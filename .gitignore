@@ -30,3 +30,7 @@
 *.exe
 *.out
 *.app
+
+build
+glfw-3.2.1
+.DS_Store
