@@ -6,10 +6,20 @@
 /*   By: jichen-m <jichen-m@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/12 19:46:10 by jichen-m          #+#    #+#             */
-/*   Updated: 2018/09/24 18:12:06 by jichen-m         ###   ########.fr       */
+/*   Updated: 2018/11/08 13:28:15 by jichen-m         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#define NK_INCLUDE_FIXED_TYPES
+#define NK_INCLUDE_STANDARD_IO
+#define NK_INCLUDE_STANDARD_VARARGS
+#define NK_INCLUDE_DEFAULT_ALLOCATOR
+#define NK_INCLUDE_VERTEX_BUFFER_OUTPUT
+#define NK_INCLUDE_FONT_BAKING
+#define NK_INCLUDE_DEFAULT_FONT
+#define NK_KEYSTATE_BASED_INPUT
+#define NK_IMPLEMENTATION
+#define NK_GLFW_GL3_IMPLEMENTATION
 #include "GlfwGUI.hpp"
 
 // === CONSTRUCTOR =============================================================
@@ -394,12 +404,13 @@ void GlfwGUI::refresh_window(void)
 {
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	create_border();
 
+	create_border();
 	draw_player(mainGame->get_player_pos());
-	draw_gui();
 
 	create_grid();
+
+	draw_gui();
 
 	//put everything to screen
 	glfwSwapBuffers(this->window);
