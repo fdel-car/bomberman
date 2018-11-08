@@ -1,16 +1,12 @@
 #pragma once
 
-#define GLFW_INCLUDE_GLCOREARB
+#include "header.hpp"
 
-#include "GameLogic.hpp"
-#include <math.h>
-
-// Nuklear
 #define MAX_VERTEX_BUFFER 512 * 1024
 #define MAX_ELEMENT_BUFFER 128 * 1024
 
-#include "Nuklear/nuklear.h"
-#include "Nuklear/nuklear_glfw_gl3.h"
+#include "nuklear/nuklear.h"
+#include "nuklear_glfw_gl3.h"
 
 // Custom Defines
 #define WHITE_SHADER 1
@@ -45,7 +41,6 @@ class GameRenderer
 
 	GameRenderer &operator=(GameRenderer const &rhs);
 
-	void init_buffer(int x, int y);
 	void init_shaders(int type);
 	void init_program(void);
 	void create_border(void);
@@ -53,7 +48,6 @@ class GameRenderer
 	void draw_gui(void);
 	void draw_player(std::tuple<int, int> &player_pos);
 	void make_vao(GLuint &vbo);
-	void drawCircle(GLfloat x, GLfloat y, GLfloat z, GLfloat radius, GLint nbrOfSide, GLfloat **points);
 
 	// General vars
 	GLFWwindow *window;
