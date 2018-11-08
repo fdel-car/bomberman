@@ -1,13 +1,10 @@
-// #pragma once
-
-#ifndef GLFWGUI_HPP
-#define GLFWGUI_HPP
+#pragma once
 
 #define GLFW_INCLUDE_GLCOREARB
 
 // #include <iostream>
 // #include "GLFW/glfw3.h"
-#include "MainGame.hpp"
+#include "GameLogic.hpp"
 
 // Nuklear
 
@@ -26,15 +23,15 @@
 #define YELLOW_SHADER 5
 #define GRAY_SHADER 6
 
-class MainGame;
+class GameLogic;
 
-class GlfwGUI
+class GameRenderer
 {
   public:
-	static MainGame *mainGame;
+	static GameLogic *mainGame;
 
-	GlfwGUI(MainGame *mainGame);
-	~GlfwGUI(void);
+	GameRenderer(GameLogic *mainGame);
+	~GameRenderer(void);
 
 	void get_user_input(void);
 	void refresh_window(void);
@@ -43,13 +40,13 @@ class GlfwGUI
 	bool active;
 
   private:
-	GlfwGUI(void);
+	GameRenderer(void);
 	static void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods);
 	static void error_callback(int error, const char *description);
 
-	GlfwGUI(GlfwGUI const &src);
+	GameRenderer(GameRenderer const &src);
 
-	GlfwGUI &operator=(GlfwGUI const &rhs);
+	GameRenderer &operator=(GameRenderer const &rhs);
 
 	void init_buffer(int x, int y);
 	void init_shaders(int type);
@@ -85,5 +82,3 @@ class GlfwGUI
 	GLuint fs;
 	GLuint shader_program;
 };
-
-#endif

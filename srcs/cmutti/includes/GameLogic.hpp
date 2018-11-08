@@ -1,9 +1,5 @@
-// #pragma once
+#pragma once
 
-#ifndef MAIN_GAME_HPP
-#define MAIN_GAME_HPP
-
-// #include <stdlib.h>
 #include <dlfcn.h>
 #include <time.h>
 #include <iostream>
@@ -11,7 +7,7 @@
 #include <thread>
 #include <chrono>
 
-#include "GlfwGUI.hpp"
+#include "GameRenderer.hpp"
 #include "AudioManager.hpp"
 
 #define MAP_SIZE 40
@@ -55,17 +51,17 @@
 
 #define FRAME_TIME 0.1f
 
-class GlfwGUI;
+class GameRenderer;
 
-class MainGame
+class GameLogic
 {
   private:
 	static const std::list<std::string> change_library_keys;
 	static const std::vector<std::tuple<std::string, int>> change_direction_keys;
 
-	MainGame(MainGame const &src);
+	GameLogic(GameLogic const &src);
 
-	MainGame &operator=(MainGame const &rhs);
+	GameLogic &operator=(GameLogic const &rhs);
 
 	void print_usage(void);
 	void change_library_request(std::string key_code);
@@ -79,7 +75,7 @@ class MainGame
 	void move_player(std::tuple<int, int> &player_body, int &player_dir);
 
 	// Graphic libraries vars
-	GlfwGUI *graphic_lib;
+	GameRenderer *graphic_lib;
 	int square_size;
 	int x_offset;
 	int y_offset;
@@ -106,8 +102,8 @@ class MainGame
 	AudioManager *audio_manager;
 
   public:
-	MainGame(void);
-	~MainGame(void);
+	GameLogic(void);
+	~GameLogic(void);
 
 	int run();
 	void button_pressed(const char *button);
@@ -123,5 +119,3 @@ class MainGame
 
 	bool canRun;
 };
-
-#endif // !MAIN_GAME_HPP

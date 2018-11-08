@@ -1,5 +1,4 @@
-#ifndef AUDIO_MANAGER_HPP
-# define AUDIO_MANAGER_HPP
+#pragma once
 
 # include "SFML/Audio.hpp"
 
@@ -24,6 +23,3 @@ class AudioManager {
 
 		bool active;
 };
-
-
-#endif

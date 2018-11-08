@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   GlfwGUI.cpp                                        :+:      :+:    :+:   */
+/*   GameRenderer.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jichen-m <jichen-m@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -20,11 +20,11 @@
 #define NK_KEYSTATE_BASED_INPUT
 #define NK_IMPLEMENTATION
 #define NK_GLFW_GL3_IMPLEMENTATION
-#include "GlfwGUI.hpp"
+#include "GameRenderer.hpp"
 
 // === CONSTRUCTOR =============================================================
 
-GlfwGUI::GlfwGUI(MainGame *_mainGame)
+GameRenderer::GameRenderer(GameLogic *_mainGame)
 {
 	this->mainGame = _mainGame;
 	// std::cout << "GLFW window" << std::endl;
@@ -79,18 +79,18 @@ GlfwGUI::GlfwGUI(MainGame *_mainGame)
 	return;
 }
 
-GlfwGUI::GlfwGUI(void)
+GameRenderer::GameRenderer(void)
 {
 	return;
 }
 
-GlfwGUI::GlfwGUI(GlfwGUI const &src)
+GameRenderer::GameRenderer(GameRenderer const &src)
 {
 	*this = src;
 	return;
 }
 
-GlfwGUI::~GlfwGUI(void)
+GameRenderer::~GameRenderer(void)
 {
 	close_window();
 	return;
@@ -100,7 +100,7 @@ GlfwGUI::~GlfwGUI(void)
 
 // === OPERATORS ===============================================================
 
-GlfwGUI &GlfwGUI::operator=(GlfwGUI const &rhs)
+GameRenderer &GameRenderer::operator=(GameRenderer const &rhs)
 {
 	this->active = rhs.active;
 	return *this;
@@ -110,7 +110,7 @@ GlfwGUI &GlfwGUI::operator=(GlfwGUI const &rhs)
 
 // === PRIVATE FUNCS ===========================================================
 
-void GlfwGUI::make_vao(GLuint &vbo)
+void GameRenderer::make_vao(GLuint &vbo)
 {
 	vao = 0;
 	glGenVertexArrays(1, &vao);
@@ -120,7 +120,7 @@ void GlfwGUI::make_vao(GLuint &vbo)
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
 }
 
-void GlfwGUI::init_buffer(int x, int y)
+void GameRenderer::init_buffer(int x, int y)
 {
 	float start_coor_X = start_x + (x * square_percent_x);
 	float start_coor_Y = start_y - (y * square_percent_y);
@@ -142,7 +142,7 @@ void GlfwGUI::init_buffer(int x, int y)
 	make_vao(vbo);
 }
 
-void GlfwGUI::init_shaders(int type)
+void GameRenderer::init_shaders(int type)
 {
 	//shader pour les vertex
 	vertex_shader =
@@ -230,7 +230,7 @@ void GlfwGUI::init_shaders(int type)
 		std::cout << "Fragment Shader compile failed" << std::endl;
 }
 
-void GlfwGUI::init_program(void)
+void GameRenderer::init_program(void)
 {
 	shader_program = glCreateProgram();
 	glAttachShader(shader_program, fs);
@@ -238,7 +238,7 @@ void GlfwGUI::init_program(void)
 	glLinkProgram(shader_program);
 }
 
-void GlfwGUI::create_border(void)
+void GameRenderer::create_border(void)
 {
 	float epsilon_x = 1 / (WINDOW_W / 2.0f);
 	float epsilon_y = 1 / (WINDOW_H / 2.0f);
@@ -272,7 +272,7 @@ void GlfwGUI::create_border(void)
 	glDrawArrays(GL_LINE_LOOP, 0, 8);
 }
 
-void GlfwGUI::create_grid(void)
+void GameRenderer::create_grid(void)
 {
 	int linesCount = 78;
 	int pointsCount = linesCount * 2;
@@ -335,7 +335,7 @@ void GlfwGUI::create_grid(void)
 	glDrawArrays(GL_LINES, 0, pointsCount);
 }
 
-void GlfwGUI::draw_gui(void)
+void GameRenderer::draw_gui(void)
 {
 	nk_glfw3_new_frame();
 
@@ -383,7 +383,7 @@ void GlfwGUI::draw_gui(void)
 	nk_glfw3_render(NK_ANTI_ALIASING_ON, MAX_VERTEX_BUFFER, MAX_ELEMENT_BUFFER);
 }
 
-void GlfwGUI::draw_player(std::tuple<int, int> &player_pos)
+void GameRenderer::draw_player(std::tuple<int, int> &player_pos)
 {
 	init_buffer(std::get<0>(player_pos), std::get<1>(player_pos));
 	init_shaders(GREEN_SHADER);
@@ -395,12 +395,12 @@ void GlfwGUI::draw_player(std::tuple<int, int> &player_pos)
 // === END PRIVATE FUNCS =======================================================
 
 // === OVERRIDES ===============================================================
-void GlfwGUI::get_user_input(void)
+void GameRenderer::get_user_input(void)
 {
 	glfwPollEvents();
 }
 
-void GlfwGUI::refresh_window(void)
+void GameRenderer::refresh_window(void)
 {
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -416,7 +416,7 @@ void GlfwGUI::refresh_window(void)
 	glfwSwapBuffers(this->window);
 }
 
-void GlfwGUI::key_callback(GLFWwindow *window, int key, int scancode, int action, int mods)
+void GameRenderer::key_callback(GLFWwindow *window, int key, int scancode, int action, int mods)
 {
 	if (action == GLFW_PRESS || action == GLFW_REPEAT)
 	{
@@ -446,7 +446,7 @@ void GlfwGUI::key_callback(GLFWwindow *window, int key, int scancode, int action
 	(void)mods;
 }
 
-void GlfwGUI::close_window()
+void GameRenderer::close_window()
 {
 	// std::cout << "Destroing Glfw window" << std::endl;
 	if (window)
@@ -454,10 +454,10 @@ void GlfwGUI::close_window()
 	glfwTerminate();
 }
 
-void GlfwGUI::error_callback(int error, const char *description)
+void GameRenderer::error_callback(int error, const char *description)
 {
 	std::cerr << "Error n." << error << ": " << description << std::endl;
 }
 // === END OVERRIDES ===========================================================
 
-MainGame *GlfwGUI::mainGame = NULL;
+GameLogic *GameRenderer::mainGame = NULL;

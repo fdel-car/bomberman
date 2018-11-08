@@ -4,7 +4,7 @@ SDIR_MAIN = ./srcs_main/
 
 INCLUDES_DIR = includes
 
-SRC_MAIN = $(SDIR_MAIN)AudioManager.cpp	$(SDIR_MAIN)GlfwGUI.cpp $(SDIR_MAIN)MainGame.cpp
+SRC_MAIN = $(SDIR_MAIN)AudioManager.cpp	$(SDIR_MAIN)GameRenderer.cpp $(SDIR_MAIN)GameLogic.cpp
 
 OBJ_MAIN = $(SRC_MAIN:.cpp=.o)
 
@@ -23,8 +23,6 @@ CC = clang++
 all: $(ALL)
 
 install:
-	export LD_LIBRARY_PATH=~/.brew/Cellar/sfml/2.4.2_1/lib
-	echo "export LD_LIBRARY_PATH=~/.brew/Cellar/sfml/2.4.2_1/lib" >> ~/.zshrc
 	brew install pkg-config
 	brew install glfw
 	cp -r ~/.brew/Cellar/glfw/3.2.1/include/GLFW ./$(INCLUDES_DIR)

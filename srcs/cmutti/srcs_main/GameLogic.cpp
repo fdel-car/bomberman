@@ -1,7 +1,7 @@
-#include "MainGame.hpp"
+#include "GameLogic.hpp"
 
 // === CONSTRUCTOR =============================================================
-MainGame::MainGame()
+GameLogic::GameLogic()
 {
 	canRun = false;
 	running = false;
@@ -18,19 +18,19 @@ MainGame::MainGame()
 	// Load Audio Library
 	audio_manager = new AudioManager();
 	// Create interface class
-	graphic_lib = new GlfwGUI(this);
+	graphic_lib = new GameRenderer(this);
 
 	// Everything good
 	canRun = true;
 }
 
-MainGame::MainGame(MainGame const &src)
+GameLogic::GameLogic(GameLogic const &src)
 {
 	*this = src;
 	return;
 }
 
-MainGame::~MainGame(void)
+GameLogic::~GameLogic(void)
 {
 	delete (graphic_lib);
 	delete (audio_manager);
@@ -40,42 +40,42 @@ MainGame::~MainGame(void)
 // === ENDCONSTRUCTOR ==========================================================
 
 // === GETTER ==================================================================
-int MainGame::get_square_size(void)
+int GameLogic::get_square_size(void)
 {
 	return square_size;
 }
 
-int MainGame::get_x_offset(void)
+int GameLogic::get_x_offset(void)
 {
 	return x_offset;
 }
 
-int MainGame::get_y_offset(void)
+int GameLogic::get_y_offset(void)
 {
 	return y_offset;
 }
 
-int MainGame::get_map_w(void)
+int GameLogic::get_map_w(void)
 {
 	return map_w;
 }
 
-int MainGame::get_map_h(void)
+int GameLogic::get_map_h(void)
 {
 	return map_h;
 }
 
-int MainGame::get_player_direction(void)
+int GameLogic::get_player_direction(void)
 {
 	return player_direction;
 }
 
-bool MainGame::get_if_is_player_alive(void)
+bool GameLogic::get_if_is_player_alive(void)
 {
 	return is_player_alive;
 }
 
-std::tuple<int, int> &MainGame::get_player_pos(void)
+std::tuple<int, int> &GameLogic::get_player_pos(void)
 {
 	return player_pos;
 }
@@ -84,7 +84,7 @@ std::tuple<int, int> &MainGame::get_player_pos(void)
 
 // === OPERATORS ===============================================================
 
-MainGame &MainGame::operator=(MainGame const &rhs)
+GameLogic &GameLogic::operator=(GameLogic const &rhs)
 {
 	this->canRun = rhs.canRun;
 	return *this;
@@ -94,12 +94,12 @@ MainGame &MainGame::operator=(MainGame const &rhs)
 
 // === PRIVATE FUNCS ===========================================================
 
-void MainGame::print_usage(void)
+void GameLogic::print_usage(void)
 {
 	std::cerr << "Usage: ./bomberman" << std::endl;
 }
 
-void MainGame::change_library_request(std::string key_code)
+void GameLogic::change_library_request(std::string key_code)
 {
 	int requested_index = std::stoi(key_code);
 
@@ -110,7 +110,7 @@ void MainGame::change_library_request(std::string key_code)
 	}
 }
 
-void MainGame::update_game_state(void)
+void GameLogic::update_game_state(void)
 {
 	// Get all pool events in library
 	if (graphic_lib)
@@ -147,7 +147,7 @@ void MainGame::update_game_state(void)
 	}
 }
 
-int MainGame::update_gui(void)
+int GameLogic::update_gui(void)
 {
 	if (dl_index < 0 || dl_index > 1)
 	{
@@ -166,7 +166,7 @@ int MainGame::update_gui(void)
 	return EXIT_SUCCESS;
 }
 
-void MainGame::regulate_frame_sleep(void)
+void GameLogic::regulate_frame_sleep(void)
 {
 	// Timer logic, make thread sleep if needed
 	past_frame_length = difftime(timer, time(NULL));
@@ -178,7 +178,7 @@ void MainGame::regulate_frame_sleep(void)
 	timer = time(NULL);
 }
 
-void MainGame::init_player(void)
+void GameLogic::init_player(void)
 {
 	is_player_alive = true;
 	has_shown_death = false;
@@ -190,7 +190,7 @@ void MainGame::init_player(void)
 	player_direction_requested = -1;
 }
 
-bool MainGame::player_can_move(void)
+bool GameLogic::player_can_move(void)
 {
 	// Check for player
 	int headX = std::get<0>(player_pos);
@@ -217,7 +217,7 @@ bool MainGame::player_can_move(void)
 	return true;
 }
 
-void MainGame::move_player(std::tuple<int, int> &player_pos, int &player_dir)
+void GameLogic::move_player(std::tuple<int, int> &player_pos, int &player_dir)
 {
 	// Advance based on direction
 	if (player_dir == UP)
@@ -230,7 +230,7 @@ void MainGame::move_player(std::tuple<int, int> &player_pos, int &player_dir)
 		std::get<0>(player_pos) = std::get<0>(player_pos) + 1;
 }
 
-void MainGame::change_direction_to(int &player_direction, int &player_direction_requested, int newDir)
+void GameLogic::change_direction_to(int &player_direction, int &player_direction_requested, int newDir)
 {
 	player_direction_requested = newDir;
 	if ((newDir == UP || newDir == DOWN) && (player_direction == LEFT || player_direction == RIGHT))
@@ -246,7 +246,7 @@ void MainGame::change_direction_to(int &player_direction, int &player_direction_
 // === END PRIVATE FUNCS =======================================================
 
 // === PUBLIC FUNCS ============================================================
-int MainGame::run(void)
+int GameLogic::run(void)
 {
 	if (!canRun)
 		return EXIT_FAILURE;
@@ -285,7 +285,7 @@ int MainGame::run(void)
 	return gui_ret;
 }
 
-void MainGame::button_pressed(const char *button)
+void GameLogic::button_pressed(const char *button)
 {
 	std::string key = !button ? KEY_ESCAPE : std::string(button); // GLFW sends NULL pointer for Escape key..
 
@@ -326,7 +326,7 @@ static std::list<std::string> generate_library_keys()
 	p.push_front(KEY_0);
 	return p;
 }
-const std::list<std::string> MainGame::change_library_keys = generate_library_keys();
+const std::list<std::string> GameLogic::change_library_keys = generate_library_keys();
 
 static std::vector<std::tuple<std::string, int>> generate_direction_keys()
 { // static here is "internal linkage"
@@ -341,7 +341,7 @@ static std::vector<std::tuple<std::string, int>> generate_direction_keys()
 	p.push_back(std::make_tuple(KEY_D_LOWER, RIGHT));
 	return p;
 }
-const std::vector<std::tuple<std::string, int>> MainGame::change_direction_keys = generate_direction_keys();
+const std::vector<std::tuple<std::string, int>> GameLogic::change_direction_keys = generate_direction_keys();
 // === END STATICVARS ==========================================================
 
 // === OTHERS ==================================================================
@@ -354,7 +354,7 @@ int main(void)
 	{
 		/* initialize random seed: */
 		srand(time(NULL));
-		MainGame mainGame;
+		GameLogic mainGame;
 		ret = mainGame.run();
 	}
 	catch (...)
