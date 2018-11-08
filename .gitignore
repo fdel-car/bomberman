@@ -37,3 +37,4 @@ glfw-3.2.1
 includes/KHR/*
 includes/glad/*
 srcs/glad/*
+includes/nuklear/*

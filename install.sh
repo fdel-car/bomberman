@@ -17,9 +17,13 @@ fi
 which -s glad || (~/Library/Python/${pythonVersion}/bin/pip install glad --user)
 if [[ ! -d "srcs/glad" && ! -d "includes/glad" && ! -d "includes/KHR" ]]; then
     ~/Library/Python/${pythonVersion}/bin/glad --api gl=4.1 --profile=core --generator=c --out-path=tmp-glad
-    mkdir srcs/glad && mv tmp-glad/src/glad.c srcs/glad/
+    mkdir srcs/glad && mv tmp-glad/src/glad.c srcs/glad/glad.cpp
     mv tmp-glad/include/KHR includes/ && mv tmp-glad/include/glad includes/
     rm -rf tmp-glad
+fi
+if [ ! -d "includes/nuklear" ]; then
+    mkdir includes/nuklear
+    curl https://raw.githubusercontent.com/vurtun/nuklear/master/nuklear.h -o includes/nuklear/nuklear.h
 fi
 which -s cmake || (echo "Without cmake installed on your computer you can't fully finish the installation. The command 'brew install cmake' can be pretty useful!" && exit)
 if [ ! -d "build" ]; then

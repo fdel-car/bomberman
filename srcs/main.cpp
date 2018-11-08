@@ -1,28 +1,20 @@
-#include <iostream>
-#include <glad/glad.h>
-#include "GLFW/glfw3.h"
+#include "GameLogic.hpp"
 
-int main()
+int main(void)
 {
-    glfwInit();
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-#ifdef __APPLE__
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-#endif
-    GLFWwindow *window = glfwCreateWindow(800, 600, "LearnOpenGL", NULL, NULL);
-    if (window == NULL)
+    int ret = 0;
+
+    try
     {
-        std::cout << "Failed to create GLFW window" << std::endl;
-        glfwTerminate();
-        return -1;
+        /* initialize random seed: */
+        srand(time(NULL));
+        GameLogic mainGame;
+        ret = mainGame.run();
     }
-    glfwMakeContextCurrent(window);
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+    catch (...)
     {
-        std::cout << "Failed to initialize GLAD" << std::endl;
-        return -1;
+        std::cerr << "Unkown error occurred when running game" << std::endl;
+        return EXIT_FAILURE;
     }
-    return 0;
+    return ret;
 }
