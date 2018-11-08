@@ -120,26 +120,81 @@ void GameRenderer::make_vao(GLuint &vbo)
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
 }
 
+void GameRenderer::drawCircle(GLfloat x, GLfloat y, GLfloat z, GLfloat radius, GLint nbrOfSide, GLfloat **points)
+{
+	GLint nbrOfVertices = nbrOfSide + 2;
+
+	GLfloat doublePi = 2.0f * 3.14159265358979f;
+
+	GLfloat circleVerticesX[nbrOfVertices];
+	GLfloat circleVerticesY[nbrOfVertices];
+	GLfloat circleVerticesZ[nbrOfVertices];
+
+	circleVerticesX[0] = x;
+	circleVerticesY[0] = y;
+	circleVerticesZ[0] = z;
+
+	for (int i = 1; i < nbrOfVertices; i++) {
+		circleVerticesX[i] = x + (radius * cos(i * doublePi / nbrOfSide));
+		circleVerticesY[i] = y + (radius * sin(i * doublePi / nbrOfSide));
+
+		std::cout << circleVerticesX[i] << " " << circleVerticesY[i] << std::endl;
+		circleVerticesZ[i] = z;
+	}
+	for (int i = 0; i < nbrOfVertices; i++) {
+		(*points)[i * 3] = circleVerticesX[i];
+		(*points)[(i * 3) + 1] = circleVerticesY[i];
+		(*points)[(i * 3) + 2] = circleVerticesZ[i];
+	}
+}
+
 void GameRenderer::init_buffer(int x, int y)
 {
 	float start_coor_X = start_x + (x * square_percent_x);
 	float start_coor_Y = start_y - (y * square_percent_y);
+	
+	float xCenter = start_coor_X + (square_percent_x / 2);
+	float yCenter = start_coor_Y - (square_percent_y / 2);
+	int nbrOfSide = 120;
+	float radiusX = square_percent_x / 2;
+	float radiusY = square_percent_y / 2;
 
-	//POINTS
-	float points[] = {
-		start_coor_X, start_coor_Y, 0.0f,
-		start_coor_X, start_coor_Y - square_percent_y, 0.0f,
-		start_coor_X + square_percent_x, start_coor_Y, 0.0f,
+	GLint nbrOfVertices = nbrOfSide + 2;
 
-		start_coor_X + square_percent_x, start_coor_Y, 0.0f,
-		start_coor_X + square_percent_x, start_coor_Y - square_percent_y, 0.0f,
-		start_coor_X, start_coor_Y - square_percent_y, 0.0f};
+	GLfloat doublePi = 2.0f * 3.14159265358979f;
+
+	GLfloat circleVerticesX[nbrOfVertices];
+	GLfloat circleVerticesY[nbrOfVertices];
+	GLfloat circleVerticesZ[nbrOfVertices];
+
+	circleVerticesX[0] = xCenter;
+	circleVerticesY[0] = yCenter;
+	circleVerticesZ[0] = 0;
+
+	for (int i = 1; i < nbrOfVertices; i++) {
+		circleVerticesX[i] = xCenter + (radiusX * cos(i * doublePi / nbrOfSide));
+		circleVerticesY[i] = yCenter + (radiusY * sin(i * doublePi / nbrOfSide));
+		circleVerticesZ[i] = 0;
+	}
+	GLfloat allCircleVertices[nbrOfVertices * 3];
+	for (int i = 0; i < nbrOfVertices; i++) {
+		allCircleVertices[i * 3] = circleVerticesX[i];
+		allCircleVertices[(i * 3) + 1] = circleVerticesY[i];
+		allCircleVertices[(i * 3) + 2] = circleVerticesZ[i];
+	}
+	
 	//BUFFER
 	vbo = 0;
 	glGenBuffers(1, &vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(points), points, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(allCircleVertices), allCircleVertices, GL_STATIC_DRAW);
 	make_vao(vbo);
+
+	init_shaders(GREEN_SHADER);
+	init_program();
+	glUseProgram(shader_program);
+	glBindVertexArray(vao);
+	glDrawArrays(GL_TRIANGLE_FAN, 0, nbrOfVertices);
 }
 
 void GameRenderer::init_shaders(int type)
@@ -386,11 +441,11 @@ void GameRenderer::draw_gui(void)
 void GameRenderer::draw_player(std::tuple<int, int> &player_pos)
 {
 	init_buffer(std::get<0>(player_pos), std::get<1>(player_pos));
-	init_shaders(GREEN_SHADER);
-	init_program();
-	glUseProgram(shader_program);
-	glBindVertexArray(vao);
-	glDrawArrays(GL_TRIANGLES, 0, 6);
+	// init_shaders(GREEN_SHADER);
+	// init_program();
+	// glUseProgram(shader_program);
+	// glBindVertexArray(vao);
+	// glDrawArrays(GL_TRIANGLES, 0, 3);
 }
 // === END PRIVATE FUNCS =======================================================
 
