@@ -6,7 +6,8 @@ if [ ! -d "glfw-3.2.1" ]; then
 fi
 PYTHON_VERSION="$(python -c 'import sys; print(".".join(map(str, sys.version_info[:2])))')"
 which -s python || (echo "You need to have python installed first, you can use 'brew install python' for instance." && exit)
-if [ ! which -s pip ]; then
+which -s pip
+if [ $? == 1 ]; then
     curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
     python get-pip.py --user
     rm get-pip.py
