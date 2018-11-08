@@ -7,18 +7,26 @@ set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 
 add_subdirectory(glfw-3.2.1)
 
+include_directories(scrs)
 set(SRCS
-    main.cpp
+  srcs/main.cpp
+  srcs/glad/glad.c
 )
 
-add_executable(game ${SRCS})
+include_directories(includes)
+set(HEADERS
+  includes/glad/glad.h
+  includes/KHR/khrplatform.h
+)
+
+add_executable(bomberman ${SRCS} ${HEADERS})
 
 if(MSVC)
   target_compile_options(glfw PRIVATE /W2)
-  target_compile_options(game PRIVATE /W4 /WX)
+  target_compile_options(bomberman PRIVATE /W4 /WX)
 else()
   target_compile_options(glfw PRIVATE -Wno-deprecated)
-  target_compile_options(game PRIVATE -Wall -Wextra -Werror -std=c++11)
+  target_compile_options(bomberman PRIVATE -Wall -Wextra -Werror)
 endif()
 
-target_link_libraries(game glfw)
+target_link_libraries(bomberman glfw)

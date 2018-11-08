@@ -34,3 +34,6 @@
 build
 glfw-3.2.1
 .DS_Store
+includes/KHR/*
+includes/glad/*
+srcs/glad/*
