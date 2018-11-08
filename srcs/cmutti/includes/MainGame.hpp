@@ -3,13 +3,12 @@
 #ifndef MAIN_GAME_HPP
 #define MAIN_GAME_HPP
 
-#include <stdlib.h>
+// #include <stdlib.h>
 #include <dlfcn.h>
 #include <time.h>
 #include <iostream>
 #include <list>
 #include <thread>
-#include <iostream>
 #include <chrono>
 
 #include "GlfwGUI.hpp"
