@@ -23,14 +23,14 @@ CC = clang++
 all: $(ALL)
 
 install:
+	export LD_LIBRARY_PATH=~/.brew/Cellar/sfml/2.4.2_1/lib
+	echo "export LD_LIBRARY_PATH=~/.brew/Cellar/sfml/2.4.2_1/lib" >> ~/.zshrc
 	brew install pkg-config
 	brew install glfw
 	cp -r ~/.brew/Cellar/glfw/3.2.1/include/GLFW ./$(INCLUDES_DIR)
 	brew install sfml
 	mkdir ./$(INCLUDES_DIR)/SFML
 	cp -r ~/.brew/Cellar/sfml/2.4.2_1/include/SFML/*.hpp ~/.brew/Cellar/sfml/2.4.2_1/include/SFML/Audio ~/.brew/Cellar/sfml/2.4.2_1/include/SFML/System ./$(INCLUDES_DIR)/SFML
-	export LD_LIBRARY_PATH=~/.brew/Cellar/sfml/2.4.2_1/lib
-	echo "export LD_LIBRARY_PATH=~/.brew/Cellar/sfml/2.4.2_1/lib" >> ~/.zshrc
 
 $(NAME): $(OBJ_MAIN)
 	$(CC) $(ALL_FLAGS) -o $(NAME) $(OBJ_MAIN)

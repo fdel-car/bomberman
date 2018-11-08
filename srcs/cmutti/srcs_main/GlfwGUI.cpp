@@ -404,12 +404,13 @@ void GlfwGUI::refresh_window(void)
 {
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	create_border();
 
+	create_border();
 	draw_player(mainGame->get_player_pos());
-	draw_gui();
 
 	create_grid();
+
+	draw_gui();
 
 	//put everything to screen
 	glfwSwapBuffers(this->window);
