@@ -1,7 +1,7 @@
 #!/bin/bash
 if [ ! -d "glfw-3.2.1" ]; then
     curl -OL https://github.com/glfw/glfw/releases/download/3.2.1/glfw-3.2.1.zip
-    unzip glfw-3.2.1.zip
+    unzip glfw-3.2.1.zip > /dev/null
     rm "glfw-3.2.1.zip"
 fi
 pythonVersion="$(python -c 'import sys; print(".".join(map(str, sys.version_info[:2])))')"
@@ -21,6 +21,7 @@ if [[ ! -d "srcs/glad" && ! -d "includes/glad" && ! -d "includes/KHR" ]]; then
     mv tmp-glad/include/KHR includes/ && mv tmp-glad/include/glad includes/
     rm -rf tmp-glad
 fi
+which -s cmake || (echo "Without cmake installed on your computer you can't fully finish the installation. The command 'brew install cmake' can be pretty useful!" && exit)
 if [ ! -d "build" ]; then
     mkdir "build"
     cd build && cmake .. && make
