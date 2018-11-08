@@ -9,6 +9,25 @@
 #include "GLFW/glfw3.h"
 #include "MainGame.hpp"
 
+// Nuklear
+#define NK_INCLUDE_FIXED_TYPES
+#define NK_INCLUDE_STANDARD_IO
+#define NK_INCLUDE_STANDARD_VARARGS
+#define NK_INCLUDE_DEFAULT_ALLOCATOR
+#define NK_INCLUDE_VERTEX_BUFFER_OUTPUT
+#define NK_INCLUDE_FONT_BAKING
+#define NK_INCLUDE_DEFAULT_FONT
+#define NK_IMPLEMENTATION
+#define NK_GLFW_GL3_IMPLEMENTATION
+#define NK_KEYSTATE_BASED_INPUT
+
+#define MAX_VERTEX_BUFFER 512 * 1024
+#define MAX_ELEMENT_BUFFER 128 * 1024
+
+#include "Nuklear/nuklear.h"
+#include "Nuklear/nuklear_glfw_gl3.h"
+
+// Custom Defines
 #define WHITE_SHADER 1
 #define GREEN_SHADER 2
 #define RED_SHADER 3
@@ -46,12 +65,14 @@ class GlfwGUI
 	void init_program(void);
 	void create_border(void);
 	void create_grid(void);
-	void put_fruit(std::tuple<int, int> &fruit_pos);
-	void put_special_fruit(std::tuple<int, int> &fruit_pos);
+	void draw_gui(void);
+	void draw_player(std::tuple<int, int> &player_pos);
 	void make_vao(GLuint &vbo);
 
+	// General vars
 	GLFWwindow *window;
-	float counter;
+	int width = 0;
+	int height = 0;
 	int x_offset;
 	int y_offset;
 	int square_size;
@@ -60,6 +81,11 @@ class GlfwGUI
 	float square_percent_y;
 	float square_percent_x;
 
+	// Nuklear vars
+	struct nk_context *ctx;
+	struct nk_colorf bg;
+
+	// Rendering vars
 	GLuint vbo;
 	GLuint vao;
 	const char *vertex_shader;

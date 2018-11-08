@@ -27,10 +27,12 @@ GlfwGUI::GlfwGUI(MainGame *_mainGame)
 	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
-	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+#ifdef __APPLE__
+	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+#endif
 	// glfwSetInputMode(window, GLFW_STICKY_KEYS, 1);
-	this->window = glfwCreateWindow(WINDOW_W, WINDOW_H, "Nibbler GLFW", NULL, NULL); // size of screen will change
+	this->window = glfwCreateWindow(WINDOW_W, WINDOW_H, "Bomberman", NULL, NULL); // size of screen will change
 	if (!this->window)
 	{
 		glfwTerminate();
@@ -40,7 +42,9 @@ GlfwGUI::GlfwGUI(MainGame *_mainGame)
 	const GLFWvidmode *mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
 	glfwSetWindowPos(window, (mode->width / 2) - (WINDOW_W / 2), (mode->height / 2) - (WINDOW_H / 2));
 	glfwMakeContextCurrent(this->window);
+	glfwGetWindowSize(window, &width, &height);
 	glfwSetWindowUserPointer(window, this);
+	// glViewport(0, 0, WINDOW_W, WINDOW_H);
 	glfwSetKeyCallback(window, key_callback);
 	glfwPollEvents();
 
@@ -56,9 +60,15 @@ GlfwGUI::GlfwGUI(MainGame *_mainGame)
 	square_percent_y = start_y / (_mainGame->get_map_h() / 2.0f);
 	square_percent_x = (-start_x) / (_mainGame->get_map_w() / 2.0f);
 
-	this->counter = 0.0f;
+	// Nuklear init
+	ctx = nk_glfw3_init(window, NK_GLFW3_INSTALL_CALLBACKS);
+	struct nk_font_atlas *atlas;
+	nk_glfw3_font_stash_begin(&atlas);
+	nk_glfw3_font_stash_end();
+
 	return;
 }
+
 GlfwGUI::GlfwGUI(void)
 {
 	return;
@@ -283,7 +293,6 @@ void GlfwGUI::create_grid(void)
 		tmpX += lineSpacing;
 	}
 	// Horizontal lines
-	// for (int i = 0; i <
 	lineSpacing = square_percent_y;
 	tmpX = start_y - lineSpacing;
 	for (int i = linesCount / 2; i < linesCount; i++)
@@ -315,6 +324,64 @@ void GlfwGUI::create_grid(void)
 	//drawing all the vertex of the triangle
 	glDrawArrays(GL_LINES, 0, pointsCount);
 }
+
+void GlfwGUI::draw_gui(void)
+{
+	nk_glfw3_new_frame();
+
+	/* GUI */
+	if (nk_begin(ctx, "Demo", nk_rect(50, 50, 230, 250),
+				 NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE |
+					 NK_WINDOW_MINIMIZABLE | NK_WINDOW_TITLE))
+	{
+		enum
+		{
+			EASY,
+			HARD
+		};
+		static int op = EASY;
+		static int property = 20;
+		nk_layout_row_static(ctx, 30, 80, 1);
+		if (nk_button_label(ctx, "button"))
+			fprintf(stdout, "button pressed\n");
+
+		nk_layout_row_dynamic(ctx, 30, 2);
+		if (nk_option_label(ctx, "easy", op == EASY))
+			op = EASY;
+		if (nk_option_label(ctx, "hard", op == HARD))
+			op = HARD;
+
+		nk_layout_row_dynamic(ctx, 25, 1);
+		nk_property_int(ctx, "Compression:", 0, &property, 100, 10, 1);
+
+		nk_layout_row_dynamic(ctx, 20, 1);
+		nk_label(ctx, "background:", NK_TEXT_LEFT);
+		nk_layout_row_dynamic(ctx, 25, 1);
+		if (nk_combo_begin_color(ctx, nk_rgb_cf(bg), nk_vec2(nk_widget_width(ctx), 400)))
+		{
+			nk_layout_row_dynamic(ctx, 120, 1);
+			bg = nk_color_picker(ctx, bg, NK_RGBA);
+			nk_layout_row_dynamic(ctx, 25, 1);
+			bg.r = nk_propertyf(ctx, "#R:", 0, bg.r, 1.0f, 0.01f, 0.005f);
+			bg.g = nk_propertyf(ctx, "#G:", 0, bg.g, 1.0f, 0.01f, 0.005f);
+			bg.b = nk_propertyf(ctx, "#B:", 0, bg.b, 1.0f, 0.01f, 0.005f);
+			bg.a = nk_propertyf(ctx, "#A:", 0, bg.a, 1.0f, 0.01f, 0.005f);
+			nk_combo_end(ctx);
+		}
+	}
+	nk_end(ctx);
+	nk_glfw3_render(NK_ANTI_ALIASING_ON, MAX_VERTEX_BUFFER, MAX_ELEMENT_BUFFER);
+}
+
+void GlfwGUI::draw_player(std::tuple<int, int> &player_pos)
+{
+	init_buffer(std::get<0>(player_pos), std::get<1>(player_pos));
+	init_shaders(GREEN_SHADER);
+	init_program();
+	glUseProgram(shader_program);
+	glBindVertexArray(vao);
+	glDrawArrays(GL_TRIANGLES, 0, 6);
+}
 // === END PRIVATE FUNCS =======================================================
 
 // === OVERRIDES ===============================================================
@@ -325,23 +392,12 @@ void GlfwGUI::get_user_input(void)
 
 void GlfwGUI::refresh_window(void)
 {
-	//only for test to see if each frame change color
-	// this->counter = this->counter + 0.2f;
-	if (this->counter == 1.0f)
-		this->counter = 0.0f;
-	glClearColor(this->counter, this->counter, this->counter, 1.0f);
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	create_border();
 
-	// Add snakes
-	std::tuple<int, int> &body_part = mainGame->get_player_pos(); // access by reference to avoid copying
-	init_buffer(std::get<0>(body_part), std::get<1>(body_part));
-	init_shaders(GREEN_SHADER);
-	init_program();
-	glUseProgram(shader_program);
-	glBindVertexArray(vao);
-	//drawing all the vertex of the triangle
-	glDrawArrays(GL_TRIANGLES, 0, 6);
+	draw_player(mainGame->get_player_pos());
+	draw_gui();
 
 	create_grid();
 
