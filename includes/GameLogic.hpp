@@ -90,7 +90,7 @@ class GameLogic
 
 	int run();
 	void buttonPressed(const char *button);
-	void buttonStateChanged(const char *button, bool isPressed);
+	void buttonStateChanged(std::string button, bool isPressed);
 
 	int getSquareSize(void);
 	int getXOffset(void);

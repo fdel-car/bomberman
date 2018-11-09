@@ -446,26 +446,494 @@ void GameRenderer::key_callback(GLFWwindow *window, int key, int scancode, int a
 {
 	if (action == GLFW_PRESS || action == GLFW_RELEASE)
 	{
-		mainGame->buttonStateChanged(glfwGetKeyName(key, scancode), action == GLFW_PRESS);
-		// mainGame->buttonStateChanged("NULL", action == GLFW_PRESS);
-		// switch (key)
-		// {
-		// case GLFW_KEY_RIGHT:
-		// 	mainGame->buttonPressed(KEY_RIGHT);
-		// 	break;
-		// case GLFW_KEY_LEFT:
-		// 	mainGame->buttonPressed(KEY_LEFT);
-		// 	break;
-		// case GLFW_KEY_UP:
-		// 	mainGame->buttonPressed(KEY_UP);
-		// 	break;
-		// case GLFW_KEY_DOWN:
-		// 	mainGame->buttonPressed(KEY_DOWN);
-		// 	break;
-		// default:
-		// 	mainGame->buttonPressed(glfwGetKeyName(key, scancode));
-		// 	break;
-		// }
+		switch (key)
+		{
+		case GLFW_KEY_UNKNOWN:
+			mainGame->buttonStateChanged("UNKNOWN", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_SPACE:
+			mainGame->buttonStateChanged("SPACE", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_APOSTROPHE:
+			mainGame->buttonStateChanged("APOSTROPHE", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_COMMA:
+			mainGame->buttonStateChanged("COMMA", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_MINUS:
+			mainGame->buttonStateChanged("MINUS", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_PERIOD:
+			mainGame->buttonStateChanged("PERIOD", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_SLASH:
+			mainGame->buttonStateChanged("SLASH", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_0:
+			mainGame->buttonStateChanged("0", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_1:
+			mainGame->buttonStateChanged("1", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_2:
+			mainGame->buttonStateChanged("2", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_3:
+			mainGame->buttonStateChanged("3", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_4:
+			mainGame->buttonStateChanged("4", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_5:
+			mainGame->buttonStateChanged("5", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_6:
+			mainGame->buttonStateChanged("6", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_7:
+			mainGame->buttonStateChanged("7", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_8:
+			mainGame->buttonStateChanged("8", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_9:
+			mainGame->buttonStateChanged("9", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_SEMICOLON:
+			mainGame->buttonStateChanged(";", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_EQUAL:
+			mainGame->buttonStateChanged("EQUAL", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_A:
+			mainGame->buttonStateChanged("A", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_B:
+			mainGame->buttonStateChanged("B", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_C:
+			mainGame->buttonStateChanged("C", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_D:
+			mainGame->buttonStateChanged("D", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_E:
+			mainGame->buttonStateChanged("E", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_F:
+			mainGame->buttonStateChanged("F", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_G:
+			mainGame->buttonStateChanged("G", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_H:
+			mainGame->buttonStateChanged("H", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_I:
+			mainGame->buttonStateChanged("I", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_J:
+			mainGame->buttonStateChanged("L", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_K:
+			mainGame->buttonStateChanged("K", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_L:
+			mainGame->buttonStateChanged("L", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_M:
+			mainGame->buttonStateChanged("M", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_N:
+			mainGame->buttonStateChanged("N", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_O:
+			mainGame->buttonStateChanged("O", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_P:
+			mainGame->buttonStateChanged("P", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_Q:
+			mainGame->buttonStateChanged("Q", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_R:
+			mainGame->buttonStateChanged("R", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_S:
+			mainGame->buttonStateChanged("S", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_T:
+			mainGame->buttonStateChanged("T", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_U:
+			mainGame->buttonStateChanged("U", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_V:
+			mainGame->buttonStateChanged("V", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_W:
+			mainGame->buttonStateChanged("W", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_X:
+			mainGame->buttonStateChanged("X", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_Y:
+			mainGame->buttonStateChanged("Y", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_Z:
+			mainGame->buttonStateChanged("Z", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_LEFT_BRACKET:
+			mainGame->buttonStateChanged("[", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_BACKSLASH:
+			mainGame->buttonStateChanged("\\", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_RIGHT_BRACKET:
+			mainGame->buttonStateChanged("]", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_GRAVE_ACCENT:
+			mainGame->buttonStateChanged("`", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_WORLD_1:
+			mainGame->buttonStateChanged("WORLD_1", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_WORLD_2:
+			mainGame->buttonStateChanged("WORLD_2", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_ESCAPE:
+			mainGame->buttonStateChanged("ESCAPE", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_ENTER:
+			mainGame->buttonStateChanged("ENTER", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_TAB:
+			mainGame->buttonStateChanged("TAB", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_BACKSPACE:
+			mainGame->buttonStateChanged("BACKSPACE", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_INSERT:
+			mainGame->buttonStateChanged("INSERT", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_DELETE:
+			mainGame->buttonStateChanged("DELETE", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_RIGHT:
+			mainGame->buttonStateChanged("RIGHT", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_LEFT:
+			mainGame->buttonStateChanged("LEFT", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_DOWN:
+			mainGame->buttonStateChanged("DOWN", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_UP:
+			mainGame->buttonStateChanged("UP", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_PAGE_UP:
+			mainGame->buttonStateChanged("PAGE_UP", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_PAGE_DOWN:
+			mainGame->buttonStateChanged("PAGE_DOWN", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_HOME:
+			mainGame->buttonStateChanged("HOME", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_END:
+			mainGame->buttonStateChanged("END", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_CAPS_LOCK:
+			mainGame->buttonStateChanged("CAPS_LOCK", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_SCROLL_LOCK:
+			mainGame->buttonStateChanged("SCROLL_LOCK", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_NUM_LOCK:
+			mainGame->buttonStateChanged("NUM_LOCK", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_PRINT_SCREEN:
+			mainGame->buttonStateChanged("PRINT_SCREEN", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_PAUSE:
+			mainGame->buttonStateChanged("PAUSE", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_F1:
+			mainGame->buttonStateChanged("F1", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_F2:
+			mainGame->buttonStateChanged("F2", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_F3:
+			mainGame->buttonStateChanged("F3", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_F4:
+			mainGame->buttonStateChanged("F4", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_F5:
+			mainGame->buttonStateChanged("F5", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_F6:
+			mainGame->buttonStateChanged("F6", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_F7:
+			mainGame->buttonStateChanged("F7", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_F8:
+			mainGame->buttonStateChanged("F8", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_F9:
+			mainGame->buttonStateChanged("F9", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_F10:
+			mainGame->buttonStateChanged("F10", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_F11:
+			mainGame->buttonStateChanged("F11", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_F12:
+			mainGame->buttonStateChanged("F12", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_F13:
+			mainGame->buttonStateChanged("F13", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_F14:
+			mainGame->buttonStateChanged("F14", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_F15:
+			mainGame->buttonStateChanged("F15", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_F16:
+			mainGame->buttonStateChanged("F16", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_F17:
+			mainGame->buttonStateChanged("F17", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_F18:
+			mainGame->buttonStateChanged("F18", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_F19:
+			mainGame->buttonStateChanged("F19", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_F20:
+			mainGame->buttonStateChanged("F20", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_F21:
+			mainGame->buttonStateChanged("F21", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_F22:
+			mainGame->buttonStateChanged("F22", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_F23:
+			mainGame->buttonStateChanged("F23", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_F24:
+			mainGame->buttonStateChanged("F24", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_F25:
+			mainGame->buttonStateChanged("F25", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_KP_0:
+			mainGame->buttonStateChanged("KP_0", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_KP_1:
+			mainGame->buttonStateChanged("KP_1", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_KP_2:
+			mainGame->buttonStateChanged("KP_2", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_KP_3:
+			mainGame->buttonStateChanged("KP_3", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_KP_4:
+			mainGame->buttonStateChanged("KP_4", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_KP_5:
+			mainGame->buttonStateChanged("KP_5", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_KP_6:
+			mainGame->buttonStateChanged("KP_6", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_KP_7:
+			mainGame->buttonStateChanged("KP_7", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_KP_8:
+			mainGame->buttonStateChanged("KP_8", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_KP_9:
+			mainGame->buttonStateChanged("KP_9", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_KP_DECIMAL:
+			mainGame->buttonStateChanged("KP_DECIMAL", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_KP_DIVIDE:
+			mainGame->buttonStateChanged("KP_DIVIDE", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_KP_MULTIPLY:
+			mainGame->buttonStateChanged("KP_MULTIPLY", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_KP_SUBTRACT:
+			mainGame->buttonStateChanged("KP_SUBTRACT", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_KP_ADD:
+			mainGame->buttonStateChanged("KP_ADD", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_KP_ENTER:
+			mainGame->buttonStateChanged("KP_ENTER", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_KP_EQUAL:
+			mainGame->buttonStateChanged("KP_EQUAL", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_LEFT_SHIFT:
+			mainGame->buttonStateChanged("LEFT_SHIFT", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_LEFT_CONTROL:
+			mainGame->buttonStateChanged("LEFT_CONTROL", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_LEFT_ALT:
+			mainGame->buttonStateChanged("LEFT_ALT", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_LEFT_SUPER:
+			mainGame->buttonStateChanged("LEFT_SUPER", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_RIGHT_SHIFT:
+			mainGame->buttonStateChanged("RIGHT_SHIFT", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_RIGHT_CONTROL:
+			mainGame->buttonStateChanged("RIGHT_CONTROL", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_RIGHT_ALT:
+			mainGame->buttonStateChanged("RIGHT_ALT", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_RIGHT_SUPER:
+			mainGame->buttonStateChanged("RIGHT_SUPER", action == GLFW_PRESS);
+			break;
+
+		case GLFW_KEY_MENU:
+			mainGame->buttonStateChanged("MENU", action == GLFW_PRESS);
+			break;
+		default:
+			break;
+		}
 	}
 	(void)key;
 	(void)scancode;

@@ -277,10 +277,12 @@ int GameLogic::run(void)
 	return guiRet;
 }
 
-void GameLogic::buttonStateChanged(const char *button, bool isPressed)
+void GameLogic::buttonStateChanged(std::string buttonName, bool isPressed)
 {
-	std::string key = !button ? "NULL" : std::string(button); // GLFW sends NULL pointer for Escape key..
-	std::cout << "key '" << key << "' new status: " << isPressed << std::endl;
+	// std::map<std::string, bool> mapKey;
+	// mapKey[buttonName] = isPressed;
+	// std::string key = !button ? "NULL" : std::string(button); // GLFW sends NULL pointer for Escape key..
+	std::cout << "key '" << buttonName << "' new status: " << isPressed << std::endl;
 }
 
 void GameLogic::buttonPressed(const char *button)
