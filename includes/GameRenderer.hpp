@@ -16,6 +16,7 @@
 #define GRAY_SHADER 6
 
 class GameLogic;
+class AEntity;
 
 class GameRenderer
 {
@@ -45,7 +46,7 @@ class GameRenderer
 	void createBorder(void);
 	void createGrid(void);
 	void drawGUI(void);
-	void drawPlayer(std::tuple<int, int> &playerPos);
+	void drawPlayer(AEntity *playerPos);
 	void makeVAO(GLuint &vbo);
 
 	// General vars

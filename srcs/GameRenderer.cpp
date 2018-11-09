@@ -1,5 +1,6 @@
 #include "GameRenderer.hpp"
 #include "GameLogic.hpp"
+#include "AEntity.hpp"
 
 GameRenderer::GameRenderer(GameLogic *_mainGame)
 {
@@ -279,10 +280,16 @@ void GameRenderer::createGrid(void)
 	glDrawArrays(GL_LINES, 0, pointsCount);
 }
 
-void GameRenderer::drawPlayer(std::tuple<int, int> &playerPos)
+void GameRenderer::drawPlayer(AEntity *player)
 {
-	float startCoordX = startX + (std::get<0>(playerPos) * squarePercentX);
-	float startCoordY = startY - (std::get<1>(playerPos) * squarePercentY);
+	if (player == nullptr)
+		return;
+	// int iPosX = static_cast<int>(player->position[0]);
+	// int iPosY = static_cast<int>(player->position[2]);
+	// std::cout << iPosX << " " << iPosY << std::endl;
+
+	float startCoordX = startX + (player->position[0] * squarePercentX); // + player->position[0] - iPosX;
+	float startCoordY = startY - (player->position[2] * squarePercentY); // + player->position[2] - iPosY;
 
 	float xCenter = startCoordX + (squarePercentX / 2);
 	float yCenter = startCoordY - (squarePercentY / 2);
@@ -341,14 +348,27 @@ void GameRenderer::refreshWindow(void)
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	createBorder();
-	drawPlayer(mainGame->getPlayerPos());
+	drawPlayer(mainGame->getFirstEntityWithName("Player"));
 
-	createGrid();
+	// createGrid();
 
 	graphicUI->drawGUI();
 
 	//put everything to screen
 	glfwSwapBuffers(this->window);
+}
+
+void GameRenderer::closeWindow()
+{
+	// std::cout << "Destroing Glfw window" << std::endl;
+	if (window)
+		glfwDestroyWindow(this->window);
+	glfwTerminate();
+}
+
+void GameRenderer::errorCallback(int error, const char *description)
+{
+	std::cerr << "Error n." << error << ": " << description << std::endl;
 }
 
 void GameRenderer::keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods)
@@ -847,19 +867,6 @@ void GameRenderer::keyCallback(GLFWwindow *window, int key, int scancode, int ac
 	(void)scancode;
 	(void)window;
 	(void)mods;
-}
-
-void GameRenderer::closeWindow()
-{
-	// std::cout << "Destroing Glfw window" << std::endl;
-	if (window)
-		glfwDestroyWindow(this->window);
-	glfwTerminate();
-}
-
-void GameRenderer::errorCallback(int error, const char *description)
-{
-	std::cerr << "Error n." << error << ": " << description << std::endl;
 }
 
 GameLogic *GameRenderer::mainGame = NULL;

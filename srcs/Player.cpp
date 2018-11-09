@@ -1,6 +1,14 @@
 #include "Player.hpp"
+#include "GameLogic.hpp"
 
 Player::Player(void) {}
+
+Player::Player(GameLogic *gameLogic, std::vector<float> position, std::vector<float> rotation) : AEntity(gameLogic, position, rotation)
+{
+	name = "Player";
+	label = "player";
+	_speed = 30.0f;
+}
 
 Player::Player(Player const &src) { *this = src; }
 
@@ -14,5 +22,17 @@ Player &Player::operator=(Player const &rhs)
 
 void Player::Update(void)
 {
-	// std::cout << "yo" << std::endl;
+	double deltaTime = static_cast<float>(gameLogic->getDeltaTime());
+
+	// Update position based on keyboard
+	if (gameLogic->isKeyPressed(KEY_A))
+		position[0] -= _speed * deltaTime;
+	if (gameLogic->isKeyPressed(KEY_D))
+		position[0] += _speed * deltaTime;
+	if (gameLogic->isKeyPressed(KEY_W))
+		position[2] -= _speed * deltaTime;
+	if (gameLogic->isKeyPressed(KEY_S))
+		position[2] += _speed * deltaTime;
+
+	// std::cout << "Delta: " << deltaTime << ", My coord: " << position[0] << " " << position[2] << std::endl;
 }

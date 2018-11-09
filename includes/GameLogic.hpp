@@ -14,28 +14,15 @@
 #define MAX_SQUARE_SIZE 25
 #define OUTLINE_TICKNESS 2
 
-#define KEY_0 "0"
 #define KEY_W "W"
 #define KEY_A "A"
 #define KEY_S "S"
 #define KEY_D "D"
-#define KEY_W_LOWER "w"
-#define KEY_A_LOWER "a"
-#define KEY_S_LOWER "s"
-#define KEY_D_LOWER "d"
-#define KEY_LEFT "Left"
-#define KEY_UP "Up"
-#define KEY_RIGHT "Right"
-#define KEY_DOWN "Down"
-
-#define KEY_ESCAPE "Escape"
-
-#define UP 1
-#define DOWN 2
-#define LEFT 3
-#define RIGHT 4
-
-#define FRAME_TIME 0.1f
+#define KEY_LEFT "LEFT"
+#define KEY_UP "UP"
+#define KEY_RIGHT "RIGHT"
+#define KEY_DOWN "DOWN"
+#define KEY_ESCAPE "ESCAPE"
 
 class GameRenderer;
 
@@ -49,23 +36,15 @@ class GameLogic
 	GameLogic &operator=(GameLogic const &rhs);
 
 	void printUsage(void);
-	void changeLibraryRequest(std::string keyCode);
-	void updateGameState(void);
 	int renderGame(void);
 	void changeDirectionTo(int &playerDirection, int &playerDirectionRequested, int newDir);
-
-	void initPlayer(void);
-	bool playerCanMove(void);
-	void movePlayer(std::tuple<int, int> &playerBody, int &playerDir);
 
 	// Graphic libraries vars
 	GameRenderer *graphicLib;
 	int squareSize;
 	int xOffset;
 	int yOffset;
-	int dlIndex;
-	int dlPastIndex;
-	time_t timer;
+	clock_t timer;
 	double pastFrameLength;
 	AudioManager *audioManager;
 
@@ -88,17 +67,22 @@ class GameLogic
 	~GameLogic(void);
 
 	int run();
-	void buttonPressed(const char *button);
-	void buttonStateChanged(std::string button, bool isPressed);
 
+	// Functions needed by Renderer
 	int getSquareSize(void);
 	int getXOffset(void);
 	int getYOffset(void);
 	int getMapW(void);
 	int getMapH(void);
-	int getPlayerDirection(void);
-	bool getIsPlayerAlive(void);
-	std::tuple<int, int> &getPlayerPos(void);
+	AEntity *getFirstEntityWithName(std::string entityName);
+	// std::vector<AEntity *> getEntitiesWithName(std::string entityName);
+	// AEntity *getFirstEntityWithLabel(std::string entityLabel);
+	// std::vector<AEntity *> getEntitiesWithLabel(std::string entityLabel);
+	void buttonStateChanged(std::string button, bool isPressed);
+
+	// Functions needed by entities
+	bool isKeyPressed(std::string keyName);
+	double getDeltaTime();
 
 	bool canRun;
 };
