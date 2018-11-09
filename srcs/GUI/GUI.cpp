@@ -17,29 +17,26 @@
 
 #include "GUI/GUI.hpp"
 
-GUI::GUI() {
-	return ;
-}
+GUI::GUI(void) {}
 
-GUI::GUI(GLFWwindow *window) {
+GUI::GUI(GLFWwindow *window)
+{
 	std::cout << "GUI call" << std::endl;
 	ctx = nk_glfw3_init(window, NK_GLFW3_INSTALL_CALLBACKS);
 	struct nk_font_atlas *atlas;
 	nk_glfw3_font_stash_begin(&atlas);
 	nk_glfw3_font_stash_end();
-	return ;
 }
 
-GUI::~GUI() {
-	return ;
-}
+GUI::~GUI(void) {}
 
 // GUI &GUI::operator=(GUI const &rhs) {
 // 	this = rhs.this;
 // 	return *this;
 // }
 
-void GUI::drawGUI() {
+void GUI::drawGUI()
+{
 	nk_glfw3_new_frame();
 
 	/* GUI */
@@ -70,7 +67,8 @@ void GUI::drawGUI() {
 		nk_layout_row_dynamic(ctx, 20, 1);
 		nk_label(ctx, "background:", NK_TEXT_LEFT);
 		nk_layout_row_dynamic(ctx, 25, 1);
-		if (nk_combo_begin_color(ctx, nk_rgb_cf(bg), nk_vec2(nk_widget_width(ctx), 400)))
+		if (nk_combo_begin_color(ctx, nk_rgb_cf(bg),
+								 nk_vec2(nk_widget_width(ctx), 400)))
 		{
 			nk_layout_row_dynamic(ctx, 120, 1);
 			bg = nk_color_picker(ctx, bg, NK_RGBA);

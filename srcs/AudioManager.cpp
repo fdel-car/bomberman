@@ -18,20 +18,15 @@ AudioManager::AudioManager(void)
 	}
 
 	active = true;
-	return;
 }
 
 AudioManager::AudioManager(AudioManager const &src)
 {
 	*this = src;
-	return;
 }
 
 AudioManager::~AudioManager(void)
 {
-	if (!active)
-		return;
-	return;
 }
 
 AudioManager &AudioManager::operator=(AudioManager const &rhs)
@@ -46,7 +41,6 @@ void AudioManager::playStartSound(void)
 		return;
 	sound.setBuffer(startBuffer);
 	sound.play();
-	return;
 }
 
 void AudioManager::playEatSound(void)
@@ -55,7 +49,6 @@ void AudioManager::playEatSound(void)
 		return;
 	sound.setBuffer(eatBuffer);
 	sound.play();
-	return;
 }
 
 void AudioManager::playDeathSound(void)
@@ -64,5 +57,4 @@ void AudioManager::playDeathSound(void)
 		return;
 	sound.setBuffer(deathBuffer);
 	sound.play();
-	return;
 }

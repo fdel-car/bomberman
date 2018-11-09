@@ -48,26 +48,21 @@ GameRenderer::GameRenderer(GameLogic *_mainGame)
 
 	// Nuklear init
 	graphicUI = new GUI(window);
-
-	return;
 }
 
 GameRenderer::GameRenderer(void)
 {
-	return;
 }
 
 GameRenderer::GameRenderer(GameRenderer const &src)
 {
 	*this = src;
-	return;
 }
 
 GameRenderer::~GameRenderer(void)
 {
 	delete graphicUI;
 	closeWindow();
-	return;
 }
 
 GameRenderer &GameRenderer::operator=(GameRenderer const &rhs)
@@ -168,10 +163,10 @@ void GameRenderer::initShaders(int type)
 	GLint status;
 	glGetShaderiv(vs, GL_COMPILE_STATUS, &status);
 	if (status != GL_TRUE)
-		std::cout << "Vertex Shader compile failed" << std::endl;
+		std::cout << "Vertex Shader compile failed." << std::endl;
 	glGetShaderiv(fs, GL_COMPILE_STATUS, &status);
 	if (status != GL_TRUE)
-		std::cout << "Fragment Shader compile failed" << std::endl;
+		std::cout << "Fragment Shader compile failed." << std::endl;
 }
 
 void GameRenderer::initProgram(void)
