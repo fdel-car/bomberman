@@ -916,9 +916,7 @@ void GameRenderer::keyCallback(GLFWwindow *window, int key, int scancode, int ac
 			break;
 		}
 	}
-	(void)key;
 	(void)scancode;
-	(void)action;
 	(void)window;
 	(void)mods;
 }
