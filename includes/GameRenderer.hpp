@@ -41,7 +41,6 @@ class GameRenderer
 
 	GameRenderer &operator=(GameRenderer const &rhs);
 
-	void init_buffer(int x, int y);
 	void init_shaders(int type);
 	void init_program(void);
 	void create_border(void);
