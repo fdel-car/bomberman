@@ -1,6 +1,8 @@
 #include "GameLogic.hpp"
 #include "GameRenderer.hpp"
 
+#include "Player.hpp" // TODO: this should be done by a "game initializer" and not by the game engine !!
+
 // === CONSTRUCTOR =============================================================
 GameLogic::GameLogic()
 {
@@ -21,6 +23,9 @@ GameLogic::GameLogic()
 	// Create interface class
 	// graphic_lib = new GameRenderer(this);
 
+	// TODO: this should be done by a "game initializer" and not by the game engine !!
+	entities.push_back(new Player());
+
 	// Everything good
 	canRun = true;
 }
@@ -33,6 +38,10 @@ GameLogic::GameLogic(GameLogic const &src)
 
 GameLogic::~GameLogic(void)
 {
+	for (auto entity : entities)
+	{
+		delete entity;
+	}
 	// delete (audio_manager);
 	delete (graphic_lib);
 	return;
@@ -268,6 +277,13 @@ int GameLogic::run(void)
 	// Start game loop
 	while (running)
 	{
+		std::cout << "------- New Frame -------------------" << std::endl;
+		for (auto entity : entities)
+		{
+			std::cout << "Calling Update on entity" << std::endl;
+			entity->Update();
+		}
+
 		// std::cout << "-- Frame --" << std::endl;
 		update_game_state();
 
