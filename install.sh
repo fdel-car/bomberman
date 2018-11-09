@@ -26,6 +26,14 @@ if [ ! -d "includes/nuklear" ]; then
     curl https://raw.githubusercontent.com/vurtun/nuklear/master/nuklear.h -o includes/nuklear/nuklear.h
 fi
 which -s cmake || (echo "Without cmake installed on your computer you can't fully finish the installation. The command 'brew install cmake' can be pretty useful!" && exit)
+if [ ! -d "SFML-2.5.1" ]; then
+    curl -OL https://www.sfml-dev.org/files/SFML-2.5.1-sources.zip
+    unzip SFML-2.5.1-sources.zip > /dev/null
+    rm "SFML-2.5.1-sources.zip"
+    mkdir SFML-2.5.1/build && cd SFML-2.5.1/build
+    cmake -DSFML_BUILD_EXAMPLES=OFF -DSFML_BUILD_DOC=OFF -DCMAKE_BUILD_TYPE:STRING=Release -DSFML_BUILD_GRAPHICS=OFF -DSFML_BUILD_WINDOW=OFF -DSFML_BUILD_NETWORK=OFF -SFML_BUILD_AUDIO=ON ..
+    make && cd ../..
+fi
 if [ ! -d "build" ]; then
     mkdir "build"
     cd build && cmake .. && make

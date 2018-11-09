@@ -1,6 +1,6 @@
 #pragma once
 
-// #include <SFML/Audio.hpp>
+#include <SFML/Audio.hpp>
 
 class AudioManager
 {
@@ -9,10 +9,10 @@ class AudioManager
 
 	AudioManager &operator=(AudioManager const &rhs);
 
-	// sf::SoundBuffer startBuffer;
-	// sf::SoundBuffer eatBuffer;
-	// sf::SoundBuffer deathBuffer;
-	// sf::Sound sound;
+	sf::SoundBuffer startBuffer;
+	sf::SoundBuffer eatBuffer;
+	sf::SoundBuffer deathBuffer;
+	sf::Sound sound;
 
   public:
 	AudioManager(void);
