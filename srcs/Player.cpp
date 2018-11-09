@@ -14,5 +14,5 @@ Player &Player::operator=(Player const &rhs)
 
 void Player::Update(void)
 {
-	std::cout << "yo" << std::endl;
+	// std::cout << "yo" << std::endl;
 }

@@ -5,8 +5,7 @@
 #define MAX_VERTEX_BUFFER 512 * 1024
 #define MAX_ELEMENT_BUFFER 128 * 1024
 
-#include "nuklear/nuklear.h"
-#include "nuklear_glfw_gl3.h"
+#include "GUI/GUI.hpp"
 
 // Custom Defines
 #define WHITE_SHADER 1
@@ -62,8 +61,7 @@ class GameRenderer
 	float squarePercentX;
 
 	// Nuklear vars
-	struct nk_context *ctx;
-	struct nk_colorf bg;
+	GUI *graphicUI;
 
 	// Rendering vars
 	GLuint vbo;

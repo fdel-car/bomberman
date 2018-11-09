@@ -16,6 +16,8 @@ set(SRCS
   srcs/GameLogic.cpp
   srcs/GameRenderer.cpp
   srcs/Player.cpp
+
+  srcs/GUI/GUI.cpp
 )
 
 include_directories(includes)
@@ -30,6 +32,8 @@ set(HEADERS
   includes/GameLogic.hpp
   includes/GameRenderer.hpp
   includes/Player.hpp
+
+  includes/GUI/GUI.hpp
 )
 
 set(SFML_DIR "${CMAKE_SOURCE_DIR}/SFML-2.5.1/build")
