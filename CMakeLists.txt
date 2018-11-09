@@ -11,6 +11,7 @@ include_directories(scrs)
 set(SRCS
   srcs/main.cpp
   srcs/glad/glad.cpp
+  srcs/AudioManager.cpp
   srcs/GameLogic.cpp
   srcs/GameRenderer.cpp
 )
@@ -22,6 +23,7 @@ set(HEADERS
   includes/nuklear/nuklear.h
   includes/nuklear_glfw_gl3.h
   includes/header.hpp
+  includes/AudioManager.hpp
   includes/GameLogic.hpp
   includes/GameRenderer.hpp
 )

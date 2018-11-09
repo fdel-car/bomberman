@@ -18,6 +18,8 @@ GameLogic::GameLogic()
 
 	// Create interface class
 	graphic_lib = new GameRenderer(this);
+	// Create interface class
+	// graphic_lib = new GameRenderer(this);
 
 	// Everything good
 	canRun = true;
@@ -31,6 +33,7 @@ GameLogic::GameLogic(GameLogic const &src)
 
 GameLogic::~GameLogic(void)
 {
+	// delete (audio_manager);
 	delete (graphic_lib);
 	return;
 }
@@ -139,6 +142,7 @@ void GameLogic::update_game_state(void)
 			if (!is_player_alive)
 			{
 				std::cerr << "Game Over ! (Press 'R' to restart)" << std::endl;
+				// audio_manager->DEATH_SOUND_FUNC();
 			}
 		}
 	}
@@ -258,6 +262,8 @@ int GameLogic::run(void)
 	timer = time(NULL);
 
 	init_player();
+
+	// audio_manager->START_SOUND_FUNC();
 
 	// Start game loop
 	while (running)

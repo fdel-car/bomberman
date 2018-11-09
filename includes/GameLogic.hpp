@@ -1,6 +1,7 @@
 #pragma once
 
 #include "header.hpp"
+#include "AudioManager.hpp"
 
 #define MAP_SIZE 40
 
@@ -75,6 +76,7 @@ class GameLogic
 	int dl_pastIndex;
 	time_t timer;
 	double past_frame_length;
+	AudioManager audio_manager;
 
 	// Game model vars
 	float frame_time;
