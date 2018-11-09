@@ -254,6 +254,10 @@ int GameLogic::run(void)
 		graphicLib->getUserInput();
 
 		// TODO: Update game engine statuses (ex. when to quit)
+		if (running)
+		{
+			running = !keyboardMap["ESCAPE"];
+		}
 
 		// Update game entities states
 		// for (auto entity : entities)
@@ -282,60 +286,139 @@ void GameLogic::buttonStateChanged(std::string buttonName, bool isPressed)
 	// std::map<std::string, bool> mapKey;
 	// mapKey[buttonName] = isPressed;
 	// std::string key = !button ? "NULL" : std::string(button); // GLFW sends NULL pointer for Escape key..
-	std::cout << "key '" << buttonName << "' new status: " << isPressed << std::endl;
-}
-
-void GameLogic::buttonPressed(const char *button)
-{
-	std::string key = !button ? KEY_ESCAPE : std::string(button); // GLFW sends NULL pointer for Escape key..
-
-	// std::cout << "key '" << key << "' was pressed" << std::endl;
-	std::list<std::string>::const_iterator iter = std::find(changeLibraryKeys.begin(), changeLibraryKeys.end(), key);
-	if (iter != changeLibraryKeys.end())
+	// std::cout << "key '" << buttonName << "' new status: " << isPressed << std::endl;
+	if (keyboardMap.find(buttonName) == keyboardMap.end())
 	{
-		changeLibraryRequest(key);
+		std::runtime_error("Unkown Mapping for '" + buttonName + "' !");
 	}
-	else
-	{
-		for (const std::tuple<std::string, int> &changeDirectionPair : changeDirectionKeys) // access by reference to avoid copying
-		{
-			if (std::get<0>(changeDirectionPair).compare(key) == 0)
-			{
-				changeDirectionTo(playerDirection, playerDirectionRequested, std::get<1>(changeDirectionPair));
-				return;
-			}
-		}
-		if (!isPlayerAlive)
-		{
-			if (key.compare("R") == 0 || key.compare("r") == 0)
-			{
-				changeLibraryRequest("0");
-				restartRequest = true;
-			}
-		}
-		// std::cout << "value not useful.." << std::endl;
-	}
+	keyboardMap[buttonName] = isPressed;
 }
 
-static std::list<std::string> generateLibraryKeys()
+static std::map<std::string, bool> generateKeyboardMap()
 { // static here is "internal linkage"
-	std::list<std::string> p;
-	p.push_front(KEY_0);
-	return p;
-}
-const std::list<std::string> GameLogic::changeLibraryKeys = generateLibraryKeys();
+	std::map<std::string, bool> m = std::map<std::string, bool>();
+	m["UNKNOWN"] = false;
+	m["SPACE"] = false;
+	m["APOSTROPHE"] = false;
+	m["COMMA"] = false;
+	m["MINUS"] = false;
+	m["PERIOD"] = false;
+	m["SLASH"] = false;
+	m["0"] = false;
+	m["1"] = false;
+	m["2"] = false;
+	m["3"] = false;
+	m["4"] = false;
+	m["5"] = false;
+	m["6"] = false;
+	m["7"] = false;
+	m["8"] = false;
+	m["9"] = false;
+	m[";"] = false;
+	m["EQUAL"] = false;
+	m["A"] = false;
+	m["B"] = false;
+	m["C"] = false;
+	m["D"] = false;
+	m["E"] = false;
+	m["F"] = false;
+	m["G"] = false;
+	m["H"] = false;
+	m["I"] = false;
+	m["L"] = false;
+	m["K"] = false;
+	m["L"] = false;
+	m["M"] = false;
+	m["N"] = false;
+	m["O"] = false;
+	m["P"] = false;
+	m["Q"] = false;
+	m["R"] = false;
+	m["S"] = false;
+	m["T"] = false;
+	m["U"] = false;
+	m["V"] = false;
+	m["W"] = false;
+	m["X"] = false;
+	m["Y"] = false;
+	m["Z"] = false;
+	m["["] = false;
+	m["\\"] = false;
+	m["]"] = false;
+	m["`"] = false;
+	m["WORLD_1"] = false;
+	m["WORLD_2"] = false;
+	m["ESCAPE"] = false;
+	m["ENTER"] = false;
+	m["TAB"] = false;
+	m["BACKSPACE"] = false;
+	m["INSERT"] = false;
+	m["DELETE"] = false;
+	m["RIGHT"] = false;
+	m["LEFT"] = false;
+	m["DOWN"] = false;
+	m["UP"] = false;
+	m["PAGE_UP"] = false;
+	m["PAGE_DOWN"] = false;
+	m["HOME"] = false;
+	m["END"] = false;
+	m["CAPS_LOCK"] = false;
+	m["SCROLL_LOCK"] = false;
+	m["NUM_LOCK"] = false;
+	m["PRINT_SCREEN"] = false;
+	m["PAUSE"] = false;
+	m["F1"] = false;
+	m["F2"] = false;
+	m["F3"] = false;
+	m["F4"] = false;
+	m["F5"] = false;
+	m["F6"] = false;
+	m["F7"] = false;
+	m["F8"] = false;
+	m["F9"] = false;
+	m["F10"] = false;
+	m["F11"] = false;
+	m["F12"] = false;
+	m["F13"] = false;
+	m["F14"] = false;
+	m["F15"] = false;
+	m["F16"] = false;
+	m["F17"] = false;
+	m["F18"] = false;
+	m["F19"] = false;
+	m["F20"] = false;
+	m["F21"] = false;
+	m["F22"] = false;
+	m["F23"] = false;
+	m["F24"] = false;
+	m["F25"] = false;
+	m["KP_0"] = false;
+	m["KP_1"] = false;
+	m["KP_2"] = false;
+	m["KP_3"] = false;
+	m["KP_4"] = false;
+	m["KP_5"] = false;
+	m["KP_6"] = false;
+	m["KP_7"] = false;
+	m["KP_8"] = false;
+	m["KP_9"] = false;
+	m["KP_DECIMAL"] = false;
+	m["KP_DIVIDE"] = false;
+	m["KP_MULTIPLY"] = false;
+	m["KP_SUBTRACT"] = false;
+	m["KP_ADD"] = false;
+	m["KP_ENTER"] = false;
+	m["KP_EQUAL"] = false;
+	m["LEFT_SHIFT"] = false;
+	m["LEFT_CONTROL"] = false;
+	m["LEFT_ALT"] = false;
+	m["LEFT_SUPER"] = false;
+	m["RIGHT_SHIFT"] = false;
+	m["RIGHT_CONTROL"] = false;
+	m["RIGHT_ALT"] = false;
+	m["RIGHT_SUPER"] = false;
+	m["MENU"] = false;
 
-static std::vector<std::tuple<std::string, int>> generateDirectionKeys()
-{ // static here is "internal linkage"
-	std::vector<std::tuple<std::string, int>> p;
-	p.push_back(std::make_tuple(KEY_W, UP));
-	p.push_back(std::make_tuple(KEY_A, LEFT));
-	p.push_back(std::make_tuple(KEY_S, DOWN));
-	p.push_back(std::make_tuple(KEY_D, RIGHT));
-	p.push_back(std::make_tuple(KEY_W_LOWER, UP));
-	p.push_back(std::make_tuple(KEY_A_LOWER, LEFT));
-	p.push_back(std::make_tuple(KEY_S_LOWER, DOWN));
-	p.push_back(std::make_tuple(KEY_D_LOWER, RIGHT));
-	return p;
+	return m;
 }
-const std::vector<std::tuple<std::string, int>> GameLogic::changeDirectionKeys = generateDirectionKeys();
+std::map<std::string, bool> GameLogic::keyboardMap = generateKeyboardMap();

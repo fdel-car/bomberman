@@ -42,8 +42,7 @@ class GameRenderer;
 class GameLogic
 {
   private:
-	static const std::list<std::string> changeLibraryKeys;
-	static const std::vector<std::tuple<std::string, int>> changeDirectionKeys;
+	static std::map<std::string, bool> keyboardMap;
 
 	GameLogic(GameLogic const &src);
 
