@@ -1,5 +1,5 @@
-cmake_minimum_required(VERSION 3.12.4)
-project(Bomberman)
+cmake_minimum_required(VERSION 3.0)
+project(SuperBomberman)
 
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
@@ -32,14 +32,19 @@ set(HEADERS
   includes/Player.hpp
 )
 
-add_executable(bomberman ${SRCS} ${HEADERS})
+set(SFML_DIR "${CMAKE_SOURCE_DIR}/SFML-2.5.1/build")
+find_package(SFML 2.5.1 COMPONENTS audio REQUIRED)
+
+add_executable(super_bomberman ${SRCS} ${HEADERS})
 
 if(MSVC)
   target_compile_options(glfw PRIVATE /W2)
-  target_compile_options(bomberman PRIVATE /W4 /WX)
+  target_compile_options(super_bomberman PRIVATE /W4 /WX)
 else()
   target_compile_options(glfw PRIVATE -Wno-deprecated)
-  target_compile_options(bomberman PRIVATE -Wall -Wextra -Werror -std=c++11)
+  target_compile_options(super_bomberman PRIVATE -Wall -Wextra -Werror)
 endif()
 
-target_link_libraries(bomberman glfw)
+target_compile_features(super_bomberman PRIVATE cxx_std_11)
+
+target_link_libraries(super_bomberman glfw sfml-audio)

@@ -76,7 +76,7 @@ class GameLogic
 	int dlPastIndex;
 	time_t timer;
 	double past_frame_length;
-	AudioManager audioManager;
+	AudioManager *audioManager;
 
 	// Game model vars
 	bool running;
