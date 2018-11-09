@@ -10,18 +10,16 @@ GameLogic::GameLogic()
 	running = false;
 
 	// Map size parsing
-	map_w = MAP_SIZE;
-	map_h = MAP_SIZE;
-	int maxSizeW = (WINDOW_W - 2 * WINDOW_MIN_X_OFFSET) / map_w;
-	int maxSizeH = (WINDOW_H - 2 * WINDOW_MIN_Y_OFFSET) / map_h;
-	square_size = (maxSizeH < maxSizeW) ? maxSizeH : maxSizeW;
-	x_offset = (WINDOW_W - square_size * map_w) / 2;
-	y_offset = (WINDOW_H - square_size * map_h) / 2;
+	mapW = MAP_SIZE;
+	mapH = MAP_SIZE;
+	int maxSizeW = (WINDOW_W - 2 * WINDOW_MIN_X_OFFSET) / mapW;
+	int maxSizeH = (WINDOW_H - 2 * WINDOW_MIN_Y_OFFSET) / mapH;
+	squareSize = (maxSizeH < maxSizeW) ? maxSizeH : maxSizeW;
+	xOffset = (WINDOW_W - squareSize * mapW) / 2;
+	yOffset = (WINDOW_H - squareSize * mapH) / 2;
 
 	// Create interface class
-	graphic_lib = new GameRenderer(this);
-	// Create interface class
-	// graphic_lib = new GameRenderer(this);
+	graphicLib = new GameRenderer(this);
 
 	// TODO: this should be done by a "game initializer" and not by the game engine !!
 	entities.push_back(new Player());
@@ -43,51 +41,51 @@ GameLogic::~GameLogic(void)
 		delete entity;
 	}
 	// delete (audio_manager);
-	delete (graphic_lib);
+	delete (graphicLib);
 	return;
 }
 
 // === ENDCONSTRUCTOR ==========================================================
 
 // === GETTER ==================================================================
-int GameLogic::get_square_size(void)
+int GameLogic::getSquareSize(void)
 {
-	return square_size;
+	return squareSize;
 }
 
-int GameLogic::get_x_offset(void)
+int GameLogic::getXOffset(void)
 {
-	return x_offset;
+	return xOffset;
 }
 
-int GameLogic::get_y_offset(void)
+int GameLogic::getYOffset(void)
 {
-	return y_offset;
+	return yOffset;
 }
 
-int GameLogic::get_map_w(void)
+int GameLogic::getMapW(void)
 {
-	return map_w;
+	return mapW;
 }
 
-int GameLogic::get_map_h(void)
+int GameLogic::getMapH(void)
 {
-	return map_h;
+	return mapH;
 }
 
-int GameLogic::get_player_direction(void)
+int GameLogic::getPlayerDirection(void)
 {
-	return player_direction;
+	return playerDirection;
 }
 
-bool GameLogic::get_if_is_player_alive(void)
+bool GameLogic::getIsPlayerAlive(void)
 {
-	return is_player_alive;
+	return isPlayerAlive;
 }
 
-std::tuple<int, int> &GameLogic::get_player_pos(void)
+std::tuple<int, int> &GameLogic::getPlayerPos(void)
 {
-	return player_pos;
+	return playerPos;
 }
 
 // === END GETTER ==============================================================
@@ -104,51 +102,51 @@ GameLogic &GameLogic::operator=(GameLogic const &rhs)
 
 // === PRIVATE FUNCS ===========================================================
 
-void GameLogic::print_usage(void)
+void GameLogic::printUsage(void)
 {
 	std::cerr << "Usage: ./bomberman" << std::endl;
 }
 
-void GameLogic::change_library_request(std::string key_code)
+void GameLogic::changeLibraryRequest(std::string key_code)
 {
 	int requested_index = std::stoi(key_code);
 
 	// std::cout << "Change index of library to: " << requested_index << std::endl;
 	if (requested_index >= 0 && requested_index <= 0)
 	{
-		dl_index = requested_index;
+		dlIndex = requested_index;
 	}
 }
 
-void GameLogic::update_game_state(void)
+void GameLogic::updateGameState(void)
 {
 	// Get all pool events in library
-	if (graphic_lib)
+	if (graphicLib)
 	{
-		graphic_lib->GET_USER_INPUT_FUNC();
+		graphicLib->GET_USER_INPUT_FUNC();
 	}
 
 	// Check if we want to close window, in this case no need to do further calculations
-	if (dl_index == 0)
+	if (dlIndex == 0)
 	{
 		// std::cout << "Need to close.." << std::endl;
 		running = false;
 	}
 
-	if (is_player_alive && running)
+	if (isPlayerAlive && running)
 	{
-		if (player_direction_requested > 0)
+		if (playerDirectionRequested > 0)
 		{
-			player_direction = player_direction_requested;
-			player_direction_requested = -1;
+			playerDirection = playerDirectionRequested;
+			playerDirectionRequested = -1;
 
-			if (player_can_move())
+			if (playerCanMove())
 			{
-				move_player(player_pos, player_direction);
+				movePlayer(playerPos, playerDirection);
 			}
 
 			//player actual moving
-			if (!is_player_alive)
+			if (!isPlayerAlive)
 			{
 				std::cerr << "Game Over ! (Press 'R' to restart)" << std::endl;
 				// audio_manager->DEATH_SOUND_FUNC();
@@ -157,99 +155,77 @@ void GameLogic::update_game_state(void)
 	}
 }
 
-int GameLogic::update_gui(void)
+int GameLogic::updateGUI(void)
 {
-	if (dl_index < 0 || dl_index > 1)
+	if (dlIndex < 0 || dlIndex > 1)
 	{
 		std::cerr << "Wrong number given..!" << std::endl;
 		return EXIT_FAILURE;
 	}
 
 	// Draw window with game infos
-	if (graphic_lib && !has_shown_death)
+	if (graphicLib && !hasShownDeath)
 	{
-		graphic_lib->REFRESH_WINDOW_FUNC();
-		if (!is_player_alive)
-			has_shown_death = true;
+		graphicLib->REFRESH_WINDOW_FUNC();
+		if (!isPlayerAlive)
+			hasShownDeath = true;
 	}
 
 	return EXIT_SUCCESS;
 }
 
-void GameLogic::regulate_frame_sleep(void)
+void GameLogic::initPlayer(void)
 {
-	// Timer logic, make thread sleep if needed
-	past_frame_length = difftime(timer, time(NULL));
-	if (past_frame_length < frame_time)
-	{
-		std::this_thread::sleep_for(std::chrono::milliseconds(static_cast<int>((frame_time - past_frame_length) * 1000)));
-	}
-	// std::cout << "frame" << std::endl;
-	timer = time(NULL);
+	isPlayerAlive = true;
+	hasShownDeath = false;
+
+	playerPos = std::tuple<int, int>();
+
+	playerPos = std::make_tuple(mapW / 2, mapH / 2);
+	playerDirection = (mapW > mapH) ? LEFT : DOWN;
+	playerDirectionRequested = -1;
 }
 
-void GameLogic::init_player(void)
-{
-	is_player_alive = true;
-	has_shown_death = false;
-
-	player_pos = std::tuple<int, int>();
-
-	player_pos = std::make_tuple(map_w / 2, map_h / 2);
-	player_direction = (map_w > map_h) ? LEFT : DOWN;
-	player_direction_requested = -1;
-}
-
-bool GameLogic::player_can_move(void)
+bool GameLogic::playerCanMove(void)
 {
 	// Check for player
-	int headX = std::get<0>(player_pos);
-	int headY = std::get<1>(player_pos);
-	if (player_direction == UP)
+	int headX = std::get<0>(playerPos);
+	int headY = std::get<1>(playerPos);
+	if (playerDirection == UP)
 		headY -= 1;
-	else if (player_direction == DOWN)
+	else if (playerDirection == DOWN)
 		headY += 1;
-	else if (player_direction == LEFT)
+	else if (playerDirection == LEFT)
 		headX -= 1;
-	else if (player_direction == RIGHT)
+	else if (playerDirection == RIGHT)
 		headX += 1;
-
-	// Check if he goes outside the map
-	if (collide_with_walls)
-	{
-		if (headX == map_w || headY == map_h ||
-			headX < 0 || headY < 0)
-		{
-			return false;
-		}
-	}
 
 	return true;
 }
 
-void GameLogic::move_player(std::tuple<int, int> &player_pos, int &player_dir)
+void GameLogic::movePlayer(std::tuple<int, int> &playerPos, int &player_dir)
 {
 	// Advance based on direction
 	if (player_dir == UP)
-		std::get<1>(player_pos) = std::get<1>(player_pos) - 1;
+		std::get<1>(playerPos) = std::get<1>(playerPos) - 1;
 	else if (player_dir == DOWN)
-		std::get<1>(player_pos) = std::get<1>(player_pos) + 1;
+		std::get<1>(playerPos) = std::get<1>(playerPos) + 1;
 	else if (player_dir == LEFT)
-		std::get<0>(player_pos) = std::get<0>(player_pos) - 1;
+		std::get<0>(playerPos) = std::get<0>(playerPos) - 1;
 	else if (player_dir == RIGHT)
-		std::get<0>(player_pos) = std::get<0>(player_pos) + 1;
+		std::get<0>(playerPos) = std::get<0>(playerPos) + 1;
 }
 
-void GameLogic::change_direction_to(int &player_direction, int &player_direction_requested, int newDir)
+void GameLogic::changeDirectionTo(int &playerDirection, int &playerDirectionRequested, int newDir)
 {
-	player_direction_requested = newDir;
-	if ((newDir == UP || newDir == DOWN) && (player_direction == LEFT || player_direction == RIGHT))
+	playerDirectionRequested = newDir;
+	if ((newDir == UP || newDir == DOWN) && (playerDirection == LEFT || playerDirection == RIGHT))
 	{
-		player_direction_requested = newDir;
+		playerDirectionRequested = newDir;
 	}
-	else if ((newDir == LEFT || newDir == RIGHT) && (player_direction == UP || player_direction == DOWN))
+	else if ((newDir == LEFT || newDir == RIGHT) && (playerDirection == UP || playerDirection == DOWN))
 	{
-		player_direction_requested = newDir;
+		playerDirectionRequested = newDir;
 	}
 }
 
@@ -260,23 +236,31 @@ int GameLogic::run(void)
 {
 	if (!canRun)
 		return EXIT_FAILURE;
-	int gui_ret;
+	int guiRet;
 
 	// init vars
 	running = true;
-	restart_request = false;
-	frame_time = FRAME_TIME;
-	dl_index = 1;
-	dl_pastIndex = -1;
+	restartRequest = false;
+	dlIndex = 1;
+	dlPastIndex = -1;
 	timer = time(NULL);
 
-	init_player();
+	initPlayer();
 
 	// audio_manager->START_SOUND_FUNC();
 
 	// Start game loop
 	while (running)
 	{
+		// Timer logic, make thread sleep if needed
+		// past_frame_length = difftime(timer, time(NULL));
+		// if (past_frame_length < frame_time)
+		// {
+		// 	std::this_thread::sleep_for(std::chrono::milliseconds(static_cast<int>((frame_time - past_frame_length) * 1000)));
+		// }
+		// // std::cout << "frame" << std::endl;
+		// timer = time(NULL);
+
 		std::cout << "------- New Frame -------------------" << std::endl;
 		for (auto entity : entities)
 		{
@@ -285,49 +269,46 @@ int GameLogic::run(void)
 		}
 
 		// std::cout << "-- Frame --" << std::endl;
-		update_game_state();
+		updateGameState();
 
-		gui_ret = update_gui();
-		if (gui_ret != EXIT_SUCCESS || !running)
+		guiRet = updateGUI();
+		if (guiRet != EXIT_SUCCESS || !running)
 			break;
-
-		regulate_frame_sleep();
-		// running = false;
 	}
-	if (restart_request)
+	if (restartRequest)
 	{
 		std::cout << "Starting new game !" << std::endl;
 		return run();
 	}
-	return gui_ret;
+	return guiRet;
 }
 
-void GameLogic::button_pressed(const char *button)
+void GameLogic::buttonPressed(const char *button)
 {
 	std::string key = !button ? KEY_ESCAPE : std::string(button); // GLFW sends NULL pointer for Escape key..
 
 	// std::cout << "key '" << key << "' was pressed" << std::endl;
-	std::list<std::string>::const_iterator iter = std::find(change_library_keys.begin(), change_library_keys.end(), key);
-	if (iter != change_library_keys.end())
+	std::list<std::string>::const_iterator iter = std::find(changeLibraryKeys.begin(), changeLibraryKeys.end(), key);
+	if (iter != changeLibraryKeys.end())
 	{
-		change_library_request(key);
+		changeLibraryRequest(key);
 	}
 	else
 	{
-		for (const std::tuple<std::string, int> &change_direction_pair : change_direction_keys) // access by reference to avoid copying
+		for (const std::tuple<std::string, int> &change_direction_pair : changeDirectionKeys) // access by reference to avoid copying
 		{
 			if (std::get<0>(change_direction_pair).compare(key) == 0)
 			{
-				change_direction_to(player_direction, player_direction_requested, std::get<1>(change_direction_pair));
+				changeDirectionTo(playerDirection, playerDirectionRequested, std::get<1>(change_direction_pair));
 				return;
 			}
 		}
-		if (!is_player_alive)
+		if (!isPlayerAlive)
 		{
 			if (key.compare("R") == 0 || key.compare("r") == 0)
 			{
-				change_library_request("0");
-				restart_request = true;
+				changeLibraryRequest("0");
+				restartRequest = true;
 			}
 		}
 		// std::cout << "value not useful.." << std::endl;
@@ -343,7 +324,7 @@ static std::list<std::string> generate_library_keys()
 	p.push_front(KEY_0);
 	return p;
 }
-const std::list<std::string> GameLogic::change_library_keys = generate_library_keys();
+const std::list<std::string> GameLogic::changeLibraryKeys = generate_library_keys();
 
 static std::vector<std::tuple<std::string, int>> generate_direction_keys()
 { // static here is "internal linkage"
@@ -358,5 +339,5 @@ static std::vector<std::tuple<std::string, int>> generate_direction_keys()
 	p.push_back(std::make_tuple(KEY_D_LOWER, RIGHT));
 	return p;
 }
-const std::vector<std::tuple<std::string, int>> GameLogic::change_direction_keys = generate_direction_keys();
+const std::vector<std::tuple<std::string, int>> GameLogic::changeDirectionKeys = generate_direction_keys();
 // === END STATICVARS ==========================================================

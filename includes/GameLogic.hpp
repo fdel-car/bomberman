@@ -50,48 +50,45 @@ class GameRenderer;
 class GameLogic
 {
   private:
-	static const std::list<std::string> change_library_keys;
-	static const std::vector<std::tuple<std::string, int>> change_direction_keys;
+	static const std::list<std::string> changeLibraryKeys;
+	static const std::vector<std::tuple<std::string, int>> changeDirectionKeys;
 
 	GameLogic(GameLogic const &src);
 
 	GameLogic &operator=(GameLogic const &rhs);
 
-	void print_usage(void);
-	void change_library_request(std::string key_code);
-	void update_game_state(void);
-	int update_gui(void);
-	void regulate_frame_sleep(void);
-	void change_direction_to(int &player_direction, int &player_direction_requested, int newDir);
+	void printUsage(void);
+	void changeLibraryRequest(std::string key_code);
+	void updateGameState(void);
+	int updateGUI(void);
+	void changeDirectionTo(int &player_direction, int &player_direction_requested, int newDir);
 
-	void init_player(void);
-	bool player_can_move(void);
-	void move_player(std::tuple<int, int> &player_body, int &player_dir);
+	void initPlayer(void);
+	bool playerCanMove(void);
+	void movePlayer(std::tuple<int, int> &player_body, int &player_dir);
 
 	// Graphic libraries vars
-	GameRenderer *graphic_lib;
-	int square_size;
-	int x_offset;
-	int y_offset;
-	int dl_index;
-	int dl_pastIndex;
+	GameRenderer *graphicLib;
+	int squareSize;
+	int xOffset;
+	int yOffset;
+	int dlIndex;
+	int dlPastIndex;
 	time_t timer;
 	double past_frame_length;
-	AudioManager audio_manager;
+	AudioManager audioManager;
 
 	// Game model vars
-	float frame_time;
 	bool running;
-	bool collide_with_walls;
-	int map_h;
-	int map_w;
-	bool is_player_alive;
-	bool has_shown_death;
-	int player_direction;
-	int player_direction_requested;
-	bool restart_request;
-	std::tuple<int, int> player_pos;
-	std::chrono::high_resolution_clock::time_point creation_precise_time;
+	int mapH;
+	int mapW;
+	bool isPlayerAlive;
+	bool hasShownDeath;
+	int playerDirection;
+	int playerDirectionRequested;
+	bool restartRequest;
+	std::tuple<int, int> playerPos;
+	std::chrono::high_resolution_clock::time_point creationPreciseTime;
 
 	std::vector<AEntity *> entities;
 
@@ -100,16 +97,16 @@ class GameLogic
 	~GameLogic(void);
 
 	int run();
-	void button_pressed(const char *button);
+	void buttonPressed(const char *button);
 
-	int get_square_size(void);
-	int get_x_offset(void);
-	int get_y_offset(void);
-	int get_map_w(void);
-	int get_map_h(void);
-	int get_player_direction(void);
-	bool get_if_is_player_alive(void);
-	std::tuple<int, int> &get_player_pos(void);
+	int getSquareSize(void);
+	int getXOffset(void);
+	int getYOffset(void);
+	int getMapW(void);
+	int getMapH(void);
+	int getPlayerDirection(void);
+	bool getIsPlayerAlive(void);
+	std::tuple<int, int> &getPlayerPos(void);
 
 	bool canRun;
 };

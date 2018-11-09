@@ -65,17 +65,17 @@ GameRenderer::GameRenderer(GameLogic *_mainGame)
 	glfwSetKeyCallback(window, key_callback);
 	glfwPollEvents();
 
-	square_size = mainGame->get_square_size();
-	x_offset = mainGame->get_x_offset();
-	y_offset = mainGame->get_y_offset();
+	square_size = mainGame->getSquareSize();
+	x_offset = mainGame->getXOffset();
+	y_offset = mainGame->getYOffset();
 
 	//get top left of game screen
 	start_x = -((WINDOW_W / 2.0f) - x_offset) / (WINDOW_W / 2.0f);
 	start_y = ((WINDOW_H / 2.0f) - y_offset) / (WINDOW_H / 2.0f);
 
 	//get the size of each square in the game screen
-	square_percent_y = start_y / (_mainGame->get_map_h() / 2.0f);
-	square_percent_x = (-start_x) / (_mainGame->get_map_w() / 2.0f);
+	square_percent_y = start_y / (_mainGame->getMapH() / 2.0f);
+	square_percent_x = (-start_x) / (_mainGame->getMapW() / 2.0f);
 
 	// Nuklear init
 	ctx = nk_glfw3_init(window, NK_GLFW3_INSTALL_CALLBACKS);
@@ -432,7 +432,7 @@ void GameRenderer::refresh_window(void)
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	create_border();
-	draw_player(mainGame->get_player_pos());
+	draw_player(mainGame->getPlayerPos());
 
 	create_grid();
 
@@ -449,19 +449,19 @@ void GameRenderer::key_callback(GLFWwindow *window, int key, int scancode, int a
 		switch (key)
 		{
 		case GLFW_KEY_RIGHT:
-			mainGame->button_pressed(KEY_RIGHT);
+			mainGame->buttonPressed(KEY_RIGHT);
 			break;
 		case GLFW_KEY_LEFT:
-			mainGame->button_pressed(KEY_LEFT);
+			mainGame->buttonPressed(KEY_LEFT);
 			break;
 		case GLFW_KEY_UP:
-			mainGame->button_pressed(KEY_UP);
+			mainGame->buttonPressed(KEY_UP);
 			break;
 		case GLFW_KEY_DOWN:
-			mainGame->button_pressed(KEY_DOWN);
+			mainGame->buttonPressed(KEY_DOWN);
 			break;
 		default:
-			mainGame->button_pressed(glfwGetKeyName(key, scancode));
+			mainGame->buttonPressed(glfwGetKeyName(key, scancode));
 			break;
 		}
 	}
