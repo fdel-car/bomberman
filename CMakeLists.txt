@@ -11,9 +11,11 @@ include_directories(scrs)
 set(SRCS
   srcs/main.cpp
   srcs/glad/glad.cpp
+  srcs/AEntity.cpp
   srcs/AudioManager.cpp
   srcs/GameLogic.cpp
   srcs/GameRenderer.cpp
+  srcs/Player.cpp
 )
 
 include_directories(includes)
@@ -23,9 +25,11 @@ set(HEADERS
   includes/nuklear/nuklear.h
   includes/nuklear_glfw_gl3.h
   includes/header.hpp
+  includes/AEntity.hpp
   includes/AudioManager.hpp
   includes/GameLogic.hpp
   includes/GameRenderer.hpp
+  includes/Player.hpp
 )
 
 add_executable(bomberman ${SRCS} ${HEADERS})

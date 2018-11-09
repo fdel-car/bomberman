@@ -2,6 +2,7 @@
 
 #include "header.hpp"
 #include "AudioManager.hpp"
+#include "AEntity.hpp"
 
 #define MAP_SIZE 40
 
@@ -91,6 +92,8 @@ class GameLogic
 	bool restart_request;
 	std::tuple<int, int> player_pos;
 	std::chrono::high_resolution_clock::time_point creation_precise_time;
+
+	std::vector<AEntity *> entities;
 
   public:
 	GameLogic(void);
