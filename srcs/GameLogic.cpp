@@ -20,8 +20,9 @@ GameLogic::GameLogic()
 
 	// Create interface class
 	graphic_lib = new GameRenderer(this);
-	// Create interface class
-	// graphic_lib = new GameRenderer(this);
+
+	// Create audio manager
+	audio_manager = new AudioManager();
 
 	// TODO: this should be done by a "game initializer" and not by the game engine !!
 	entities.push_back(new Player());
@@ -42,14 +43,11 @@ GameLogic::~GameLogic(void)
 	{
 		delete entity;
 	}
-	// delete (audio_manager);
+	delete (audio_manager);
 	delete (graphic_lib);
 	return;
 }
 
-// === ENDCONSTRUCTOR ==========================================================
-
-// === GETTER ==================================================================
 int GameLogic::get_square_size(void)
 {
 	return square_size;
@@ -100,10 +98,6 @@ GameLogic &GameLogic::operator=(GameLogic const &rhs)
 	return *this;
 }
 
-// === ENDOPERATORS ============================================================
-
-// === PRIVATE FUNCS ===========================================================
-
 void GameLogic::print_usage(void)
 {
 	std::cerr << "Usage: ./bomberman" << std::endl;
@@ -151,7 +145,7 @@ void GameLogic::update_game_state(void)
 			if (!is_player_alive)
 			{
 				std::cerr << "Game Over ! (Press 'R' to restart)" << std::endl;
-				// audio_manager->DEATH_SOUND_FUNC();
+				audio_manager->DEATH_SOUND_FUNC();
 			}
 		}
 	}
@@ -272,7 +266,7 @@ int GameLogic::run(void)
 
 	init_player();
 
-	// audio_manager->START_SOUND_FUNC();
+	audio_manager->START_SOUND_FUNC();
 
 	// Start game loop
 	while (running)
