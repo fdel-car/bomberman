@@ -26,9 +26,9 @@ class GameRenderer
 	GameRenderer(GameLogic *mainGame);
 	~GameRenderer(void);
 
-	void get_user_input(void);
-	void refresh_window(void);
-	void close_window(void);
+	void getUserInput(void);
+	void refreshWindow(void);
+	void closeWindow(void);
 
 	bool active;
 

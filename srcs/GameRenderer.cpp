@@ -99,7 +99,7 @@ GameRenderer::GameRenderer(GameRenderer const &src)
 
 GameRenderer::~GameRenderer(void)
 {
-	close_window();
+	closeWindow();
 	return;
 }
 
@@ -421,12 +421,12 @@ void GameRenderer::draw_player(std::tuple<int, int> &player_pos)
 // === END PRIVATE FUNCS =======================================================
 
 // === OVERRIDES ===============================================================
-void GameRenderer::get_user_input(void)
+void GameRenderer::getUserInput(void)
 {
 	glfwPollEvents();
 }
 
-void GameRenderer::refresh_window(void)
+void GameRenderer::refreshWindow(void)
 {
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -444,26 +444,28 @@ void GameRenderer::refresh_window(void)
 
 void GameRenderer::key_callback(GLFWwindow *window, int key, int scancode, int action, int mods)
 {
-	if (action == GLFW_PRESS || action == GLFW_REPEAT)
+	if (action == GLFW_PRESS || action == GLFW_RELEASE)
 	{
-		switch (key)
-		{
-		case GLFW_KEY_RIGHT:
-			mainGame->buttonPressed(KEY_RIGHT);
-			break;
-		case GLFW_KEY_LEFT:
-			mainGame->buttonPressed(KEY_LEFT);
-			break;
-		case GLFW_KEY_UP:
-			mainGame->buttonPressed(KEY_UP);
-			break;
-		case GLFW_KEY_DOWN:
-			mainGame->buttonPressed(KEY_DOWN);
-			break;
-		default:
-			mainGame->buttonPressed(glfwGetKeyName(key, scancode));
-			break;
-		}
+		mainGame->buttonStateChanged(glfwGetKeyName(key, scancode), action == GLFW_PRESS);
+		// mainGame->buttonStateChanged("NULL", action == GLFW_PRESS);
+		// switch (key)
+		// {
+		// case GLFW_KEY_RIGHT:
+		// 	mainGame->buttonPressed(KEY_RIGHT);
+		// 	break;
+		// case GLFW_KEY_LEFT:
+		// 	mainGame->buttonPressed(KEY_LEFT);
+		// 	break;
+		// case GLFW_KEY_UP:
+		// 	mainGame->buttonPressed(KEY_UP);
+		// 	break;
+		// case GLFW_KEY_DOWN:
+		// 	mainGame->buttonPressed(KEY_DOWN);
+		// 	break;
+		// default:
+		// 	mainGame->buttonPressed(glfwGetKeyName(key, scancode));
+		// 	break;
+		// }
 	}
 	(void)key;
 	(void)scancode;
@@ -472,7 +474,7 @@ void GameRenderer::key_callback(GLFWwindow *window, int key, int scancode, int a
 	(void)mods;
 }
 
-void GameRenderer::close_window()
+void GameRenderer::closeWindow()
 {
 	// std::cout << "Destroing Glfw window" << std::endl;
 	if (window)

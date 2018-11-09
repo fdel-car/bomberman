@@ -40,7 +40,7 @@ AudioManager &AudioManager::operator=(AudioManager const &rhs)
 	return *this;
 }
 
-void AudioManager::play_start_sound(void)
+void AudioManager::playStartSound(void)
 {
 	if (!active)
 		return;
@@ -49,7 +49,7 @@ void AudioManager::play_start_sound(void)
 	return;
 }
 
-void AudioManager::play_eat_sound(void)
+void AudioManager::playEatSound(void)
 {
 	if (!active)
 		return;
@@ -58,7 +58,7 @@ void AudioManager::play_eat_sound(void)
 	return;
 }
 
-void AudioManager::play_death_sound(void)
+void AudioManager::playDeathSound(void)
 {
 	if (!active)
 		return;

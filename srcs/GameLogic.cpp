@@ -3,7 +3,6 @@
 
 #include "Player.hpp" // TODO: this should be done by a "game initializer" and not by the game engine !!
 
-// === CONSTRUCTOR =============================================================
 GameLogic::GameLogic()
 {
 	canRun = false;
@@ -20,9 +19,19 @@ GameLogic::GameLogic()
 
 	// Create interface class
 	graphicLib = new GameRenderer(this);
+	if (!graphicLib)
+	{
+		std::cerr << "GameRenderer couldn't load !" << std::endl;
+		return;
+	}
 
 	// Create audio manager
 	audioManager = new AudioManager();
+	if (!audioManager)
+	{
+		std::cerr << "AudioManager couldn't load !" << std::endl;
+		return;
+	}
 
 	// TODO: this should be done by a "game initializer" and not by the game engine !!
 	entities.push_back(new Player());
@@ -88,10 +97,6 @@ std::tuple<int, int> &GameLogic::getPlayerPos(void)
 	return playerPos;
 }
 
-// === END GETTER ==============================================================
-
-// === OPERATORS ===============================================================
-
 GameLogic &GameLogic::operator=(GameLogic const &rhs)
 {
 	this->canRun = rhs.canRun;
@@ -117,15 +122,11 @@ void GameLogic::changeLibraryRequest(std::string key_code)
 void GameLogic::updateGameState(void)
 {
 	// Get all pool events in library
-	if (graphicLib)
-	{
-		graphicLib->GET_USER_INPUT_FUNC();
-	}
+	graphicLib->getUserInput();
 
 	// Check if we want to close window, in this case no need to do further calculations
 	if (dlIndex == 0)
 	{
-		// std::cout << "Need to close.." << std::endl;
 		running = false;
 	}
 
@@ -145,13 +146,13 @@ void GameLogic::updateGameState(void)
 			if (!isPlayerAlive)
 			{
 				std::cerr << "Game Over ! (Press 'R' to restart)" << std::endl;
-				audioManager->DEATH_SOUND_FUNC();
+				audioManager->playDeathSound();
 			}
 		}
 	}
 }
 
-int GameLogic::updateGUI(void)
+int GameLogic::renderGame(void)
 {
 	if (dlIndex < 0 || dlIndex > 1)
 	{
@@ -162,7 +163,7 @@ int GameLogic::updateGUI(void)
 	// Draw window with game infos
 	if (graphicLib && !hasShownDeath)
 	{
-		graphicLib->REFRESH_WINDOW_FUNC();
+		graphicLib->refreshWindow();
 		if (!isPlayerAlive)
 			hasShownDeath = true;
 	}
@@ -225,9 +226,6 @@ void GameLogic::changeDirectionTo(int &playerDirection, int &playerDirectionRequ
 	}
 }
 
-// === END PRIVATE FUNCS =======================================================
-
-// === PUBLIC FUNCS ============================================================
 int GameLogic::run(void)
 {
 	if (!canRun)
@@ -243,31 +241,31 @@ int GameLogic::run(void)
 
 	initPlayer();
 
-	audioManager->START_SOUND_FUNC();
+	audioManager->playStartSound();
 
 	// Start game loop
 	while (running)
 	{
-		// Timer logic, make thread sleep if needed
-		// past_frame_length = difftime(timer, time(NULL));
-		// if (past_frame_length < frame_time)
+		// Get delta time in order to synch entities positions
+		pastFrameLength = difftime(timer, time(NULL));
+		timer = time(NULL);
+
+		// Update inputs
+		graphicLib->getUserInput();
+
+		// TODO: Update game engine statuses (ex. when to quit)
+
+		// Update game entities states
+		// for (auto entity : entities)
 		// {
-		// 	std::this_thread::sleep_for(std::chrono::milliseconds(static_cast<int>((frame_time - past_frame_length) * 1000)));
+		// 	entity->Update();
 		// }
-		// // std::cout << "frame" << std::endl;
-		// timer = time(NULL);
 
-		std::cout << "------- New Frame -------------------" << std::endl;
-		for (auto entity : entities)
-		{
-			std::cout << "Calling Update on entity" << std::endl;
-			entity->Update();
-		}
+		// TODO: set position of entities back to prev frame when they collide
 
-		// std::cout << "-- Frame --" << std::endl;
 		updateGameState();
 
-		guiRet = updateGUI();
+		guiRet = renderGame();
 		if (guiRet != EXIT_SUCCESS || !running)
 			break;
 	}
@@ -277,6 +275,12 @@ int GameLogic::run(void)
 		return run();
 	}
 	return guiRet;
+}
+
+void GameLogic::buttonStateChanged(const char *button, bool isPressed)
+{
+	std::string key = !button ? "NULL" : std::string(button); // GLFW sends NULL pointer for Escape key..
+	std::cout << "key '" << key << "' new status: " << isPressed << std::endl;
 }
 
 void GameLogic::buttonPressed(const char *button)
@@ -311,9 +315,6 @@ void GameLogic::buttonPressed(const char *button)
 	}
 }
 
-// === END PUBLIC FUNCS ========================================================
-
-// === STATICVARS ==============================================================
 static std::list<std::string> generate_library_keys()
 { // static here is "internal linkage"
 	std::list<std::string> p;
@@ -336,4 +337,3 @@ static std::vector<std::tuple<std::string, int>> generate_direction_keys()
 	return p;
 }
 const std::vector<std::tuple<std::string, int>> GameLogic::changeDirectionKeys = generate_direction_keys();
-// === END STATICVARS ==========================================================

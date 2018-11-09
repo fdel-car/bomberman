@@ -14,14 +14,6 @@
 #define MAX_SQUARE_SIZE 25
 #define OUTLINE_TICKNESS 2
 
-#define GET_USER_INPUT_FUNC get_user_input
-#define REFRESH_WINDOW_FUNC refresh_window
-#define CLOSE_WINDOW_FUNC close_window
-
-#define START_SOUND_FUNC play_start_sound
-#define EAT_SOUND_FUNC play_eat_sound
-#define DEATH_SOUND_FUNC play_death_sound
-
 #define KEY_0 "0"
 #define KEY_W "W"
 #define KEY_A "A"
@@ -60,7 +52,7 @@ class GameLogic
 	void printUsage(void);
 	void changeLibraryRequest(std::string key_code);
 	void updateGameState(void);
-	int updateGUI(void);
+	int renderGame(void);
 	void changeDirectionTo(int &player_direction, int &player_direction_requested, int newDir);
 
 	void initPlayer(void);
@@ -75,7 +67,7 @@ class GameLogic
 	int dlIndex;
 	int dlPastIndex;
 	time_t timer;
-	// double past_frame_length;
+	double pastFrameLength;
 	AudioManager *audioManager;
 
 	// Game model vars
@@ -98,6 +90,7 @@ class GameLogic
 
 	int run();
 	void buttonPressed(const char *button);
+	void buttonStateChanged(const char *button, bool isPressed);
 
 	int getSquareSize(void);
 	int getXOffset(void);

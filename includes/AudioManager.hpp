@@ -18,9 +18,9 @@ class AudioManager
 	AudioManager(void);
 	~AudioManager(void);
 
-	void play_start_sound(void);
-	void play_eat_sound(void);
-	void play_death_sound(void);
+	void playStartSound(void);
+	void playEatSound(void);
+	void playDeathSound(void);
 
 	bool active;
 };
