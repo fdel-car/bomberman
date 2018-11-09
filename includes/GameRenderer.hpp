@@ -34,32 +34,32 @@ class GameRenderer
 
   private:
 	GameRenderer(void);
-	static void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods);
-	static void error_callback(int error, const char *description);
+	static void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods);
+	static void errorCallback(int error, const char *description);
 
 	GameRenderer(GameRenderer const &src);
 
 	GameRenderer &operator=(GameRenderer const &rhs);
 
-	void init_shaders(int type);
-	void init_program(void);
-	void create_border(void);
-	void create_grid(void);
-	void draw_gui(void);
-	void draw_player(std::tuple<int, int> &player_pos);
-	void make_vao(GLuint &vbo);
+	void initShaders(int type);
+	void initProgram(void);
+	void createBorder(void);
+	void createGrid(void);
+	void drawGUI(void);
+	void drawPlayer(std::tuple<int, int> &playerPos);
+	void makeVAO(GLuint &vbo);
 
 	// General vars
 	GLFWwindow *window;
 	int width = 0;
 	int height = 0;
-	int x_offset;
-	int y_offset;
-	int square_size;
-	float start_x;
-	float start_y;
-	float square_percent_y;
-	float square_percent_x;
+	int xOffset;
+	int yOffset;
+	int squareSize;
+	float startX;
+	float startY;
+	float squarePercentY;
+	float squarePercentX;
 
 	// Nuklear vars
 	struct nk_context *ctx;
@@ -68,9 +68,9 @@ class GameRenderer
 	// Rendering vars
 	GLuint vbo;
 	GLuint vao;
-	const char *vertex_shader;
-	const char *fragment_shader;
+	const char *vertexShader;
+	const char *fragmentShader;
 	GLuint vs;
 	GLuint fs;
-	GLuint shader_program;
+	GLuint shaderProgram;
 };

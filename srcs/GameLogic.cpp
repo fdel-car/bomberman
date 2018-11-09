@@ -1,7 +1,7 @@
 #include "GameLogic.hpp"
 #include "GameRenderer.hpp"
 
-#include "Player.hpp" // TODO: this should be done by a "game initializer" and not by the game engine !!
+#include "Player.hpp" // TODO: this should be done by a "game initializer" and not by the game engine!
 
 GameLogic::GameLogic()
 {
@@ -33,7 +33,7 @@ GameLogic::GameLogic()
 		return;
 	}
 
-	// TODO: this should be done by a "game initializer" and not by the game engine !!
+	// TODO: this should be done by a "game initializer" and not by the game engine!
 	entities.push_back(new Player());
 
 	// Everything good
@@ -108,14 +108,14 @@ void GameLogic::printUsage(void)
 	std::cerr << "Usage: ./bomberman" << std::endl;
 }
 
-void GameLogic::changeLibraryRequest(std::string key_code)
+void GameLogic::changeLibraryRequest(std::string keyCode)
 {
-	int requested_index = std::stoi(key_code);
+	int requestedIndex = std::stoi(keyCode);
 
-	// std::cout << "Change index of library to: " << requested_index << std::endl;
-	if (requested_index >= 0 && requested_index <= 0)
+	// std::cout << "Change index of library to: " << requestedIndex << std::endl;
+	if (requestedIndex >= 0 && requestedIndex <= 0)
 	{
-		dlIndex = requested_index;
+		dlIndex = requestedIndex;
 	}
 }
 
@@ -145,7 +145,7 @@ void GameLogic::updateGameState(void)
 			//player actual moving
 			if (!isPlayerAlive)
 			{
-				std::cerr << "Game Over ! (Press 'R' to restart)" << std::endl;
+				std::cerr << "Game Over! (Press 'R' to restart)" << std::endl;
 				audioManager->playDeathSound();
 			}
 		}
@@ -156,7 +156,7 @@ int GameLogic::renderGame(void)
 {
 	if (dlIndex < 0 || dlIndex > 1)
 	{
-		std::cerr << "Wrong number given..!" << std::endl;
+		std::cerr << "Wrong number given.." << std::endl;
 		return EXIT_FAILURE;
 	}
 
@@ -200,16 +200,16 @@ bool GameLogic::playerCanMove(void)
 	return true;
 }
 
-void GameLogic::movePlayer(std::tuple<int, int> &playerPos, int &player_dir)
+void GameLogic::movePlayer(std::tuple<int, int> &playerPos, int &playerDir)
 {
 	// Advance based on direction
-	if (player_dir == UP)
+	if (playerDir == UP)
 		std::get<1>(playerPos) = std::get<1>(playerPos) - 1;
-	else if (player_dir == DOWN)
+	else if (playerDir == DOWN)
 		std::get<1>(playerPos) = std::get<1>(playerPos) + 1;
-	else if (player_dir == LEFT)
+	else if (playerDir == LEFT)
 		std::get<0>(playerPos) = std::get<0>(playerPos) - 1;
-	else if (player_dir == RIGHT)
+	else if (playerDir == RIGHT)
 		std::get<0>(playerPos) = std::get<0>(playerPos) + 1;
 }
 
@@ -271,7 +271,7 @@ int GameLogic::run(void)
 	}
 	if (restartRequest)
 	{
-		std::cout << "Starting new game !" << std::endl;
+		std::cout << "Starting new game!" << std::endl;
 		return run();
 	}
 	return guiRet;
@@ -295,11 +295,11 @@ void GameLogic::buttonPressed(const char *button)
 	}
 	else
 	{
-		for (const std::tuple<std::string, int> &change_direction_pair : changeDirectionKeys) // access by reference to avoid copying
+		for (const std::tuple<std::string, int> &changeDirectionPair : changeDirectionKeys) // access by reference to avoid copying
 		{
-			if (std::get<0>(change_direction_pair).compare(key) == 0)
+			if (std::get<0>(changeDirectionPair).compare(key) == 0)
 			{
-				changeDirectionTo(playerDirection, playerDirectionRequested, std::get<1>(change_direction_pair));
+				changeDirectionTo(playerDirection, playerDirectionRequested, std::get<1>(changeDirectionPair));
 				return;
 			}
 		}
@@ -315,15 +315,15 @@ void GameLogic::buttonPressed(const char *button)
 	}
 }
 
-static std::list<std::string> generate_library_keys()
+static std::list<std::string> generateLibraryKeys()
 { // static here is "internal linkage"
 	std::list<std::string> p;
 	p.push_front(KEY_0);
 	return p;
 }
-const std::list<std::string> GameLogic::changeLibraryKeys = generate_library_keys();
+const std::list<std::string> GameLogic::changeLibraryKeys = generateLibraryKeys();
 
-static std::vector<std::tuple<std::string, int>> generate_direction_keys()
+static std::vector<std::tuple<std::string, int>> generateDirectionKeys()
 { // static here is "internal linkage"
 	std::vector<std::tuple<std::string, int>> p;
 	p.push_back(std::make_tuple(KEY_W, UP));
@@ -336,4 +336,4 @@ static std::vector<std::tuple<std::string, int>> generate_direction_keys()
 	p.push_back(std::make_tuple(KEY_D_LOWER, RIGHT));
 	return p;
 }
-const std::vector<std::tuple<std::string, int>> GameLogic::changeDirectionKeys = generate_direction_keys();
+const std::vector<std::tuple<std::string, int>> GameLogic::changeDirectionKeys = generateDirectionKeys();
