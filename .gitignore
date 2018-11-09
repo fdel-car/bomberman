@@ -36,6 +36,7 @@ glfw-3.2.1
 .DS_Store
 includes/KHR/*
 includes/glad/*
+includes/glm/*
 srcs/glad/*
 includes/nuklear/*
 SFML-2.5.1/*

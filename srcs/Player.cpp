@@ -33,6 +33,4 @@ void Player::Update(void)
 		position[2] -= _speed * deltaTime;
 	if (gameLogic->isKeyPressed(KEY_S))
 		position[2] += _speed * deltaTime;
-
-	// std::cout << "Delta: " << deltaTime << ", My coord: " << position[0] << " " << position[2] << std::endl;
 }
