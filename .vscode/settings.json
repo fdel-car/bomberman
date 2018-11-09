@@ -16,7 +16,11 @@
 		"new": "cpp",
 		"stdexcept": "cpp",
 		"typeinfo": "cpp",
-		"algorithm": "cpp"
+		"algorithm": "cpp",
+		"__split_buffer": "cpp",
+		"deque": "cpp",
+		"list": "cpp",
+		"vector": "cpp"
 	},
 	"FormattingOptions": {
 		"NewLinesForBracesInLambdaExpressionBody": false,

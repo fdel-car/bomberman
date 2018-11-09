@@ -50,14 +50,14 @@ class GameLogic
 	GameLogic &operator=(GameLogic const &rhs);
 
 	void printUsage(void);
-	void changeLibraryRequest(std::string key_code);
+	void changeLibraryRequest(std::string keyCode);
 	void updateGameState(void);
 	int renderGame(void);
-	void changeDirectionTo(int &player_direction, int &player_direction_requested, int newDir);
+	void changeDirectionTo(int &playerDirection, int &playerDirectionRequested, int newDir);
 
 	void initPlayer(void);
 	bool playerCanMove(void);
-	void movePlayer(std::tuple<int, int> &player_body, int &player_dir);
+	void movePlayer(std::tuple<int, int> &playerBody, int &playerDir);
 
 	// Graphic libraries vars
 	GameRenderer *graphicLib;

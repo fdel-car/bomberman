@@ -23,18 +23,13 @@
 #include "GameRenderer.hpp"
 #include "GameLogic.hpp"
 
-// === CONSTRUCTOR =============================================================
-
 GameRenderer::GameRenderer(GameLogic *_mainGame)
 {
 	this->mainGame = _mainGame;
 	// std::cout << "GLFW window" << std::endl;
-	glfwSetErrorCallback(error_callback);
+	glfwSetErrorCallback(errorCallback);
 	if (!glfwInit())
-	{
-		std::cout << "Failed to initialize GLFW" << std::endl;
-		throw new std::runtime_error("NOP");
-	}
+		throw new std::runtime_error("Failed to initialize GLFW");
 	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
@@ -43,12 +38,11 @@ GameRenderer::GameRenderer(GameLogic *_mainGame)
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
 	// glfwSetInputMode(window, GLFW_STICKY_KEYS, 1);
-	this->window = glfwCreateWindow(WINDOW_W, WINDOW_H, "Bomberman", NULL, NULL); // size of screen will change
+	this->window = glfwCreateWindow(WINDOW_W, WINDOW_H, "Bomberman", NULL, NULL); // Size of screen will change
 	if (!this->window)
 	{
 		glfwTerminate();
-		std::cout << "Failed to create windows GLFW" << std::endl;
-		throw new std::runtime_error("NOP");
+		throw new std::runtime_error("Failed to create windows GLFW");
 	}
 	const GLFWvidmode *mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
 	glfwSetWindowPos(window, (mode->width / 2) - (WINDOW_W / 2), (mode->height / 2) - (WINDOW_H / 2));
@@ -57,25 +51,22 @@ GameRenderer::GameRenderer(GameLogic *_mainGame)
 	glfwSetWindowUserPointer(window, this);
 	// glViewport(0, 0, WINDOW_W, WINDOW_H);
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-	{
-		std::cout << "Failed to initialize GLAD" << std::endl;
-		throw new std::runtime_error("NOP");
-	}
+		throw new std::runtime_error("Failed to initialize GLAD");
 
-	glfwSetKeyCallback(window, key_callback);
+	glfwSetKeyCallback(window, keyCallback);
 	glfwPollEvents();
 
-	square_size = mainGame->getSquareSize();
-	x_offset = mainGame->getXOffset();
-	y_offset = mainGame->getYOffset();
+	squareSize = mainGame->getSquareSize();
+	xOffset = mainGame->getXOffset();
+	yOffset = mainGame->getYOffset();
 
-	//get top left of game screen
-	start_x = -((WINDOW_W / 2.0f) - x_offset) / (WINDOW_W / 2.0f);
-	start_y = ((WINDOW_H / 2.0f) - y_offset) / (WINDOW_H / 2.0f);
+	// Get top left of game screen
+	startX = -((WINDOW_W / 2.0f) - xOffset) / (WINDOW_W / 2.0f);
+	startY = ((WINDOW_H / 2.0f) - yOffset) / (WINDOW_H / 2.0f);
 
-	//get the size of each square in the game screen
-	square_percent_y = start_y / (_mainGame->getMapH() / 2.0f);
-	square_percent_x = (-start_x) / (_mainGame->getMapW() / 2.0f);
+	// Get the size of each square in the game screen
+	squarePercentY = startY / (_mainGame->getMapH() / 2.0f);
+	squarePercentX = (-startX) / (_mainGame->getMapW() / 2.0f);
 
 	// Nuklear init
 	ctx = nk_glfw3_init(window, NK_GLFW3_INSTALL_CALLBACKS);
@@ -103,21 +94,13 @@ GameRenderer::~GameRenderer(void)
 	return;
 }
 
-// === ENDCONSTRUCTOR ==========================================================
-
-// === OPERATORS ===============================================================
-
 GameRenderer &GameRenderer::operator=(GameRenderer const &rhs)
 {
 	this->active = rhs.active;
 	return *this;
 }
 
-// === ENDOPERATORS ============================================================
-
-// === PRIVATE FUNCS ===========================================================
-
-void GameRenderer::make_vao(GLuint &vbo)
+void GameRenderer::makeVAO(GLuint &vbo)
 {
 	vao = 0;
 	glGenVertexArrays(1, &vao);
@@ -127,10 +110,10 @@ void GameRenderer::make_vao(GLuint &vbo)
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
 }
 
-void GameRenderer::init_shaders(int type)
+void GameRenderer::initShaders(int type)
 {
-	//shader pour les vertex
-	vertex_shader =
+	// Shader pour les vertex
+	vertexShader =
 		"#version 400\n"
 		"in vec3 vp;"
 		"void main() {"
@@ -139,8 +122,8 @@ void GameRenderer::init_shaders(int type)
 
 	if (type == WHITE_SHADER)
 	{
-		//shader pour dessiner ce qu'il y a entre les vertex
-		fragment_shader =
+		// Shader pour dessiner ce qu'il y a entre les vertex
+		fragmentShader =
 			"#version 400\n"
 			"out vec4 frag_colour;"
 			"void main() {"
@@ -149,8 +132,8 @@ void GameRenderer::init_shaders(int type)
 	}
 	else if (type == CYAN_SHADER)
 	{
-		//shader pour dessiner ce qu'il y a entre les vertex
-		fragment_shader =
+		// Shader pour dessiner ce qu'il y a entre les vertex
+		fragmentShader =
 			"#version 400\n"
 			"out vec4 frag_colour;"
 			"void main() {"
@@ -159,8 +142,8 @@ void GameRenderer::init_shaders(int type)
 	}
 	else if (type == RED_SHADER)
 	{
-		//shader pour dessiner ce qu'il y a entre les vertex
-		fragment_shader =
+		// Shader pour dessiner ce qu'il y a entre les vertex
+		fragmentShader =
 			"#version 400\n"
 			"out vec4 frag_colour;"
 			"void main() {"
@@ -169,8 +152,8 @@ void GameRenderer::init_shaders(int type)
 	}
 	else if (type == GREEN_SHADER)
 	{
-		//shader pour dessiner ce qu'il y a entre les vertex
-		fragment_shader =
+		// Shader pour dessiner ce qu'il y a entre les vertex
+		fragmentShader =
 			"#version 400\n"
 			"out vec4 frag_colour;"
 			"void main() {"
@@ -179,8 +162,8 @@ void GameRenderer::init_shaders(int type)
 	}
 	else if (type == YELLOW_SHADER)
 	{
-		//shader pour dessiner ce qu'il y a entre les vertex
-		fragment_shader =
+		// Shader pour dessiner ce qu'il y a entre les vertex
+		fragmentShader =
 			"#version 400\n"
 			"out vec4 frag_colour;"
 			"void main() {"
@@ -189,8 +172,8 @@ void GameRenderer::init_shaders(int type)
 	}
 	else if (type == GRAY_SHADER)
 	{
-		//shader pour dessiner ce qu'il y a entre les vertex
-		fragment_shader =
+		// Shader pour dessiner ce qu'il y a entre les vertex
+		fragmentShader =
 			"#version 400\n"
 			"out vec4 frag_colour;"
 			"void main() {"
@@ -199,10 +182,10 @@ void GameRenderer::init_shaders(int type)
 	}
 
 	vs = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(vs, 1, &vertex_shader, NULL);
+	glShaderSource(vs, 1, &vertexShader, NULL);
 	glCompileShader(vs);
 	fs = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fs, 1, &fragment_shader, NULL);
+	glShaderSource(fs, 1, &fragmentShader, NULL);
 	glCompileShader(fs);
 
 	//check if shaders compile fail
@@ -215,93 +198,93 @@ void GameRenderer::init_shaders(int type)
 		std::cout << "Fragment Shader compile failed" << std::endl;
 }
 
-void GameRenderer::init_program(void)
+void GameRenderer::initProgram(void)
 {
-	shader_program = glCreateProgram();
-	glAttachShader(shader_program, fs);
-	glAttachShader(shader_program, vs);
-	glLinkProgram(shader_program);
+	shaderProgram = glCreateProgram();
+	glAttachShader(shaderProgram, fs);
+	glAttachShader(shaderProgram, vs);
+	glLinkProgram(shaderProgram);
 }
 
-void GameRenderer::create_border(void)
+void GameRenderer::createBorder(void)
 {
-	float epsilon_x = 1 / (WINDOW_W / 2.0f);
-	float epsilon_y = 1 / (WINDOW_H / 2.0f);
+	float epsilonX = 1 / (WINDOW_W / 2.0f);
+	float epsilonY = 1 / (WINDOW_H / 2.0f);
 
-	float vertex_border[] =
+	float vertexBorders[] =
 		{
-			start_x, start_y + epsilon_y, 0.0f,				   // top-left
-			-(start_x) + epsilon_x, start_y + epsilon_y, 0.0f, // top-right
+			startX, startY + epsilonY, 0.0f,			   // top-left
+			-(startX) + epsilonX, startY + epsilonY, 0.0f, // top-right
 
-			-(start_x) + epsilon_x, start_y + epsilon_y, 0.0f, // top-right
-			-(start_x) + epsilon_x, -(start_y), 0.0f,		   // bottom-right
+			-(startX) + epsilonX, startY + epsilonY, 0.0f, // top-right
+			-(startX) + epsilonX, -(startY), 0.0f,		   // bottom-right
 
-			-(start_x) + epsilon_x, -(start_y), 0.0f, // bottom-right
-			start_x, -(start_y), 0.0f,				  // bottom-left
+			-(startX) + epsilonX, -(startY), 0.0f, // bottom-right
+			startX, -(startY), 0.0f,			   // bottom-left
 
-			start_x, -(start_y), 0.0f,		   // bottom-left
-			start_x, start_y + epsilon_y, 0.0f // top-left
+			startX, -(startY), 0.0f,		// bottom-left
+			startX, startY + epsilonY, 0.0f // top-left
 		};
 	//BUFFER
 	vbo = 0;
 	glGenBuffers(1, &vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertex_border), vertex_border, GL_STATIC_DRAW);
-	make_vao(vbo);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertexBorders), vertexBorders, GL_STATIC_DRAW);
+	makeVAO(vbo);
 
-	init_shaders(1);
-	init_program();
-	glUseProgram(shader_program);
+	initShaders(1);
+	initProgram();
+	glUseProgram(shaderProgram);
 	glBindVertexArray(vao);
 	//drawing all the vertex of the triangle
 	glDrawArrays(GL_LINE_LOOP, 0, 8);
 }
 
-void GameRenderer::create_grid(void)
+void GameRenderer::createGrid(void)
 {
 	int linesCount = 78;
 	int pointsCount = linesCount * 2;
-	float lineSpacing = square_percent_x;
-	float tmpX = start_x;
-	float vertex_border[pointsCount * 3];
+	float lineSpacing = squarePercentX;
+	float tmpX = startX;
+	float vertexBorders[pointsCount * 3];
 	for (int i = 0; i < pointsCount * 3; i++)
 	{
-		vertex_border[i] = 0;
+		vertexBorders[i] = 0;
 	}
 
 	// Vertical lines
-	lineSpacing = square_percent_x;
-	tmpX = start_x + lineSpacing;
+	lineSpacing = squarePercentX;
+	tmpX = startX + lineSpacing;
 	for (int i = 0; i < linesCount / 2; i++)
 	{
 		// Start point
 		int lineIdx = i * 6;
-		vertex_border[lineIdx] = tmpX;
-		vertex_border[lineIdx + 1] = start_y;
-		vertex_border[lineIdx + 2] = 0.0f;
+		vertexBorders[lineIdx] = tmpX;
+		vertexBorders[lineIdx + 1] = startY;
+		vertexBorders[lineIdx + 2] = 0.0f;
 
 		// End point
-		vertex_border[lineIdx + 3] = tmpX;
-		vertex_border[lineIdx + 4] = -(start_y);
-		vertex_border[lineIdx + 5] = 0.0f;
+		vertexBorders[lineIdx + 3] = tmpX;
+		vertexBorders[lineIdx + 4] = -(startY);
+		vertexBorders[lineIdx + 5] = 0.0f;
 
 		tmpX += lineSpacing;
 	}
 	// Horizontal lines
-	lineSpacing = square_percent_y;
-	tmpX = start_y - lineSpacing;
+	lineSpacing = squarePercentY;
+	tmpX = startY - lineSpacing;
 	for (int i = linesCount / 2; i < linesCount; i++)
 	{
 		// Start point
 		int lineIdx = i * 6;
-		vertex_border[lineIdx] = start_x;
-		vertex_border[lineIdx + 1] = tmpX;
-		vertex_border[lineIdx + 2] = 0.0f;
+		vertexBorders[lineIdx] = startX;
+		vertexBorders[lineIdx + 1] = tmpX;
+		vertexBorders[lineIdx + 2] = 0.0f;
 
 		// End point
-		vertex_border[lineIdx + 3] = -start_x;
-		vertex_border[lineIdx + 4] = tmpX;
-		vertex_border[lineIdx + 5] = 0.0f;
+		vertexBorders[lineIdx + 3] = -startX;
+		vertexBorders[lineIdx + 4] = tmpX;
+		vertexBorders[lineIdx + 5] = 0.0f;
 
 		tmpX -= lineSpacing;
 	}
@@ -309,18 +292,18 @@ void GameRenderer::create_grid(void)
 	vbo = 0;
 	glGenBuffers(1, &vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertex_border), vertex_border, GL_STATIC_DRAW);
-	make_vao(vbo);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertexBorders), vertexBorders, GL_STATIC_DRAW);
+	makeVAO(vbo);
 
-	init_shaders(1);
-	init_program();
-	glUseProgram(shader_program);
+	initShaders(1);
+	initProgram();
+	glUseProgram(shaderProgram);
 	glBindVertexArray(vao);
 	//drawing all the vertex of the triangle
 	glDrawArrays(GL_LINES, 0, pointsCount);
 }
 
-void GameRenderer::draw_gui(void)
+void GameRenderer::drawGUI(void)
 {
 	nk_glfw3_new_frame();
 
@@ -368,16 +351,16 @@ void GameRenderer::draw_gui(void)
 	nk_glfw3_render(NK_ANTI_ALIASING_ON, MAX_VERTEX_BUFFER, MAX_ELEMENT_BUFFER);
 }
 
-void GameRenderer::draw_player(std::tuple<int, int> &player_pos)
+void GameRenderer::drawPlayer(std::tuple<int, int> &playerPos)
 {
-	float start_coor_X = start_x + (std::get<0>(player_pos) * square_percent_x);
-	float start_coor_Y = start_y - (std::get<1>(player_pos) * square_percent_y);
+	float startCoordX = startX + (std::get<0>(playerPos) * squarePercentX);
+	float startCoordY = startY - (std::get<1>(playerPos) * squarePercentY);
 
-	float xCenter = start_coor_X + (square_percent_x / 2);
-	float yCenter = start_coor_Y - (square_percent_y / 2);
+	float xCenter = startCoordX + (squarePercentX / 2);
+	float yCenter = startCoordY - (squarePercentY / 2);
 	int nbrOfSide = 120;
-	float radiusX = square_percent_x / 2;
-	float radiusY = square_percent_y / 2;
+	float radiusX = squarePercentX / 2;
+	float radiusY = squarePercentY / 2;
 
 	GLint nbrOfVertices = nbrOfSide + 2;
 
@@ -410,17 +393,15 @@ void GameRenderer::draw_player(std::tuple<int, int> &player_pos)
 	glGenBuffers(1, &vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(allCircleVertices), allCircleVertices, GL_STATIC_DRAW);
-	make_vao(vbo);
+	makeVAO(vbo);
 
-	init_shaders(GREEN_SHADER);
-	init_program();
-	glUseProgram(shader_program);
+	initShaders(GREEN_SHADER);
+	initProgram();
+	glUseProgram(shaderProgram);
 	glBindVertexArray(vao);
 	glDrawArrays(GL_TRIANGLE_FAN, 0, nbrOfVertices);
 }
-// === END PRIVATE FUNCS =======================================================
 
-// === OVERRIDES ===============================================================
 void GameRenderer::getUserInput(void)
 {
 	glfwPollEvents();
@@ -431,18 +412,18 @@ void GameRenderer::refreshWindow(void)
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	create_border();
-	draw_player(mainGame->getPlayerPos());
+	createBorder();
+	drawPlayer(mainGame->getPlayerPos());
 
-	create_grid();
+	createGrid();
 
-	draw_gui();
+	drawGUI();
 
 	//put everything to screen
 	glfwSwapBuffers(this->window);
 }
 
-void GameRenderer::key_callback(GLFWwindow *window, int key, int scancode, int action, int mods)
+void GameRenderer::keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods)
 {
 	if (action == GLFW_PRESS || action == GLFW_RELEASE)
 	{
@@ -950,10 +931,9 @@ void GameRenderer::closeWindow()
 	glfwTerminate();
 }
 
-void GameRenderer::error_callback(int error, const char *description)
+void GameRenderer::errorCallback(int error, const char *description)
 {
 	std::cerr << "Error n." << error << ": " << description << std::endl;
 }
-// === END OVERRIDES ===========================================================
 
 GameLogic *GameRenderer::mainGame = NULL;
