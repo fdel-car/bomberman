@@ -7,22 +7,21 @@ if [ ! -d "glfw-3.2.1" ]; then
     rm "glfw-3.2.1.zip"
 fi
 
+which python >> /dev/null || (echo "You need to have python installed first, you can use 'brew install python' for instance." || exit 0)
 pythonVersion="$(python -c 'import sys; print(".".join(map(str, sys.version_info[:2])))')"
-which -s python || (echo "You need to have python installed first, you can use 'brew install python' for instance." && exit)
 # pip install
-which -s pip
+which pip >> /dev/null
 if [ $? == 1 ]; then
     curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
     python get-pip.py --user
     rm get-pip.py
-    echo -e "\033[0;33mNow that pip is installed please note that you should add it to your path.\n\
-    So the commands pip and glad won't work for you as it, but that line: 'export PATH=~/Library/Python/${pythonVersion}/bin:\$PATH' in your .bashrc will do the trick.\033[0m"
+	echo -e "\033[0;33mIn order to finish the install script you need to add the path to the pip binary to your PATH env variable.\033[0m"
 fi
 
 # GLAD install
-which -s glad || (~/Library/Python/${pythonVersion}/bin/pip install glad --user)
+which glad >> /dev/null || pip install glad --user
 if [[ ! -d "srcs/glad" && ! -d "includes/glad" && ! -d "includes/KHR" ]]; then
-    ~/Library/Python/${pythonVersion}/bin/glad --api gl=4.1 --profile=core --generator=c --out-path=tmp-glad
+    glad --api gl=4.1 --profile=core --generator=c --out-path=tmp-glad
     mkdir srcs/glad && mv tmp-glad/src/glad.c srcs/glad/glad.cpp
     mv tmp-glad/include/KHR includes/ && mv tmp-glad/include/glad includes/
     rm -rf tmp-glad
@@ -43,7 +42,7 @@ if [ ! -d "includes/nuklear" ]; then
     curl https://raw.githubusercontent.com/vurtun/nuklear/master/nuklear.h -o includes/nuklear/nuklear.h
 fi
 
-which -s cmake || (echo "Without cmake installed on your computer you can't fully finish the installation. The command 'brew install cmake' can be pretty useful!" && exit)
+which cmake >> /dev/null || (echo "Without cmake installed on your computer you can't fully finish the installation. The command 'brew install cmake' can be pretty useful!" || exit 0)
 
 # SFML 2.5.1 audio install
 if [ ! -d "SFML-2.5.1" ]; then

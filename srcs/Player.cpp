@@ -1,8 +1,6 @@
 #include "Player.hpp"
 #include "GameLogic.hpp"
 
-Player::Player(void) {}
-
 Player::Player(GameLogic *gameLogic, std::vector<float> position, std::vector<float> rotation) : AEntity(gameLogic, position, rotation)
 {
 	name = "Player";
@@ -10,7 +8,7 @@ Player::Player(GameLogic *gameLogic, std::vector<float> position, std::vector<fl
 	_speed = 30.0f;
 }
 
-Player::Player(Player const &src) { *this = src; }
+Player::Player(Player const &src) : AEntity(src.gameLogic, src.position, src.rotation) { *this = src; }
 
 Player::~Player(void) {}
 

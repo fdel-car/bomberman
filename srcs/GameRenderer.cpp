@@ -86,71 +86,71 @@ void GameRenderer::initShaders(int type)
 {
 	// Shader pour les vertex
 	vertexShader =
-		"#version 400\n"
-		"in vec3 vp;"
-		"void main() {"
-		"  gl_Position = vec4(vp, 1.0);"
-		"}";
+			"#version 400\n"
+			"in vec3 vp;"
+			"void main() {"
+			"  gl_Position = vec4(vp, 1.0);"
+			"}";
 
 	if (type == WHITE_SHADER)
 	{
 		// Shader pour dessiner ce qu'il y a entre les vertex
 		fragmentShader =
-			"#version 400\n"
-			"out vec4 frag_colour;"
-			"void main() {"
-			"  frag_colour = vec4(1.0, 1.0, 1.0, 1.0);"
-			"}";
+				"#version 400\n"
+				"out vec4 frag_colour;"
+				"void main() {"
+				"  frag_colour = vec4(1.0, 1.0, 1.0, 1.0);"
+				"}";
 	}
 	else if (type == CYAN_SHADER)
 	{
 		// Shader pour dessiner ce qu'il y a entre les vertex
 		fragmentShader =
-			"#version 400\n"
-			"out vec4 frag_colour;"
-			"void main() {"
-			"  frag_colour = vec4(0.0, 0.9, 0.7, 1.0);"
-			"}";
+				"#version 400\n"
+				"out vec4 frag_colour;"
+				"void main() {"
+				"  frag_colour = vec4(0.0, 0.9, 0.7, 1.0);"
+				"}";
 	}
 	else if (type == RED_SHADER)
 	{
 		// Shader pour dessiner ce qu'il y a entre les vertex
 		fragmentShader =
-			"#version 400\n"
-			"out vec4 frag_colour;"
-			"void main() {"
-			"  frag_colour = vec4(1.0, 0.0, 0.0, 1.0);"
-			"}";
+				"#version 400\n"
+				"out vec4 frag_colour;"
+				"void main() {"
+				"  frag_colour = vec4(1.0, 0.0, 0.0, 1.0);"
+				"}";
 	}
 	else if (type == GREEN_SHADER)
 	{
 		// Shader pour dessiner ce qu'il y a entre les vertex
 		fragmentShader =
-			"#version 400\n"
-			"out vec4 frag_colour;"
-			"void main() {"
-			"  frag_colour = vec4(0.0, 0.9, 0.0, 1.0);"
-			"}";
+				"#version 400\n"
+				"out vec4 frag_colour;"
+				"void main() {"
+				"  frag_colour = vec4(0.0, 0.9, 0.0, 1.0);"
+				"}";
 	}
 	else if (type == YELLOW_SHADER)
 	{
 		// Shader pour dessiner ce qu'il y a entre les vertex
 		fragmentShader =
-			"#version 400\n"
-			"out vec4 frag_colour;"
-			"void main() {"
-			"  frag_colour = vec4(1.0, 1.0, 0.0, 1.0);"
-			"}";
+				"#version 400\n"
+				"out vec4 frag_colour;"
+				"void main() {"
+				"  frag_colour = vec4(1.0, 1.0, 0.0, 1.0);"
+				"}";
 	}
 	else if (type == GRAY_SHADER)
 	{
 		// Shader pour dessiner ce qu'il y a entre les vertex
 		fragmentShader =
-			"#version 400\n"
-			"out vec4 frag_colour;"
-			"void main() {"
-			"  frag_colour = vec4(185.0/255.0, 185.0/255.0, 146.0/255.0, 1.0);"
-			"}";
+				"#version 400\n"
+				"out vec4 frag_colour;"
+				"void main() {"
+				"  frag_colour = vec4(185.0/255.0, 185.0/255.0, 146.0/255.0, 1.0);"
+				"}";
 	}
 
 	vs = glCreateShader(GL_VERTEX_SHADER);
@@ -184,19 +184,19 @@ void GameRenderer::createBorder(void)
 	float epsilonY = 1 / (WINDOW_H / 2.0f);
 
 	float vertexBorders[] =
-		{
-			startX, startY + epsilonY, 0.0f,			   // top-left
-			-(startX) + epsilonX, startY + epsilonY, 0.0f, // top-right
+			{
+					startX, startY + epsilonY, 0.0f,							 // top-left
+					-(startX) + epsilonX, startY + epsilonY, 0.0f, // top-right
 
-			-(startX) + epsilonX, startY + epsilonY, 0.0f, // top-right
-			-(startX) + epsilonX, -(startY), 0.0f,		   // bottom-right
+					-(startX) + epsilonX, startY + epsilonY, 0.0f, // top-right
+					-(startX) + epsilonX, -(startY), 0.0f,				 // bottom-right
 
-			-(startX) + epsilonX, -(startY), 0.0f, // bottom-right
-			startX, -(startY), 0.0f,			   // bottom-left
+					-(startX) + epsilonX, -(startY), 0.0f, // bottom-right
+					startX, -(startY), 0.0f,							 // bottom-left
 
-			startX, -(startY), 0.0f,		// bottom-left
-			startX, startY + epsilonY, 0.0f // top-left
-		};
+					startX, -(startY), 0.0f,				// bottom-left
+					startX, startY + epsilonY, 0.0f // top-left
+			};
 	//BUFFER
 	vbo = 0;
 	glGenBuffers(1, &vbo);
@@ -368,6 +368,7 @@ void GameRenderer::errorCallback(int error, const char *description)
 
 void GameRenderer::keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods)
 {
+	std::cout << "Key pressed: " << key << std::endl;
 	if (action == GLFW_PRESS || action == GLFW_RELEASE)
 	{
 		switch (key)

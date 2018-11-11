@@ -6,8 +6,8 @@
 
 #define MAP_SIZE 40
 
-#define WINDOW_W 1100
-#define WINDOW_H 1200
+#define WINDOW_W 1280
+#define WINDOW_H 720
 #define WINDOW_MIN_X_OFFSET 50
 #define WINDOW_MIN_Y_OFFSET 100
 #define MIN_SQUARE_SIZE 10
@@ -28,7 +28,7 @@ class GameRenderer;
 
 class GameLogic
 {
-  private:
+private:
 	static std::map<std::string, bool> keyboardMap;
 
 	GameLogic(GameLogic const &src);
@@ -62,7 +62,7 @@ class GameLogic
 
 	std::vector<AEntity *> entities;
 
-  public:
+public:
 	GameLogic(void);
 	~GameLogic(void);
 
