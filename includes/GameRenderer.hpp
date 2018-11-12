@@ -15,14 +15,12 @@
 #define YELLOW_SHADER 5
 #define GRAY_SHADER 6
 
-class GameLogic;
+class GameEngine;
 class AEntity;
 
 class GameRenderer {
    public:
-	static GameLogic *mainGame;
-
-	GameRenderer(GameLogic *mainGame);
+	GameRenderer(GameEngine *gameEngine);
 	~GameRenderer(void);
 
 	void getUserInput(void);
@@ -49,8 +47,10 @@ class GameRenderer {
 	void drawPlayer(AEntity *playerPos);
 	void makeVAO(GLuint &vbo);
 
+	static GameEngine *_gameEngine;
+
 	// General vars
-	GLFWwindow *window;
+	GLFWwindow *_window;
 	int width = 0;
 	int height = 0;
 	int xOffset;

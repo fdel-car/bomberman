@@ -13,7 +13,7 @@ set(SRCS
   srcs/glad/glad.cpp
   srcs/AEntity.cpp
   srcs/AudioManager.cpp
-  srcs/GameLogic.cpp
+  srcs/GameEngine.cpp
   srcs/GameRenderer.cpp
   srcs/Player.cpp
   srcs/GUI/GUI.cpp
@@ -30,7 +30,7 @@ set(HEADERS
   includes/header.hpp
   includes/AEntity.hpp
   includes/AudioManager.hpp
-  includes/GameLogic.hpp
+  includes/GameEngine.hpp
   includes/GameRenderer.hpp
   includes/Player.hpp
   includes/GUI/GUI.hpp

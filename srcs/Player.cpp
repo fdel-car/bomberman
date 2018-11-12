@@ -1,16 +1,16 @@
 #include "Player.hpp"
-#include "GameLogic.hpp"
+#include "GameEngine.hpp"
 
-Player::Player(GameLogic *_gameLogic, std::vector<float> position,
+Player::Player(GameEngine *_gameEngine, std::vector<float> position,
 			   std::vector<float> rotation)
-	: AEntity(_gameLogic, position, rotation) {
+	: AEntity(_gameEngine, position, rotation) {
 	name = "Player";
 	tag = "Player";
 	_speed = 8.0f;
 }
 
 Player::Player(Player const &src)
-	: AEntity(src._gameLogic, src.position, src.rotation) {
+	: AEntity(src._gameEngine, src.position, src.rotation) {
 	*this = src;
 }
 
@@ -22,11 +22,11 @@ Player &Player::operator=(Player const &rhs) {
 }
 
 void Player::Update(void) {
-	double deltaTime = _gameLogic->getDeltaTime();
+	double deltaTime = _gameEngine->getDeltaTime();
 
 	// Update position based on keyboard
-	if (_gameLogic->isKeyPressed(KEY_A)) position[0] -= _speed * deltaTime;
-	if (_gameLogic->isKeyPressed(KEY_D)) position[0] += _speed * deltaTime;
-	if (_gameLogic->isKeyPressed(KEY_W)) position[2] -= _speed * deltaTime;
-	if (_gameLogic->isKeyPressed(KEY_S)) position[2] += _speed * deltaTime;
+	if (_gameEngine->isKeyPressed(KEY_A)) position[0] -= _speed * deltaTime;
+	if (_gameEngine->isKeyPressed(KEY_D)) position[0] += _speed * deltaTime;
+	if (_gameEngine->isKeyPressed(KEY_W)) position[2] -= _speed * deltaTime;
+	if (_gameEngine->isKeyPressed(KEY_S)) position[2] += _speed * deltaTime;
 }

@@ -4,7 +4,7 @@
 
 class Player : public AEntity {
    public:
-	Player(GameLogic *_gameLogic, std::vector<float> position,
+	Player(GameEngine *_gameEngine, std::vector<float> position,
 		   std::vector<float> rotation);
 	~Player(void);
 	Player(Player const &src);

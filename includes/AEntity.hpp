@@ -2,11 +2,11 @@
 
 #include "header.hpp"
 
-class GameLogic;
+class GameEngine;
 
 class AEntity {
    public:
-	AEntity(GameLogic *_gameLogic, std::vector<float> position,
+	AEntity(GameEngine *_gameEngine, std::vector<float> position,
 			std::vector<float> rotation);
 	virtual ~AEntity(void) {}
 
@@ -26,5 +26,5 @@ class AEntity {
    protected:
 	AEntity(void);
 
-	GameLogic *_gameLogic;
+	GameEngine *_gameEngine;
 };
