@@ -18,9 +18,8 @@
 class GameLogic;
 class AEntity;
 
-class GameRenderer
-{
-  public:
+class GameRenderer {
+   public:
 	static GameLogic *mainGame;
 
 	GameRenderer(GameLogic *mainGame);
@@ -32,9 +31,10 @@ class GameRenderer
 
 	bool active;
 
-  private:
+   private:
 	GameRenderer(void);
-	static void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods);
+	static void keyCallback(GLFWwindow *window, int key, int scancode,
+							int action, int mods);
 	static void errorCallback(int error, const char *description);
 
 	GameRenderer(GameRenderer const &src);

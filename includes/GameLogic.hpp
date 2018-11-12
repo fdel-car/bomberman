@@ -1,8 +1,8 @@
 #pragma once
 
-#include "header.hpp"
-#include "AudioManager.hpp"
 #include "AEntity.hpp"
+#include "AudioManager.hpp"
+#include "header.hpp"
 
 #define MAP_SIZE 40
 
@@ -26,9 +26,8 @@
 
 class GameRenderer;
 
-class GameLogic
-{
-private:
+class GameLogic {
+   private:
 	static std::map<std::string, bool> keyboardMap;
 
 	GameLogic(GameLogic const &src);
@@ -37,7 +36,8 @@ private:
 
 	void printUsage(void);
 	int renderGame(void);
-	void changeDirectionTo(int &playerDirection, int &playerDirectionRequested, int newDir);
+	void changeDirectionTo(int &playerDirection, int &playerDirectionRequested,
+						   int newDir);
 
 	// Graphic libraries vars
 	GameRenderer *graphicLib;
@@ -62,7 +62,7 @@ private:
 
 	std::vector<AEntity *> entities;
 
-public:
+   public:
 	GameLogic(void);
 	~GameLogic(void);
 

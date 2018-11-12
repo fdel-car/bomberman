@@ -4,10 +4,10 @@
 
 class GameLogic;
 
-class AEntity
-{
-public:
-	AEntity(GameLogic *gameLogic, std::vector<float> position, std::vector<float> rotation);
+class AEntity {
+   public:
+	AEntity(GameLogic *gameLogic, std::vector<float> position,
+			std::vector<float> rotation);
 	virtual ~AEntity(void) {}
 
 	virtual void Update(void) = 0;
@@ -23,7 +23,7 @@ public:
 	// Collider *collider;
 	// bool isTrigger;
 
-protected:
+   protected:
 	AEntity(void);
 
 	GameLogic *gameLogic;

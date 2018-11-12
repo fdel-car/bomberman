@@ -41,3 +41,4 @@ srcs/glad/*
 includes/nuklear/*
 SFML-2.5.1/*
 sfml-build/*
+.vscode/
