@@ -4,7 +4,6 @@
 
 GameRenderer::GameRenderer(GameLogic *_mainGame) {
 	this->mainGame = _mainGame;
-	// std::cout << "GLFW window" << std::endl;
 	glfwSetErrorCallback(errorCallback);
 	if (!glfwInit()) throw new std::runtime_error("Failed to initialize GLFW");
 	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
@@ -14,7 +13,6 @@ GameRenderer::GameRenderer(GameLogic *_mainGame) {
 #ifdef __APPLE__
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
-	// glfwSetInputMode(window, GLFW_STICKY_KEYS, 1);
 	this->window = glfwCreateWindow(WINDOW_W, WINDOW_H, "Bomberman", NULL,
 									NULL);  // Size of screen will change
 	if (!this->window) {
@@ -27,10 +25,9 @@ GameRenderer::GameRenderer(GameLogic *_mainGame) {
 	glfwMakeContextCurrent(this->window);
 	glfwGetWindowSize(window, &width, &height);
 	glfwSetWindowUserPointer(window, this);
-	// glViewport(0, 0, WINDOW_W, WINDOW_H);
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 		throw new std::runtime_error("Failed to initialize GLAD");
-
+	glViewport(0, 0, WINDOW_W, WINDOW_H);
 	glfwSetKeyCallback(window, keyCallback);
 	glfwPollEvents();
 
@@ -47,7 +44,7 @@ GameRenderer::GameRenderer(GameLogic *_mainGame) {
 	squarePercentX = (-startX) / (_mainGame->getMapW() / 2.0f);
 
 	// Nuklear init
-	graphicUI = new GUI(window);
+	// graphicUI = new GUI(window);
 }
 
 GameRenderer::GameRenderer(void) {}
@@ -197,11 +194,11 @@ void GameRenderer::createBorder(void) {
 				 GL_STATIC_DRAW);
 	makeVAO(vbo);
 
-	initShaders(1);
+	initShaders(WHITE_SHADER);
 	initProgram();
 	glUseProgram(shaderProgram);
 	glBindVertexArray(vao);
-	// drawing all the vertex of the triangle
+	// Drawing all the vertex of the triangle
 	glDrawArrays(GL_LINE_LOOP, 0, 8);
 }
 
@@ -257,11 +254,11 @@ void GameRenderer::createGrid(void) {
 				 GL_STATIC_DRAW);
 	makeVAO(vbo);
 
-	initShaders(1);
+	initShaders(WHITE_SHADER);
 	initProgram();
 	glUseProgram(shaderProgram);
 	glBindVertexArray(vao);
-	// drawing all the vertex of the triangle
+	// Drawing all the vertex of the triangle
 	glDrawArrays(GL_LINES, 0, pointsCount);
 }
 
@@ -331,19 +328,18 @@ void GameRenderer::refreshWindow(void) {
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	createBorder();
-	drawPlayer(mainGame->getFirstEntityWithName("Player"));
+	// createBorder();
+	// drawPlayer(mainGame->getFirstEntityWithName("Player"));
 
 	// createGrid();
 
-	graphicUI->drawGUI();
+	// graphicUI->drawGUI();
 
-	// put everything to screen
+	// Put everything to screen
 	glfwSwapBuffers(this->window);
 }
 
 void GameRenderer::closeWindow() {
-	// std::cout << "Destroing Glfw window" << std::endl;
 	if (window) glfwDestroyWindow(this->window);
 	glfwTerminate();
 }

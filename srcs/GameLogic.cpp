@@ -88,7 +88,7 @@ int GameLogic::run(void) {
 	if (!canRun) return EXIT_FAILURE;
 	int guiRet;
 
-	// init vars
+	// Init vars
 	running = true;
 	restartRequest = false;
 	_lastFrameTs = Clock::now();
@@ -132,7 +132,7 @@ int GameLogic::run(void) {
 
 void GameLogic::buttonStateChanged(std::string buttonName, bool isPressed) {
 	if (keyboardMap.find(buttonName) == keyboardMap.end()) {
-		std::runtime_error("Unkown Mapping for '" + buttonName + "' !");
+		std::runtime_error("Unkown Mapping for '" + buttonName + "'!");
 	}
 	keyboardMap[buttonName] = isPressed;
 }
