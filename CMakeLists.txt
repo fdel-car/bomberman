@@ -12,9 +12,11 @@ set(SRCS
   srcs/main.cpp
   srcs/glad/glad.cpp
   srcs/AEntity.cpp
+  srcs/AGameScene.cpp
   srcs/AudioManager.cpp
   srcs/GameLogic.cpp
   srcs/GameRenderer.cpp
+  srcs/LevelOne.cpp
   srcs/Player.cpp
   srcs/GUI/GUI.cpp
 )
@@ -29,9 +31,11 @@ set(HEADERS
   includes/nuklear_glfw_gl3.h
   includes/header.hpp
   includes/AEntity.hpp
+  includes/AGameScene.hpp
   includes/AudioManager.hpp
   includes/GameLogic.hpp
   includes/GameRenderer.hpp
+  includes/LevelOne.hpp
   includes/Player.hpp
   includes/GUI/GUI.hpp
 )
