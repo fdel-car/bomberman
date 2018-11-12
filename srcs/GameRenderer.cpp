@@ -324,7 +324,7 @@ void GameRenderer::drawPlayer(Entity *player) {
 	glDrawArrays(GL_TRIANGLE_FAN, 0, nbrOfVertices);
 }
 
-void GameRenderer::drawWall(Entity *wall) {
+void GameRenderer::drawSquare(Entity *wall) {
 	float startCoordX = startX + (wall->getPosition()[0] * squarePercentX);
 	float startCoordY = startY - (wall->getPosition()[2] * squarePercentY);
 
@@ -374,10 +374,10 @@ int GameRenderer::refreshWindow(std::vector<Entity *> &entities) {
 
 	for (const auto entity : entities) {
 		// Just a temporary if, waiting to have a way to handle .obj
-		if (entity->getCollider().shape == Collider::Circle)
+		if (entity->getCollider()->shape == Collider::Circle)
 			drawPlayer(entity);
 		else
-			drawWall(entity);
+			drawSquare(entity);
 	}
 	// createGrid();
 	glfwSetWindowTitle(

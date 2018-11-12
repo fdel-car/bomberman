@@ -3,8 +3,8 @@
 
 Player::Player(std::vector<float> position, std::vector<float> rotation)
 	: Entity(position, rotation,
-			 Collider(Collider::Circle, 1,
-					  1)) {  // TODO: put collider width/height back to 0.5
+			 new Collider(Collider::Circle, 1,
+						  1)) {  // TODO: put collider width/height back to 0.5
 	_name = "Player";
 	_tag = "Player";
 	_speed = 8.0f;
@@ -12,8 +12,8 @@ Player::Player(std::vector<float> position, std::vector<float> rotation)
 
 Player::Player(Player const &src)
 	: Entity(src.getPosition(), src.getRotation(),
-			 Collider(Collider::Circle, 1,
-					  1)) {  // TODO: put collider width/height back to 0.5
+			 new Collider(Collider::Circle, 1,
+						  1)) {  // TODO: put collider width/height back to 0.5
 	*this = src;
 }
 

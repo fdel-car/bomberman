@@ -21,7 +21,6 @@ set(SRCS
   srcs/Model.cpp
   srcs/LevelOne.cpp
   srcs/Player.cpp
-  srcs/Wall.cpp
   srcs/GUI/GUI.cpp
 )
 
@@ -44,7 +43,6 @@ set(HEADERS
   includes/Model.hpp
   includes/LevelOne.hpp
   includes/Player.hpp
-  includes/Wall.hpp
   includes/GUI/GUI.hpp
 )
 

@@ -1,6 +1,6 @@
 #include "LevelOne.hpp"
+#include "Collider.hpp"
 #include "Player.hpp"
-#include "Wall.hpp"
 
 LevelOne::LevelOne(void) : AGameScene() {
 	// TODO: Center of map should be 0,0,0
@@ -11,9 +11,10 @@ LevelOne::LevelOne(void) : AGameScene() {
 	std::vector<float> rot(4, 0);
 	startEntities.push_back(new Player(pos, rot));
 
-	pos[0] = 4;
-	pos[2] = 2;
-	startEntities.push_back(new Wall(pos));
+	pos[0] = 10;
+	pos[2] = 10;
+	startEntities.push_back(
+		new Entity(pos, rot, new Collider(Collider::Rectangle, 0.5, 0.5)));
 	// for (int i = 0; i < MAP_SIZE; i++) {
 	// 	// Up side
 	// 	pos[0] = i;

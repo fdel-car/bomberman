@@ -49,7 +49,7 @@ class GameRenderer {
 	void createGrid(void);
 	void drawGUI(void);
 	void drawPlayer(Entity *player);
-	void drawWall(Entity *wall);
+	void drawSquare(Entity *wall);
 	void makeVAO(GLuint &vbo);
 
 	static GameEngine *_gameEngine;

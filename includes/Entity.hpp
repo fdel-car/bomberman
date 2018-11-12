@@ -8,14 +8,14 @@ class GameEngine;
 class Entity {
    public:
 	Entity(std::vector<float> position, std::vector<float> rotation,
-		   Collider collider);
-	virtual ~Entity(void) {}
+		   Collider *collider);
+	virtual ~Entity(void);
 
 	virtual void Update(void);
 	GameEngine *getGameEngine(void) const;
 	const std::vector<float> &getPosition(void) const;
 	const std::vector<float> &getRotation(void) const;
-	const Collider &getCollider(void) const;
+	const Collider *getCollider(void) const;
 	void setGameEngine(GameEngine *gameEngine);
 
 	// Model *model;
@@ -27,7 +27,7 @@ class Entity {
 	std::vector<float> _position;
 	std::vector<float> _rotation;
 
-	Collider _collider;
+	Collider *_collider;
 
 	std::string _name;
 	std::string _tag;
