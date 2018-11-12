@@ -1,11 +1,11 @@
 #include "GameLogic.hpp"
 #include "GameRenderer.hpp"
 
-#include "Player.hpp"  // TODO: this should be done by a "game initializer" and not by the game engine!
+GameLogic::GameLogic() : _gameScenes(std::vector<AGameScene *>()) {}
 
-GameLogic::GameLogic() {
+GameLogic::GameLogic(std::vector<AGameScene *> gameScenes)
+	: _gameScenes(gameScenes) {
 	canRun = false;
-	hasShownDeath = false;
 	running = false;
 
 	// Map size parsing
@@ -22,24 +22,16 @@ GameLogic::GameLogic() {
 	// Create audio manager
 	audioManager = new AudioManager();
 
-	// TODO: this should be done by a "game initializer" and not by the game
-	// engine!
-	std::vector<float> pos(3, 0);
-	pos[0] = mapW / 2;
-	pos[2] = mapW / 2;
-	std::vector<float> rot(4, 0);
-	entities.push_back(new Player(this, pos, rot));
+	// Force load of first scene
+	_sceneIdx = 0;
 
 	// Everything good
 	canRun = true;
 }
 
-GameLogic::GameLogic(GameLogic const &src) { *this = src; }
+GameLogic::GameLogic(GameLogic const &src) : GameLogic() { *this = src; }
 
 GameLogic::~GameLogic(void) {
-	for (auto entity : entities) {
-		delete entity;
-	}
 	delete (audioManager);
 	delete (graphicLib);
 }
@@ -56,7 +48,7 @@ int GameLogic::getMapH(void) { return mapH; }
 
 AEntity *GameLogic::getFirstEntityWithName(std::string entityName) {
 	AEntity *foundElem = nullptr;
-	for (auto entity : entities) {
+	for (auto entity : _activeEntities) {
 		if (entity->name.compare(entityName) == 0) {
 			foundElem = entity;
 			break;
@@ -70,15 +62,22 @@ GameLogic &GameLogic::operator=(GameLogic const &rhs) {
 	return *this;
 }
 
-void GameLogic::printUsage(void) {
-	std::cerr << "Usage: ./bomberman" << std::endl;
+bool GameLogic::initScene(int newSceneIdx) {
+	if (newSceneIdx < 0 || newSceneIdx >= static_cast<int>(_gameScenes.size()))
+		return false;
+	_sceneIdx = newSceneIdx;
+	_activeEntities.clear();
+	for (auto entity : _gameScenes[newSceneIdx]->startEntities) {
+		_activeEntities.push_back(entity);
+		_activeEntities.back()->setGameLogic(this);
+	}
+	return true;
 }
 
 int GameLogic::renderGame(void) {
 	// Draw window with game infos
-	if (graphicLib && !hasShownDeath) {
+	if (graphicLib) {
 		graphicLib->refreshWindow();
-		if (!isPlayerAlive) hasShownDeath = true;
 	}
 
 	return EXIT_SUCCESS;
@@ -93,6 +92,8 @@ int GameLogic::run(void) {
 	restartRequest = false;
 	_lastFrameTs = Clock::now();
 
+	if (!initScene(_sceneIdx)) std::runtime_error("Cannot load scene !");
+
 	audioManager->playStartSound();
 
 	// Start game loop
@@ -102,7 +103,7 @@ int GameLogic::run(void) {
 		_deltaTime = (std::chrono::duration_cast<std::chrono::milliseconds>(
 						  _frameTs - _lastFrameTs)
 						  .count()) /
-					 1000.0;
+					 (double)1000.0;
 		_lastFrameTs = _frameTs;
 
 		// Update inputs
@@ -114,7 +115,7 @@ int GameLogic::run(void) {
 		}
 
 		// Update game entities states
-		for (auto entity : entities) {
+		for (auto entity : _activeEntities) {
 			entity->Update();
 		}
 

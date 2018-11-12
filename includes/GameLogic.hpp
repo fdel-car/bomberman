@@ -1,6 +1,7 @@
 #pragma once
 
 #include "AEntity.hpp"
+#include "AGameScene.hpp"
 #include "AudioManager.hpp"
 #include "header.hpp"
 
@@ -32,14 +33,13 @@ class GameLogic {
    private:
 	static std::map<std::string, bool> keyboardMap;
 
+	GameLogic(void);
 	GameLogic(GameLogic const &src);
 
 	GameLogic &operator=(GameLogic const &rhs);
 
-	void printUsage(void);
+	bool initScene(int newSceneIdx);
 	int renderGame(void);
-	void changeDirectionTo(int &playerDirection, int &playerDirectionRequested,
-						   int newDir);
 
 	// Graphic libraries vars
 	GameRenderer *graphicLib;
@@ -55,17 +55,16 @@ class GameLogic {
 	bool running;
 	int mapH;
 	int mapW;
-	bool isPlayerAlive;
-	bool hasShownDeath;
-	int playerDirection;
-	int playerDirectionRequested;
 	bool restartRequest;
 	std::tuple<int, int> playerPos;
 
-	std::vector<AEntity *> entities;
+	// Scene management vars
+	int _sceneIdx;
+	std::vector<AGameScene *> _gameScenes;
+	std::vector<AEntity *> _activeEntities;
 
    public:
-	GameLogic(void);
+	GameLogic(std::vector<AGameScene *> gameScenes);
 	~GameLogic(void);
 
 	int run();

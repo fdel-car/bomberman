@@ -4,8 +4,7 @@
 
 class Player : public AEntity {
    public:
-	Player(GameLogic *_gameLogic, std::vector<float> position,
-		   std::vector<float> rotation);
+	Player(std::vector<float> position, std::vector<float> rotation);
 	~Player(void);
 	Player(Player const &src);
 	Player &operator=(Player const &rhs);
