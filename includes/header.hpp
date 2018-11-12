@@ -4,6 +4,7 @@
 #include <math.h>
 #include <time.h>
 #include <chrono>
+#include <fstream>
 #include <iostream>
 #include <list>
 #include <map>
@@ -25,3 +26,5 @@ std::string toString(const T& val) {
 	oss << val;
 	return oss.str();
 }
+
+const char* getFileContent(std::string const& filename);

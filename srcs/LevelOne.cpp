@@ -6,7 +6,7 @@ LevelOne::LevelOne(void) : AGameScene() {
 	// float blockHalfSize = 0.5f;
 	// for (int i = 0; i < 30; i++) {
 	// 	// Up side
-	// 	AEntity *newMapElem = new Player();
+	// 	Entity *newMapElem = new Player();
 	// }
 	// mapEntities.push_back
 

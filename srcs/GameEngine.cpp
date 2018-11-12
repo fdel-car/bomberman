@@ -46,16 +46,16 @@ int GameEngine::getMapW(void) { return mapW; }
 
 int GameEngine::getMapH(void) { return mapH; }
 
-AEntity *GameEngine::getFirstEntityWithName(std::string entityName) {
-	AEntity *foundElem = nullptr;
-	for (auto entity : _activeEntities) {
-		if (entity->name.compare(entityName) == 0) {
-			foundElem = entity;
-			break;
-		}
-	}
-	return foundElem;
-}
+// Entity *GameEngine::getFirstEntityWithName(std::string entityName) {
+// 	Entity *foundElem = nullptr;
+// 	for (auto entity : _activeEntities) {
+// 		if (entity->getName().compare(entityName) == 0) {
+// 			foundElem = entity;
+// 			break;
+// 		}
+// 	}
+// 	return foundElem;
+// }
 
 GameEngine &GameEngine::operator=(GameEngine const &rhs) {
 	this->canRun = rhs.canRun;

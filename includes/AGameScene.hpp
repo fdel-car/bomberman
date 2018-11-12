@@ -1,7 +1,7 @@
 #ifndef AGAMESCENE_HPP
 #define AGAMESCENE_HPP
 
-#include "AEntity.hpp"
+#include "Entity.hpp"
 #include "header.hpp"
 
 class AGameScene {
@@ -14,7 +14,7 @@ class AGameScene {
 
 	virtual std::string getSceneName(void) = 0;
 
-	std::vector<AEntity *> startEntities;
+	std::vector<Entity *> startEntities;
 };
 
 #endif

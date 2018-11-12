@@ -1,6 +1,6 @@
 #include "AGameScene.hpp"
 
-AGameScene::AGameScene(void) : startEntities(std::vector<AEntity *>()) {}
+AGameScene::AGameScene(void) : startEntities(std::vector<Entity *>()) {}
 
 AGameScene::AGameScene(AGameScene const &src) { *this = src; }
 
