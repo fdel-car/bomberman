@@ -24,6 +24,8 @@
 #define KEY_DOWN "DOWN"
 #define KEY_ESCAPE "ESCAPE"
 
+typedef std::chrono::high_resolution_clock Clock;
+
 class GameRenderer;
 
 class GameLogic {
@@ -44,8 +46,9 @@ class GameLogic {
 	int squareSize;
 	int xOffset;
 	int yOffset;
-	clock_t timer;
-	double pastFrameLength;
+	Clock::time_point _frameTs;
+	Clock::time_point _lastFrameTs;
+	double _deltaTime;
 	AudioManager *audioManager;
 
 	// Game model vars
@@ -58,7 +61,6 @@ class GameLogic {
 	int playerDirectionRequested;
 	bool restartRequest;
 	std::tuple<int, int> playerPos;
-	std::chrono::high_resolution_clock::time_point creationPreciseTime;
 
 	std::vector<AEntity *> entities;
 

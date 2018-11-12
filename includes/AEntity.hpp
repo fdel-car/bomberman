@@ -6,7 +6,7 @@ class GameLogic;
 
 class AEntity {
    public:
-	AEntity(GameLogic *gameLogic, std::vector<float> position,
+	AEntity(GameLogic *_gameLogic, std::vector<float> position,
 			std::vector<float> rotation);
 	virtual ~AEntity(void) {}
 
@@ -16,7 +16,7 @@ class AEntity {
 	std::vector<float> rotation;
 
 	std::string name;
-	std::string label;
+	std::string tag;
 	// Model *model;
 	// Texture *texture;
 	// Animation *anim;
@@ -26,5 +26,5 @@ class AEntity {
    protected:
 	AEntity(void);
 
-	GameLogic *gameLogic;
+	GameLogic *_gameLogic;
 };

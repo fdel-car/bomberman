@@ -354,7 +354,6 @@ void GameRenderer::errorCallback(int error, const char *description) {
 
 void GameRenderer::keyCallback(GLFWwindow *window, int key, int scancode,
 							   int action, int mods) {
-	std::cout << "Key pressed: " << key << std::endl;
 	if (action == GLFW_PRESS || action == GLFW_RELEASE) {
 		switch (key) {
 			case GLFW_KEY_UNKNOWN:

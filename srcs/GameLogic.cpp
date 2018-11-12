@@ -91,16 +91,19 @@ int GameLogic::run(void) {
 	// init vars
 	running = true;
 	restartRequest = false;
-	timer = clock();
+	_lastFrameTs = Clock::now();
 
 	audioManager->playStartSound();
 
 	// Start game loop
 	while (running) {
 		// Get delta time in order to synch entities positions
-		pastFrameLength = static_cast<float>(clock()) / CLOCKS_PER_SEC -
-						  static_cast<float>(timer) / CLOCKS_PER_SEC;
-		timer = clock();
+		_frameTs = Clock::now();
+		_deltaTime = (std::chrono::duration_cast<std::chrono::milliseconds>(
+						  _frameTs - _lastFrameTs)
+						  .count()) /
+					 1000.0;
+		_lastFrameTs = _frameTs;
 
 		// Update inputs
 		graphicLib->getUserInput();
@@ -138,7 +141,7 @@ bool GameLogic::isKeyPressed(std::string keyName) {
 	return keyboardMap[keyName];
 }
 
-double GameLogic::getDeltaTime(void) { return pastFrameLength; }
+double GameLogic::getDeltaTime(void) { return _deltaTime; }
 
 static std::map<std::string, bool>
 generateKeyboardMap() {  // static here is "internal linkage"
