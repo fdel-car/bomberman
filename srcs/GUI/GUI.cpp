@@ -9,9 +9,7 @@
 
 #include "GUI/GUI.hpp"
 
-GUI::GUI() {
-	return ;
-}
+GUI::GUI(void) {}
 
 static void
 device_upload_atlas(struct device *dev, const void *image, int width, int height)
@@ -32,12 +30,12 @@ GUI::GUI(GLFWwindow *window) : _win(window) {
 	// struct nk_font_atlas atlas;
 	glfwSetWindowUserPointer(_win, &_ctx);
 	struct nk_font_atlas _atlas;
-	{
-		std::cout << "1" << std::endl;
+	// {
+	// 	std::cout << "1" << std::endl;
 		_deviceInit(&_device);
-		std::cout << "2" << std::endl;
-		{
-			// std::cout << "1" << std::endl;
+	// 	std::cout << "2" << std::endl;
+	// 	{
+	// 		// std::cout << "1" << std::endl;
 			const void *image;
 			int w = 0;
 			int h = 0;
@@ -53,12 +51,12 @@ GUI::GUI(GLFWwindow *window) : _win(window) {
 		    image = nk_font_atlas_bake(&_atlas, &w, &h, NK_FONT_ATLAS_RGBA32);
 		    device_upload_atlas(&_device, image, w, h);
 		    nk_font_atlas_end(&_atlas, nk_handle_id((int)_device.font_tex), &_device.null);
-			// std::cout << "2" << std::endl;
-		}
-	// 	// std::cout << "3" << std::endl;
-	    nk_init_default(&_ctx, &_media.font_14->handle);
-	// 	// std::cout << "4" << std::endl;
-	}
+	// 		// std::cout << "2" << std::endl;
+	// 	}
+	// // 	// std::cout << "3" << std::endl;
+	    // std::cout << nk_init_default(&_ctx, &_media.font_14->handle) << " un ours" << std::endl;
+	// // 	// std::cout << "4" << std::endl;
+	// }
 	std::cout << "5" << std::endl;
 	/*
 	** V2 end

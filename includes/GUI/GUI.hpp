@@ -97,7 +97,7 @@ private:
     // struct nk_font_atlas _atlas;
     struct media _media;
     struct nk_context _ctx;
-	struct nk_font_atlas *_atlas;
+	// struct nk_font_atlas *_atlas;
 
 	/*
 	** V1 start

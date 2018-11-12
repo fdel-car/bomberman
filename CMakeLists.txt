@@ -11,12 +11,16 @@ include_directories(scrs)
 set(SRCS
   srcs/main.cpp
   srcs/glad/glad.cpp
-  srcs/AEntity.cpp
+  srcs/Entity.cpp
+  srcs/AGameScene.cpp
   srcs/AudioManager.cpp
-  srcs/GameLogic.cpp
+  srcs/Collider.cpp
+  srcs/GameEngine.cpp
   srcs/GameRenderer.cpp
+  srcs/ShaderProgram.cpp
+  srcs/Model.cpp
+  srcs/LevelOne.cpp
   srcs/Player.cpp
-
   srcs/GUI/GUI.cpp
 )
 
@@ -25,19 +29,22 @@ set(HEADERS
   includes/glad/glad.h
   includes/KHR/khrplatform.h
   includes/nuklear/nuklear.h
+  includes/glm/glm.hpp
+  includes/glm/gtc/matrix_transform.hpp
   includes/nuklear_glfw_gl3.h
   includes/header.hpp
-  includes/AEntity.hpp
+  includes/Entity.hpp
+  includes/AGameScene.hpp
   includes/AudioManager.hpp
-  includes/GameLogic.hpp
+  includes/Collider.hpp
+  includes/GameEngine.hpp
   includes/GameRenderer.hpp
+  includes/ShaderProgram.hpp
+  includes/Model.hpp
+  includes/LevelOne.hpp
   includes/Player.hpp
-
   includes/GUI/GUI.hpp
 )
-
-set(SFML_DIR "${CMAKE_SOURCE_DIR}/SFML-2.5.1/build")
-find_package(SFML 2.5.1 COMPONENTS audio REQUIRED)
 
 add_executable(super_bomberman ${SRCS} ${HEADERS})
 
@@ -50,5 +57,8 @@ else()
 endif()
 
 target_compile_features(super_bomberman PRIVATE cxx_std_11)
+
+set(SFML_DIR "${CMAKE_SOURCE_DIR}/SFML-2.5.1/build")
+find_package(SFML 2.5.1 COMPONENTS audio REQUIRED)
 
 target_link_libraries(super_bomberman glfw sfml-audio)

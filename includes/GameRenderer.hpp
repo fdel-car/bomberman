@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Collider.hpp"
 #include "header.hpp"
 
 #define MAX_VERTEX_BUFFER 512 * 1024
@@ -15,41 +16,46 @@
 #define YELLOW_SHADER 5
 #define GRAY_SHADER 6
 
-class GameLogic;
+class GameEngine;
 
-class GameRenderer
-{
-  public:
-	static GameLogic *mainGame;
+class Entity;
 
-	GameRenderer(GameLogic *mainGame);
+class GameRenderer {
+   public:
+	GameRenderer(GameEngine *gameEngine);
 	~GameRenderer(void);
 
 	void getUserInput(void);
-	void refreshWindow(void);
+	int refreshWindow(std::vector<Entity *> &entities);
 	void closeWindow(void);
 
 	bool active;
 
-  private:
+   private:
 	GameRenderer(void);
-	static void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods);
+	static void keyCallback(GLFWwindow *window, int key, int scancode,
+							int action, int mods);
 	static void errorCallback(int error, const char *description);
 
 	GameRenderer(GameRenderer const &src);
 
 	GameRenderer &operator=(GameRenderer const &rhs);
 
-	void initShaders(int type);
+	void _initShaders(int type);
+	void _initScene(void);
 	void initProgram(void);
+	// void drawGUI(void);
 	void createBorder(void);
 	void createGrid(void);
 	void drawGUI(void);
-	void drawPlayer(std::tuple<int, int> &playerPos);
+	void drawPlayer(Entity *player);
+	void drawSquare(Entity *wall);
 	void makeVAO(GLuint &vbo);
 
+	static GameEngine *_gameEngine;
+
 	// General vars
-	GLFWwindow *window;
+	GLFWwindow *_window;
 	int width = 0;
 	int height = 0;
 	int xOffset;
@@ -64,6 +70,8 @@ class GameRenderer
 	GUI *graphicUI;
 
 	// Rendering vars
+	GLuint _shaderProgram;
+	std::list<unsigned int> _models;
 	GLuint vbo;
 	GLuint vao;
 	const char *vertexShader;

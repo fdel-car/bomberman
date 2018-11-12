@@ -2,9 +2,8 @@
 
 #include <SFML/Audio.hpp>
 
-class AudioManager
-{
-  private:
+class AudioManager {
+   private:
 	AudioManager(AudioManager const &src);
 
 	AudioManager &operator=(AudioManager const &rhs);
@@ -14,7 +13,7 @@ class AudioManager
 	sf::SoundBuffer deathBuffer;
 	sf::Sound sound;
 
-  public:
+   public:
 	AudioManager(void);
 	~AudioManager(void);
 
