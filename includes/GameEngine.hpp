@@ -29,14 +29,14 @@ typedef std::chrono::high_resolution_clock Clock;
 
 class GameRenderer;
 
-class GameLogic {
+class GameEngine {
    private:
 	static std::map<std::string, bool> keyboardMap;
 
-	GameLogic(void);
-	GameLogic(GameLogic const &src);
+	GameEngine(void);
+	GameEngine(GameEngine const &src);
 
-	GameLogic &operator=(GameLogic const &rhs);
+	GameEngine &operator=(GameEngine const &rhs);
 
 	bool initScene(int newSceneIdx);
 	int renderGame(void);
@@ -64,8 +64,8 @@ class GameLogic {
 	std::vector<AEntity *> _activeEntities;
 
    public:
-	GameLogic(std::vector<AGameScene *> gameScenes);
-	~GameLogic(void);
+	GameEngine(std::vector<AGameScene *> gameScenes);
+	~GameEngine(void);
 
 	int run();
 

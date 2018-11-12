@@ -1,4 +1,4 @@
-#include "GameLogic.hpp"
+#include "GameEngine.hpp"
 #include "LevelOne.hpp"
 
 int main(void) {
@@ -8,8 +8,8 @@ int main(void) {
 		srand(time(NULL));
 		std::vector<AGameScene *> gameScenes = std::vector<AGameScene *>();
 		gameScenes.push_back(new LevelOne());
-		GameLogic mainGame(gameScenes);
-		ret = mainGame.run();
+		GameEngine gameEngine(gameScenes);
+		ret = gameEngine.run();
 
 		for (auto scene : gameScenes) {
 			delete scene;

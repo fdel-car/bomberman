@@ -1,9 +1,9 @@
-#include "GameLogic.hpp"
+#include "GameEngine.hpp"
 #include "GameRenderer.hpp"
 
-GameLogic::GameLogic() : _gameScenes(std::vector<AGameScene *>()) {}
+GameEngine::GameEngine() : _gameScenes(std::vector<AGameScene *>()) {}
 
-GameLogic::GameLogic(std::vector<AGameScene *> gameScenes)
+GameEngine::GameEngine(std::vector<AGameScene *> gameScenes)
 	: _gameScenes(gameScenes) {
 	canRun = false;
 	running = false;
@@ -29,24 +29,24 @@ GameLogic::GameLogic(std::vector<AGameScene *> gameScenes)
 	canRun = true;
 }
 
-GameLogic::GameLogic(GameLogic const &src) : GameLogic() { *this = src; }
+GameEngine::GameEngine(GameEngine const &src) { *this = src; }
 
-GameLogic::~GameLogic(void) {
+GameEngine::~GameEngine(void) {
 	delete (audioManager);
 	delete (graphicLib);
 }
 
-int GameLogic::getSquareSize(void) { return squareSize; }
+int GameEngine::getSquareSize(void) { return squareSize; }
 
-int GameLogic::getXOffset(void) { return xOffset; }
+int GameEngine::getXOffset(void) { return xOffset; }
 
-int GameLogic::getYOffset(void) { return yOffset; }
+int GameEngine::getYOffset(void) { return yOffset; }
 
-int GameLogic::getMapW(void) { return mapW; }
+int GameEngine::getMapW(void) { return mapW; }
 
-int GameLogic::getMapH(void) { return mapH; }
+int GameEngine::getMapH(void) { return mapH; }
 
-AEntity *GameLogic::getFirstEntityWithName(std::string entityName) {
+AEntity *GameEngine::getFirstEntityWithName(std::string entityName) {
 	AEntity *foundElem = nullptr;
 	for (auto entity : _activeEntities) {
 		if (entity->name.compare(entityName) == 0) {
@@ -57,24 +57,24 @@ AEntity *GameLogic::getFirstEntityWithName(std::string entityName) {
 	return foundElem;
 }
 
-GameLogic &GameLogic::operator=(GameLogic const &rhs) {
+GameEngine &GameEngine::operator=(GameEngine const &rhs) {
 	this->canRun = rhs.canRun;
 	return *this;
 }
 
-bool GameLogic::initScene(int newSceneIdx) {
+bool GameEngine::initScene(int newSceneIdx) {
 	if (newSceneIdx < 0 || newSceneIdx >= static_cast<int>(_gameScenes.size()))
 		return false;
 	_sceneIdx = newSceneIdx;
 	_activeEntities.clear();
 	for (auto entity : _gameScenes[newSceneIdx]->startEntities) {
 		_activeEntities.push_back(entity);
-		_activeEntities.back()->setGameLogic(this);
+		_activeEntities.back()->setGameEngine(this);
 	}
 	return true;
 }
 
-int GameLogic::renderGame(void) {
+int GameEngine::renderGame(void) {
 	// Draw window with game infos
 	if (graphicLib) {
 		graphicLib->refreshWindow();
@@ -83,7 +83,7 @@ int GameLogic::renderGame(void) {
 	return EXIT_SUCCESS;
 }
 
-int GameLogic::run(void) {
+int GameEngine::run(void) {
 	if (!canRun) return EXIT_FAILURE;
 	int guiRet;
 
@@ -131,18 +131,18 @@ int GameLogic::run(void) {
 	return guiRet;
 }
 
-void GameLogic::buttonStateChanged(std::string buttonName, bool isPressed) {
+void GameEngine::buttonStateChanged(std::string buttonName, bool isPressed) {
 	if (keyboardMap.find(buttonName) == keyboardMap.end()) {
 		std::runtime_error("Unkown Mapping for '" + buttonName + "'!");
 	}
 	keyboardMap[buttonName] = isPressed;
 }
 
-bool GameLogic::isKeyPressed(std::string keyName) {
+bool GameEngine::isKeyPressed(std::string keyName) {
 	return keyboardMap[keyName];
 }
 
-double GameLogic::getDeltaTime(void) { return _deltaTime; }
+double GameEngine::getDeltaTime(void) { return _deltaTime; }
 
 static std::map<std::string, bool>
 generateKeyboardMap() {  // static here is "internal linkage"
@@ -270,4 +270,4 @@ generateKeyboardMap() {  // static here is "internal linkage"
 	map["MENU"] = false;
 	return map;
 }
-std::map<std::string, bool> GameLogic::keyboardMap = generateKeyboardMap();
+std::map<std::string, bool> GameEngine::keyboardMap = generateKeyboardMap();

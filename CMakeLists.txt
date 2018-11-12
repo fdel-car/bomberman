@@ -14,7 +14,7 @@ set(SRCS
   srcs/AEntity.cpp
   srcs/AGameScene.cpp
   srcs/AudioManager.cpp
-  srcs/GameLogic.cpp
+  srcs/GameEngine.cpp
   srcs/GameRenderer.cpp
   srcs/LevelOne.cpp
   srcs/Player.cpp
@@ -33,7 +33,7 @@ set(HEADERS
   includes/AEntity.hpp
   includes/AGameScene.hpp
   includes/AudioManager.hpp
-  includes/GameLogic.hpp
+  includes/GameEngine.hpp
   includes/GameRenderer.hpp
   includes/LevelOne.hpp
   includes/Player.hpp
