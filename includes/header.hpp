@@ -12,7 +12,8 @@
 #include <tuple>
 #include <vector>
 
-#include <GLFW/glfw3.h>
 #include <glad/glad.h>
+// The formatter is dumb, keep this line!
+#include <GLFW/glfw3.h>
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
