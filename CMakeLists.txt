@@ -14,10 +14,12 @@ set(SRCS
   srcs/AEntity.cpp
   srcs/AGameScene.cpp
   srcs/AudioManager.cpp
+  srcs/Collider.cpp
   srcs/GameEngine.cpp
   srcs/GameRenderer.cpp
   srcs/LevelOne.cpp
   srcs/Player.cpp
+  srcs/Wall.cpp
   srcs/GUI/GUI.cpp
 )
 
@@ -33,10 +35,12 @@ set(HEADERS
   includes/AEntity.hpp
   includes/AGameScene.hpp
   includes/AudioManager.hpp
+  includes/Collider.hpp
   includes/GameEngine.hpp
   includes/GameRenderer.hpp
   includes/LevelOne.hpp
   includes/Player.hpp
+  includes/Wall.hpp
   includes/GUI/GUI.hpp
 )
 

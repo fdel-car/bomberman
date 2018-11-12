@@ -268,18 +268,14 @@ void GameRenderer::drawPlayer(AEntity *player) {
 	// int iPosY = static_cast<int>(player->position[2]);
 	// std::cout << iPosX << " " << iPosY << std::endl;
 
-	float startCoordX =
-		startX + (player->position[0] *
-				  squarePercentX);  // + player->position[0] - iPosX;
-	float startCoordY =
-		startY - (player->position[2] *
-				  squarePercentY);  // + player->position[2] - iPosY;
+	float startCoordX = startX + (player->position[0] * squarePercentX);
+	float startCoordY = startY - (player->position[2] * squarePercentY);
 
 	float xCenter = startCoordX + (squarePercentX / 2);
 	float yCenter = startCoordY - (squarePercentY / 2);
 	int nbrOfSide = 120;
-	float radiusX = squarePercentX / 2;
-	float radiusY = squarePercentY / 2;
+	float radiusX = squarePercentX / 1;  // TODO: put back to 2
+	float radiusY = squarePercentY / 1;  // TODO: put back to 2
 
 	GLint nbrOfVertices = nbrOfSide + 2;
 
@@ -312,7 +308,7 @@ void GameRenderer::drawPlayer(AEntity *player) {
 	glGenBuffers(1, &vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(allCircleVertices), allCircleVertices,
-				 GL_STATIC_DRAW);
+				 GL_DYNAMIC_DRAW);
 	makeVAO(vbo);
 
 	initShaders(GREEN_SHADER);
@@ -322,22 +318,69 @@ void GameRenderer::drawPlayer(AEntity *player) {
 	glDrawArrays(GL_TRIANGLE_FAN, 0, nbrOfVertices);
 }
 
+void GameRenderer::drawWall(AEntity *wall) {
+	float startCoordX = startX + (wall->position[0] * squarePercentX);
+	float startCoordY = startY - (wall->position[2] * squarePercentY);
+
+	// POINTS
+	float points[] = {startCoordX,
+					  startCoordY,
+					  0.0f,
+					  startCoordX,
+					  startCoordY - squarePercentY,
+					  0.0f,
+					  startCoordX + squarePercentX,
+					  startCoordY,
+					  0.0f,
+
+					  startCoordX + squarePercentX,
+					  startCoordY,
+					  0.0f,
+					  startCoordX + squarePercentX,
+					  startCoordY - squarePercentY,
+					  0.0f,
+					  startCoordX,
+					  startCoordY - squarePercentY,
+					  0.0f};
+
+	// BUFFER
+	vbo = 0;
+	glGenBuffers(1, &vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(points), points, GL_STATIC_DRAW);
+	makeVAO(vbo);
+
+	initShaders(CYAN_SHADER);
+	initProgram();
+	glUseProgram(shaderProgram);
+	glBindVertexArray(vao);
+	// drawing all the vertex of the triangle
+	glDrawArrays(GL_TRIANGLES, 0, 6);
+}
+
 void GameRenderer::getUserInput(void) { glfwPollEvents(); }
 
-void GameRenderer::refreshWindow(void) {
+int GameRenderer::refreshWindow(std::vector<AEntity *> &entities) {
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	// createBorder();
-	// drawPlayer(_gameEngine->getFirstEntityWithName("Player"));
-	// createGrid();
+	createBorder();
+	for (const auto entity : entities) {
+		// Just a temporary if, waiting to have a way to handle .obj
+		if (entity->name.compare("Player") == 0)
+			drawPlayer(entity);
+		else
+			drawWall(entity);
+	}
+	createGrid();
 	// graphicUI->drawGUI();
-	// glfwSetWindowTitle(_window,
-	// 				   toString(static_cast<int>(1 /
-	// _gameEngine->getDeltaTime())).c_str());
+	glfwSetWindowTitle(
+		_window,
+		toString(static_cast<int>(1 / _gameEngine->getDeltaTime())).c_str());
 
 	// Put everything to screen
 	glfwSwapBuffers(_window);
+	return EXIT_SUCCESS;
 }
 
 void GameRenderer::closeWindow() {

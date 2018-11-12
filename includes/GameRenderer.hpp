@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Collider.hpp"
 #include "header.hpp"
 
 #define MAX_VERTEX_BUFFER 512 * 1024
@@ -24,7 +25,7 @@ class GameRenderer {
 	~GameRenderer(void);
 
 	void getUserInput(void);
-	void refreshWindow(void);
+	int refreshWindow(std::vector<AEntity *> &entities);
 	void closeWindow(void);
 
 	bool active;
@@ -44,7 +45,8 @@ class GameRenderer {
 	void createBorder(void);
 	void createGrid(void);
 	void drawGUI(void);
-	void drawPlayer(AEntity *playerPos);
+	void drawPlayer(AEntity *player);
+	void drawWall(AEntity *wall);
 	void makeVAO(GLuint &vbo);
 
 	static GameEngine *_gameEngine;

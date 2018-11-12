@@ -2,13 +2,18 @@
 #include "GameEngine.hpp"
 
 Player::Player(std::vector<float> position, std::vector<float> rotation)
-	: AEntity(position, rotation) {
+	: AEntity(position, rotation,
+			  Collider(Collider::Circle, 1,
+					   1)) {  // TODO: put collider width/height back to 0.5
 	name = "Player";
 	tag = "Player";
 	_speed = 8.0f;
 }
 
-Player::Player(Player const &src) : AEntity(src.position, src.rotation) {
+Player::Player(Player const &src)
+	: AEntity(src.position, src.rotation,
+			  Collider(Collider::Circle, 1,
+					   1)) {  // TODO: put collider width/height back to 0.5
 	*this = src;
 }
 

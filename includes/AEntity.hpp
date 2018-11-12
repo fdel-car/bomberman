@@ -1,12 +1,14 @@
 #pragma once
 
+#include "Collider.hpp"
 #include "header.hpp"
 
 class GameEngine;
 
 class AEntity {
    public:
-	AEntity(std::vector<float> position, std::vector<float> rotation);
+	AEntity(std::vector<float> position, std::vector<float> rotation,
+			Collider collider);
 	virtual ~AEntity(void) {}
 
 	virtual void Update(void) = 0;
@@ -21,7 +23,7 @@ class AEntity {
 	// Model *model;
 	// Texture *texture;
 	// Animation *anim;
-	// Collider *collider;
+	Collider collider;
 	// bool isTrigger;
 
    protected:

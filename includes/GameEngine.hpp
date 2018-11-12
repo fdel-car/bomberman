@@ -3,6 +3,7 @@
 #include "AEntity.hpp"
 #include "AGameScene.hpp"
 #include "AudioManager.hpp"
+#include "Collider.hpp"
 #include "header.hpp"
 
 #define MAP_SIZE 40
@@ -39,7 +40,9 @@ class GameEngine {
 	GameEngine &operator=(GameEngine const &rhs);
 
 	bool initScene(int newSceneIdx);
-	int renderGame(void);
+	void checkCollisions(void);
+	bool doCollide(AEntity *entityA, AEntity *entityB);
+	bool collisionCircleRectangle(AEntity *circleEntity, AEntity *rectEntity);
 
 	// Graphic libraries vars
 	GameRenderer *graphicLib;
