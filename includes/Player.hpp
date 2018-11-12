@@ -1,10 +1,10 @@
 #pragma once
 
-#include "AEntity.hpp"
+#include "Entity.hpp"
 
-class Player : public AEntity {
+class Player : public Entity {
    public:
-	Player(GameEngine *_gameEngine, std::vector<float> position,
+	Player(GameEngine *gameEngine, std::vector<float> position,
 		   std::vector<float> rotation);
 	~Player(void);
 	Player(Player const &src);

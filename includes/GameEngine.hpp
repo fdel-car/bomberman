@@ -1,7 +1,7 @@
 #pragma once
 
-#include "AEntity.hpp"
 #include "AudioManager.hpp"
+#include "Entity.hpp"
 #include "header.hpp"
 
 #define MAP_SIZE 40
@@ -60,9 +60,9 @@ class GameEngine {
 	int playerDirection;
 	int playerDirectionRequested;
 	bool restartRequest;
-	std::tuple<int, int> playerPos;
+	// std::tuple<int, int> playerPos;
 
-	std::vector<AEntity *> entities;
+	std::vector<Entity *> entities;
 
    public:
 	GameEngine(void);
@@ -76,10 +76,10 @@ class GameEngine {
 	int getYOffset(void);
 	int getMapW(void);
 	int getMapH(void);
-	AEntity *getFirstEntityWithName(std::string entityName);
-	// std::vector<AEntity *> getEntitiesWithName(std::string entityName);
-	// AEntity *getFirstEntityWithLabel(std::string entityLabel);
-	// std::vector<AEntity *> getEntitiesWithLabel(std::string entityLabel);
+	Entity *getFirstEntityWithName(std::string entityName);
+	// std::vector<Entity *> getEntitiesWithName(std::string entityName);
+	// Entity *getFirstEntityWithLabel(std::string entityLabel);
+	// std::vector<Entity *> getEntitiesWithLabel(std::string entityLabel);
 	void buttonStateChanged(std::string button, bool isPressed);
 
 	// Functions needed by entities

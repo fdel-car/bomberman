@@ -16,7 +16,8 @@
 #define GRAY_SHADER 6
 
 class GameEngine;
-class AEntity;
+
+class Entity;
 
 class GameRenderer {
    public:
@@ -39,13 +40,14 @@ class GameRenderer {
 
 	GameRenderer &operator=(GameRenderer const &rhs);
 
-	void initShaders(int type);
+	void _initShaders(int type);
+	void _initScene(void);
 	void initProgram(void);
+	// void drawGUI(void);
 	void createBorder(void);
 	void createGrid(void);
-	void drawGUI(void);
-	void drawPlayer(AEntity *playerPos);
 	void makeVAO(GLuint &vbo);
+	void drawPlayer(Entity *player);
 
 	static GameEngine *_gameEngine;
 
@@ -65,6 +67,8 @@ class GameRenderer {
 	GUI *graphicUI;
 
 	// Rendering vars
+	GLuint _shaderProgram;
+	std::list<unsigned int> _models;
 	GLuint vbo;
 	GLuint vao;
 	const char *vertexShader;

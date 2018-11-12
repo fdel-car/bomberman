@@ -1,6 +1,8 @@
 #include "GameRenderer.hpp"
-#include "AEntity.hpp"
+#include "Entity.hpp"
 #include "GameEngine.hpp"
+#include "Model.hpp"
+#include "ShaderProgram.hpp"
 
 GameRenderer::GameRenderer(GameEngine *gameEngine) {
 	_gameEngine = gameEngine;
@@ -29,8 +31,6 @@ GameRenderer::GameRenderer(GameEngine *gameEngine) {
 		throw new std::runtime_error("Failed to initialize GLAD");
 	glViewport(0, 0, WINDOW_W, WINDOW_H);
 	glfwSetKeyCallback(_window, keyCallback);
-	glfwPollEvents();
-
 	squareSize = _gameEngine->getSquareSize();
 	xOffset = _gameEngine->getXOffset();
 	yOffset = _gameEngine->getYOffset();
@@ -45,6 +45,9 @@ GameRenderer::GameRenderer(GameEngine *gameEngine) {
 
 	// Nuklear init
 	// graphicUI = new GUI(window);
+
+	// _initShaders();
+	_initScene();
 }
 
 GameRenderer::GameRenderer(void) {}
@@ -70,7 +73,10 @@ void GameRenderer::makeVAO(GLuint &vbo) {
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
 }
 
-void GameRenderer::initShaders(int type) {
+void GameRenderer::_initShaders(int type) {
+	ShaderProgram simple("assets/shaders/simple.vs",
+						 "assets/shaders/simple.fs");
+	_shaderProgram = simple.getProgram();
 	// Shader pour les vertex
 	vertexShader =
 		"#version 400\n"
@@ -153,6 +159,10 @@ void GameRenderer::initProgram(void) {
 	glLinkProgram(shaderProgram);
 }
 
+void GameRenderer::_initScene(void) {
+	_models.push_back(Model("Test").getVAO());
+}
+
 void GameRenderer::createBorder(void) {
 	float epsilonX = 1 / (WINDOW_W / 2.0f);
 	float epsilonY = 1 / (WINDOW_H / 2.0f);
@@ -194,7 +204,7 @@ void GameRenderer::createBorder(void) {
 				 GL_STATIC_DRAW);
 	makeVAO(vbo);
 
-	initShaders(WHITE_SHADER);
+	_initShaders(WHITE_SHADER);
 	initProgram();
 	glUseProgram(shaderProgram);
 	glBindVertexArray(vao);
@@ -254,7 +264,7 @@ void GameRenderer::createGrid(void) {
 				 GL_STATIC_DRAW);
 	makeVAO(vbo);
 
-	initShaders(WHITE_SHADER);
+	_initShaders(WHITE_SHADER);
 	initProgram();
 	glUseProgram(shaderProgram);
 	glBindVertexArray(vao);
@@ -262,18 +272,10 @@ void GameRenderer::createGrid(void) {
 	glDrawArrays(GL_LINES, 0, pointsCount);
 }
 
-void GameRenderer::drawPlayer(AEntity *player) {
+void GameRenderer::drawPlayer(Entity *player) {
 	if (player == nullptr) return;
-	// int iPosX = static_cast<int>(player->position[0]);
-	// int iPosY = static_cast<int>(player->position[2]);
-	// std::cout << iPosX << " " << iPosY << std::endl;
-
-	float startCoordX =
-		startX + (player->position[0] *
-				  squarePercentX);  // + player->position[0] - iPosX;
-	float startCoordY =
-		startY - (player->position[2] *
-				  squarePercentY);  // + player->position[2] - iPosY;
+	float startCoordX = startX + (player->getPosition()[0] * squarePercentX);
+	float startCoordY = startY - (player->getPosition()[2] * squarePercentY);
 
 	float xCenter = startCoordX + (squarePercentX / 2);
 	float yCenter = startCoordY - (squarePercentY / 2);
@@ -315,7 +317,7 @@ void GameRenderer::drawPlayer(AEntity *player) {
 				 GL_STATIC_DRAW);
 	makeVAO(vbo);
 
-	initShaders(GREEN_SHADER);
+	_initShaders(GREEN_SHADER);
 	initProgram();
 	glUseProgram(shaderProgram);
 	glBindVertexArray(vao);
@@ -328,13 +330,21 @@ void GameRenderer::refreshWindow(void) {
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	// createBorder();
+	createBorder();
 	// drawPlayer(_gameEngine->getFirstEntityWithName("Player"));
-	// createGrid();
+	createGrid();
+
 	// graphicUI->drawGUI();
+
 	// glfwSetWindowTitle(_window,
 	// 				   toString(static_cast<int>(1 /
 	// _gameEngine->getDeltaTime())).c_str());
+
+	// glUseProgram(_shaderProgram);
+	// glBindVertexArray(_VAO);
+	// glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	// glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+	// glBindVertexArray(0);
 
 	// Put everything to screen
 	glfwSwapBuffers(_window);
