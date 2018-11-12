@@ -9,10 +9,11 @@
 
 #include "GUI/GUI.hpp"
 
+#define UNUSED(a) (void)a
+
 GUI::GUI(void) {}
 
-static void
-device_upload_atlas(struct device *dev, const void *image, int width, int height)
+static void device_upload_atlas(struct device *dev, const void *image, int width, int height)
 {
     glGenTextures(1, &dev->font_tex);
     glBindTexture(GL_TEXTURE_2D, dev->font_tex);
@@ -21,6 +22,10 @@ device_upload_atlas(struct device *dev, const void *image, int width, int height
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, (GLsizei)width, (GLsizei)height, 0,
                 GL_RGBA, GL_UNSIGNED_BYTE, image);
 }
+static void text_input(GLFWwindow *win, unsigned int codepoint)
+{nk_input_unicode((struct nk_context*)glfwGetWindowUserPointer(win), codepoint);}
+static void scroll_input(GLFWwindow *win, double _, double yoff)
+{UNUSED(_);nk_input_scroll((struct nk_context*)glfwGetWindowUserPointer(win), nk_vec2(0, (float)yoff));}
 
 GUI::GUI(GLFWwindow *window) : _win(window) {
 	/*
@@ -28,7 +33,18 @@ GUI::GUI(GLFWwindow *window) : _win(window) {
 	*/
 	// std::cout << "" << std::endl;
 	// struct nk_font_atlas atlas;
+	// struct device _device;
+    // // struct nk_font_atlas _atlas;
+    // struct media _media;
+    // struct nk_context _ctx;
+	int width = 0, height = 0;
+    int display_width=0, display_height=0;
 	glfwSetWindowUserPointer(_win, &_ctx);
+    glfwSetCharCallback(_win, text_input);
+    glfwSetScrollCallback(_win, scroll_input);
+    glfwGetWindowSize(_win, &width, &height);
+    glfwGetFramebufferSize(_win, &display_width, &display_height);
+	// &_ctx = nk_glfw3_init(win, &_ctx)
 	struct nk_font_atlas _atlas;
 	// {
 	// 	std::cout << "1" << std::endl;
@@ -54,7 +70,7 @@ GUI::GUI(GLFWwindow *window) : _win(window) {
 	// 		// std::cout << "2" << std::endl;
 	// 	}
 	// // 	// std::cout << "3" << std::endl;
-	    // std::cout << nk_init_default(&_ctx, &_media.font_14->handle) << " un ours" << std::endl;
+	   nk_init_default(&_ctx, &_media.font_14->handle);
 	// // 	// std::cout << "4" << std::endl;
 	// }
 	std::cout << "5" << std::endl;

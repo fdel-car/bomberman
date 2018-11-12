@@ -8,8 +8,6 @@
 
 #define MAP_SIZE 40
 
-#define WINDOW_W 1280
-#define WINDOW_H 720
 #define WINDOW_MIN_X_OFFSET 50
 #define WINDOW_MIN_Y_OFFSET 100
 #define MIN_SQUARE_SIZE 10

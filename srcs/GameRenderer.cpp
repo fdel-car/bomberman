@@ -26,7 +26,7 @@ GameRenderer::GameRenderer(GameEngine *gameEngine) {
 					 (mode->height / 2) - (WINDOW_H / 2));
 	glfwMakeContextCurrent(_window);
 	glfwGetWindowSize(_window, &width, &height);
-	glfwSetWindowUserPointer(_window, this);
+	// glfwSetWindowUserPointer(_window, this);
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 		throw new std::runtime_error("Failed to initialize GLAD");
 	glViewport(0, 0, WINDOW_W, WINDOW_H);

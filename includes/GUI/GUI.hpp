@@ -14,23 +14,6 @@
 #include "nuklear/nuklear.h"
 #include "stb/stb_image.h"
 
-// static struct nk_glfw
-// {
-//     GLFWwindow *win;
-//     int width, height;
-//     int display_width, display_height;
-//     struct nk_glfw_device ogl;
-//     struct nk_context ctx;
-//     struct nk_font_atlas atlas;
-//     struct nk_vec2 fb_scale;
-//     unsigned int text[NK_GLFW_TEXT_MAX];
-//     int text_len;
-//     struct nk_vec2 scroll;
-//     double last_button_click;
-//     int is_double_click_down;
-//     struct nk_vec2 double_click_pos;
-// } glfw;
-
 struct media {
     struct nk_font *font_14;
     struct nk_font *font_18;
@@ -93,10 +76,10 @@ private:
 	void _deviceInit(struct device *dev);
 
 	GLFWwindow * _win;
-	struct device _device;
-    // struct nk_font_atlas _atlas;
-    struct media _media;
-    struct nk_context _ctx;
+	// struct device _device;
+    // // struct nk_font_atlas _atlas;
+    // struct media _media;
+    // struct nk_context _ctx;
 	// struct nk_font_atlas *_atlas;
 
 	/*

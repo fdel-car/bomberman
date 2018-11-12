@@ -3,9 +3,6 @@
 #include "Collider.hpp"
 #include "header.hpp"
 
-#define MAX_VERTEX_BUFFER 512 * 1024
-#define MAX_ELEMENT_BUFFER 128 * 1024
-
 #include "GUI/GUI.hpp"
 
 // Custom Defines
