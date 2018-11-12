@@ -9,6 +9,7 @@ int main(void)
         /* initialize random seed: */
         srand(time(NULL));
         GameLogic mainGame;
+		// std::cout << "test" << std::endl;
         ret = mainGame.run();
     }
     catch (...)

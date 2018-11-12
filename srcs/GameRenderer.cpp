@@ -27,6 +27,7 @@ GameRenderer::GameRenderer(GameLogic *_mainGame)
 	glfwMakeContextCurrent(this->window);
 	glfwGetWindowSize(window, &width, &height);
 	glfwSetWindowUserPointer(window, this);
+	// graphicUI = new GUI(window);
 	// glViewport(0, 0, WINDOW_W, WINDOW_H);
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 		throw new std::runtime_error("Failed to initialize GLAD");
@@ -46,8 +47,8 @@ GameRenderer::GameRenderer(GameLogic *_mainGame)
 	squarePercentY = startY / (_mainGame->getMapH() / 2.0f);
 	squarePercentX = (-startX) / (_mainGame->getMapW() / 2.0f);
 
-	// Nuklear init
 	graphicUI = new GUI(window);
+	// std::cout << "6" << std::endl;
 
 	return;
 }
@@ -65,8 +66,11 @@ GameRenderer::GameRenderer(GameRenderer const &src)
 
 GameRenderer::~GameRenderer(void)
 {
+	std::cout << "toto" << std::endl;
 	delete graphicUI;
+	std::cout << "toto1" << std::endl;
 	closeWindow();
+	std::cout << "toto2" << std::endl;
 	return;
 }
 
@@ -168,7 +172,7 @@ void GameRenderer::initShaders(int type)
 	GLint status;
 	glGetShaderiv(vs, GL_COMPILE_STATUS, &status);
 	if (status != GL_TRUE)
-		std::cout << "Vertex Shader compile failed" << std::endl;
+		// std::cout << "Vertex Shader compile failed" << std::endl;
 	glGetShaderiv(fs, GL_COMPILE_STATUS, &status);
 	if (status != GL_TRUE)
 		std::cout << "Fragment Shader compile failed" << std::endl;
@@ -337,16 +341,19 @@ void GameRenderer::getUserInput(void)
 
 void GameRenderer::refreshWindow(void)
 {
+	// std::cout << "7" << std::endl;
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	// std::cout << "8" << std::endl;
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+	// std::cout << "9" << std::endl;
 	createBorder();
+	// std::cout << "10" << std::endl;
 	drawPlayer(mainGame->getPlayerPos());
-
+	// std::cout << "11" << std::endl;
 	createGrid();
-
+	// std::cout << "12" << std::endl;
 	graphicUI->drawGUI();
-
+	// std::cout << "13" << std::endl;
 	//put everything to screen
 	glfwSwapBuffers(this->window);
 }
@@ -852,8 +859,10 @@ void GameRenderer::keyCallback(GLFWwindow *window, int key, int scancode, int ac
 void GameRenderer::closeWindow()
 {
 	// std::cout << "Destroing Glfw window" << std::endl;
+	std::cout << "toto pas content" << std::endl;
 	if (window)
 		glfwDestroyWindow(this->window);
+	std::cout << "toto pas content2" << std::endl;
 	glfwTerminate();
 }
 

@@ -18,20 +18,25 @@ GameLogic::GameLogic()
 	yOffset = (WINDOW_H - squareSize * mapH) / 2;
 
 	// Create interface class
+	// std::cout << "ALLER1" << std::endl;
 	graphicLib = new GameRenderer(this);
+	// std::cout << "ALLER2" << std::endl;
 	if (!graphicLib)
 	{
 		std::cerr << "GameRenderer couldn't load !" << std::endl;
 		return;
 	}
-
 	// Create audio manager
+	// std::cout << "ALLER3" << std::endl;
 	audioManager = new AudioManager();
+
+	// std::cout << "ALLER4" << std::endl;
 	if (!audioManager)
 	{
 		std::cerr << "AudioManager couldn't load !" << std::endl;
 		return;
 	}
+	// std::cout << "ALLER5" << std::endl;
 
 	// TODO: this should be done by a "game initializer" and not by the game engine!
 	entities.push_back(new Player());
@@ -112,7 +117,7 @@ void GameLogic::changeLibraryRequest(std::string keyCode)
 {
 	int requestedIndex = std::stoi(keyCode);
 
-	// std::cout << "Change index of library to: " << requestedIndex << std::endl;
+	std::cout << "Change index of library to: " << requestedIndex << std::endl;
 	if (requestedIndex >= 0 && requestedIndex <= 0)
 	{
 		dlIndex = requestedIndex;
@@ -228,6 +233,7 @@ void GameLogic::changeDirectionTo(int &playerDirection, int &playerDirectionRequ
 
 int GameLogic::run(void)
 {
+	// std::cout << "COUCOU1" << std::endl;
 	if (!canRun)
 		return EXIT_FAILURE;
 	int guiRet;
@@ -251,6 +257,7 @@ int GameLogic::run(void)
 		timer = time(NULL);
 
 		// Update inputs
+		// std::cout << "COUCOU2" << std::endl;
 		graphicLib->getUserInput();
 
 		// TODO: Update game engine statuses (ex. when to quit)
@@ -275,7 +282,7 @@ int GameLogic::run(void)
 	}
 	if (restartRequest)
 	{
-		std::cout << "Starting new game!" << std::endl;
+		// std::cout << "Starting new game!" << std::endl;
 		return run();
 	}
 	return guiRet;
