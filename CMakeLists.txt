@@ -11,12 +11,14 @@ include_directories(scrs)
 set(SRCS
   srcs/main.cpp
   srcs/glad/glad.cpp
-  srcs/AEntity.cpp
+  srcs/Entity.cpp
   srcs/AGameScene.cpp
   srcs/AudioManager.cpp
   srcs/Collider.cpp
   srcs/GameEngine.cpp
   srcs/GameRenderer.cpp
+  srcs/ShaderProgram.cpp
+  srcs/Model.cpp
   srcs/LevelOne.cpp
   srcs/Player.cpp
   srcs/Wall.cpp
@@ -32,12 +34,14 @@ set(HEADERS
   includes/glm/gtc/matrix_transform.hpp
   includes/nuklear_glfw_gl3.h
   includes/header.hpp
-  includes/AEntity.hpp
+  includes/Entity.hpp
   includes/AGameScene.hpp
   includes/AudioManager.hpp
   includes/Collider.hpp
   includes/GameEngine.hpp
   includes/GameRenderer.hpp
+  includes/ShaderProgram.hpp
+  includes/Model.hpp
   includes/LevelOne.hpp
   includes/Player.hpp
   includes/Wall.hpp

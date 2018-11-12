@@ -1,8 +1,8 @@
 #pragma once
 
-#include "AEntity.hpp"
+#include "Entity.hpp"
 
-class Wall : public AEntity {
+class Wall : public Entity {
    public:
 	Wall(std::vector<float> position);
 	~Wall(void);

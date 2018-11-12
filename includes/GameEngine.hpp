@@ -1,9 +1,9 @@
 #pragma once
 
-#include "AEntity.hpp"
 #include "AGameScene.hpp"
 #include "AudioManager.hpp"
 #include "Collider.hpp"
+#include "Entity.hpp"
 #include "header.hpp"
 
 #define MAP_SIZE 40
@@ -41,8 +41,8 @@ class GameEngine {
 
 	bool initScene(int newSceneIdx);
 	void checkCollisions(void);
-	bool doCollide(AEntity *entityA, AEntity *entityB);
-	bool collisionCircleRectangle(AEntity *circleEntity, AEntity *rectEntity);
+	bool doCollide(Entity *entityA, Entity *entityB);
+	bool collisionCircleRectangle(Entity *circleEntity, Entity *rectEntity);
 
 	// Graphic libraries vars
 	GameRenderer *graphicLib;
@@ -59,12 +59,12 @@ class GameEngine {
 	int mapH;
 	int mapW;
 	bool restartRequest;
-	std::tuple<int, int> playerPos;
+	// std::tuple<int, int> playerPos;
 
 	// Scene management vars
 	int _sceneIdx;
 	std::vector<AGameScene *> _gameScenes;
-	std::vector<AEntity *> _activeEntities;
+	std::vector<Entity *> _activeEntities;
 
    public:
 	GameEngine(std::vector<AGameScene *> gameScenes);
@@ -78,10 +78,10 @@ class GameEngine {
 	int getYOffset(void);
 	int getMapW(void);
 	int getMapH(void);
-	AEntity *getFirstEntityWithName(std::string entityName);
-	// std::vector<AEntity *> getEntitiesWithName(std::string entityName);
-	// AEntity *getFirstEntityWithLabel(std::string entityLabel);
-	// std::vector<AEntity *> getEntitiesWithLabel(std::string entityLabel);
+	Entity *getFirstEntityWithName(std::string entityName);
+	// std::vector<Entity *> getEntitiesWithName(std::string entityName);
+	// Entity *getFirstEntityWithLabel(std::string entityLabel);
+	// std::vector<Entity *> getEntitiesWithLabel(std::string entityLabel);
 	void buttonStateChanged(std::string button, bool isPressed);
 
 	// Functions needed by entities

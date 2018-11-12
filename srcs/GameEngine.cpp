@@ -46,16 +46,16 @@ int GameEngine::getMapW(void) { return mapW; }
 
 int GameEngine::getMapH(void) { return mapH; }
 
-AEntity *GameEngine::getFirstEntityWithName(std::string entityName) {
-	AEntity *foundElem = nullptr;
-	for (auto entity : _activeEntities) {
-		if (entity->name.compare(entityName) == 0) {
-			foundElem = entity;
-			break;
-		}
-	}
-	return foundElem;
-}
+// Entity *GameEngine::getFirstEntityWithName(std::string entityName) {
+// 	Entity *foundElem = nullptr;
+// 	for (auto entity : _activeEntities) {
+// 		if (entity->getName().compare(entityName) == 0) {
+// 			foundElem = entity;
+// 			break;
+// 		}
+// 	}
+// 	return foundElem;
+// }
 
 GameEngine &GameEngine::operator=(GameEngine const &rhs) {
 	this->canRun = rhs.canRun;
@@ -85,58 +85,67 @@ void GameEngine::checkCollisions(void) {
 	}
 }
 
-bool GameEngine::doCollide(AEntity *entityA, AEntity *entityB) {
-	float aXCenter = entityA->position[0];
-	float aYCenter = entityA->position[0];
-	float bXCenter = entityB->position[2];
-	float bYCenter = entityB->position[2];
-	if (entityA->collider.shape == entityB->collider.shape) {
+bool GameEngine::doCollide(Entity *entityA, Entity *entityB) {
+	float aXCenter = entityA->getPosition()[0];
+	float aYCenter = entityA->getPosition()[0];
+	float bXCenter = entityB->getPosition()[2];
+	float bYCenter = entityB->getPosition()[2];
+	if (entityA->getCollider().shape == entityB->getCollider().shape) {
 		// Circle with circle
-		if (entityA->collider.shape == Collider::Circle) {
+		if (entityA->getCollider().shape == Collider::Circle) {
 			float distance =
 				sqrt(pow(aXCenter - bXCenter, 2) + pow(aYCenter - bYCenter, 2));
-			return (distance <=
-					entityA->collider.width + entityA->collider.width);
+			return (distance <= entityA->getCollider().width +
+									entityA->getCollider().width);
 		}
 		// Rectangle with rectangle
-		else if (entityA->collider.shape == Collider::Rectangle) {
-			return (abs(aXCenter - bXCenter) <=
-						entityA->collider.width + entityA->collider.width &&
-					abs(aYCenter - bYCenter) <=
-						entityA->collider.height + entityA->collider.height);
+		else if (entityA->getCollider().shape == Collider::Rectangle) {
+			return (
+				abs(aXCenter - bXCenter) <= entityA->getCollider().width +
+												entityA->getCollider().width &&
+				abs(aYCenter - bYCenter) <= entityA->getCollider().height +
+												entityA->getCollider().height);
 		}
 	}
 	// Circle with rectangle
-	else if (entityA->collider.shape == Collider::Circle &&
-			 entityB->collider.shape == Collider::Rectangle) {
+	else if (entityA->getCollider().shape == Collider::Circle &&
+			 entityB->getCollider().shape == Collider::Rectangle) {
 		return collisionCircleRectangle(entityA, entityB);
 	}
 	// Rectangle with circle
-	else if (entityB->collider.shape == Collider::Circle &&
-			 entityA->collider.shape == Collider::Rectangle) {
+	else if (entityB->getCollider().shape == Collider::Circle &&
+			 entityA->getCollider().shape == Collider::Rectangle) {
 		return collisionCircleRectangle(entityB, entityA);
 	}
 	return false;
 }
 
-bool GameEngine::collisionCircleRectangle(AEntity *circleEntity,
-										  AEntity *rectEntity) {
-	float closestX = circleEntity->position[0];
-	float closestY = circleEntity->position[2];
+bool GameEngine::collisionCircleRectangle(Entity *circleEntity,
+										  Entity *rectEntity) {
+	float closestX = circleEntity->getPosition()[0];
+	float closestY = circleEntity->getPosition()[2];
 	// Find closest X of rectangle shape to circle center
-	if (closestX > rectEntity->position[0] + rectEntity->collider.width)
-		closestX = rectEntity->position[0] + rectEntity->collider.width;
-	else if (closestX < rectEntity->position[0] - rectEntity->collider.width)
-		closestX = rectEntity->position[0] - rectEntity->collider.width;
+	if (closestX >
+		rectEntity->getPosition()[0] + rectEntity->getCollider().width)
+		closestX =
+			rectEntity->getPosition()[0] + rectEntity->getCollider().width;
+	else if (closestX <
+			 rectEntity->getPosition()[0] - rectEntity->getCollider().width)
+		closestX =
+			rectEntity->getPosition()[0] - rectEntity->getCollider().width;
 	// Find closest Y of rectangle shape to circle center
-	if (closestY > rectEntity->position[2] + rectEntity->collider.height)
-		closestY = rectEntity->position[2] + rectEntity->collider.height;
-	else if (closestY < rectEntity->position[2] - rectEntity->collider.height)
-		closestY = rectEntity->position[2] - rectEntity->collider.height;
+	if (closestY >
+		rectEntity->getPosition()[2] + rectEntity->getCollider().height)
+		closestY =
+			rectEntity->getPosition()[2] + rectEntity->getCollider().height;
+	else if (closestY <
+			 rectEntity->getPosition()[2] - rectEntity->getCollider().height)
+		closestY =
+			rectEntity->getPosition()[2] - rectEntity->getCollider().height;
 	// Is distance of closer point smaller than circle radius ?
-	return sqrt(pow(circleEntity->position[0] - closestX, 2) +
-				pow(circleEntity->position[2] - closestY, 2)) <=
-		   circleEntity->collider.width;
+	return sqrt(pow(circleEntity->getPosition()[0] - closestX, 2) +
+				pow(circleEntity->getPosition()[2] - closestY, 2)) <=
+		   circleEntity->getCollider().width;
 }
 
 int GameEngine::run(void) {

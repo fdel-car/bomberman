@@ -2,15 +2,15 @@
 #include "GameEngine.hpp"
 
 Wall::Wall(std::vector<float> position)
-	: AEntity(position, std::vector<float>(4, 0),
-			  Collider(Collider::Rectangle, 0.5f, 0.5f)) {
-	name = "Wall";
-	tag = "Wall";
+	: Entity(position, std::vector<float>(4, 0),
+			 Collider(Collider::Rectangle, 0.5f, 0.5f)) {
+	_name = "Wall";
+	_tag = "Wall";
 }
 
 Wall::Wall(Wall const &src)
-	: AEntity(src.position, src.rotation,
-			  Collider(Collider::Rectangle, 0.5f, 0.5f)) {
+	: Entity(src.getPosition(), src.getRotation(),
+			 Collider(Collider::Rectangle, 0.5f, 0.5f)) {
 	*this = src;
 }
 

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "AEntity.hpp"
+#include "Entity.hpp"
 
-class Player : public AEntity {
+class Player : public Entity {
    public:
 	Player(std::vector<float> position, std::vector<float> rotation);
 	~Player(void);
