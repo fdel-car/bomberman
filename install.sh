@@ -15,7 +15,8 @@ if [ $? == 1 ]; then
     curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
     python get-pip.py --user
     rm get-pip.py
-	echo -e "\033[0;33mIn order to finish the install script you need to add the path to the pip binary to your PATH env variable.\033[0m"
+	echo -e "\033[0;31mIn order to finish the install script you need to add the path to the pip binary to your PATH env variable.\033[0m"
+    exit 0;
 fi
 
 # GLAD install
