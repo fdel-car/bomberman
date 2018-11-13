@@ -40,7 +40,7 @@ class GameRenderer {
 
 	GameRenderer &operator=(GameRenderer const &rhs);
 
-	void _initShaders(int type);
+	void _initShaders(void);
 	void _initScene(void);
 	void initProgram(void);
 	// void drawGUI(void);
@@ -55,13 +55,13 @@ class GameRenderer {
 	GLFWwindow *_window;
 	int width = 0;
 	int height = 0;
-	int xOffset;
-	int yOffset;
-	int squareSize;
-	float startX;
-	float startY;
-	float squarePercentY;
-	float squarePercentX;
+	// int xOffset;
+	// int yOffset;
+	// int squareSize;
+	// float startX;
+	// float startY;
+	// float squarePercentY;
+	// float squarePercentX;
 
 	// Nuklear vars
 	GUI *graphicUI;
@@ -69,11 +69,11 @@ class GameRenderer {
 	// Rendering vars
 	GLuint _shaderProgram;
 	std::list<unsigned int> _models;
-	GLuint vbo;
-	GLuint vao;
-	const char *vertexShader;
-	const char *fragmentShader;
-	GLuint vs;
-	GLuint fs;
-	GLuint shaderProgram;
+	// GLuint vbo;
+	// GLuint vao;
+	// const char *vertexShader;
+	// const char *fragmentShader;
+	// GLuint vs;
+	// GLuint fs;
+	// GLuint shaderProgram;
 };
