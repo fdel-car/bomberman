@@ -56,11 +56,8 @@ GameRenderer::GameRenderer(GameRenderer const &src) { *this = src; }
 
 GameRenderer::~GameRenderer(void)
 {
-	std::cout << "toto" << std::endl;
 	delete graphicUI;
-	std::cout << "toto1" << std::endl;
 	closeWindow();
-	std::cout << "toto2" << std::endl;
 	return;
 }
 
