@@ -324,16 +324,61 @@ void GameRenderer::_initScene(void) {
 // 	glDrawArrays(GL_TRIANGLE_FAN, 0, nbrOfVertices);
 // }
 
+// void GameRenderer::drawSquare(Entity *wall) {
+// 	float startCoordX = startX + (wall->getPosition()[0] * squarePercentX);
+// 	float startCoordY = startY - (wall->getPosition()[2] * squarePercentY);
+
+// 	// POINTS
+// 	float points[] = {startCoordX,
+// 					  startCoordY,
+// 					  0.0f,
+// 					  startCoordX,
+// 					  startCoordY - squarePercentY,
+// 					  0.0f,
+// 					  startCoordX + squarePercentX,
+// 					  startCoordY,
+// 					  0.0f,
+
+// 					  startCoordX + squarePercentX,
+// 					  startCoordY,
+// 					  0.0f,
+// 					  startCoordX + squarePercentX,
+// 					  startCoordY - squarePercentY,
+// 					  0.0f,
+// 					  startCoordX,
+// 					  startCoordY - squarePercentY,
+// 					  0.0f};
+
+// 	// BUFFER
+// 	vbo = 0;
+// 	glGenBuffers(1, &vbo);
+// 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+// 	glBufferData(GL_ARRAY_BUFFER, sizeof(points), points, GL_STATIC_DRAW);
+// 	makeVAO(vbo);
+
+// 	_initShaders(CYAN_SHADER);
+// 	initProgram();
+// 	glUseProgram(shaderProgram);
+// 	glBindVertexArray(vao);
+// 	// drawing all the vertex of the triangle
+// 	glDrawArrays(GL_TRIANGLES, 0, 6);
+// }
+
 void GameRenderer::getUserInput(void) { glfwPollEvents(); }
 
-void GameRenderer::refreshWindow(void) {
+int GameRenderer::refreshWindow(std::vector<Entity *> &entities) {
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	// createBorder();
-	// drawPlayer(_gameEngine->getFirstEntityWithName("Player"));
+	// for (const auto entity : entities) {
+	// 	// Just a temporary if, waiting to have a way to handle .obj
+	// 	if (entity->getCollider()->shape == Collider::Circle)
+	// 		drawPlayer(entity);
+	// 	else
+	// 		drawSquare(entity);
+	// }
 	// createGrid();
-
 	// graphicUI->drawGUI();
 
 	// glfwSetWindowTitle(_window,
@@ -348,6 +393,7 @@ void GameRenderer::refreshWindow(void) {
 
 	// Put everything to screen
 	glfwSwapBuffers(_window);
+	return EXIT_SUCCESS;
 }
 
 void GameRenderer::closeWindow() {

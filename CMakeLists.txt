@@ -14,6 +14,7 @@ set(SRCS
   srcs/Entity.cpp
   srcs/AGameScene.cpp
   srcs/AudioManager.cpp
+  srcs/Collider.cpp
   srcs/GameEngine.cpp
   srcs/GameRenderer.cpp
   srcs/ShaderProgram.cpp
@@ -35,6 +36,7 @@ set(HEADERS
   includes/Entity.hpp
   includes/AGameScene.hpp
   includes/AudioManager.hpp
+  includes/Collider.hpp
   includes/GameEngine.hpp
   includes/GameRenderer.hpp
   includes/ShaderProgram.hpp

@@ -1,8 +1,8 @@
 #pragma once
 
 #include "AGameScene.hpp"
-#include "Entity.hpp"
 #include "AudioManager.hpp"
+#include "Collider.hpp"
 #include "Entity.hpp"
 #include "header.hpp"
 
@@ -40,7 +40,9 @@ class GameEngine {
 	GameEngine &operator=(GameEngine const &rhs);
 
 	bool initScene(int newSceneIdx);
-	int renderGame(void);
+	void checkCollisions(void);
+	bool doCollide(Entity *entityA, Entity *entityB);
+	bool collisionCircleRectangle(Entity *circleEntity, Entity *rectEntity);
 
 	// Graphic libraries vars
 	GameRenderer *graphicLib;
