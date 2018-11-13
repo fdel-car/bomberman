@@ -40,12 +40,13 @@ class GameEngine {
 	GameEngine &operator=(GameEngine const &rhs);
 
 	bool initScene(int newSceneIdx);
-	void checkCollisions(void);
-	bool doCollide(Entity *entityA, Entity *entityB);
-	bool collisionCircleRectangle(Entity *circleEntity, Entity *rectEntity);
+	void _clearTmpEntities(void);
+	// void checkCollisions(void);
+	// bool doCollide(Entity *entityA, Entity *entityB);
+	// bool collisionCircleRectangle(Entity *circleEntity, Entity *rectEntity);
 
 	// Graphic libraries vars
-	GameRenderer *graphicLib;
+	GameRenderer *_gameRenderer;
 	int squareSize;
 	int xOffset;
 	int yOffset;
@@ -64,7 +65,7 @@ class GameEngine {
 	// Scene management vars
 	int _sceneIdx;
 	std::vector<AGameScene *> _gameScenes;
-	std::vector<Entity *> _activeEntities;
+	std::vector<Entity *> _allEntities;
 
    public:
 	GameEngine(std::vector<AGameScene *> gameScenes);

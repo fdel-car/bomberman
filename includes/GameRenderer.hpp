@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Collider.hpp"
+#include "Model.hpp"
 #include "header.hpp"
 
 #define MAX_VERTEX_BUFFER 512 * 1024
@@ -28,6 +29,7 @@ class GameRenderer {
 	void getUserInput(void);
 	int refreshWindow(std::vector<Entity *> &entities);
 	void closeWindow(void);
+	std::map<std::string, Model *> getModels(void) const;
 
 	bool active;
 
@@ -42,15 +44,15 @@ class GameRenderer {
 	GameRenderer &operator=(GameRenderer const &rhs);
 
 	void _initShaders(void);
-	void _initScene(void);
-	void initProgram(void);
+	void _initModels(void);
+	// void initProgram(void);
 	// void drawGUI(void);
-	void createBorder(void);
-	void createGrid(void);
-	void drawGUI(void);
-	void drawPlayer(Entity *player);
-	void drawSquare(Entity *wall);
-	void makeVAO(GLuint &vbo);
+	// void createBorder(void);
+	// void createGrid(void);
+	// void drawGUI(void);
+	// void drawPlayer(Entity *player);
+	// void drawSquare(Entity *wall);
+	// void makeVAO(GLuint &vbo);
 
 	static GameEngine *_gameEngine;
 
@@ -70,8 +72,8 @@ class GameRenderer {
 	GUI *graphicUI;
 
 	// Rendering vars
-	GLuint _shaderProgram;
-	std::list<unsigned int> _models;
+	unsigned int _shaderProgram;
+	std::map<std::string, Model *> _models;
 	// GLuint vbo;
 	// GLuint vao;
 	// const char *vertexShader;

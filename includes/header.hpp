@@ -19,6 +19,7 @@
 #include <GLFW/glfw3.h>
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
+#include "glm/gtc/type_ptr.hpp"
 
 template <typename T>
 std::string toString(const T& val) {

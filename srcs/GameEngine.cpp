@@ -18,7 +18,7 @@ GameEngine::GameEngine(std::vector<AGameScene *> gameScenes)
 	yOffset = (WINDOW_H - squareSize * mapH) / 2;
 
 	// Create interface class
-	graphicLib = new GameRenderer(this);
+	_gameRenderer = new GameRenderer(this);
 	// Create audio manager
 	audioManager = new AudioManager();
 
@@ -32,8 +32,8 @@ GameEngine::GameEngine(std::vector<AGameScene *> gameScenes)
 GameEngine::GameEngine(GameEngine const &src) { *this = src; }
 
 GameEngine::~GameEngine(void) {
-	delete (audioManager);
-	delete (graphicLib);
+	delete audioManager;
+	delete _gameRenderer;
 }
 
 int GameEngine::getSquareSize(void) { return squareSize; }
@@ -48,7 +48,7 @@ int GameEngine::getMapH(void) { return mapH; }
 
 // Entity *GameEngine::getFirstEntityWithName(std::string entityName) {
 // 	Entity *foundElem = nullptr;
-// 	for (auto entity : _activeEntities) {
+// 	for (auto entity : _allEntities) {
 // 		if (entity->getName().compare(entityName) == 0) {
 // 			foundElem = entity;
 // 			break;
@@ -66,89 +66,102 @@ bool GameEngine::initScene(int newSceneIdx) {
 	if (newSceneIdx < 0 || newSceneIdx >= static_cast<int>(_gameScenes.size()))
 		return false;
 	_sceneIdx = newSceneIdx;
-	_activeEntities.clear();
-	for (auto entity : _gameScenes[newSceneIdx]->startEntities) {
-		_activeEntities.push_back(entity);
-		_activeEntities.back()->setGameEngine(this);
+	_clearTmpEntities();
+	_gameScenes[newSceneIdx]->load();
+	for (auto data : _gameScenes[newSceneIdx]->getData()) {
+		_allEntities.push_back(
+			new Entity(data.pos, data.rot, data.collider,
+					   (_gameRenderer->getModels())[data.modelName], true));
+		_allEntities.back()->setGameEngine(this);
 	}
 	return true;
 }
 
-void GameEngine::checkCollisions(void) {
-	for (size_t i = 0; i < _activeEntities.size() - 1; i++) {
-		for (size_t j = i + 1; j < _activeEntities.size(); j++) {
-			if (doCollide(_activeEntities[i], _activeEntities[j])) {
-				// TODO: Handle collision
-				std::cout << "Collision detected !" << std::endl;
-			}
-		}
+void GameEngine::_clearTmpEntities(void) {
+	size_t idx = 0;
+	for (auto entity : _allEntities) {
+		if (entity->getTmpState())
+			_allEntities.erase(_allEntities.begin() + idx);
+		else
+			idx++;
 	}
 }
 
-bool GameEngine::doCollide(Entity *entityA, Entity *entityB) {
-	const Collider *colliderA = entityA->getCollider();
-	const Collider *colliderB = entityB->getCollider();
-	if (!colliderA || !colliderB) return false;
+// void GameEngine::checkCollisions(void) {
+// 	for (size_t i = 0; i < _allEntities.size() - 1; i++) {
+// 		for (size_t j = i + 1; j < _allEntities.size(); j++) {
+// 			if (doCollide(_allEntities[i], _allEntities[j])) {
+// 				// TODO: Handle collision
+// 				std::cout << "Collision detected !" << std::endl;
+// 			}
+// 		}
+// 	}
+// }
 
-	float aXCenter = entityA->getPosition()[0];
-	float aYCenter = entityA->getPosition()[0];
-	float bXCenter = entityB->getPosition()[2];
-	float bYCenter = entityB->getPosition()[2];
-	if (colliderA->shape == colliderB->shape) {
-		// Circle with circle
-		if (colliderA->shape == Collider::Circle) {
-			float distance =
-				sqrt(pow(aXCenter - bXCenter, 2) + pow(aYCenter - bYCenter, 2));
-			return (distance <= colliderA->width + colliderB->width);
-		}
-		// Rectangle with rectangle
-		else if (colliderA->shape == Collider::Rectangle) {
-			return (abs(aXCenter - bXCenter) <=
-						colliderA->width + colliderB->width &&
-					abs(aYCenter - bYCenter) <=
-						colliderA->height + colliderB->height);
-		}
-	}
-	// Circle with rectangle
-	else if (colliderA->shape == Collider::Circle &&
-			 colliderB->shape == Collider::Rectangle) {
-		return collisionCircleRectangle(entityA, entityB);
-	}
-	// Rectangle with circle
-	else if (colliderB->shape == Collider::Circle &&
-			 colliderA->shape == Collider::Rectangle) {
-		return collisionCircleRectangle(entityB, entityA);
-	}
-	return false;
-}
+// bool GameEngine::doCollide(Entity *entityA, Entity *entityB) {
+// 	const Collider *colliderA = entityA->getCollider();
+// 	const Collider *colliderB = entityB->getCollider();
+// 	if (!colliderA || !colliderB) return false;
 
-bool GameEngine::collisionCircleRectangle(Entity *circleEntity,
-										  Entity *rectEntity) {
-	float closestX = circleEntity->getPosition()[0];
-	float closestY = circleEntity->getPosition()[2];
-	// Find closest X of rectangle shape to circle center
-	if (closestX >
-		rectEntity->getPosition()[0] + rectEntity->getCollider()->width)
-		closestX =
-			rectEntity->getPosition()[0] + rectEntity->getCollider()->width;
-	else if (closestX <
-			 rectEntity->getPosition()[0] - rectEntity->getCollider()->width)
-		closestX =
-			rectEntity->getPosition()[0] - rectEntity->getCollider()->width;
-	// Find closest Y of rectangle shape to circle center
-	if (closestY >
-		rectEntity->getPosition()[2] + rectEntity->getCollider()->height)
-		closestY =
-			rectEntity->getPosition()[2] + rectEntity->getCollider()->height;
-	else if (closestY <
-			 rectEntity->getPosition()[2] - rectEntity->getCollider()->height)
-		closestY =
-			rectEntity->getPosition()[2] - rectEntity->getCollider()->height;
-	// Is distance of closer point smaller than circle radius ?
-	return sqrt(pow(circleEntity->getPosition()[0] - closestX, 2) +
-				pow(circleEntity->getPosition()[2] - closestY, 2)) <=
-		   circleEntity->getCollider()->width;
-}
+// 	float aXCenter = entityA->getPosition()[0];
+// 	float aYCenter = entityA->getPosition()[0];
+// 	float bXCenter = entityB->getPosition()[2];
+// 	float bYCenter = entityB->getPosition()[2];
+// 	if (colliderA->shape == colliderB->shape) {
+// 		// Circle with circle
+// 		if (colliderA->shape == Collider::Circle) {
+// 			float distance =
+// 				sqrt(pow(aXCenter - bXCenter, 2) + pow(aYCenter - bYCenter, 2));
+// 			return (distance <= colliderA->width + colliderB->width);
+// 		}
+// 		// Rectangle with rectangle
+// 		else if (colliderA->shape == Collider::Rectangle) {
+// 			return (abs(aXCenter - bXCenter) <=
+// 						colliderA->width + colliderB->width &&
+// 					abs(aYCenter - bYCenter) <=
+// 						colliderA->height + colliderB->height);
+// 		}
+// 	}
+// 	// Circle with rectangle
+// 	else if (colliderA->shape == Collider::Circle &&
+// 			 colliderB->shape == Collider::Rectangle) {
+// 		return collisionCircleRectangle(entityA, entityB);
+// 	}
+// 	// Rectangle with circle
+// 	else if (colliderB->shape == Collider::Circle &&
+// 			 colliderA->shape == Collider::Rectangle) {
+// 		return collisionCircleRectangle(entityB, entityA);
+// 	}
+// 	return false;
+// }
+
+// bool GameEngine::collisionCircleRectangle(Entity *circleEntity,
+// 										  Entity *rectEntity) {
+// 	float closestX = circleEntity->getPosition()[0];
+// 	float closestY = circleEntity->getPosition()[2];
+// 	// Find closest X of rectangle shape to circle center
+// 	if (closestX >
+// 		rectEntity->getPosition()[0] + rectEntity->getCollider()->width)
+// 		closestX =
+// 			rectEntity->getPosition()[0] + rectEntity->getCollider()->width;
+// 	else if (closestX <
+// 			 rectEntity->getPosition()[0] - rectEntity->getCollider()->width)
+// 		closestX =
+// 			rectEntity->getPosition()[0] - rectEntity->getCollider()->width;
+// 	// Find closest Y of rectangle shape to circle center
+// 	if (closestY >
+// 		rectEntity->getPosition()[2] + rectEntity->getCollider()->height)
+// 		closestY =
+// 			rectEntity->getPosition()[2] + rectEntity->getCollider()->height;
+// 	else if (closestY <
+// 			 rectEntity->getPosition()[2] - rectEntity->getCollider()->height)
+// 		closestY =
+// 			rectEntity->getPosition()[2] - rectEntity->getCollider()->height;
+// 	// Is distance of closer point smaller than circle radius ?
+// 	return sqrt(pow(circleEntity->getPosition()[0] - closestX, 2) +
+// 				pow(circleEntity->getPosition()[2] - closestY, 2)) <=
+// 		   circleEntity->getCollider()->width;
+// }
 
 int GameEngine::run(void) {
 	if (!canRun) return EXIT_FAILURE;
@@ -170,11 +183,11 @@ int GameEngine::run(void) {
 		_deltaTime = (std::chrono::duration_cast<std::chrono::milliseconds>(
 						  _frameTs - _lastFrameTs)
 						  .count()) /
-					 (double)1000.0;
+					 static_cast<double>(1000.0);
 		_lastFrameTs = _frameTs;
 
 		// Update inputs
-		graphicLib->getUserInput();
+		_gameRenderer->getUserInput();
 
 		// TODO: Update game engine statuses (ex. when to quit)
 		if (running) {
@@ -182,14 +195,14 @@ int GameEngine::run(void) {
 		}
 
 		// Update game entities states
-		for (auto entity : _activeEntities) {
+		for (auto entity : _allEntities) {
 			entity->Update();
 		}
 
 		// TODO: set position of entities back to prev frame when they collide
-		checkCollisions();
+		// checkCollisions();
 
-		guiRet = graphicLib->refreshWindow(_activeEntities);
+		guiRet = _gameRenderer->refreshWindow(_allEntities);
 		if (guiRet != EXIT_SUCCESS || !running) break;
 	}
 	if (restartRequest) {

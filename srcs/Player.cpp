@@ -1,28 +1,15 @@
 #include "Player.hpp"
 #include "GameEngine.hpp"
 
-Player::Player(std::vector<float> position, std::vector<float> rotation)
-	: Entity(position, rotation,
-			 new Collider(Collider::Circle, 1,
-						  1)) {  // TODO: put collider width/height back to 0.5
+Player::Player(glm::vec3 position, glm::vec3 rotation)
+	: Entity(position, rotation, new Collider(Collider::Circle, 1, 1), nullptr,
+			 false) {  // TODO: put collider width/height back to 0.5
 	_name = "Player";
 	_tag = "Player";
 	_speed = 8.0f;
 }
 
-Player::Player(Player const &src)
-	: Entity(src.getPosition(), src.getRotation(),
-			 new Collider(Collider::Circle, 1,
-						  1)) {  // TODO: put collider width/height back to 0.5
-	*this = src;
-}
-
 Player::~Player(void) {}
-
-Player &Player::operator=(Player const &rhs) {
-	return *this;
-	(void)rhs;
-}
 
 void Player::Update(void) {
 	double deltaTime = _gameEngine->getDeltaTime();

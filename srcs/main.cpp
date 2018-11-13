@@ -1,5 +1,5 @@
 #include "GameEngine.hpp"
-#include "LevelOne.hpp"
+#include "scenes/Factory.hpp"
 
 const char *getFileContent(std::string const &filename) {
 	std::ifstream in(filename, std::ios::in | std::ios::binary);
@@ -22,7 +22,7 @@ int main(void) {
 		/* Initialize random seed: */
 		srand(time(NULL));
 		std::vector<AGameScene *> gameScenes = std::vector<AGameScene *>();
-		gameScenes.push_back(new LevelOne());
+		gameScenes.push_back(new Factory());
 		GameEngine gameEngine(gameScenes);
 		ret = gameEngine.run();
 

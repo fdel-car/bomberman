@@ -47,7 +47,7 @@ GameRenderer::GameRenderer(GameEngine *gameEngine) {
 	// graphicUI = new GUI(window);
 
 	_initShaders();
-	_initScene();
+	_initModels();
 }
 
 GameRenderer::GameRenderer(void) {}
@@ -159,8 +159,8 @@ void GameRenderer::_initShaders(void) {
 // 	glLinkProgram(shaderProgram);
 // }
 
-void GameRenderer::_initScene(void) {
-	_models.push_back(Model("Test").getVAO());
+void GameRenderer::_initModels(void) {
+	_models["Cube"] = new Model("assets/cube.obj");
 }
 
 // void GameRenderer::createBorder(void) {
@@ -385,15 +385,22 @@ int GameRenderer::refreshWindow(std::vector<Entity *> &entities) {
 	// 				   toString(static_cast<int>(1 /
 	// _gameEngine->getDeltaTime())).c_str());
 
-	// glUseProgram(_shaderProgram);
-	// glBindVertexArray(_VAO);
-	// glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	// glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-	// glBindVertexArray(0);
+	glUseProgram(_shaderProgram);
+
+	for (auto entity : entities) {
+		glBindVertexArray((entity->getModel())->getVAO());
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+		// glBindVertexArray(0);
+	}
 
 	// Put everything to screen
 	glfwSwapBuffers(_window);
 	return EXIT_SUCCESS;
+}
+
+std::map<std::string, Model *> GameRenderer::getModels() const {
+	return _models;
 }
 
 void GameRenderer::closeWindow() {
