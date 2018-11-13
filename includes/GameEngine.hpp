@@ -32,6 +32,19 @@ class GameRenderer;
 
 class GameEngine {
    private:
+	struct LineInfo {  // Equation of a line: z = mx + q
+	   public:
+		LineInfo(void);
+		LineInfo(float startX, float startZ, float endX, float endZ);
+
+		float m;
+		float q;
+		bool isVertical;  // if line is vertical then m = inf
+		float startX;
+		float startZ;
+		float endX;
+		float endZ;
+	};
 	static std::map<std::string, bool> keyboardMap;
 
 	GameEngine(void);
@@ -40,9 +53,19 @@ class GameEngine {
 	GameEngine &operator=(GameEngine const &rhs);
 
 	bool initScene(int newSceneIdx);
-	void checkCollisions(void);
-	bool doCollide(Entity *entityA, Entity *entityB);
-	bool collisionCircleRectangle(Entity *circleEntity, Entity *rectEntity);
+	void moveEntities(void);
+	void getMovementLines(Entity *entity, LineInfo *lineA, LineInfo *lineB);
+	bool hasCollisionCourse(LineInfo &lineA, LineInfo &lineB, Entity *entityB);
+	bool isLineLineCollision(LineInfo &lineA, LineInfo &lineB);
+	bool isLineCircleCollision(LineInfo &lineA, float &xSquareCoeff,
+							   float &xCoeff, float &zSquareCoeff,
+							   float &zCoeff, float &cCoeff);
+	bool doCollide(const Collider *colliderA, const std::vector<float> &posA,
+				   Entity *entityB) const;
+	bool collisionCircleRectangle(const Collider *circleCollider,
+								  const std::vector<float> &circlePos,
+								  const Collider *rectangleCollider,
+								  const std::vector<float> &rectanglePos) const;
 
 	// Graphic libraries vars
 	GameRenderer *graphicLib;

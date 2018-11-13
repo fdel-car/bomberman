@@ -26,10 +26,30 @@ Player &Player::operator=(Player const &rhs) {
 
 void Player::Update(void) {
 	double deltaTime = _gameEngine->getDeltaTime();
+	int xSign = 0;
+	int zSign = 0;
+	float xDirection = 0.0f;
+	// float yDirection = 0.0f;  // Not used since we cannot jump yet
+	float zDirection = 0.0f;
 
 	// Update position based on keyboard
-	if (_gameEngine->isKeyPressed(KEY_A)) _position[0] -= _speed * deltaTime;
-	if (_gameEngine->isKeyPressed(KEY_D)) _position[0] += _speed * deltaTime;
-	if (_gameEngine->isKeyPressed(KEY_W)) _position[2] -= _speed * deltaTime;
-	if (_gameEngine->isKeyPressed(KEY_S)) _position[2] += _speed * deltaTime;
+	if (_gameEngine->isKeyPressed(KEY_A)) xSign -= 1;
+	if (_gameEngine->isKeyPressed(KEY_D)) xSign += 1;
+	if (_gameEngine->isKeyPressed(KEY_W)) zSign -= 1;
+	if (_gameEngine->isKeyPressed(KEY_S)) zSign += 1;
+	if (xSign == 0 && zSign == 0) {
+		// TODO: check for joystick input
+	} else {
+		// Normalize direction
+		xDirection = static_cast<float>(xSign);
+		zDirection = static_cast<float>(zSign);
+		xSign = abs(xSign);
+		zSign = abs(zSign);
+		float totalMagnitude = abs(xSign) + abs(zSign);
+		xDirection *= sqrt(xSign / totalMagnitude);
+		zDirection *= sqrt(zSign / totalMagnitude);
+	}
+
+	_targetMovement[0] = xDirection * _speed * deltaTime;
+	_targetMovement[2] = zDirection * _speed * deltaTime;
 }

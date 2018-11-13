@@ -3,6 +3,25 @@
 
 GameEngine::GameEngine() : _gameScenes(std::vector<AGameScene *>()) {}
 
+GameEngine::LineInfo::LineInfo(void)
+	: m(0.0f),
+	  q(0.0f),
+	  isVertical(false),
+	  startX(0.0f),
+	  startZ(0.0f),
+	  endX(0.0f),
+	  endZ(0.0f) {}
+
+GameEngine::LineInfo::LineInfo(float startX, float startZ, float endX,
+							   float endZ)
+	: startX(startX), startZ(startZ), endX(endX), endZ(endZ) {
+	isVertical = startX == endX;
+	if (!isVertical) {
+		m = (startZ - endZ) / (startX - endX);
+		q = startZ - m * startX;
+	}
+}
+
 GameEngine::GameEngine(std::vector<AGameScene *> gameScenes)
 	: _gameScenes(gameScenes) {
 	canRun = false;
@@ -74,27 +93,284 @@ bool GameEngine::initScene(int newSceneIdx) {
 	return true;
 }
 
-void GameEngine::checkCollisions(void) {
-	for (size_t i = 0; i < _activeEntities.size() - 1; i++) {
-		for (size_t j = i + 1; j < _activeEntities.size(); j++) {
-			if (doCollide(_activeEntities[i], _activeEntities[j])) {
-				// TODO: Handle collision
-				std::cout << "Collision detected !" << std::endl;
+void GameEngine::moveEntities(void) {
+	const Collider *collider;
+	bool collisionDetected = false;
+	std::vector<float> futurePos = std::vector<float>(3, 0);
+	LineInfo lineA;
+	LineInfo lineB;
+
+	size_t idx = 0;
+	for (auto entity : _activeEntities) {
+		collisionDetected = false;
+		if (entity->getTargetMovement()[0] != 0.0f ||
+			entity->getTargetMovement()[2] != 0.0f) {
+			collider = entity->getCollider();
+
+			if (collider) {
+				// 1) Find lines that inglobe movement
+				getMovementLines(entity, &lineA, &lineB);
+
+				// Simulate movement
+				futurePos[0] =
+					entity->getPosition()[0] + entity->getTargetMovement()[0];
+				futurePos[2] =
+					entity->getPosition()[2] + entity->getTargetMovement()[2];
+
+				for (size_t j = idx + 1; j < _activeEntities.size(); j++) {
+					// TODO: skip collision with object that cannot collide with
+
+					// 2) Check if final position collides with smth
+					// 3) Check if any other obj collides with lineA/lineB
+					if (doCollide(collider, futurePos, _activeEntities[j]) ||
+						hasCollisionCourse(lineA, lineB, _activeEntities[j])) {
+						// TODO: handle if is physical collision or trigger
+						collisionDetected = true;
+						break;
+					}
+				}
+
+				// If no collision, everything is good
+				if (!collisionDetected) {
+					entity->moveFromPosition(entity->getTargetMovement());
+				}
+				// TODO: Else
+				else {
+					// TODO
+					std::cout << "Collision detected !" << std::endl;
+				}
+			} else {
+				// Skip checks if entity doesnt have a collider
+				entity->moveFromPosition(entity->getTargetMovement());
 			}
 		}
+		idx++;
 	}
 }
 
-bool GameEngine::doCollide(Entity *entityA, Entity *entityB) {
-	const Collider *colliderA = entityA->getCollider();
+void GameEngine::getMovementLines(Entity *entity, LineInfo *lineA,
+								  LineInfo *lineB) {
+	// Find points that will determine Lines
+	lineA->startX = entity->getPosition()[0];
+	lineA->startZ = entity->getPosition()[2];
+	lineB->startX = entity->getPosition()[0];
+	lineB->startZ = entity->getPosition()[2];
+	// Avoid division by 0 if movement is only along 'z' axis
+	if (entity->getTargetMovement()[0] == 0.0f) {
+		lineA->startX += entity->getCollider()->width;
+		lineB->startX -= entity->getCollider()->width;
+		lineA->isVertical = true;
+		lineA->q = lineA->startX;
+		lineB->isVertical = true;
+		lineB->q = lineB->startX;
+	} else {
+		// Find 'm' of direction from center to target center
+		float m = entity->getTargetMovement()[2] /
+				  entity->getTargetMovement()[0];  // TargetMovement is already
+												   // a delta of coords
+		lineA->m = m;
+		lineB->m = m;
+		lineA->isVertical = false;
+		lineB->isVertical = false;
+
+		// Find points based on shape
+		if (entity->getCollider()->shape == Collider::Rectangle) {
+			// Rectangle
+			// TODO: for now we increase Z when we want to go down, but will
+			// change soon
+			if ((entity->getTargetMovement()[0] > 0.0f &&
+				 entity->getTargetMovement()[2] > 0.0f) ||
+				(entity->getTargetMovement()[0] < 0.0f &&
+				 entity->getTargetMovement()[2] < 0.0f)) {
+				// We are going Down-Right or Up-Left, take TopRight(A) and
+				// BottomLeft(B) corners
+				lineA->startX += entity->getCollider()->width;
+				lineA->startZ -= entity->getCollider()
+									 ->height;  // TODO: Change minus to plus
+				lineB->startX -= entity->getCollider()->width;
+				lineB->startZ += entity->getCollider()
+									 ->height;  // TODO: Change plus to minus
+			} else {
+				// We are going Down-Left or Up-Right, take TopLeft(A) and
+				// BottomRight(B) corners
+				lineA->startX -= entity->getCollider()->width;
+				lineA->startZ -= entity->getCollider()
+									 ->height;  // TODO: Change minus to plus
+				lineB->startX += entity->getCollider()->width;
+				lineB->startZ += entity->getCollider()
+									 ->height;  // TODO: Change plus to minus
+			}
+		} else {
+			// Circle
+			// mPrime = - 1 / m
+			float mPerpendicular = -(1.0f / m);
+			// q of line that will intercept startA and startB
+			float q = entity->getPosition()[2] -
+					  mPerpendicular * entity->getPosition()[0];
+
+			float xOffset = mPerpendicular * entity->getCollider()->width;
+			lineA->startX += xOffset;
+			lineB->startX -= xOffset;
+			// since we have 'mPerpendicular', 'q' and 'x' we can easily get 'z'
+			lineA->startZ = mPerpendicular * lineA->startX + q;
+			lineB->startZ = mPerpendicular * lineB->startX + q;
+		}
+
+		// With m and boh starting points, we can easily get 'q' for lineA and
+		// lineB
+		lineA->q = lineA->startZ - m * lineA->startX;
+		lineB->q = lineB->startZ - m * lineB->startX;
+	}
+
+	// Add end point infos
+	lineA->endX = lineA->startX + entity->getTargetMovement()[0];
+	lineA->endZ = lineA->startZ + entity->getTargetMovement()[2];
+	lineB->endX = lineB->startX + entity->getTargetMovement()[0];
+	lineB->endZ = lineB->startZ + entity->getTargetMovement()[2];
+}
+
+bool GameEngine::hasCollisionCourse(LineInfo &lineA, LineInfo &lineB,
+									Entity *entityB) {
+	const Collider *colliderB = entityB->getCollider();
+	// Easy case, we can use doCollide() since we have a "standard" rectangle
+	if (lineA.isVertical) {
+		Collider testCollider(Collider::Rectangle,
+							  abs(lineA.startX - lineB.startX) / 2,
+							  abs(lineA.startZ - lineA.endZ) / 2);
+		std::vector<float> centerPos(3, 0);
+		centerPos[0] = (lineA.startX + lineB.startX) / 2;
+		centerPos[2] = (lineA.startZ + lineA.endZ) / 2;
+		// return false;
+		return doCollide(&testCollider, centerPos, entityB);
+	}
+
+	// Classic case
+	if (colliderB->shape == Collider::Rectangle) {
+		// Rectangle
+		// TODO:: change sign for Z when up is positive
+		float leftX = entityB->getPosition()[0] - colliderB->width;
+		float rightX = entityB->getPosition()[0] + colliderB->width;
+		float upZ = entityB->getPosition()[2] - colliderB->height;
+		float downZ = entityB->getPosition()[2] + colliderB->height;
+		LineInfo tmpLine(leftX, upZ, rightX, upZ);
+		if (isLineLineCollision(lineA, tmpLine) ||
+			isLineLineCollision(lineB, tmpLine)) {
+			return true;
+		}
+		tmpLine = LineInfo(leftX, downZ, rightX, downZ);
+		if (isLineLineCollision(lineA, tmpLine) ||
+			isLineLineCollision(lineB, tmpLine)) {
+			return true;
+		}
+		tmpLine = LineInfo(leftX, upZ, leftX, downZ);
+		if (isLineLineCollision(lineA, tmpLine) ||
+			isLineLineCollision(lineB, tmpLine)) {
+			return true;
+		}
+		tmpLine = LineInfo(rightX, upZ, rightX, downZ);
+		if (isLineLineCollision(lineA, tmpLine) ||
+			isLineLineCollision(lineB, tmpLine)) {
+			return true;
+		}
+	} else {
+		// Circle
+		// To be true it must be one of the following
+		// 1) Circle intersects with (at least one) line and point of
+		// intersection is between start end end
+		float xSquareCoeff = 1.0f;
+		float xCoeff = -(2.0f * entityB->getPosition()[0]);
+		float zSquareCoeff = 1.0f;
+		float zCoeff = -(2.0f * entityB->getPosition()[2]);
+		float cCoeff = colliderB->width + pow(entityB->getPosition()[0], 2) +
+					   pow(entityB->getPosition()[2], 2);
+		if (isLineCircleCollision(lineA, xSquareCoeff, xCoeff, zSquareCoeff,
+								  zCoeff, cCoeff)) {
+			return true;
+		}
+		if (isLineCircleCollision(lineB, xSquareCoeff, xCoeff, zSquareCoeff,
+								  zCoeff, cCoeff)) {
+			return true;
+		}
+
+		// 2) Circle is between two lines but with a tiny radius
+		// TODO
+	}
+	return false;
+}
+
+bool GameEngine::isLineLineCollision(LineInfo &lineA, LineInfo &lineB) {
+	// Easy: If both line are vertical
+	if (lineA.isVertical && lineB.isVertical) {
+		return lineA.startX == lineB.startX;
+	}
+
+	// Easy: If lines are parallel
+	if (lineA.m == lineB.m) {
+		return lineA.q == lineB.q;
+	}
+
+	float intersectionPointX = (lineB.q - lineA.q) / (lineA.m - lineB.m);
+	// Only truly collide if intersec point is between start/end
+	if ((lineA.startX <= intersectionPointX &&
+		 intersectionPointX <= lineA.endX) ||
+		(lineA.endX <= intersectionPointX &&
+		 intersectionPointX <= lineA.startX)) {
+		// Do same thing for other line
+		if ((lineB.startX <= intersectionPointX &&
+			 intersectionPointX <= lineB.endX) ||
+			(lineB.endX <= intersectionPointX &&
+			 intersectionPointX <= lineB.startX)) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
+bool GameEngine::isLineCircleCollision(LineInfo &lineA, float &xSquareCoeff,
+									   float &xCoeff, float &zSquareCoeff,
+									   float &zCoeff, float &cCoeff) {
+	// TODO
+	xSquareCoeff += zSquareCoeff * pow(lineA.m, 2);
+	xCoeff += zSquareCoeff * (2 * lineA.m * lineA.q);
+	cCoeff += zSquareCoeff * pow(lineA.q, 2);
+	xCoeff += zCoeff * lineA.m;
+	cCoeff += zCoeff * lineA.q;
+
+	float delta = pow(xCoeff, 2) - 4 * xSquareCoeff * cCoeff;
+	if (delta < 0) return false;
+	delta = sqrt(delta);
+	float intersectionPointX = (-xCoeff + delta) / (2 * xSquareCoeff);
+	// Point really collides only if is inside line's start/end point
+	if ((lineA.startX <= intersectionPointX &&
+		 intersectionPointX <= lineA.endX) ||
+		(lineA.endX <= intersectionPointX &&
+		 intersectionPointX <= lineA.startX)) {
+		return true;
+	}
+	if (delta > 0) {
+		intersectionPointX = (-xCoeff - delta) / (2 * xSquareCoeff);
+		if ((lineA.startX <= intersectionPointX &&
+			 intersectionPointX <= lineA.endX) ||
+			(lineA.endX <= intersectionPointX &&
+			 intersectionPointX <= lineA.startX)) {
+			return true;
+		}
+	}
+	return false;
+}
+
+bool GameEngine::doCollide(const Collider *colliderA,
+						   const std::vector<float> &posA,
+						   Entity *entityB) const {
 	const Collider *colliderB = entityB->getCollider();
 	if (!colliderA || !colliderB) return false;
 
-	float aXCenter = entityA->getPosition()[0];
-	float aYCenter = entityA->getPosition()[0];
-	float bXCenter = entityB->getPosition()[2];
-	float bYCenter = entityB->getPosition()[2];
 	if (colliderA->shape == colliderB->shape) {
+		float aXCenter = posA[0];
+		float aYCenter = posA[2];
+		float bXCenter = entityB->getPosition()[0];
+		float bYCenter = entityB->getPosition()[2];
 		// Circle with circle
 		if (colliderA->shape == Collider::Circle) {
 			float distance =
@@ -112,42 +388,37 @@ bool GameEngine::doCollide(Entity *entityA, Entity *entityB) {
 	// Circle with rectangle
 	else if (colliderA->shape == Collider::Circle &&
 			 colliderB->shape == Collider::Rectangle) {
-		return collisionCircleRectangle(entityA, entityB);
+		return collisionCircleRectangle(colliderA, posA, entityB->getCollider(),
+										entityB->getPosition());
 	}
 	// Rectangle with circle
 	else if (colliderB->shape == Collider::Circle &&
 			 colliderA->shape == Collider::Rectangle) {
-		return collisionCircleRectangle(entityB, entityA);
+		return collisionCircleRectangle(
+			entityB->getCollider(), entityB->getPosition(), colliderA, posA);
 	}
 	return false;
 }
 
-bool GameEngine::collisionCircleRectangle(Entity *circleEntity,
-										  Entity *rectEntity) {
-	float closestX = circleEntity->getPosition()[0];
-	float closestY = circleEntity->getPosition()[2];
+bool GameEngine::collisionCircleRectangle(
+	const Collider *circleCollider, const std::vector<float> &circlePos,
+	const Collider *rectangleCollider,
+	const std::vector<float> &rectanglePos) const {
+	float closestX = circlePos[0];
+	float closestY = circlePos[2];
 	// Find closest X of rectangle shape to circle center
-	if (closestX >
-		rectEntity->getPosition()[0] + rectEntity->getCollider()->width)
-		closestX =
-			rectEntity->getPosition()[0] + rectEntity->getCollider()->width;
-	else if (closestX <
-			 rectEntity->getPosition()[0] - rectEntity->getCollider()->width)
-		closestX =
-			rectEntity->getPosition()[0] - rectEntity->getCollider()->width;
+	if (closestX > rectanglePos[0] + rectangleCollider->width)
+		closestX = rectanglePos[0] + rectangleCollider->width;
+	else if (closestX < rectanglePos[0] - rectangleCollider->width)
+		closestX = rectanglePos[0] - rectangleCollider->width;
 	// Find closest Y of rectangle shape to circle center
-	if (closestY >
-		rectEntity->getPosition()[2] + rectEntity->getCollider()->height)
-		closestY =
-			rectEntity->getPosition()[2] + rectEntity->getCollider()->height;
-	else if (closestY <
-			 rectEntity->getPosition()[2] - rectEntity->getCollider()->height)
-		closestY =
-			rectEntity->getPosition()[2] - rectEntity->getCollider()->height;
+	if (closestY > rectanglePos[2] + rectangleCollider->height)
+		closestY = rectanglePos[2] + rectangleCollider->height;
+	else if (closestY < rectanglePos[2] - rectangleCollider->height)
+		closestY = rectanglePos[2] - rectangleCollider->height;
 	// Is distance of closer point smaller than circle radius ?
-	return sqrt(pow(circleEntity->getPosition()[0] - closestX, 2) +
-				pow(circleEntity->getPosition()[2] - closestY, 2)) <=
-		   circleEntity->getCollider()->width;
+	return sqrt(pow(circlePos[0] - closestX, 2) +
+				pow(circlePos[2] - closestY, 2)) <= circleCollider->width;
 }
 
 int GameEngine::run(void) {
@@ -186,8 +457,9 @@ int GameEngine::run(void) {
 			entity->Update();
 		}
 
-		// TODO: set position of entities back to prev frame when they collide
-		checkCollisions();
+		// TODO: set position of entities back to prev frame when they
+		// collide
+		moveEntities();
 
 		guiRet = graphicLib->refreshWindow(_activeEntities);
 		if (guiRet != EXIT_SUCCESS || !running) break;
