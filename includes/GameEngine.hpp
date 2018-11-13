@@ -31,6 +31,28 @@ typedef std::chrono::high_resolution_clock Clock;
 class GameRenderer;
 
 class GameEngine {
+   public:
+	GameEngine(std::vector<AGameScene *> gameScenes);
+	~GameEngine(void);
+
+	void run();
+
+	// Functions needed by Renderer
+	int getSquareSize(void);
+	int getXOffset(void);
+	int getYOffset(void);
+	int getMapW(void);
+	int getMapH(void);
+	Entity *getFirstEntityWithName(std::string entityName);
+	// std::vector<Entity *> getEntitiesWithName(std::string entityName);
+	// Entity *getFirstEntityWithLabel(std::string entityLabel);
+	// std::vector<Entity *> getEntitiesWithLabel(std::string entityLabel);
+	void buttonStateChanged(std::string button, bool isPressed);
+
+	// Functions needed by entities
+	bool isKeyPressed(std::string keyName);
+	double getDeltaTime();
+
    private:
 	static std::map<std::string, bool> keyboardMap;
 
@@ -53,10 +75,10 @@ class GameEngine {
 	Clock::time_point _frameTs;
 	Clock::time_point _lastFrameTs;
 	double _deltaTime;
-	AudioManager *audioManager;
+	AudioManager *_audioManager;
 
 	// Game model vars
-	bool running;
+	bool _running;
 	int mapH;
 	int mapW;
 	bool restartRequest;
@@ -66,28 +88,4 @@ class GameEngine {
 	int _sceneIdx;
 	std::vector<AGameScene *> _gameScenes;
 	std::vector<Entity *> _allEntities;
-
-   public:
-	GameEngine(std::vector<AGameScene *> gameScenes);
-	~GameEngine(void);
-
-	int run();
-
-	// Functions needed by Renderer
-	int getSquareSize(void);
-	int getXOffset(void);
-	int getYOffset(void);
-	int getMapW(void);
-	int getMapH(void);
-	Entity *getFirstEntityWithName(std::string entityName);
-	// std::vector<Entity *> getEntitiesWithName(std::string entityName);
-	// Entity *getFirstEntityWithLabel(std::string entityLabel);
-	// std::vector<Entity *> getEntitiesWithLabel(std::string entityLabel);
-	void buttonStateChanged(std::string button, bool isPressed);
-
-	// Functions needed by entities
-	bool isKeyPressed(std::string keyName);
-	double getDeltaTime();
-
-	bool canRun;
 };

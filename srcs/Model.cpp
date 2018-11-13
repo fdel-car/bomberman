@@ -2,7 +2,7 @@
 #define TINYOBJLOADER_IMPLEMENTATION
 #include "tiny_obj_loader/tiny_obj_loader.h"
 
-Model::Model(std::string const &objPath) {
+Model::Model(std::string const &objPath) : _size(0) {
 	tinyobj::attrib_t attrib;
 	std::vector<tinyobj::shape_t> shapes;
 	std::vector<tinyobj::material_t> materials;
@@ -21,8 +21,8 @@ Model::Model(std::string const &objPath) {
 
 	for (size_t s = 0; s < shapes.size(); s++) {
 		size_t index_offset = 0;
-		for (size_t f = 0; f < shapes[0].mesh.num_face_vertices.size(); f++) {
-			unsigned int fv =
+		for (size_t f = 0; f < shapes[s].mesh.num_face_vertices.size(); f++) {
+			size_t fv =
 				shapes[s].mesh.num_face_vertices[f];  // Will always be 3 since
 													  // we triangulate the .obj
 			for (size_t v = 0; v < fv; v++) {
@@ -38,13 +38,13 @@ Model::Model(std::string const &objPath) {
 				vertices.push_back(attrib.normals[3 * idx.normal_index + 1]);
 				vertices.push_back(attrib.normals[3 * idx.normal_index + 2]);
 
-				indices.push_back(
-					idx.vertex_index);  // We have to use this one in order to
-										// have a working EBO
+				// indices.push_back(idx.vertex_index);
+				_size++;
 			}
 			index_offset += fv;
 		}
 	}
+	std::cout << _size << std::endl;
 
 	glGenVertexArrays(1, &_VAO);
 	glGenBuffers(1, &_VBO);
@@ -56,16 +56,16 @@ Model::Model(std::string const &objPath) {
 	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vertices.size(),
 				 &vertices.front(), GL_STATIC_DRAW);
 
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * indices.size(),
-				 &indices.front(), GL_STATIC_DRAW);
+	// glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _EBO);
+	// glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) *
+	// indices.size(), 			 &indices.front(), GL_STATIC_DRAW);
 
 	// Positions
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float),
 						  (void *)0);
 	glEnableVertexAttribArray(0);
 
-	// Normals
+	// // Normals
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float),
 						  (void *)(3 * sizeof(float)));
 	glEnableVertexAttribArray(1);
@@ -76,4 +76,5 @@ Model::Model(std::string const &objPath) {
 
 Model::~Model(void) {}
 
-unsigned int Model::getVAO(void) const { return _VAO; }
+GLuint Model::getVAO(void) const { return _VAO; }
+size_t Model::getSize(void) const { return _size; }

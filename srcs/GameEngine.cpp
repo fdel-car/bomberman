@@ -5,34 +5,28 @@ GameEngine::GameEngine() : _gameScenes(std::vector<AGameScene *>()) {}
 
 GameEngine::GameEngine(std::vector<AGameScene *> gameScenes)
 	: _gameScenes(gameScenes) {
-	canRun = false;
-	running = false;
+	_running = false;
 
-	// Map size parsing
-	mapW = MAP_SIZE;
-	mapH = MAP_SIZE;
-	int maxSizeW = (WINDOW_W - 2 * WINDOW_MIN_X_OFFSET) / mapW;
-	int maxSizeH = (WINDOW_H - 2 * WINDOW_MIN_Y_OFFSET) / mapH;
-	squareSize = (maxSizeH < maxSizeW) ? maxSizeH : maxSizeW;
-	xOffset = (WINDOW_W - squareSize * mapW) / 2;
-	yOffset = (WINDOW_H - squareSize * mapH) / 2;
+	// // Map size parsing
+	// mapW = MAP_SIZE;
+	// mapH = MAP_SIZE;
+	// int maxSizeW = (WINDOW_W - 2 * WINDOW_MIN_X_OFFSET) / mapW;
+	// int maxSizeH = (WINDOW_H - 2 * WINDOW_MIN_Y_OFFSET) / mapH;
+	// squareSize = (maxSizeH < maxSizeW) ? maxSizeH : maxSizeW;
+	// xOffset = (WINDOW_W - squareSize * mapW) / 2;
+	// yOffset = (WINDOW_H - squareSize * mapH) / 2;
 
 	// Create interface class
 	_gameRenderer = new GameRenderer(this);
 	// Create audio manager
-	audioManager = new AudioManager();
+	_audioManager = new AudioManager();
 
 	// Force load of first scene
 	_sceneIdx = 0;
-
-	// Everything good
-	canRun = true;
 }
 
-GameEngine::GameEngine(GameEngine const &src) { *this = src; }
-
 GameEngine::~GameEngine(void) {
-	delete audioManager;
+	delete _audioManager;
 	delete _gameRenderer;
 }
 
@@ -56,11 +50,6 @@ int GameEngine::getMapH(void) { return mapH; }
 // 	}
 // 	return foundElem;
 // }
-
-GameEngine &GameEngine::operator=(GameEngine const &rhs) {
-	this->canRun = rhs.canRun;
-	return *this;
-}
 
 bool GameEngine::initScene(int newSceneIdx) {
 	if (newSceneIdx < 0 || newSceneIdx >= static_cast<int>(_gameScenes.size()))
@@ -163,21 +152,18 @@ void GameEngine::_clearTmpEntities(void) {
 // 		   circleEntity->getCollider()->width;
 // }
 
-int GameEngine::run(void) {
-	if (!canRun) return EXIT_FAILURE;
-	int guiRet;
-
+void GameEngine::run(void) {
 	// Init vars
-	running = true;
+	_running = true;
 	restartRequest = false;
 	_lastFrameTs = Clock::now();
 
 	if (!initScene(_sceneIdx)) std::runtime_error("Cannot load scene !");
 
-	audioManager->playStartSound();
+	_audioManager->playStartSound();
 
 	// Start game loop
-	while (running) {
+	while (_running) {
 		// Get delta time in order to synch entities positions
 		_frameTs = Clock::now();
 		_deltaTime = (std::chrono::duration_cast<std::chrono::milliseconds>(
@@ -190,8 +176,8 @@ int GameEngine::run(void) {
 		_gameRenderer->getUserInput();
 
 		// TODO: Update game engine statuses (ex. when to quit)
-		if (running) {
-			running = !keyboardMap["ESCAPE"];
+		if (_running) {
+			_running = !keyboardMap["ESCAPE"];
 		}
 
 		// Update game entities states
@@ -202,14 +188,12 @@ int GameEngine::run(void) {
 		// TODO: set position of entities back to prev frame when they collide
 		// checkCollisions();
 
-		guiRet = _gameRenderer->refreshWindow(_allEntities);
-		if (guiRet != EXIT_SUCCESS || !running) break;
+		_gameRenderer->refreshWindow(_allEntities);
 	}
 	if (restartRequest) {
 		std::cout << "Starting new game!" << std::endl;
 		return run();
 	}
-	return guiRet;
 }
 
 void GameEngine::buttonStateChanged(std::string buttonName, bool isPressed) {

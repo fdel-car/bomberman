@@ -2,7 +2,6 @@
 #include "Entity.hpp"
 #include "GameEngine.hpp"
 #include "Model.hpp"
-#include "ShaderProgram.hpp"
 
 GameRenderer::GameRenderer(GameEngine *gameEngine) {
 	_gameEngine = gameEngine;
@@ -30,6 +29,7 @@ GameRenderer::GameRenderer(GameEngine *gameEngine) {
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 		throw new std::runtime_error("Failed to initialize GLAD");
 	glViewport(0, 0, WINDOW_W, WINDOW_H);
+	glEnable(GL_DEPTH_TEST);
 	glfwSetKeyCallback(_window, keyCallback);
 	// squareSize = _gameEngine->getSquareSize();
 	// xOffset = _gameEngine->getXOffset();
@@ -48,20 +48,13 @@ GameRenderer::GameRenderer(GameEngine *gameEngine) {
 
 	_initShaders();
 	_initModels();
+
+	_transform = glm::mat4(1.0f);
 }
-
-GameRenderer::GameRenderer(void) {}
-
-GameRenderer::GameRenderer(GameRenderer const &src) { *this = src; }
 
 GameRenderer::~GameRenderer(void) {
 	delete graphicUI;
 	closeWindow();
-}
-
-GameRenderer &GameRenderer::operator=(GameRenderer const &rhs) {
-	this->active = rhs.active;
-	return *this;
 }
 
 // void GameRenderer::makeVAO(GLuint &vbo) {
@@ -74,9 +67,8 @@ GameRenderer &GameRenderer::operator=(GameRenderer const &rhs) {
 // }
 
 void GameRenderer::_initShaders(void) {
-	ShaderProgram simple("assets/shaders/simple.vs",
-						 "assets/shaders/simple.fs");
-	_shaderProgram = simple.getProgram();
+	_shaderPrograms["4.1"] =
+		new ShaderProgram("assets/shaders/4.1.vs", "assets/shaders/4.1.fs");
 	// // Shader pour les vertex
 	// vertexShader =
 	// 	"#version 400\n"
@@ -152,221 +144,15 @@ void GameRenderer::_initShaders(void) {
 	// 	std::cout << "Fragment Shader compile failed." << std::endl;
 }
 
-// void GameRenderer::initProgram(void) {
-// 	shaderProgram = glCreateProgram();
-// 	glAttachShader(shaderProgram, fs);
-// 	glAttachShader(shaderProgram, vs);
-// 	glLinkProgram(shaderProgram);
-// }
-
 void GameRenderer::_initModels(void) {
-	_models["Cube"] = new Model("assets/cube.obj");
+	_models["Cube"] = new Model("assets/objs/cube.obj");
+	_models["Bomb"] = new Model("assets/objs/bomb/Bomb.obj");
+	_models["Sponza"] = new Model("assets/objs/sponza/sponza.obj");
 }
-
-// void GameRenderer::createBorder(void) {
-// 	float epsilonX = 1 / (WINDOW_W / 2.0f);
-// 	float epsilonY = 1 / (WINDOW_H / 2.0f);
-
-// 	float vertexBorders[] = {
-// 		startX,
-// 		startY + epsilonY,
-// 		0.0f,  // top-left
-// 		-(startX) + epsilonX,
-// 		startY + epsilonY,
-// 		0.0f,  // top-right
-
-// 		-(startX) + epsilonX,
-// 		startY + epsilonY,
-// 		0.0f,  // top-right
-// 		-(startX) + epsilonX,
-// 		-(startY),
-// 		0.0f,  // bottom-right
-
-// 		-(startX) + epsilonX,
-// 		-(startY),
-// 		0.0f,  // bottom-right
-// 		startX,
-// 		-(startY),
-// 		0.0f,  // bottom-left
-
-// 		startX,
-// 		-(startY),
-// 		0.0f,  // bottom-left
-// 		startX,
-// 		startY + epsilonY,
-// 		0.0f  // top-left
-// 	};
-// 	// BUFFER
-// 	vbo = 0;
-// 	glGenBuffers(1, &vbo);
-// 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-// 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertexBorders), vertexBorders,
-// 				 GL_STATIC_DRAW);
-// 	makeVAO(vbo);
-
-// 	_initShaders(WHITE_SHADER);
-// 	initProgram();
-// 	glUseProgram(shaderProgram);
-// 	glBindVertexArray(vao);
-// 	// Drawing all the vertex of the triangle
-// 	glDrawArrays(GL_LINE_LOOP, 0, 8);
-// }
-
-// void GameRenderer::createGrid(void) {
-// 	int linesCount = 78;
-// 	int pointsCount = linesCount * 2;
-// 	float lineSpacing = squarePercentX;
-// 	float tmpX = startX;
-// 	float vertexBorders[pointsCount * 3];
-// 	for (int i = 0; i < pointsCount * 3; i++) {
-// 		vertexBorders[i] = 0;
-// 	}
-
-// 	// Vertical lines
-// 	lineSpacing = squarePercentX;
-// 	tmpX = startX + lineSpacing;
-// 	for (int i = 0; i < linesCount / 2; i++) {
-// 		// Start point
-// 		int lineIdx = i * 6;
-// 		vertexBorders[lineIdx] = tmpX;
-// 		vertexBorders[lineIdx + 1] = startY;
-// 		vertexBorders[lineIdx + 2] = 0.0f;
-
-// 		// End point
-// 		vertexBorders[lineIdx + 3] = tmpX;
-// 		vertexBorders[lineIdx + 4] = -(startY);
-// 		vertexBorders[lineIdx + 5] = 0.0f;
-
-// 		tmpX += lineSpacing;
-// 	}
-// 	// Horizontal lines
-// 	lineSpacing = squarePercentY;
-// 	tmpX = startY - lineSpacing;
-// 	for (int i = linesCount / 2; i < linesCount; i++) {
-// 		// Start point
-// 		int lineIdx = i * 6;
-// 		vertexBorders[lineIdx] = startX;
-// 		vertexBorders[lineIdx + 1] = tmpX;
-// 		vertexBorders[lineIdx + 2] = 0.0f;
-
-// 		// End point
-// 		vertexBorders[lineIdx + 3] = -startX;
-// 		vertexBorders[lineIdx + 4] = tmpX;
-// 		vertexBorders[lineIdx + 5] = 0.0f;
-
-// 		tmpX -= lineSpacing;
-// 	}
-// 	// BUFFER
-// 	vbo = 0;
-// 	glGenBuffers(1, &vbo);
-// 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-// 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertexBorders), vertexBorders,
-// 				 GL_STATIC_DRAW);
-// 	makeVAO(vbo);
-
-// 	_initShaders(WHITE_SHADER);
-// 	initProgram();
-// 	glUseProgram(shaderProgram);
-// 	glBindVertexArray(vao);
-// 	// Drawing all the vertex of the triangle
-// 	glDrawArrays(GL_LINES, 0, pointsCount);
-// }
-
-// void GameRenderer::drawPlayer(Entity *player) {
-// 	if (player == nullptr) return;
-// 	float startCoordX = startX + (player->getPosition()[0] * squarePercentX);
-// 	float startCoordY = startY - (player->getPosition()[2] * squarePercentY);
-
-// 	float xCenter = startCoordX + (squarePercentX / 2);
-// 	float yCenter = startCoordY - (squarePercentY / 2);
-// 	int nbrOfSide = 120;
-// 	float radiusX = squarePercentX / 2;
-// 	float radiusY = squarePercentY / 2;
-
-// 	GLint nbrOfVertices = nbrOfSide + 2;
-
-// 	GLfloat doublePi = 2.0f * 3.14159265358979f;
-
-// 	GLfloat circleVerticesX[nbrOfVertices];
-// 	GLfloat circleVerticesY[nbrOfVertices];
-// 	GLfloat circleVerticesZ[nbrOfVertices];
-
-// 	circleVerticesX[0] = xCenter;
-// 	circleVerticesY[0] = yCenter;
-// 	circleVerticesZ[0] = 0;
-
-// 	for (int i = 1; i < nbrOfVertices; i++) {
-// 		circleVerticesX[i] =
-// 			xCenter + (radiusX * cos(i * doublePi / nbrOfSide));
-// 		circleVerticesY[i] =
-// 			yCenter + (radiusY * sin(i * doublePi / nbrOfSide));
-// 		circleVerticesZ[i] = 0;
-// 	}
-// 	GLfloat allCircleVertices[nbrOfVertices * 3];
-// 	for (int i = 0; i < nbrOfVertices; i++) {
-// 		allCircleVertices[i * 3] = circleVerticesX[i];
-// 		allCircleVertices[(i * 3) + 1] = circleVerticesY[i];
-// 		allCircleVertices[(i * 3) + 2] = circleVerticesZ[i];
-// 	}
-
-// 	// BUFFER
-// 	vbo = 0;
-// 	glGenBuffers(1, &vbo);
-// 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-// 	glBufferData(GL_ARRAY_BUFFER, sizeof(allCircleVertices), allCircleVertices,
-// 				 GL_STATIC_DRAW);
-// 	makeVAO(vbo);
-
-// 	_initShaders(GREEN_SHADER);
-// 	initProgram();
-// 	glUseProgram(shaderProgram);
-// 	glBindVertexArray(vao);
-// 	glDrawArrays(GL_TRIANGLE_FAN, 0, nbrOfVertices);
-// }
-
-// void GameRenderer::drawSquare(Entity *wall) {
-// 	float startCoordX = startX + (wall->getPosition()[0] * squarePercentX);
-// 	float startCoordY = startY - (wall->getPosition()[2] * squarePercentY);
-
-// 	// POINTS
-// 	float points[] = {startCoordX,
-// 					  startCoordY,
-// 					  0.0f,
-// 					  startCoordX,
-// 					  startCoordY - squarePercentY,
-// 					  0.0f,
-// 					  startCoordX + squarePercentX,
-// 					  startCoordY,
-// 					  0.0f,
-
-// 					  startCoordX + squarePercentX,
-// 					  startCoordY,
-// 					  0.0f,
-// 					  startCoordX + squarePercentX,
-// 					  startCoordY - squarePercentY,
-// 					  0.0f,
-// 					  startCoordX,
-// 					  startCoordY - squarePercentY,
-// 					  0.0f};
-
-// 	// BUFFER
-// 	vbo = 0;
-// 	glGenBuffers(1, &vbo);
-// 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-// 	glBufferData(GL_ARRAY_BUFFER, sizeof(points), points, GL_STATIC_DRAW);
-// 	makeVAO(vbo);
-
-// 	_initShaders(CYAN_SHADER);
-// 	initProgram();
-// 	glUseProgram(shaderProgram);
-// 	glBindVertexArray(vao);
-// 	// drawing all the vertex of the triangle
-// 	glDrawArrays(GL_TRIANGLES, 0, 6);
-// }
 
 void GameRenderer::getUserInput(void) { glfwPollEvents(); }
 
-int GameRenderer::refreshWindow(std::vector<Entity *> &entities) {
+void GameRenderer::refreshWindow(std::vector<Entity *> &entities) {
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -385,18 +171,36 @@ int GameRenderer::refreshWindow(std::vector<Entity *> &entities) {
 	// 				   toString(static_cast<int>(1 /
 	// _gameEngine->getDeltaTime())).c_str());
 
-	glUseProgram(_shaderProgram);
+	glUseProgram(_shaderPrograms["4.1"]->getID());
+
+	glm::mat4 projection = glm::perspective(
+		glm::radians(45.0f), (float)width / (float)height, 0.1f, 100.0f);
+	int projectionLoc =
+		glGetUniformLocation(_shaderPrograms["4.1"]->getID(), "projection");
+	glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
+
+	glm::mat4 view = glm::mat4(1.0f);
+	view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+	int viewLoc = glGetUniformLocation(_shaderPrograms["4.1"]->getID(), "view");
+	glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+
+	glm::mat4 model =
+		glm::rotate(glm::mat4(1.0f), (float)glfwGetTime() * glm::radians(50.0f),
+					glm::vec3(0.5f, 1.0f, 0.0f));
+	int modelLoc =
+		glGetUniformLocation(_shaderPrograms["4.1"]->getID(), "model");
+	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 
 	for (auto entity : entities) {
 		glBindVertexArray((entity->getModel())->getVAO());
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+		glDrawArrays(GL_TRIANGLES, 0, entity->getModel()->getSize());
 		// glBindVertexArray(0);
 	}
 
+	(void)entities;
 	// Put everything to screen
 	glfwSwapBuffers(_window);
-	return EXIT_SUCCESS;
 }
 
 std::map<std::string, Model *> GameRenderer::getModels() const {
@@ -934,3 +738,211 @@ void GameRenderer::keyCallback(GLFWwindow *window, int key, int scancode,
 }
 
 GameEngine *GameRenderer::_gameEngine = NULL;
+
+// void GameRenderer::createBorder(void) {
+// 	float epsilonX = 1 / (WINDOW_W / 2.0f);
+// 	float epsilonY = 1 / (WINDOW_H / 2.0f);
+
+// 	float vertexBorders[] = {
+// 		startX,
+// 		startY + epsilonY,
+// 		0.0f,  // top-left
+// 		-(startX) + epsilonX,
+// 		startY + epsilonY,
+// 		0.0f,  // top-right
+
+// 		-(startX) + epsilonX,
+// 		startY + epsilonY,
+// 		0.0f,  // top-right
+// 		-(startX) + epsilonX,
+// 		-(startY),
+// 		0.0f,  // bottom-right
+
+// 		-(startX) + epsilonX,
+// 		-(startY),
+// 		0.0f,  // bottom-right
+// 		startX,
+// 		-(startY),
+// 		0.0f,  // bottom-left
+
+// 		startX,
+// 		-(startY),
+// 		0.0f,  // bottom-left
+// 		startX,
+// 		startY + epsilonY,
+// 		0.0f  // top-left
+// 	};
+// 	// BUFFER
+// 	vbo = 0;
+// 	glGenBuffers(1, &vbo);
+// 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+// 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertexBorders), vertexBorders,
+// 				 GL_STATIC_DRAW);
+// 	makeVAO(vbo);
+
+// 	_initShaders(WHITE_SHADER);
+// 	initProgram();
+// 	glUseProgram(shaderProgram);
+// 	glBindVertexArray(vao);
+// 	// Drawing all the vertex of the triangle
+// 	glDrawArrays(GL_LINE_LOOP, 0, 8);
+// }
+
+// void GameRenderer::createGrid(void) {
+// 	int linesCount = 78;
+// 	int pointsCount = linesCount * 2;
+// 	float lineSpacing = squarePercentX;
+// 	float tmpX = startX;
+// 	float vertexBorders[pointsCount * 3];
+// 	for (int i = 0; i < pointsCount * 3; i++) {
+// 		vertexBorders[i] = 0;
+// 	}
+
+// 	// Vertical lines
+// 	lineSpacing = squarePercentX;
+// 	tmpX = startX + lineSpacing;
+// 	for (int i = 0; i < linesCount / 2; i++) {
+// 		// Start point
+// 		int lineIdx = i * 6;
+// 		vertexBorders[lineIdx] = tmpX;
+// 		vertexBorders[lineIdx + 1] = startY;
+// 		vertexBorders[lineIdx + 2] = 0.0f;
+
+// 		// End point
+// 		vertexBorders[lineIdx + 3] = tmpX;
+// 		vertexBorders[lineIdx + 4] = -(startY);
+// 		vertexBorders[lineIdx + 5] = 0.0f;
+
+// 		tmpX += lineSpacing;
+// 	}
+// 	// Horizontal lines
+// 	lineSpacing = squarePercentY;
+// 	tmpX = startY - lineSpacing;
+// 	for (int i = linesCount / 2; i < linesCount; i++) {
+// 		// Start point
+// 		int lineIdx = i * 6;
+// 		vertexBorders[lineIdx] = startX;
+// 		vertexBorders[lineIdx + 1] = tmpX;
+// 		vertexBorders[lineIdx + 2] = 0.0f;
+
+// 		// End point
+// 		vertexBorders[lineIdx + 3] = -startX;
+// 		vertexBorders[lineIdx + 4] = tmpX;
+// 		vertexBorders[lineIdx + 5] = 0.0f;
+
+// 		tmpX -= lineSpacing;
+// 	}
+// 	// BUFFER
+// 	vbo = 0;
+// 	glGenBuffers(1, &vbo);
+// 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+// 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertexBorders), vertexBorders,
+// 				 GL_STATIC_DRAW);
+// 	makeVAO(vbo);
+
+// 	_initShaders(WHITE_SHADER);
+// 	initProgram();
+// 	glUseProgram(shaderProgram);
+// 	glBindVertexArray(vao);
+// 	// Drawing all the vertex of the triangle
+// 	glDrawArrays(GL_LINES, 0, pointsCount);
+// }
+
+// void GameRenderer::drawPlayer(Entity *player) {
+// 	if (player == nullptr) return;
+// 	float startCoordX = startX + (player->getPosition()[0] * squarePercentX);
+// 	float startCoordY = startY - (player->getPosition()[2] * squarePercentY);
+
+// 	float xCenter = startCoordX + (squarePercentX / 2);
+// 	float yCenter = startCoordY - (squarePercentY / 2);
+// 	int nbrOfSide = 120;
+// 	float radiusX = squarePercentX / 2;
+// 	float radiusY = squarePercentY / 2;
+
+// 	GLint nbrOfVertices = nbrOfSide + 2;
+
+// 	GLfloat doublePi = 2.0f * 3.14159265358979f;
+
+// 	GLfloat circleVerticesX[nbrOfVertices];
+// 	GLfloat circleVerticesY[nbrOfVertices];
+// 	GLfloat circleVerticesZ[nbrOfVertices];
+
+// 	circleVerticesX[0] = xCenter;
+// 	circleVerticesY[0] = yCenter;
+// 	circleVerticesZ[0] = 0;
+
+// 	for (int i = 1; i < nbrOfVertices; i++) {
+// 		circleVerticesX[i] =
+// 			xCenter + (radiusX * cos(i * doublePi / nbrOfSide));
+// 		circleVerticesY[i] =
+// 			yCenter + (radiusY * sin(i * doublePi / nbrOfSide));
+// 		circleVerticesZ[i] = 0;
+// 	}
+// 	GLfloat allCircleVertices[nbrOfVertices * 3];
+// 	for (int i = 0; i < nbrOfVertices; i++) {
+// 		allCircleVertices[i * 3] = circleVerticesX[i];
+// 		allCircleVertices[(i * 3) + 1] = circleVerticesY[i];
+// 		allCircleVertices[(i * 3) + 2] = circleVerticesZ[i];
+// 	}
+
+// 	// BUFFER
+// 	vbo = 0;
+// 	glGenBuffers(1, &vbo);
+// 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+// 	glBufferData(GL_ARRAY_BUFFER, sizeof(allCircleVertices), allCircleVertices,
+// 				 GL_STATIC_DRAW);
+// 	makeVAO(vbo);
+
+// 	_initShaders(GREEN_SHADER);
+// 	initProgram();
+// 	glUseProgram(shaderProgram);
+// 	glBindVertexArray(vao);
+// 	glDrawArrays(GL_TRIANGLE_FAN, 0, nbrOfVertices);
+// }
+
+// void GameRenderer::drawSquare(Entity *wall) {
+// 	float startCoordX = startX + (wall->getPosition()[0] * squarePercentX);
+// 	float startCoordY = startY - (wall->getPosition()[2] * squarePercentY);
+
+// 	// POINTS
+// 	float points[] = {startCoordX,
+// 					  startCoordY,
+// 					  0.0f,
+// 					  startCoordX,
+// 					  startCoordY - squarePercentY,
+// 					  0.0f,
+// 					  startCoordX + squarePercentX,
+// 					  startCoordY,
+// 					  0.0f,
+
+// 					  startCoordX + squarePercentX,
+// 					  startCoordY,
+// 					  0.0f,
+// 					  startCoordX + squarePercentX,
+// 					  startCoordY - squarePercentY,
+// 					  0.0f,
+// 					  startCoordX,
+// 					  startCoordY - squarePercentY,
+// 					  0.0f};
+
+// 	// BUFFER
+// 	vbo = 0;
+// 	glGenBuffers(1, &vbo);
+// 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+// 	glBufferData(GL_ARRAY_BUFFER, sizeof(points), points, GL_STATIC_DRAW);
+// 	makeVAO(vbo);
+
+// 	_initShaders(CYAN_SHADER);
+// 	initProgram();
+// 	glUseProgram(shaderProgram);
+// 	glBindVertexArray(vao);
+// 	// drawing all the vertex of the triangle
+// 	glDrawArrays(GL_TRIANGLES, 0, 6);
+// }
+
+// void GameRenderer::initProgram(void) {
+// 	shaderProgram = glCreateProgram();
+// 	glAttachShader(shaderProgram, fs);
+// 	glAttachShader(shaderProgram, vs);
+// 	glLinkProgram(shaderProgram);
+// }

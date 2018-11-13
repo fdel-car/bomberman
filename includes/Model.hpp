@@ -7,7 +7,8 @@ class Model {
 	Model(std::string const &objPath);
 	virtual ~Model(void);
 
-	unsigned int getVAO(void) const;
+	size_t getSize(void) const;
+	GLuint getVAO(void) const;
 
    private:
 	Model(void);
@@ -15,7 +16,9 @@ class Model {
 
 	Model &operator=(Model const &rhs);
 
-	unsigned int _VAO;
-	unsigned int _VBO;
-	unsigned int _EBO;
+	size_t _size;
+
+	GLuint _VAO;
+	GLuint _VBO;
+	GLuint _EBO;
 };

@@ -27,5 +27,3 @@ std::string toString(const T& val) {
 	oss << val;
 	return oss.str();
 }
-
-const char* getFileContent(std::string const& filename);
