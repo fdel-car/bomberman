@@ -43,8 +43,19 @@ GameRenderer::GameRenderer(GameEngine *gameEngine) {
 	squarePercentY = startY / (_gameEngine->getMapH() / 2.0f);
 	squarePercentX = (-startX) / (_gameEngine->getMapW() / 2.0f);
 
-	graphicUI = new GUI(_window);
-	// std::cout << "6" << std::endl;
+
+
+	std::vector< std::tuple< float, const char *, std::string > > vFontPath;
+	vFontPath.push_back(std::tuple<float, const char *, std::string> (14.0f, "/Users/vklaouse/Desktop/Amatic-Bold.ttf", "Amatic-Bold.ttf"));
+	vFontPath.push_back(std::tuple<float, const char *, std::string> (18.0f, "/Users/vklaouse/Desktop/Amatic-Bold.ttf", "Amatic-Bold.ttf"));
+	vFontPath.push_back(std::tuple<float, const char *, std::string> (22.0f, "/Users/vklaouse/Desktop/DroidSans.ttf", "DroidSans.ttf"));
+
+	std::vector< std::tuple< const char *, std::string > > vImagePath;
+	vImagePath.push_back(std::tuple< const char *, std::string > ("/Users/vklaouse/Desktop/image1.png", "image1.png"));
+
+	graphicUI = new GUI(_window, vFontPath, vImagePath);
+
+
 
 	// _initShaders();
 	_initScene();

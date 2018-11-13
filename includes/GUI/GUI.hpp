@@ -19,29 +19,8 @@
 #include "stb/stb_image.h"
 
 struct media {
-    struct nk_font *font_14;
-    struct nk_font *font_18;
-    struct nk_font *font_20;
-    struct nk_font *font_22;
-
-    struct nk_image unchecked;
-    struct nk_image checked;
-    struct nk_image rocket;
-    struct nk_image cloud;
-    struct nk_image pen;
-    struct nk_image play;
-    struct nk_image pause;
-    struct nk_image stop;
-    struct nk_image prev;
-    struct nk_image next;
-    struct nk_image tools;
-    struct nk_image dir;
-    struct nk_image copy;
-    struct nk_image convert;
-    struct nk_image del;
-    struct nk_image edit;
-    struct nk_image images[9];
-    struct nk_image menu[6];
+    std::map<std::string, struct nk_font * > myFonts;
+	std::map<std::string, struct nk_image > myImages;
 };
 
 struct nk_vertex {
@@ -65,7 +44,7 @@ struct device {
     GLuint font_tex;
 };
 
-static struct nk {
+struct nk {
     GLFWwindow *win;
     int width, height;
     int display_width, display_height;
@@ -79,46 +58,71 @@ static struct nk {
     double last_button_click;
     int is_double_click_down;
     struct nk_vec2 double_click_pos;
-} glfw;
+};
 
 class GUI {
 
 public:
+
 	GUI();
-	GUI(GLFWwindow *window);
+	GUI(GLFWwindow *window,
+		std::vector<std::tuple<float,const char *,std::string>> vFontPath = std::vector<std::tuple<float,const char *,std::string>>(),
+		std::vector<std::tuple<const char *,std::string>> vImagePath = std::vector<std::tuple<const char *,std::string>>());
 	~GUI();
 
 	GUI &operator=(GUI const &rhs);
 
 	void drawGUI();
 
-private:
-	// struct nk glfw;
-	enum nk_glfw_init_state
-	{
-	    NK_GLFW3_DEFAULT = 0,
-	    NK_GLFW3_INSTALL_CALLBACKS
-	};
+	static struct nk glfw;
 
-	struct nk_context * nkInit(GLFWwindow *win, enum nk_glfw_init_state);
+	/*
+	** Rendering
+	*/
+
+	void nkNewFrame();
+	void nkRender();
+
+	/*
+	** Use for init GUI
+	*/
+
 	static void nkClipboardCopy(nk_handle usr, const char *text, int len);
 	static void nkClipboardPaste(nk_handle usr, struct nk_text_edit *edit);
-	void nkDeviceCreate();
 	static void nkCharCallback(GLFWwindow *win, unsigned int codepoint);
 	static void nkScrollCallback(GLFWwindow *win, double xoff, double yoff);
 	static void nkMouseButtonCallback(GLFWwindow *win, int button, int action, int mods);
 
-	void nkNewFrame();
+private:
+	/*
+	** Contain all fonts && images/icons
+	*/
 
-	void deviceUploadAtlas(const void *image, int width, int height);
-	void nkRender(enum nk_anti_aliasing AA, int max_vertex_buffer, int max_element_buffer);
-	// void nk_glfw3_shutdown(void);
-	void nkFontStashBegin(/*struct nk_font_atlas **atlas*/);
-	void nkFontStashEnd();
-	//
-	// void nk_glfw3_device_destroy(void);
-	//
+	struct media * _media;
 
-    struct media * _media;
+	/*
+	** Init GUI (nuklear)
+	*/
+
+	void _nkInit(GLFWwindow *win);
+	void _nkDeviceCreate();
+
+	/*
+	** Init && Set : font && image
+	*/
+
+	void _nkFontStashBegin();
+	void _nkFontStashEnd();
+	void _deviceUploadAtlas(const void *image, int width, int height);
+	void _setFonts(std::vector< std::tuple< float, const char *, std::string > > &vFontPath);
+	void _setImages(std::vector< std::tuple< const char *, std::string > > &vImagePath);
+	struct nk_image iconLoad(const char *filename);
+
+	/*
+	** Free GUI (nuklear)
+	*/
+
+	void _nkDeviceDestroy();
+	void _nkShutdown();
 
 };
