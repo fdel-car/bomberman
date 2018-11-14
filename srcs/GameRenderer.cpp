@@ -46,15 +46,15 @@ GameRenderer::GameRenderer(GameEngine *gameEngine) {
 
 
 	std::vector< std::tuple< float, const char *, std::string > > vFontPath;
-	vFontPath.push_back(std::tuple<float, const char *, std::string> (14.0f, "/Users/vklaouse/Desktop/Amatic-Bold.ttf", "Amatic-Bold.ttf"));
-	vFontPath.push_back(std::tuple<float, const char *, std::string> (18.0f, "/Users/vklaouse/Desktop/Amatic-Bold.ttf", "Amatic-Bold.ttf"));
-	vFontPath.push_back(std::tuple<float, const char *, std::string> (22.0f, "/Users/vklaouse/Desktop/DroidSans.ttf", "DroidSans.ttf"));
+	vFontPath.push_back(std::tuple<float, const char *, std::string> (18.0f, "/Users/vklaouse/Desktop/BOMBERMA.TTF", "BOMBERMA.TTF"));
+	// vFontPath.push_back(std::tuple<float, const char *, std::string> (18.0f, "/Users/vklaouse/Desktop/Amatic-Bold.ttf", "Amatic-Bold.ttf"));
+	// vFontPath.push_back(std::tuple<float, const char *, std::string> (14.0f, "/Users/vklaouse/Desktop/DroidSans.ttf", "DroidSans.ttf"));
 
 	std::vector< std::tuple< const char *, std::string > > vImagePath;
 	vImagePath.push_back(std::tuple< const char *, std::string > ("/Users/vklaouse/Desktop/image1.png", "image1.png"));
 
 	graphicUI = new GUI(_window, vFontPath, vImagePath);
-
+	graphicUI->setStyle(THEME_DARK);
 
 
 	// _initShaders();
@@ -397,9 +397,11 @@ int GameRenderer::refreshWindow(std::vector<Entity *> &entities) {
 	glfwSetWindowTitle(
 		_window,
 		toString(static_cast<int>(1 / _gameEngine->getDeltaTime())).c_str());
+	graphicUI->nkNewFrame();
 
-	graphicUI->drawGUI();
-
+	graphicUI->uiDialogBox("Vivien", "image1.png", "18_BOMBERMA.TTF", "You watch those nature documentaries on the cable? You see the one about", true);
+	// graphicUI->drawGUI();
+	graphicUI->nkRender();
 	// glfwSetWindowTitle(_window,
 	// 				   toString(static_cast<int>(1 /
 	// _gameEngine->getDeltaTime())).c_str());

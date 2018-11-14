@@ -18,6 +18,8 @@
 #include "nuklear/nuklear.h"
 #include "stb/stb_image.h"
 
+enum theme {THEME_BLACK, THEME_WHITE, THEME_RED, THEME_BLUE, THEME_DARK};
+
 struct media {
     std::map<std::string, struct nk_font * > myFonts;
 	std::map<std::string, struct nk_image > myImages;
@@ -84,14 +86,19 @@ public:
 	void nkRender();
 
 	/*
-	** Use for init GUI
+	** Style
 	*/
 
-	static void nkClipboardCopy(nk_handle usr, const char *text, int len);
-	static void nkClipboardPaste(nk_handle usr, struct nk_text_edit *edit);
-	static void nkCharCallback(GLFWwindow *win, unsigned int codepoint);
-	static void nkScrollCallback(GLFWwindow *win, double xoff, double yoff);
-	static void nkMouseButtonCallback(GLFWwindow *win, int button, int action, int mods);
+	void setStyle(enum theme theme);
+
+	bool uiStartBlock(const char * id, const char * title, struct nk_rect bounds, nk_flags flags);
+	void uiEndBlock();
+	void uiSetFont(std::string fontName);
+	void uiSetImage(std::string imgName);
+	void uiHeader(std::string fontName, const char * title, bool isLeft);
+	void uiWidget(std::string fontName, float height);
+	void uiWidgetCentered(std::string fontName, float height);
+	void uiDialogBox(const char * name, std::string imgName, std::string fontName, const char * text, bool isImgLeft);
 
 private:
 	/*
@@ -106,6 +113,12 @@ private:
 
 	void _nkInit(GLFWwindow *win);
 	void _nkDeviceCreate();
+
+	static void nkClipboardCopy(nk_handle usr, const char *text, int len);
+	static void nkClipboardPaste(nk_handle usr, struct nk_text_edit *edit);
+	static void nkCharCallback(GLFWwindow *win, unsigned int codepoint);
+	static void nkScrollCallback(GLFWwindow *win, double xoff, double yoff);
+	static void nkMouseButtonCallback(GLFWwindow *win, int button, int action, int mods);
 
 	/*
 	** Init && Set : font && image
