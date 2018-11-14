@@ -96,82 +96,163 @@ bool GameEngine::initScene(int newSceneIdx) {
 void GameEngine::moveEntities(void) {
 	const Collider *collider;
 	bool collisionDetected = false;
+	std::vector<Entity *> collidedEntities = std::vector<Entity *>();
+	std::vector<Entity *> collidedTriggers = std::vector<Entity *>();
+	std::vector<float> futureMovement = std::vector<float>(3, 0);
+	std::vector<float> tmpFutureMovement = std::vector<float>(3, 0);
 	std::vector<float> futurePos = std::vector<float>(3, 0);
 	LineInfo lineA;
 	LineInfo lineB;
 
-	for (size_t i = 0; i < _activeEntities.size(); i++) {
-		collisionDetected = false;
-		if (_activeEntities[i]->getTargetMovement()[0] != 0.0f ||
-			_activeEntities[i]->getTargetMovement()[2] != 0.0f) {
-			collider = _activeEntities[i]->getCollider();
+	size_t idx = 0;
+	size_t idxToTest = 0;
+	for (auto entity : _activeEntities) {
+		if (entity->getTargetMovement()[0] != 0.0f ||
+			entity->getTargetMovement()[2] != 0.0f) {
+			collider = entity->getCollider();
 
 			if (collider) {
-				// 1) Find lines that inglobe movement
-				getMovementLines(_activeEntities[i], &lineA, &lineB);
-				// If lines are vertical, create Rectangle Collider only once
-				Collider moveCollider(Collider::Rectangle, 0.0f, 0.0f);
-				std::vector<float> centerPos(3, 0);
-				if (lineA.isVertical) {
-					moveCollider.width =
-						abs(lineA.startX - lineB.startX) / 2.0f;
-					moveCollider.height = abs(lineA.startZ - lineA.endZ) / 2.0f;
-					centerPos[0] = (lineA.startX + lineB.startX) / 2;
-					centerPos[2] = (lineA.startZ + lineA.endZ) / 2;
-				}
+				// Init vars before first loop
+				collisionDetected = false;
+				collidedEntities = _activeEntities;
+				collidedEntities.erase(collidedEntities.begin() +
+									   idx);  // Erase self entity from list
+											  // that needs to be checked
+				// To make Obj slide over obstacles we have to adapt
+				// targetMovement to suitable pos
+				futureMovement[0] = entity->getTargetMovement()[0];
+				futureMovement[2] = entity->getTargetMovement()[2];
+				do {
+					collisionDetected =
+						checkCollision(entity, futureMovement, collidedEntities,
+									   collidedTriggers) !=
+						collidedEntities.size();
 
-				// Simulate movement
-				futurePos[0] = _activeEntities[i]->getPosition()[0] +
-							   _activeEntities[i]->getTargetMovement()[0];
-				futurePos[2] = _activeEntities[i]->getPosition()[2] +
-							   _activeEntities[i]->getTargetMovement()[2];
+					if (collisionDetected) {
+						// Safe break to avoid infinite loop
+						if (abs(futureMovement[0]) <= 0.05f &&
+							abs(futureMovement[2]) <= 0.05f) {
+							collidedTriggers.clear();
+							break;
+						}
 
-				for (size_t j = 0; j < _activeEntities.size(); j++) {
-					if (j == i) continue;
-					// TODO: skip collision with object that cannot collide with
+						// Update entities to check collisions with
+						if (idxToTest != 0)
+							collidedEntities.erase(
+								collidedEntities.begin(),
+								collidedEntities.begin() + idxToTest - 1);
 
-					// 2) Check if final position collides with smth
-					// 3) Check if any other obj collides with lineA/lineB
-					if (doCollide(collider, futurePos, _activeEntities[j]) ||
-						(lineA.isVertical && doCollide(&moveCollider, centerPos,
-													   _activeEntities[j])) ||
-						(!lineA.isVertical &&
-						 hasCollisionCourse(lineA, lineB,
-											_activeEntities[j]))) {
-						// TODO: handle if is physical collision or trigger
-						collisionDetected = true;
-						break;
+						// If is first time then try moving indipendently one
+						// of the two axis (Only if its a two-axis move)
+						if (futureMovement[0] ==
+								entity->getTargetMovement()[0] &&
+							futureMovement[0] != 0.0f &&
+							futureMovement[2] ==
+								entity->getTargetMovement()[2] &&
+							futureMovement[2] != 0.0f) {
+							tmpFutureMovement[0] = futureMovement[0];
+							tmpFutureMovement[2] = 0.0f;
+							collisionDetected =
+								checkCollision(entity, tmpFutureMovement,
+											   collidedEntities,
+											   collidedTriggers) !=
+								collidedEntities.size();
+							if (!collisionDetected) {
+								futureMovement[2] = 0.0f;
+								break;
+							}
+							tmpFutureMovement[0] = 0.0f;
+							tmpFutureMovement[2] = futureMovement[2];
+							collisionDetected =
+								checkCollision(entity, tmpFutureMovement,
+											   collidedEntities,
+											   collidedTriggers) !=
+								collidedEntities.size();
+							if (!collisionDetected) {
+								futureMovement[0] = 0.0f;
+								break;
+							}
+						}
+
+						// Slightly decrease futureMovement to see if smaller
+						// movement can be performed
+						futureMovement[0] /= 2.0f;
+						futureMovement[2] /= 2.0f;
 					}
-				}
+				} while (collisionDetected);
 
-				// If no collision, everything is good
+				// TODO: trigger all triggers
+				// for (auto triggerEntity : collidedTriggers) {
+				// }
 				if (!collisionDetected) {
-					_activeEntities[i]->moveFromPosition(
-						_activeEntities[i]->getTargetMovement());
-				}
-				// TODO: Else
-				else {
-					// TODO
-					std::cout << "Collision detected !" << std::endl;
+					entity->moveFromPosition(futureMovement);
 				}
 			} else {
 				// Skip checks if entity doesnt have a collider
-				_activeEntities[i]->moveFromPosition(
-					_activeEntities[i]->getTargetMovement());
+				entity->moveFromPosition(entity->getTargetMovement());
 			}
 		}
 	}
 }
 
-void GameEngine::getMovementLines(Entity *entity, LineInfo *lineA,
-								  LineInfo *lineB) {
+size_t GameEngine::checkCollision(Entity *entity,
+								  std::vector<float> &futureMovement,
+								  std::vector<Entity *> &collidedEntities,
+								  std::vector<Entity *> &collidedTriggers) {
+	// Init
+	std::vector<float> futurePos = std::vector<float>(3, 0);
+	LineInfo lineA;
+	LineInfo lineB;
+	collidedTriggers.clear();
+
+	// 1) Find lines that inglobe movement
+	getMovementLines(entity, futureMovement, &lineA, &lineB);
+	// If lines are vertical, create Rectangle Collider only
+	// once
+	Collider moveCollider(Collider::Rectangle, 0.0f, 0.0f);
+	std::vector<float> centerPos(3, 0);
+	if (lineA.isVertical) {
+		moveCollider.width = abs(lineA.startX - lineB.startX) / 2.0f;
+		moveCollider.height = abs(lineA.startZ - lineA.endZ) / 2.0f;
+		centerPos[0] = (lineA.startX + lineB.startX) / 2;
+		centerPos[2] = (lineA.startZ + lineA.endZ) / 2;
+	}
+
+	// Simulate movement
+	futurePos[0] = entity->getPosition()[0] + futureMovement[0];
+	futurePos[2] = entity->getPosition()[2] + futureMovement[2];
+
+	size_t idxToTest = 0;
+	for (auto entityToTest : collidedEntities) {
+		// TODO: skip collision with object that cannot collide
+		// with
+
+		// 2) Check if final position collides with smth
+		// 3) Check if any other obj collides with lineA/lineB
+		if (doCollide(entity->getCollider(), futurePos, entityToTest) ||
+			(lineA.isVertical &&
+			 doCollide(&moveCollider, centerPos, entityToTest)) ||
+			(!lineA.isVertical &&
+			 hasCollisionCourse(lineA, lineB, entityToTest))) {
+			// TODO: handle if is physical collision or trigger
+			break;
+		}
+		idxToTest++;
+	}
+
+	return idxToTest;
+}
+
+void GameEngine::getMovementLines(Entity *entity,
+								  std::vector<float> &targetMovement,
+								  LineInfo *lineA, LineInfo *lineB) {
 	// Find points that will determine Lines
 	lineA->startX = entity->getPosition()[0];
 	lineA->startZ = entity->getPosition()[2];
 	lineB->startX = entity->getPosition()[0];
 	lineB->startZ = entity->getPosition()[2];
 	// Avoid division by 0 if movement is only along 'z' axis
-	if (entity->getTargetMovement()[0] == 0.0f) {
+	if (targetMovement[0] == 0.0f) {
 		lineA->startX += entity->getCollider()->width;
 		lineB->startX -= entity->getCollider()->width;
 		lineA->isVertical = true;
@@ -180,9 +261,9 @@ void GameEngine::getMovementLines(Entity *entity, LineInfo *lineA,
 		lineB->q = lineB->startX;
 	} else {
 		// Find 'm' of direction from center to target center
-		float m = entity->getTargetMovement()[2] /
-				  entity->getTargetMovement()[0];  // TargetMovement is already
-												   // a delta of coords
+		float m =
+			targetMovement[2] / targetMovement[0];  // TargetMovement is already
+													// a delta of coords
 		lineA->m = m;
 		lineB->m = m;
 		lineA->isVertical = false;
@@ -193,10 +274,8 @@ void GameEngine::getMovementLines(Entity *entity, LineInfo *lineA,
 			// Rectangle
 			// TODO: for now we increase Z when we want to go down, but will
 			// change soon
-			if ((entity->getTargetMovement()[0] > 0.0f &&
-				 entity->getTargetMovement()[2] > 0.0f) ||
-				(entity->getTargetMovement()[0] < 0.0f &&
-				 entity->getTargetMovement()[2] < 0.0f)) {
+			if ((targetMovement[0] > 0.0f && targetMovement[2] > 0.0f) ||
+				(targetMovement[0] < 0.0f && targetMovement[2] < 0.0f)) {
 				// We are going Down-Right or Up-Left, take TopRight(A) and
 				// BottomLeft(B) corners
 				lineA->startX += entity->getCollider()->width;
@@ -238,10 +317,10 @@ void GameEngine::getMovementLines(Entity *entity, LineInfo *lineA,
 	}
 
 	// Add end point infos
-	lineA->endX = lineA->startX + entity->getTargetMovement()[0];
-	lineA->endZ = lineA->startZ + entity->getTargetMovement()[2];
-	lineB->endX = lineB->startX + entity->getTargetMovement()[0];
-	lineB->endZ = lineB->startZ + entity->getTargetMovement()[2];
+	lineA->endX = lineA->startX + targetMovement[0];
+	lineA->endZ = lineA->startZ + targetMovement[2];
+	lineB->endX = lineB->startX + targetMovement[0];
+	lineB->endZ = lineB->startZ + targetMovement[2];
 }
 
 bool GameEngine::hasCollisionCourse(LineInfo &lineA, LineInfo &lineB,

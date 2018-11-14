@@ -54,7 +54,11 @@ class GameEngine {
 
 	bool initScene(int newSceneIdx);
 	void moveEntities(void);
-	void getMovementLines(Entity *entity, LineInfo *lineA, LineInfo *lineB);
+	size_t checkCollision(Entity *entity, std::vector<float> &futureMovement,
+						  std::vector<Entity *> &collidedEntities,
+						  std::vector<Entity *> &collidedTriggers);
+	void getMovementLines(Entity *entity, std::vector<float> &targetMovement,
+						  LineInfo *lineA, LineInfo *lineB);
 	bool hasCollisionCourse(LineInfo &lineA, LineInfo &lineB, Entity *entityB);
 	bool isLineLineCollision(LineInfo &lineA, LineInfo &lineB);
 	bool isLineCircleCollision(LineInfo &lineA, float &xSquareCoeff,
