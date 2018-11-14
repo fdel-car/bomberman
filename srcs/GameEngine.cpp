@@ -100,30 +100,44 @@ void GameEngine::moveEntities(void) {
 	LineInfo lineA;
 	LineInfo lineB;
 
-	size_t idx = 0;
-	for (auto entity : _activeEntities) {
+	for (size_t i = 0; i < _activeEntities.size(); i++) {
 		collisionDetected = false;
-		if (entity->getTargetMovement()[0] != 0.0f ||
-			entity->getTargetMovement()[2] != 0.0f) {
-			collider = entity->getCollider();
+		if (_activeEntities[i]->getTargetMovement()[0] != 0.0f ||
+			_activeEntities[i]->getTargetMovement()[2] != 0.0f) {
+			collider = _activeEntities[i]->getCollider();
 
 			if (collider) {
 				// 1) Find lines that inglobe movement
-				getMovementLines(entity, &lineA, &lineB);
+				getMovementLines(_activeEntities[i], &lineA, &lineB);
+				// If lines are vertical, create Rectangle Collider only once
+				Collider moveCollider(Collider::Rectangle, 0.0f, 0.0f);
+				std::vector<float> centerPos(3, 0);
+				if (lineA.isVertical) {
+					moveCollider.width =
+						abs(lineA.startX - lineB.startX) / 2.0f;
+					moveCollider.height = abs(lineA.startZ - lineA.endZ) / 2.0f;
+					centerPos[0] = (lineA.startX + lineB.startX) / 2;
+					centerPos[2] = (lineA.startZ + lineA.endZ) / 2;
+				}
 
 				// Simulate movement
-				futurePos[0] =
-					entity->getPosition()[0] + entity->getTargetMovement()[0];
-				futurePos[2] =
-					entity->getPosition()[2] + entity->getTargetMovement()[2];
+				futurePos[0] = _activeEntities[i]->getPosition()[0] +
+							   _activeEntities[i]->getTargetMovement()[0];
+				futurePos[2] = _activeEntities[i]->getPosition()[2] +
+							   _activeEntities[i]->getTargetMovement()[2];
 
-				for (size_t j = idx + 1; j < _activeEntities.size(); j++) {
+				for (size_t j = 0; j < _activeEntities.size(); j++) {
+					if (j == i) continue;
 					// TODO: skip collision with object that cannot collide with
 
 					// 2) Check if final position collides with smth
 					// 3) Check if any other obj collides with lineA/lineB
 					if (doCollide(collider, futurePos, _activeEntities[j]) ||
-						hasCollisionCourse(lineA, lineB, _activeEntities[j])) {
+						(lineA.isVertical && doCollide(&moveCollider, centerPos,
+													   _activeEntities[j])) ||
+						(!lineA.isVertical &&
+						 hasCollisionCourse(lineA, lineB,
+											_activeEntities[j]))) {
 						// TODO: handle if is physical collision or trigger
 						collisionDetected = true;
 						break;
@@ -132,7 +146,8 @@ void GameEngine::moveEntities(void) {
 
 				// If no collision, everything is good
 				if (!collisionDetected) {
-					entity->moveFromPosition(entity->getTargetMovement());
+					_activeEntities[i]->moveFromPosition(
+						_activeEntities[i]->getTargetMovement());
 				}
 				// TODO: Else
 				else {
@@ -141,10 +156,10 @@ void GameEngine::moveEntities(void) {
 				}
 			} else {
 				// Skip checks if entity doesnt have a collider
-				entity->moveFromPosition(entity->getTargetMovement());
+				_activeEntities[i]->moveFromPosition(
+					_activeEntities[i]->getTargetMovement());
 			}
 		}
-		idx++;
 	}
 }
 
@@ -231,9 +246,10 @@ void GameEngine::getMovementLines(Entity *entity, LineInfo *lineA,
 
 bool GameEngine::hasCollisionCourse(LineInfo &lineA, LineInfo &lineB,
 									Entity *entityB) {
-	const Collider *colliderB = entityB->getCollider();
-	// Easy case, we can use doCollide() since we have a "standard" rectangle
-	if (lineA.isVertical) {
+	// Check to avoid errors
+	if (lineA.isVertical || lineB.isVertical) {
+		// Easy case, we can use doCollide() since we have a "standard"
+		// rectangle
 		Collider testCollider(Collider::Rectangle,
 							  abs(lineA.startX - lineB.startX) / 2,
 							  abs(lineA.startZ - lineA.endZ) / 2);
@@ -245,6 +261,7 @@ bool GameEngine::hasCollisionCourse(LineInfo &lineA, LineInfo &lineB,
 	}
 
 	// Classic case
+	const Collider *colliderB = entityB->getCollider();
 	if (colliderB->shape == Collider::Rectangle) {
 		// Rectangle
 		// TODO:: change sign for Z when up is positive
@@ -330,7 +347,6 @@ bool GameEngine::isLineLineCollision(LineInfo &lineA, LineInfo &lineB) {
 bool GameEngine::isLineCircleCollision(LineInfo &lineA, float &xSquareCoeff,
 									   float &xCoeff, float &zSquareCoeff,
 									   float &zCoeff, float &cCoeff) {
-	// TODO
 	xSquareCoeff += zSquareCoeff * pow(lineA.m, 2);
 	xCoeff += zSquareCoeff * (2 * lineA.m * lineA.q);
 	cCoeff += zSquareCoeff * pow(lineA.q, 2);
