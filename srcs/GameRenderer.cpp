@@ -72,12 +72,13 @@ void GameRenderer::_initShaders(void) {
 	// Init projection matrix
 	_projection = glm::perspective(
 		glm::radians(45.0f), (float)_width / (float)_height, 0.1f, 100.0f);
+
+	// Init GLint uniform identfiers
 	_projectionLoc =
 		glGetUniformLocation(_shaderPrograms["4.1"]->getID(), "projection");
 	glUniformMatrix4fv(_projectionLoc, 1, GL_FALSE,
 					   glm::value_ptr(_projection));
-
-	// Init GLint uniform identfier for "model"
+	_viewLoc = glGetUniformLocation(_shaderPrograms["4.1"]->getID(), "view");
 	_modelLoc = glGetUniformLocation(_shaderPrograms["4.1"]->getID(), "model");
 
 	// // Shader pour les vertex
@@ -156,14 +157,15 @@ void GameRenderer::_initShaders(void) {
 }
 
 void GameRenderer::_initShapes(void) {
-	_shapes["Cube"] = new Shape("assets/objs/cube.obj");
-	_shapes["Bomb"] = new Shape("assets/objs/bomb/Bomb.obj");
-	_shapes["Sponza"] = new Shape("assets/objs/sponza/sponza.obj");
+	_shapes["Floor"] = new Shape("assets/objs/floor/floor.obj");
+	_shapes["Player"] = new Shape("assets/objs/player/player.obj");
+	_shapes["Bomb"] = new Shape("assets/objs/bomb/bomb.obj");
 }
 
 void GameRenderer::getUserInput(void) { glfwPollEvents(); }
 
-void GameRenderer::refreshWindow(std::vector<Entity *> &entities) {
+void GameRenderer::refreshWindow(std::vector<Entity *> &entities,
+								 Camera *camera) {
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -184,10 +186,10 @@ void GameRenderer::refreshWindow(std::vector<Entity *> &entities) {
 
 	glUseProgram(_shaderPrograms["4.1"]->getID());
 
-	glm::mat4 view = glm::mat4(1.0f);
-	view = glm::translate(view, glm::vec3(0.0f, 0.0f, -5.0f));
-	int viewLoc = glGetUniformLocation(_shaderPrograms["4.1"]->getID(), "view");
-	glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+	// glm::mat4 view = glm::mat4(1.0f);
+	// view = glm::translate(view, glm::vec3(0.0f, 0.0f, -5.0f));
+	glUniformMatrix4fv(_viewLoc, 1, GL_FALSE,
+					   glm::value_ptr(camera->getViewMatrix()));
 
 	for (auto entity : entities) {
 		// entity->rotate(glm::vec3(0.0, 1.0, 0.0), 1.0);

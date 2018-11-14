@@ -8,11 +8,36 @@ Entity::Entity(glm::vec3 position, glm::vec3 eulerAngles, Collider *collider,
 	  _collider(collider),
 	  _shape(shape),
 	  _isTmp(isTmp) {
-	glm::quat rotationQuat = glm::quat(eulerAngles);
+	// std::cout << "Euler Angles: " << eulerAngles.x << ' ' << eulerAngles.y
+	// 		  << ' ' << eulerAngles.z << std::endl;
+
+	// float c1 = cos(glm::radians(eulerAngles.z) / 2);
+	// float s1 = sin(glm::radians(eulerAngles.z) / 2);
+	// float c2 = cos(eulerAngles.y / 2);
+	// float s2 = sin(eulerAngles.y / 2);
+	// float c3 = cos(eulerAngles.x / 2);
+	// float s3 = sin(eulerAngles.x / 2);
+	// float c1c2 = c1 * c2;
+	// float s1s2 = s1 * s2;
+	// glm::quat rotQuaternion(c1c2 * c3 - s1s2 * s3, c1c2 * s3 + s1s2 * c3,
+	// 						s1 * c2 * c3 + c1 * s2 * s3,
+	// 						c1 * s2 * c3 - s1 * c2 * s3);
+
+	// std::cout << "Quaternion: " << rotQuaternion.x << ' ' << rotQuaternion.y
+	// 		  << ' ' << rotQuaternion.z << " | " << rotQuaternion.w
+	// 		  << std::endl;
+
+	// glm::quat tmp(eulerAngles);
+
+	// std::cout << "Tmp quaternion: " << tmp.x << ' ' << tmp.y << ' ' << tmp.z
+	// 		  << " | " << tmp.w << std::endl;
+
+	// std::cout << glm::radians(45.0f) << std::endl;
+
 	_modelMatrix = glm::translate(_modelMatrix, position);
-	_modelMatrix =
-		glm::rotate(_modelMatrix, rotationQuat.w,
-					glm::vec3(rotationQuat.x, rotationQuat.y, rotationQuat.z));
+	// _modelMatrix =
+	// glm::rotate(_modelMatrix, rotQuaternion.w, glm::vec3(0.0, 0.0, 1.0));
+	(void)eulerAngles;
 }
 
 Entity::~Entity(void) {

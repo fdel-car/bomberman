@@ -7,7 +7,7 @@ class AGameScene {
 	AGameScene(void);
 	virtual ~AGameScene(void) {}
 	SceneData const getData() const;
-	Camera const *getCamera() const;
+	Camera *getCamera() const;
 	virtual void load(void) = 0;
 
    protected:

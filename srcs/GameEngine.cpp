@@ -57,6 +57,7 @@ bool GameEngine::initScene(int newSceneIdx) {
 	_sceneIdx = newSceneIdx;
 	_clearTmpEntities();
 	_gameScenes[newSceneIdx]->load();
+	_camera = _gameScenes[newSceneIdx]->getCamera();
 	for (auto data : _gameScenes[newSceneIdx]->getData()) {
 		_allEntities.push_back(
 			new Entity(data.pos, data.eulerAngles, data.collider,
@@ -188,7 +189,7 @@ void GameEngine::run(void) {
 		// TODO: set position of entities back to prev frame when they collide
 		// checkCollisions();
 
-		_gameRenderer->refreshWindow(_allEntities);
+		_gameRenderer->refreshWindow(_allEntities, _camera);
 	}
 	if (restartRequest) {
 		std::cout << "Starting new game!" << std::endl;

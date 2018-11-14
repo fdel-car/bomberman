@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Camera.hpp"
 #include "Collider.hpp"
 #include "ShaderProgram.hpp"
 #include "Shape.hpp"
@@ -27,7 +28,7 @@ class GameRenderer {
 	~GameRenderer(void);
 
 	void getUserInput(void);
-	void refreshWindow(std::vector<Entity *> &entities);
+	void refreshWindow(std::vector<Entity *> &entities, Camera *camera);
 	void closeWindow(void);
 	std::map<std::string, Shape *> getShapes(void) const;
 
@@ -77,6 +78,7 @@ class GameRenderer {
 
 	glm::mat4 _projection;
 	GLint _projectionLoc;
+	GLint _viewLoc;
 	GLint _modelLoc;
 	// GLuint vbo;
 	// GLuint vao;
