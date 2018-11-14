@@ -1,8 +1,8 @@
-#include "Model.hpp"
+#include "Shape.hpp"
 #define TINYOBJLOADER_IMPLEMENTATION
 #include "tiny_obj_loader/tiny_obj_loader.h"
 
-Model::Model(std::string const &objPath) : _size(0) {
+Shape::Shape(std::string const &objPath) : _size(0) {
 	tinyobj::attrib_t attrib;
 	std::vector<tinyobj::shape_t> shapes;
 	std::vector<tinyobj::material_t> materials;
@@ -74,7 +74,7 @@ Model::Model(std::string const &objPath) : _size(0) {
 	glBindVertexArray(0);
 }
 
-Model::~Model(void) {}
+Shape::~Shape(void) {}
 
-GLuint Model::getVAO(void) const { return _VAO; }
-size_t Model::getSize(void) const { return _size; }
+GLuint Shape::getVAO(void) const { return _VAO; }
+size_t Shape::getSize(void) const { return _size; }

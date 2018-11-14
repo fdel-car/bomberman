@@ -1,7 +1,7 @@
 #include "GameRenderer.hpp"
 #include "Entity.hpp"
 #include "GameEngine.hpp"
-#include "Model.hpp"
+#include "Shape.hpp"
 
 GameRenderer::GameRenderer(GameEngine *gameEngine) {
 	_gameEngine = gameEngine;
@@ -24,7 +24,7 @@ GameRenderer::GameRenderer(GameEngine *gameEngine) {
 	glfwSetWindowPos(_window, (mode->width / 2) - (WINDOW_W / 2),
 					 (mode->height / 2) - (WINDOW_H / 2));
 	glfwMakeContextCurrent(_window);
-	glfwGetWindowSize(_window, &width, &height);
+	glfwGetWindowSize(_window, &_width, &_height);
 	glfwSetWindowUserPointer(_window, this);
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 		throw new std::runtime_error("Failed to initialize GLAD");
@@ -47,9 +47,7 @@ GameRenderer::GameRenderer(GameEngine *gameEngine) {
 	// graphicUI = new GUI(window);
 
 	_initShaders();
-	_initModels();
-
-	_transform = glm::mat4(1.0f);
+	_initShapes();
 }
 
 GameRenderer::~GameRenderer(void) {
@@ -69,6 +67,19 @@ GameRenderer::~GameRenderer(void) {
 void GameRenderer::_initShaders(void) {
 	_shaderPrograms["4.1"] =
 		new ShaderProgram("assets/shaders/4.1.vs", "assets/shaders/4.1.fs");
+	glUseProgram(_shaderPrograms["4.1"]->getID());
+
+	// Init projection matrix
+	_projection = glm::perspective(
+		glm::radians(45.0f), (float)_width / (float)_height, 0.1f, 100.0f);
+	_projectionLoc =
+		glGetUniformLocation(_shaderPrograms["4.1"]->getID(), "projection");
+	glUniformMatrix4fv(_projectionLoc, 1, GL_FALSE,
+					   glm::value_ptr(_projection));
+
+	// Init GLint uniform identfier for "model"
+	_modelLoc = glGetUniformLocation(_shaderPrograms["4.1"]->getID(), "model");
+
 	// // Shader pour les vertex
 	// vertexShader =
 	// 	"#version 400\n"
@@ -144,10 +155,10 @@ void GameRenderer::_initShaders(void) {
 	// 	std::cout << "Fragment Shader compile failed." << std::endl;
 }
 
-void GameRenderer::_initModels(void) {
-	_models["Cube"] = new Model("assets/objs/cube.obj");
-	_models["Bomb"] = new Model("assets/objs/bomb/Bomb.obj");
-	_models["Sponza"] = new Model("assets/objs/sponza/sponza.obj");
+void GameRenderer::_initShapes(void) {
+	_shapes["Cube"] = new Shape("assets/objs/cube.obj");
+	_shapes["Bomb"] = new Shape("assets/objs/bomb/Bomb.obj");
+	_shapes["Sponza"] = new Shape("assets/objs/sponza/sponza.obj");
 }
 
 void GameRenderer::getUserInput(void) { glfwPollEvents(); }
@@ -173,28 +184,18 @@ void GameRenderer::refreshWindow(std::vector<Entity *> &entities) {
 
 	glUseProgram(_shaderPrograms["4.1"]->getID());
 
-	glm::mat4 projection = glm::perspective(
-		glm::radians(45.0f), (float)width / (float)height, 0.1f, 100.0f);
-	int projectionLoc =
-		glGetUniformLocation(_shaderPrograms["4.1"]->getID(), "projection");
-	glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
-
 	glm::mat4 view = glm::mat4(1.0f);
-	view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+	view = glm::translate(view, glm::vec3(0.0f, 0.0f, -5.0f));
 	int viewLoc = glGetUniformLocation(_shaderPrograms["4.1"]->getID(), "view");
 	glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
 
-	glm::mat4 model =
-		glm::rotate(glm::mat4(1.0f), (float)glfwGetTime() * glm::radians(50.0f),
-					glm::vec3(0.5f, 1.0f, 0.0f));
-	int modelLoc =
-		glGetUniformLocation(_shaderPrograms["4.1"]->getID(), "model");
-	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-
 	for (auto entity : entities) {
-		glBindVertexArray((entity->getModel())->getVAO());
+		// entity->rotate(glm::vec3(0.0, 1.0, 0.0), 1.0);
+		glUniformMatrix4fv(_modelLoc, 1, GL_FALSE,
+						   glm::value_ptr(entity->getModelMatrix()));
+		glBindVertexArray((entity->getShape())->getVAO());
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-		glDrawArrays(GL_TRIANGLES, 0, entity->getModel()->getSize());
+		glDrawArrays(GL_TRIANGLES, 0, entity->getShape()->getSize());
 		// glBindVertexArray(0);
 	}
 
@@ -203,8 +204,8 @@ void GameRenderer::refreshWindow(std::vector<Entity *> &entities) {
 	glfwSwapBuffers(_window);
 }
 
-std::map<std::string, Model *> GameRenderer::getModels() const {
-	return _models;
+std::map<std::string, Shape *> GameRenderer::getShapes() const {
+	return _shapes;
 }
 
 void GameRenderer::closeWindow() {

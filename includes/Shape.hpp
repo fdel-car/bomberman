@@ -2,19 +2,19 @@
 
 #include "header.hpp"
 
-class Model {
+class Shape {
    public:
-	Model(std::string const &objPath);
-	virtual ~Model(void);
+	Shape(std::string const &objPath);
+	virtual ~Shape(void);
 
 	size_t getSize(void) const;
 	GLuint getVAO(void) const;
 
    private:
-	Model(void);
-	Model(Model const &src);
+	Shape(void);
+	Shape(Shape const &src);
 
-	Model &operator=(Model const &rhs);
+	Shape &operator=(Shape const &rhs);
 
 	size_t _size;
 

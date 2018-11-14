@@ -59,8 +59,8 @@ bool GameEngine::initScene(int newSceneIdx) {
 	_gameScenes[newSceneIdx]->load();
 	for (auto data : _gameScenes[newSceneIdx]->getData()) {
 		_allEntities.push_back(
-			new Entity(data.pos, data.rot, data.collider,
-					   (_gameRenderer->getModels())[data.modelName], true));
+			new Entity(data.pos, data.eulerAngles, data.collider,
+					   (_gameRenderer->getShapes())[data.shapeName], true));
 		_allEntities.back()->setGameEngine(this);
 	}
 	return true;

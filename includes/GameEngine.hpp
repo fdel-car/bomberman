@@ -2,9 +2,8 @@
 
 #include "AGameScene.hpp"
 #include "AudioManager.hpp"
+#include "Camera.hpp"
 #include "Collider.hpp"
-#include "Entity.hpp"
-#include "header.hpp"
 
 #define MAP_SIZE 40
 
@@ -88,4 +87,5 @@ class GameEngine {
 	int _sceneIdx;
 	std::vector<AGameScene *> _gameScenes;
 	std::vector<Entity *> _allEntities;
+	Camera *_camera;
 };

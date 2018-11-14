@@ -1,25 +1,28 @@
 #pragma once
 
 #include "Collider.hpp"
-#include "Model.hpp"
-#include "header.hpp"
+#include "Shape.hpp"
 
 class GameEngine;
 
 class Entity {
    public:
-	Entity(glm::vec3 position, glm::vec3 rotation, Collider *collider,
-		   Model *model, bool isTmp);
+	Entity(glm::vec3 position, glm::vec3 eulerAngles, Collider *collider,
+		   Shape *shape, bool isTmp);
 	virtual ~Entity(void);
 
 	virtual void Update(void);
 	GameEngine *getGameEngine(void) const;
 	const glm::vec3 &getPosition(void) const;
-	const glm::vec3 &getRotation(void) const;
+	const glm::mat4 &getModelMatrix(void) const;
 	const Collider *getCollider(void) const;
-	const Model *getModel(void) const;
+	const Shape *getShape(void) const;
 	bool getTmpState(void) const;
 	void setGameEngine(GameEngine *gameEngine);
+
+	void rotate(glm::vec3 axis, float angle);
+	void rotateY(float angle);
+	void translate(glm::vec3 translation);
 
 	// Texture *texture;
 	// Animation *anim;
@@ -27,10 +30,10 @@ class Entity {
 
    protected:
 	glm::vec3 _position;
-	glm::vec3 _rotation;
+	glm::mat4 _modelMatrix;
 
 	Collider *_collider;
-	Model *_model;
+	Shape *_shape;
 
 	std::string _name;
 	std::string _tag;
@@ -44,9 +47,9 @@ class Entity {
 
 typedef struct s_data {
 	glm::vec3 pos;
-	glm::vec3 rot;
+	glm::vec3 eulerAngles;
 	Collider *collider;
-	std::string modelName;
+	std::string shapeName;
 } t_data;
 
 typedef std::vector<t_data> SceneData;

@@ -18,7 +18,8 @@ set(SRCS
   srcs/GameEngine.cpp
   srcs/GameRenderer.cpp
   srcs/ShaderProgram.cpp
-  srcs/Model.cpp
+  srcs/Camera.cpp
+  srcs/Shape.cpp
   srcs/Player.cpp
   srcs/GUI/GUI.cpp
   srcs/scenes/Factory.cpp
@@ -42,7 +43,8 @@ set(HEADERS
   includes/GameEngine.hpp
   includes/GameRenderer.hpp
   includes/ShaderProgram.hpp
-  includes/Model.hpp
+  includes/Camera.hpp
+  includes/Shape.hpp
   includes/Player.hpp
   includes/GUI/GUI.hpp
   srcs/scenes/Factory.hpp
