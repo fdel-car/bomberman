@@ -23,6 +23,7 @@ enum theme {THEME_BLACK, THEME_WHITE, THEME_RED, THEME_BLUE, THEME_DARK};
 struct media {
     std::map<std::string, struct nk_font * > myFonts;
 	std::map<std::string, struct nk_image > myImages;
+	std::string defaultFont;
 };
 
 struct nk_vertex {
@@ -93,12 +94,14 @@ public:
 
 	bool uiStartBlock(const char * id, const char * title, struct nk_rect bounds, nk_flags flags);
 	void uiEndBlock();
-	void uiSetFont(std::string fontName);
+	void uiApplyFont(std::string fontName);
+	void uiApplyDefaultFont();
+	void uiSetDefaultFont(std::string fontName);
 	void uiSetImage(std::string imgName);
-	void uiHeader(std::string fontName, const char * title, bool isLeft);
-	void uiWidget(std::string fontName, float height);
-	void uiWidgetCentered(std::string fontName, float height);
-	void uiDialogBox(const char * name, std::string imgName, std::string fontName, const char * text, bool isImgLeft);
+	void uiHeader(const char * title, nk_flags flags, std::string fontName = "");
+	void uiWidget(float height, std::string fontName = "");
+	void uiWidgetCentered(float height, std::string fontName = "");
+	void uiDialogBox(const char * name, std::string imgName, const char * text, bool isImgLeft, size_t maxCharPerLine, int nbrOfLine, nk_flags textPosition = NK_TEXT_LEFT, std::string fontText = "", std::string fontTitle = "");
 
 private:
 	/*

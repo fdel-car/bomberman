@@ -301,7 +301,7 @@ struct nk_image GUI::iconLoad(const char *filename) {
     GLuint tex;
     unsigned char *data = stbi_load(filename, &x, &y, &n, 0);
     if (!data) {
-		std::cerr << "Image not found" << std::endl;
+		std::cerr << "Image not found at " << filename << std::endl;
 		filename = NULL;
 		return nk_image_id(-1);
 	}
@@ -663,52 +663,87 @@ void GUI::uiEndBlock() {
 	nk_end(&GUI::glfw.ctx);
 }
 
-void GUI::uiSetFont(std::string fontName) {
-	nk_style_set_font(&glfw.ctx, &_media->myFonts[fontName]->handle);
+void GUI::uiApplyFont(std::string fontName) {
+	if (_media->myFonts.find(fontName) != _media->myFonts.end())
+		nk_style_set_font(&glfw.ctx, &_media->myFonts[fontName]->handle);
+}
+
+void GUI::uiApplyDefaultFont() {
+	if (_media->myFonts.find(_media->defaultFont) != _media->myFonts.end())
+		nk_style_set_font(&glfw.ctx, &_media->myFonts[_media->defaultFont]->handle);
+}
+
+void GUI::uiSetDefaultFont(std::string fontName) {
+	_media->defaultFont = fontName;
+	uiApplyDefaultFont();
 }
 
 void GUI::uiSetImage(std::string imgName) {
-	nk_image(&glfw.ctx, _media->myImages.at(imgName));
+	if (_media->myImages.find(imgName) != _media->myImages.end())
+		nk_image(&glfw.ctx, _media->myImages.at(imgName));
 }
 
-void GUI::uiHeader(std::string fontName, const char * title, bool isLeft) {
-    uiSetFont(fontName);
+void GUI::uiHeader(const char * title, nk_flags flags, std::string fontName) {
+    uiApplyFont(fontName);
     nk_layout_row_dynamic(&glfw.ctx, 20, 1);
-    nk_label(&glfw.ctx, title, isLeft ? NK_TEXT_LEFT : NK_TEXT_RIGHT);
+    nk_label(&glfw.ctx, title, flags);
+	uiApplyDefaultFont();
 }
 
-void GUI::uiWidget(std::string fontName, float height) {
+void GUI::uiWidget(float height, std::string fontName) {
     static const float ratio[] = {0.15f, 0.85f};
-    uiSetFont(fontName);
+    uiApplyFont(fontName);
     nk_layout_row(&glfw.ctx, NK_DYNAMIC, height, 2, ratio);
     nk_spacing(&glfw.ctx, 1);
+	uiApplyDefaultFont();
 }
 
-void GUI::uiWidgetCentered(std::string fontName, float height) {
+void GUI::uiWidgetCentered(float height, std::string fontName) {
     static const float ratio[] = {0.15f, 0.50f, 0.35f};
-    uiSetFont(fontName);
+    uiApplyFont(fontName);
     nk_layout_row(&glfw.ctx, NK_DYNAMIC, height, 3, ratio);
     nk_spacing(&glfw.ctx, 1);
+	uiApplyDefaultFont();
 }
 
-void GUI::uiDialogBox(const char * name, std::string imgName, std::string fontName, const char * text, bool isImgLeft) {
+void GUI::uiDialogBox(const char * name, std::string imgName, const char * text, bool isImgLeft, size_t maxCharPerLine, int nbrOfLine, nk_flags textPosition, std::string fontText, std::string fontTitle) {
 	struct nk_rect rect = nk_rect(0, (WINDOW_H / 4) * 3, WINDOW_W, WINDOW_H / 4);
+	int imgWidth = (WINDOW_H / 4) - 40;
+	int dialogBoxHeight = (WINDOW_H / 4) - 45;
+	int textWidth = (WINDOW_W / 4) * 3 - (imgWidth - (WINDOW_W / 4)) - 40;
 	if (uiStartBlock("dialog", name, rect, 0)) {
-		uiHeader(fontName, name, isImgLeft);
-		nk_layout_row_begin(&glfw.ctx, NK_STATIC, (WINDOW_H / 4) - 60, 2);
+		uiHeader(name, NK_TEXT_CENTERED, fontTitle);
+		uiApplyFont(fontText);
+		nk_layout_row_begin(&glfw.ctx, NK_STATIC, dialogBoxHeight, 2);
 		if (isImgLeft) {
-			nk_layout_row_push(&glfw.ctx, WINDOW_W / 4);
-	        uiSetImage(imgName);
-	        nk_layout_row_push(&glfw.ctx, (WINDOW_W / 4) * 3 - 50);
-			nk_label(&glfw.ctx, text, NK_TEXT_LEFT);
+			nk_layout_row_push(&glfw.ctx, imgWidth);
+			uiSetImage(imgName);
 		}
-		else {
-			nk_layout_row_push(&glfw.ctx, (WINDOW_W / 4) * 3 - 50);
-			nk_label(&glfw.ctx, text, NK_TEXT_LEFT);
-			nk_layout_row_push(&glfw.ctx, WINDOW_W / 4);
+		nk_layout_row_push(&glfw.ctx, textWidth);
+        if (nk_group_begin(&glfw.ctx, "dialogLines", NK_WINDOW_BORDER | NK_WINDOW_NO_SCROLLBAR)) {
+			size_t printedChars = 0;
+			std::string myStr = std::string(text);
+			if ((dialogBoxHeight / 20) - 1 < nbrOfLine || nbrOfLine <= 0)
+				nbrOfLine = (dialogBoxHeight / 20) - 1;
+            nk_layout_row_dynamic(&glfw.ctx, (dialogBoxHeight / nbrOfLine) - 1.0f, 1);
+			for (int i = 0; i < nbrOfLine; i++) {
+				std::string partialStr = myStr.substr(printedChars, maxCharPerLine);
+				if (partialStr.size() == maxCharPerLine) {
+					std::size_t found = partialStr.rfind(" ");
+  					if (found!=std::string::npos)
+						partialStr = partialStr.substr(0, found + 1);
+				}
+				nk_label(&glfw.ctx, partialStr.c_str(), textPosition);
+				printedChars += partialStr.size();
+			}
+            nk_group_end(&glfw.ctx);
+        }
+		if (!isImgLeft) {
+			nk_layout_row_push(&glfw.ctx, imgWidth);
 			uiSetImage(imgName);
 		}
 	    nk_layout_row_end(&glfw.ctx);
 	}
 	uiEndBlock();
+	uiApplyDefaultFont();
 }

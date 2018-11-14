@@ -46,15 +46,18 @@ GameRenderer::GameRenderer(GameEngine *gameEngine) {
 
 
 	std::vector< std::tuple< float, const char *, std::string > > vFontPath;
-	vFontPath.push_back(std::tuple<float, const char *, std::string> (18.0f, "/Users/vklaouse/Desktop/BOMBERMA.TTF", "BOMBERMA.TTF"));
-	// vFontPath.push_back(std::tuple<float, const char *, std::string> (18.0f, "/Users/vklaouse/Desktop/Amatic-Bold.ttf", "Amatic-Bold.ttf"));
-	// vFontPath.push_back(std::tuple<float, const char *, std::string> (14.0f, "/Users/vklaouse/Desktop/DroidSans.ttf", "DroidSans.ttf"));
+	vFontPath.push_back(std::tuple<float, const char *, std::string> (42.0f, "/Users/vklaouse/Desktop/BOMBERMA.TTF", "BOMBERMA.TTF"));
+		vFontPath.push_back(std::tuple<float, const char *, std::string> (18.0f, "/Users/vklaouse/Desktop/BOMBERMA.TTF", "BOMBERMA.TTF"));
+	vFontPath.push_back(std::tuple<float, const char *, std::string> (18.0f, "/Users/vklaouse/Desktop/Amatic-Bold.ttf", "Amatic-Bold.ttf"));
+	vFontPath.push_back(std::tuple<float, const char *, std::string> (18.0f, "/Users/vklaouse/Desktop/DroidSans.ttf", "DroidSans.ttf"));
 
 	std::vector< std::tuple< const char *, std::string > > vImagePath;
-	vImagePath.push_back(std::tuple< const char *, std::string > ("/Users/vklaouse/Desktop/image1.png", "image1.png"));
+	vImagePath.push_back(std::tuple< const char *, std::string > ("/Users/vklaouse/Desktop/toto.png", "toto.png"));
+	vImagePath.push_back(std::tuple< const char *, std::string > ("/Users/vklaouse/Desktop/image1.png", "image2.png"));
 
 	graphicUI = new GUI(_window, vFontPath, vImagePath);
-	graphicUI->setStyle(THEME_DARK);
+	graphicUI->uiSetDefaultFont("18_DroidSans.ttf");
+	graphicUI->setStyle(THEME_RED);
 
 
 	// _initShaders();
@@ -385,21 +388,33 @@ int GameRenderer::refreshWindow(std::vector<Entity *> &entities) {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	// std::cout << "9" << std::endl;
 	createBorder();
-
-	for (const auto entity : entities) {
-		// Just a temporary if, waiting to have a way to handle .obj
-		if (entity->getCollider()->shape == Collider::Circle)
-			drawPlayer(entity);
-		else
-			drawSquare(entity);
-	}
+	(void)entities;
+	// for (const auto entity : entities) {
+	// 	// Just a temporary if, waiting to have a way to handle .obj
+	// 	if (entity->getCollider()->shape == Collider::Circle)
+	// 		drawPlayer(entity);
+	// 	else
+	// 		drawSquare(entity);
+	// }
 	// createGrid();
 	glfwSetWindowTitle(
 		_window,
 		toString(static_cast<int>(1 / _gameEngine->getDeltaTime())).c_str());
 	graphicUI->nkNewFrame();
-
-	graphicUI->uiDialogBox("Vivien", "image1.png", "18_BOMBERMA.TTF", "You watch those nature documentaries on the cable? You see the one about", true);
+	struct nk_rect rect = nk_rect(0, 0, 300, 300);
+	if (graphicUI->uiStartBlock("test1", "Demo", rect, NK_WINDOW_TITLE | NK_WINDOW_BORDER)) {
+		// graphicUI->uiSetFont("14_DroidSans.ttf");
+		graphicUI->uiHeader("Left", NK_TEXT_LEFT);
+		graphicUI->uiHeader("Right", NK_TEXT_RIGHT, "18_BOMBERMA.TTF");
+		// if (nk_button_label(&GUI::glfw.ctx, "Button"))
+			// std::cout << "Coucou" << std::endl;
+	}
+	graphicUI->uiEndBlock();
+	// if (uiStartBlock(ds)) {
+	//
+	// }
+	// uiEndBlock();
+	graphicUI->uiDialogBox("Bomber Man", "image1.png", "AHAHAHAHAHAH AH", true, 40, 1, NK_TEXT_CENTERED, "42_BOMBERMA.TTF", "18_BOMBERMA.TTF");
 	// graphicUI->drawGUI();
 	graphicUI->nkRender();
 	// glfwSetWindowTitle(_window,
