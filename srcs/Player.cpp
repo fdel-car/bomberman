@@ -31,10 +31,10 @@ void Player::Update(void) {
 	float zDirection = 0.0f;
 
 	// Update position based on keyboard
-	if (_gameEngine->isKeyPressed(KEY_D)) xSign -= 1;
-	if (_gameEngine->isKeyPressed(KEY_A)) xSign += 1;
-	if (_gameEngine->isKeyPressed(KEY_S)) zSign -= 1;
-	if (_gameEngine->isKeyPressed(KEY_W)) zSign += 1;
+	if (_gameEngine->isKeyPressed(KEY_A)) xSign -= 1;
+	if (_gameEngine->isKeyPressed(KEY_D)) xSign += 1;
+	if (_gameEngine->isKeyPressed(KEY_W)) zSign -= 1;
+	if (_gameEngine->isKeyPressed(KEY_S)) zSign += 1;
 	if (xSign == 0 && zSign == 0) {
 		// TODO: check for joystick input
 	} else {

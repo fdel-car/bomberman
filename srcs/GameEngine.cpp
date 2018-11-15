@@ -269,24 +269,24 @@ void GameEngine::getMovementLines(Entity *entity, glm::vec3 &targetMovement,
 			// Rectangle
 			// TODO: for now we increase Z when we want to go down, but will
 			// change soon
-			if ((targetMovement.x > 0.0f && targetMovement.z < 0.0f) ||
-				(targetMovement.x < 0.0f && targetMovement.z > 0.0f)) {
+			if ((targetMovement.x > 0.0f && targetMovement.z > 0.0f) ||
+				(targetMovement.x < 0.0f && targetMovement.z < 0.0f)) {
 				// We are going Down-Right or Up-Left, take TopRight(A) and
 				// BottomLeft(B) corners
 				lineA->startX += entity->getCollider()->width;
-				lineA->startZ += entity->getCollider()
+				lineA->startZ -= entity->getCollider()
 									 ->height;  // TODO: Change minus to plus
 				lineB->startX -= entity->getCollider()->width;
-				lineB->startZ -= entity->getCollider()
+				lineB->startZ += entity->getCollider()
 									 ->height;  // TODO: Change plus to minus
 			} else {
 				// We are going Down-Left or Up-Right, take TopLeft(A) and
 				// BottomRight(B) corners
 				lineA->startX -= entity->getCollider()->width;
-				lineA->startZ += entity->getCollider()
+				lineA->startZ -= entity->getCollider()
 									 ->height;  // TODO: Change minus to plus
 				lineB->startX += entity->getCollider()->width;
-				lineB->startZ -= entity->getCollider()
+				lineB->startZ += entity->getCollider()
 									 ->height;  // TODO: Change plus to minus
 			}
 		} else {
@@ -341,8 +341,8 @@ bool GameEngine::hasCollisionCourse(LineInfo &lineA, LineInfo &lineB,
 		// TODO:: change sign for Z when up is positive
 		float leftX = entityB->getPosition().x - colliderB->width;
 		float rightX = entityB->getPosition().x + colliderB->width;
-		float upZ = entityB->getPosition().z + colliderB->height;
-		float downZ = entityB->getPosition().z - colliderB->height;
+		float upZ = entityB->getPosition().z - colliderB->height;
+		float downZ = entityB->getPosition().z + colliderB->height;
 		LineInfo tmpLine(leftX, upZ, rightX, upZ);
 		if (isLineLineCollision(lineA, tmpLine) ||
 			isLineLineCollision(lineB, tmpLine)) {
