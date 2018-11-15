@@ -34,6 +34,7 @@ set(HEADERS
   includes/glm/glm.hpp
   includes/glm/gtc/matrix_transform.hpp
   includes/glm/gtc/type_ptr.hpp
+  includes/glm/gtc/epsilon.hpp
   includes/nuklear_glfw_gl3.h
   includes/header.hpp
   includes/Entity.hpp

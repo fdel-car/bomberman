@@ -18,6 +18,7 @@
 // The formatter is dumb, keep this line!
 #include <GLFW/glfw3.h>
 #include "glm/glm.hpp"
+#include "glm/gtc/epsilon.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/type_ptr.hpp"
 

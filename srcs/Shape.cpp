@@ -42,7 +42,7 @@ Shape::Shape(std::string const &objPath) : _size(0) {
 				vertices.push_back(attrib.normals[3 * idx.normal_index + 1]);
 				vertices.push_back(attrib.normals[3 * idx.normal_index + 2]);
 
-				// Push normals inside vertices vector
+				// Push colors inside vertices vector
 				vertices.push_back(r);
 				vertices.push_back(g);
 				vertices.push_back(b);
@@ -79,7 +79,7 @@ Shape::Shape(std::string const &objPath) : _size(0) {
 
 	// Colors
 	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float),
-						  (void *)(3 * sizeof(float)));
+						  (void *)(6 * sizeof(float)));
 	glEnableVertexAttribArray(2);
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);

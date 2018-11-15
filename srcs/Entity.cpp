@@ -69,8 +69,8 @@ void Entity::translate(glm::vec3 translation) {
 
 void Entity::rotate(glm::vec3 axis, float angle) {
 	float length = glm::length(axis);
-	if (1.0 > length + FLT_EPSILON ||
-		1.0 < length - FLT_EPSILON)  // Normalize if needed
+	if (1.0f > length + FLT_EPSILON ||
+		1.0f < length - FLT_EPSILON)  // Normalize if needed
 		axis = glm::normalize(axis);
 	_modelMatrix = glm::rotate(_modelMatrix, glm::radians(angle), axis);
 }
