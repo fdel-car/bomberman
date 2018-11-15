@@ -17,9 +17,11 @@ class Entity {
 	const Collider *getCollider(void) const;
 	const Shape *getShape(void) const;
 	bool getTmpState(void) const;
-	void initEntity(GameEngine *gameEngine);
+	glm::vec3 getEulerAngles(void) const;
+	std::string const &getName(void) const;
 
-	virtual void Update(void);
+	virtual void update(void);
+	virtual void initEntity(GameEngine *gameEngine);
 
 	void rotate(glm::vec3 axis, float angle);
 	void rotateY(float angle);
@@ -35,6 +37,8 @@ class Entity {
 	glm::vec3 _position;
 	glm::mat4 _modelMatrix;
 
+	Entity &operator=(Entity const &rhs);
+
    protected:
 	std::string _shapeName;
 	std::string _name;
@@ -44,8 +48,12 @@ class Entity {
 	Collider *_collider;
 	GameEngine *_gameEngine;
 	bool _isTmp;
+
+	glm::quat _rotation;
 	glm::vec3 _targetMovement;
 
 	Entity(void);
 	Entity(Entity const &src);
 };
+
+std::ostream &operator<<(std::ostream &o, Entity const &entity);

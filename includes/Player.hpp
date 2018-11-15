@@ -7,7 +7,7 @@ class Player : public Entity {
 	Player(glm::vec3 position, glm::vec3 eulerAngles);
 	~Player(void);
 
-	virtual void Update(void);
+	virtual void update(void);
 
    private:
 	float _speed;
