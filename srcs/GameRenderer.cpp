@@ -84,11 +84,11 @@ void GameRenderer::_initShaders(void) {
 	_viewLoc = glGetUniformLocation(_shaderPrograms["4.1"]->getID(), "view");
 	_modelLoc = glGetUniformLocation(_shaderPrograms["4.1"]->getID(), "model");
 	
-	// _lightDirLoc = glGetUniformLocation(_shaderPrograms["4.1"]->getID(), "lightDir");
-	// glUniform3fv(_lightDirLoc, 1, glm::value_ptr(glm::vec3( -0.2f, -1.0f, -0.3f )));
-	// _viewPosLoc = glGetUniformLocation(_shaderPrograms["4.1"]->getID(), "viewPos");
-	// _lightColorLoc = glGetUniformLocation(_shaderPrograms["4.1"]->getID(), "lightColor");
-	// glUniform3fv(_lightColorLoc, 1, glm::value_ptr(glm::vec3(1.0f, 1.0f, 1.0f)));
+	_lightDirLoc = glGetUniformLocation(_shaderPrograms["4.1"]->getID(), "lightDir");
+	glUniform3fv(_lightDirLoc, 1, glm::value_ptr(glm::vec3( -0.2f, -1.0f, -0.3f )));
+	_viewPosLoc = glGetUniformLocation(_shaderPrograms["4.1"]->getID(), "viewPos");
+	_lightColorLoc = glGetUniformLocation(_shaderPrograms["4.1"]->getID(), "lightColor");
+	glUniform3fv(_lightColorLoc, 1, glm::value_ptr(glm::vec3(1.0f, 1.0f, 1.0f)));
 	
 
 	// // Shader pour les vertex
@@ -201,7 +201,7 @@ void GameRenderer::refreshWindow(std::vector<Entity *> &entities,
 	glUniformMatrix4fv(_viewLoc, 1, GL_FALSE,
 					   glm::value_ptr(camera->getViewMatrix()));
 
-	// glUniform3fv(_viewPosLoc, 1, glm::value_ptr(camera->getPosition()));
+	glUniform3fv(_viewPosLoc, 1, glm::value_ptr(camera->getPosition()));
 	
 	for (auto entity : entities) {
 		// entity->rotate(glm::vec3(0.0, 1.0, 0.0), 1.0);
