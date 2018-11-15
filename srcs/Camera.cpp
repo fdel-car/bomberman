@@ -20,23 +20,30 @@ glm::mat4 const &Camera::getProjectionMatrix(void) const { return _projection; }
 
 void Camera::initEntity(GameEngine *gameEngine) {
 	Entity::initEntity(gameEngine);
-	float const aspectRatio = (float)gameEngine->getGameRenderer()->getWidth() /
-							  (float)gameEngine->getGameRenderer()->getHeight();
-	_projection =
-		glm::perspective(glm::radians(45.0f), aspectRatio, 0.1f, 100.0f);
-	// float length = glm::length(glm::vec3() - getPosition());
-	// _projection = glm::ortho(-aspectRatio * length, aspectRatio * length,
-	// 						 -length, length, 0.1f, 100.0f);
+	_aspectRatio = (float)gameEngine->getGameRenderer()->getWidth() /
+				   (float)gameEngine->getGameRenderer()->getHeight();
+	// _projection =
+	// glm::perspective(glm::radians(45.0f), _aspectRatio, 0.1f, 100.0f);
+	float length = glm::length(glm::vec3() - getPosition());
+	_projection = glm::ortho(-_aspectRatio * length, _aspectRatio * length,
+							 -length, length, 0.1f, 100.0f);
 }
 
 void Camera::update(void) {
 	float deltaTime = _gameEngine->getDeltaTime();
 	if (_gameEngine->isKeyPressed(KEY_UP)) {
 		translate(_front * deltaTime * _speed);
-		_view = glm::inverse(getModelMatrix());
+		_updateData();
 	}
 	if (_gameEngine->isKeyPressed(KEY_DOWN)) {
 		translate(-_front * deltaTime * _speed);
-		_view = glm::inverse(getModelMatrix());
+		_updateData();
 	}
+}
+
+void Camera::_updateData(void) {
+	_view = glm::inverse(getModelMatrix());
+	float length = glm::length(glm::vec3() - getPosition());
+	_projection = glm::ortho(-_aspectRatio * length, _aspectRatio * length,
+							 -length, length, 0.1f, 100.0f);
 }
