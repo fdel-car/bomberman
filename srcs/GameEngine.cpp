@@ -110,10 +110,10 @@ void GameEngine::moveEntities(void) {
 		if (entity->getTargetMovement()[0] != 0.0f ||
 			entity->getTargetMovement()[2] != 0.0f) {
 			collider = entity->getCollider();
+			collisionDetected = false;
 
 			if (collider) {
 				// Init vars before first loop
-				collisionDetected = false;
 				collidedEntities = _activeEntities;
 				collidedEntities.erase(collidedEntities.begin() +
 									   idx);  // Erase self entity from list
@@ -129,9 +129,10 @@ void GameEngine::moveEntities(void) {
 						collidedEntities.size();
 
 					if (collisionDetected) {
+						float absX = abs(futureMovement[0]);
+						float absZ = abs(futureMovement[2]);
 						// Safe break to avoid infinite loop
-						if (abs(futureMovement[0]) <= 0.05f &&
-							abs(futureMovement[2]) <= 0.05f) {
+						if (absX <= 0.05f && absZ <= 0.05f) {
 							collidedTriggers.clear();
 							break;
 						}
@@ -173,6 +174,29 @@ void GameEngine::moveEntities(void) {
 								break;
 							}
 						}
+
+						// TODO: Special cases for Circle, will be able to
+						// "circle around" obstacles more easily if
+						// (collider->shape == Collider::Circle && false) {
+						// 	// Only try to move along the most important
+						// 	// targetMovement
+						// 	if (absX >= absZ) {
+						// 		// Only attempt horizontal slide if centerX is
+						// 		// outside
+						// 		tmpFutureMovement[0] = futureMovement[0];
+						// 		tmpFutureMovement[2] = futureMovement[2];
+						// 		collisionDetected =
+						// 			checkCollision(entity, tmpFutureMovement,
+						// 						   collidedEntities,
+						// 						   collidedTriggers) !=
+						// 			collidedEntities.size();
+						// 		if (!collisionDetected) {
+						// 			futureMovement[0] = tmpFutureMovement[0];
+						// 			futureMovement[2] = tmpFutureMovement[2];
+						// 			break;
+						// 		}
+						// 	}
+						// }
 
 						// Slightly decrease futureMovement to see if smaller
 						// movement can be performed
