@@ -24,6 +24,8 @@ class Entity {
 	void rotate(glm::vec3 axis, float angle);
 	void rotateY(float angle);
 	void translate(glm::vec3 translation);
+	glm::vec3 &getTargetMovement(void);
+	void moveFromPosition(glm::vec3 &newPos);
 
 	// Texture *texture;
 	// Animation *anim;
@@ -34,25 +36,16 @@ class Entity {
 	glm::mat4 _modelMatrix;
 
    protected:
-	Collider *_collider;
 	std::string _shapeName;
-	Shape *_shape;
-
 	std::string _name;
 	std::string _tag;
+
+	Shape *_shape;
+	Collider *_collider;
+	GameEngine *_gameEngine;
 	bool _isTmp;
+	glm::vec3 _targetMovement;
 
 	Entity(void);
 	Entity(Entity const &src);
-
-	GameEngine *_gameEngine;
 };
-
-typedef struct s_data {
-	glm::vec3 pos;
-	glm::vec3 eulerAngles;
-	Collider *collider;
-	std::string shapeName;
-} t_data;
-
-typedef std::vector<t_data> SceneData;

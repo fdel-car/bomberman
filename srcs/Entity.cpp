@@ -6,12 +6,12 @@ Entity::Entity(glm::vec3 position, glm::vec3 eulerAngles, Collider *collider,
 			   std::string shapeName)
 	: _position(position),
 	  _modelMatrix(glm::mat4(1.0f)),
-	  _collider(collider),
 	  _shapeName(shapeName),
-	  _isTmp(true) {
+	  _collider(collider),
+	  _isTmp(true),
+	  _targetMovement(glm::vec3()) {
 	// std::cout << "Euler Angles: " << eulerAngles.x << ' ' << eulerAngles.y
 	// 		  << ' ' << eulerAngles.z << std::endl;
-
 	// float c1 = cos(glm::radians(eulerAngles.z) / 2);
 	// float s1 = sin(glm::radians(eulerAngles.z) / 2);
 	// float c2 = cos(eulerAngles.y / 2);
@@ -49,11 +49,18 @@ Entity::~Entity(void) {
 void Entity::Update(void) {}
 
 GameEngine *Entity::getGameEngine(void) const { return _gameEngine; }
+
 const glm::vec3 &Entity::getPosition(void) const { return _position; }
+
 const glm::mat4 &Entity::getModelMatrix(void) const { return _modelMatrix; }
+
 const Collider *Entity::getCollider(void) const { return _collider; }
+
 const Shape *Entity::getShape(void) const { return _shape; }
+
 bool Entity::getTmpState(void) const { return _isTmp; }
+
+glm::vec3 &Entity::getTargetMovement(void) { return _targetMovement; }
 
 void Entity::translate(glm::vec3 translation) {
 	_modelMatrix = glm::translate(_modelMatrix, translation);

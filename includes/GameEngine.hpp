@@ -54,6 +54,19 @@ class GameEngine {
 	float getDeltaTime();
 
    private:
+	struct LineInfo {  // Equation of a line: z = mx + q
+	   public:
+		LineInfo(void);
+		LineInfo(float startX, float startZ, float endX, float endZ);
+
+		float m;
+		float q;
+		bool isVertical;  // if line is vertical then m = inf
+		float startX;
+		float startZ;
+		float endX;
+		float endZ;
+	};
 	static std::map<std::string, bool> keyboardMap;
 
 	GameEngine(void);
@@ -63,9 +76,23 @@ class GameEngine {
 
 	bool initScene(int newSceneIdx);
 	void _clearTmpEntities(void);
-	// void checkCollisions(void);
-	// bool doCollide(Entity *entityA, Entity *entityB);
-	// bool collisionCircleRectangle(Entity *circleEntity, Entity *rectEntity);
+	void moveEntities(void);
+	size_t checkCollision(Entity *entity, glm::vec3 &futureMovement,
+						  std::vector<Entity *> &collidedEntities,
+						  std::vector<Entity *> &collidedTriggers);
+	void getMovementLines(Entity *entity, glm::vec3 &targetMovement,
+						  LineInfo *lineA, LineInfo *lineB);
+	bool hasCollisionCourse(LineInfo &lineA, LineInfo &lineB, Entity *entityB);
+	bool isLineLineCollision(LineInfo &lineA, LineInfo &lineB);
+	bool isLineCircleCollision(LineInfo &lineA, float &xSquareCoeff,
+							   float &xCoeff, float &zSquareCoeff,
+							   float &zCoeff, float &cCoeff);
+	bool doCollide(const Collider *colliderA, const glm::vec3 &posA,
+				   Entity *entityB) const;
+	bool collisionCircleRectangle(const Collider *circleCollider,
+								  const glm::vec3 &circlePos,
+								  const Collider *rectangleCollider,
+								  const glm::vec3 &rectanglePos) const;
 
 	// Graphic libraries vars
 	GameRenderer *_gameRenderer;
@@ -82,7 +109,6 @@ class GameEngine {
 	int mapH;
 	int mapW;
 	bool restartRequest;
-	// std::tuple<int, int> playerPos;
 
 	// Scene management vars
 	int _sceneIdx;
