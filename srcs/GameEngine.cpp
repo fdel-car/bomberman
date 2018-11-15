@@ -162,8 +162,8 @@ void GameEngine::moveEntities(void) {
 										if (tmpFutureMovement.z > absX) {
 											tmpFutureMovement.z = absX;
 										}
-										if (futureMovement.z < 10 * FLT_EPSILON)
-											tmpFutureMovement.z += 0.01;
+										// if (futureMovement.z < 10 * EPSILON)
+										// 	tmpFutureMovement.z += 0.01;
 										tmpFutureMovement.x =
 											(futureMovement.x < 0.0f)
 												? -tmpFutureMovement.z
@@ -180,14 +180,13 @@ void GameEngine::moveEntities(void) {
 														   collidedEntities,
 														   collidedTriggers) !=
 											collidedEntities.size();
-										if (futureMovement.z >
-											10 * FLT_EPSILON) {
-											futureMovement.x +=
-												(tmpFutureMovement.x < 0)
-													? 5 * FLT_EPSILON
-													: -(5 * FLT_EPSILON);
-											futureMovement.z -= 5 * FLT_EPSILON;
-										}
+										// if (futureMovement.z > 10 * EPSILON)
+										// { 	futureMovement.x +=
+										// 		(tmpFutureMovement.x < 0)
+										// 			? 5 * EPSILON
+										// 			: -(5 * EPSILON);
+										// 	futureMovement.z -= 5 * EPSILON;
+										// }
 										if (idxOfCollision ==
 											collidedEntities.size()) {
 											futureMovement.x =
@@ -248,7 +247,7 @@ void GameEngine::moveEntities(void) {
 						futureMovement.x /= 2.0f;
 						futureMovement.z /= 2.0f;
 
-						if (absX <= 0.05f && absZ <= 0.05f) {
+						if (absX <= EPSILON && absZ <= EPSILON) {
 							collidedTriggers.clear();
 							break;
 						}
@@ -260,14 +259,18 @@ void GameEngine::moveEntities(void) {
 				// }
 				if (collidedEntities.size() == 0) {
 					// if (futureMovement.x > 0.05)
-					// 	futureMovement.x -= 10 * FLT_EPSILON;
+					// 	futureMovement.x -= 10 * EPSILON;
 					// if (futureMovement.x < -0.05)
-					// 	futureMovement.x += 10 * FLT_EPSILON;
+					// 	futureMovement.x += 10 * EPSILON;
 					// if (futureMovement.z > 0.05)
-					// 	futureMovement.z -= 10 * FLT_EPSILON;
+					// 	futureMovement.z -= 10 * EPSILON;
 					// if (futureMovement.z < -0.05)
-					// 	futureMovement.z += 10 * FLT_EPSILON;
+					// 	futureMovement.z += 10 * EPSILON;
 					entity->translate(futureMovement);
+					// if (checkCollision(entity, tmpFutureMovement,
+					// 				   collidedEntities, collidedTriggers) !=
+					// 	collidedEntities.size()) {
+					// }
 				}
 			} else {
 				// Skip checks if entity doesnt have a collider
@@ -552,7 +555,7 @@ bool GameEngine::doCollide(const Collider *colliderA, const glm::vec3 &posA,
 			distance -= colliderA->width +
 						colliderB->width;  // If value is greater than 0
 										   // then there is no collision
-			return (distance <= FLT_EPSILON);
+			return (distance <= EPSILON);
 		}
 		// Rectangle with rectangle
 		else if (colliderA->shape == Collider::Rectangle) {
@@ -560,11 +563,11 @@ bool GameEngine::doCollide(const Collider *colliderA, const glm::vec3 &posA,
 			distance -= colliderA->width +
 						colliderB->width;  // If value is greater than 0
 										   // then there is no collision
-			if (distance <= FLT_EPSILON) {
+			if (distance <= EPSILON) {
 				// Do same for Z
 				distance = abs(aZCenter - bZCenter);
 				distance -= colliderA->height + colliderB->height;
-				return (distance <= FLT_EPSILON);
+				return (distance <= EPSILON);
 			}
 		}
 	}
@@ -603,7 +606,7 @@ bool GameEngine::collisionCircleRectangle(const Collider *circleCollider,
 	return ((sqrt(pow(circlePos.x - closestX, 2) +
 				  pow(circlePos.z - closestZ, 2))) -
 				circleCollider->width <=
-			FLT_EPSILON);
+			EPSILON);
 }
 
 void GameEngine::run(void) {
