@@ -1,42 +1,51 @@
 #pragma once
 
 #include "Collider.hpp"
-#include "header.hpp"
+#include "Shape.hpp"
 
 class GameEngine;
 
 class Entity {
    public:
-	Entity(std::vector<float> position, std::vector<float> rotation,
-		   Collider *collider);
+	Entity(glm::vec3 position, glm::vec3 eulerAngles, Collider *collider,
+		   std::string shapeName);
 	virtual ~Entity(void);
 
-	virtual void Update(void);
 	GameEngine *getGameEngine(void) const;
-	const std::vector<float> &getPosition(void) const;
-	const std::vector<float> &getRotation(void) const;
+	const glm::vec3 &getPosition(void) const;
+	const glm::mat4 &getModelMatrix(void) const;
 	const Collider *getCollider(void) const;
-	std::vector<float> &getTargetMovement(void);
-	void moveFromPosition(std::vector<float> &newPos);
-	void setGameEngine(GameEngine *gameEngine);
+	const Shape *getShape(void) const;
+	bool getTmpState(void) const;
+	void initEntity(GameEngine *gameEngine);
 
-	// Model *model;
+	virtual void Update(void);
+
+	void rotate(glm::vec3 axis, float angle);
+	void rotateY(float angle);
+	void translate(glm::vec3 translation);
+	glm::vec3 &getTargetMovement(void);
+	void moveFromPosition(glm::vec3 &newPos);
+
 	// Texture *texture;
 	// Animation *anim;
 	// bool isTrigger;
 
-   protected:
-	Entity(void);
-	Entity(Entity const &src);
+   private:
+	glm::vec3 _position;
+	glm::mat4 _modelMatrix;
 
+   protected:
+	std::string _shapeName;
 	std::string _name;
 	std::string _tag;
-	GameEngine *_gameEngine;
 
-	std::vector<float> _targetMovement;
-
-   private:
-	std::vector<float> _position;
-	std::vector<float> _rotation;
+	Shape *_shape;
 	Collider *_collider;
+	GameEngine *_gameEngine;
+	bool _isTmp;
+	glm::vec3 _targetMovement;
+
+	Entity(void);
+	Entity(Entity const &src);
 };

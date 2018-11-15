@@ -1,16 +1,9 @@
 #include "AGameScene.hpp"
 
-AGameScene::AGameScene(void) : startEntities(std::vector<Entity *>()) {}
+AGameScene::AGameScene(void) : _camera(NULL) {}
 
-AGameScene::AGameScene(AGameScene const &src) { *this = src; }
-
-AGameScene::~AGameScene(void) {
-	for (auto entity : startEntities) {
-		delete entity;
-	}
+std::vector<Entity *> const AGameScene::getEntities(void) const {
+	return _entities;
 }
 
-AGameScene &AGameScene::operator=(AGameScene const &rhs) {
-	return *this;
-	(void)rhs;
-}
+Camera *AGameScene::getCamera(void) const { return _camera; }

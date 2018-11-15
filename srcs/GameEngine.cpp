@@ -1,5 +1,6 @@
 #include "GameEngine.hpp"
 #include "GameRenderer.hpp"
+#include "Player.hpp"
 
 GameEngine::GameEngine() : _gameScenes(std::vector<AGameScene *>()) {}
 
@@ -24,35 +25,20 @@ GameEngine::LineInfo::LineInfo(float startX, float startZ, float endX,
 
 GameEngine::GameEngine(std::vector<AGameScene *> gameScenes)
 	: _gameScenes(gameScenes) {
-	canRun = false;
-	running = false;
-
-	// Map size parsing
-	mapW = MAP_SIZE;
-	mapH = MAP_SIZE;
-	int maxSizeW = (WINDOW_W - 2 * WINDOW_MIN_X_OFFSET) / mapW;
-	int maxSizeH = (WINDOW_H - 2 * WINDOW_MIN_Y_OFFSET) / mapH;
-	squareSize = (maxSizeH < maxSizeW) ? maxSizeH : maxSizeW;
-	xOffset = (WINDOW_W - squareSize * mapW) / 2;
-	yOffset = (WINDOW_H - squareSize * mapH) / 2;
+	_running = false;
 
 	// Create interface class
-	graphicLib = new GameRenderer(this);
+	_gameRenderer = new GameRenderer(this);
 	// Create audio manager
-	audioManager = new AudioManager();
+	_audioManager = new AudioManager();
 
 	// Force load of first scene
 	_sceneIdx = 0;
-
-	// Everything good
-	canRun = true;
 }
 
-GameEngine::GameEngine(GameEngine const &src) { *this = src; }
-
 GameEngine::~GameEngine(void) {
-	delete (audioManager);
-	delete (graphicLib);
+	delete _audioManager;
+	delete _gameRenderer;
 }
 
 int GameEngine::getSquareSize(void) { return squareSize; }
@@ -65,9 +51,15 @@ int GameEngine::getMapW(void) { return mapW; }
 
 int GameEngine::getMapH(void) { return mapH; }
 
+float GameEngine::getDeltaTime(void) { return _deltaTime; }
+
+GameRenderer const *GameEngine::getGameRenderer(void) const {
+	return _gameRenderer;
+}
+
 // Entity *GameEngine::getFirstEntityWithName(std::string entityName) {
 // 	Entity *foundElem = nullptr;
-// 	for (auto entity : _activeEntities) {
+// 	for (auto entity : _allEntities) {
 // 		if (entity->getName().compare(entityName) == 0) {
 // 			foundElem = entity;
 // 			break;
@@ -76,21 +68,29 @@ int GameEngine::getMapH(void) { return mapH; }
 // 	return foundElem;
 // }
 
-GameEngine &GameEngine::operator=(GameEngine const &rhs) {
-	this->canRun = rhs.canRun;
-	return *this;
-}
-
 bool GameEngine::initScene(int newSceneIdx) {
 	if (newSceneIdx < 0 || newSceneIdx >= static_cast<int>(_gameScenes.size()))
 		return false;
 	_sceneIdx = newSceneIdx;
-	_activeEntities.clear();
-	for (auto entity : _gameScenes[newSceneIdx]->startEntities) {
-		_activeEntities.push_back(entity);
-		_activeEntities.back()->setGameEngine(this);
+	_clearTmpEntities();
+	_gameScenes[newSceneIdx]->load();
+	_camera = _gameScenes[newSceneIdx]->getCamera();
+	for (auto entity : _gameScenes[newSceneIdx]->getEntities()) {
+		_allEntities.push_back(entity);
+		_allEntities.back()->initEntity(this);
 	}
 	return true;
+}
+
+// /!\ Function not tested yet
+void GameEngine::_clearTmpEntities(void) {
+	size_t idx = 0;
+	for (auto entity : _allEntities) {
+		if (entity->getTmpState())
+			_allEntities.erase(_allEntities.begin() + idx);
+		else
+			idx++;
+	}
 }
 
 void GameEngine::moveEntities(void) {
@@ -98,30 +98,29 @@ void GameEngine::moveEntities(void) {
 	bool collisionDetected = false;
 	std::vector<Entity *> collidedEntities = std::vector<Entity *>();
 	std::vector<Entity *> collidedTriggers = std::vector<Entity *>();
-	std::vector<float> futureMovement = std::vector<float>(3, 0);
-	std::vector<float> tmpFutureMovement = std::vector<float>(3, 0);
-	std::vector<float> futurePos = std::vector<float>(3, 0);
+	glm::vec3 futureMovement = glm::vec3();
+	glm::vec3 tmpFutureMovement = glm::vec3();
 	LineInfo lineA;
 	LineInfo lineB;
 
 	size_t idx = 0;
 	size_t idxToTest = 0;
-	for (auto entity : _activeEntities) {
-		if (entity->getTargetMovement()[0] != 0.0f ||
-			entity->getTargetMovement()[2] != 0.0f) {
+	for (auto entity : _allEntities) {
+		if (entity->getTargetMovement().x != 0.0f ||
+			entity->getTargetMovement().z != 0.0f) {
 			collider = entity->getCollider();
 			collisionDetected = false;
 
 			if (collider) {
 				// Init vars before first loop
-				collidedEntities = _activeEntities;
+				collidedEntities = _allEntities;
 				collidedEntities.erase(collidedEntities.begin() +
 									   idx);  // Erase self entity from list
 											  // that needs to be checked
 				// To make Obj slide over obstacles we have to adapt
 				// targetMovement to suitable pos
-				futureMovement[0] = entity->getTargetMovement()[0];
-				futureMovement[2] = entity->getTargetMovement()[2];
+				futureMovement.x = entity->getTargetMovement().x;
+				futureMovement.z = entity->getTargetMovement().z;
 				do {
 					collisionDetected =
 						checkCollision(entity, futureMovement, collidedEntities,
@@ -129,8 +128,8 @@ void GameEngine::moveEntities(void) {
 						collidedEntities.size();
 
 					if (collisionDetected) {
-						float absX = abs(futureMovement[0]);
-						float absZ = abs(futureMovement[2]);
+						float absX = abs(futureMovement.x);
+						float absZ = abs(futureMovement.z);
 						// Safe break to avoid infinite loop
 						if (absX <= 0.05f && absZ <= 0.05f) {
 							collidedTriggers.clear();
@@ -145,32 +144,30 @@ void GameEngine::moveEntities(void) {
 
 						// If is first time then try moving indipendently one
 						// of the two axis (Only if its a two-axis move)
-						if (futureMovement[0] ==
-								entity->getTargetMovement()[0] &&
-							futureMovement[0] != 0.0f &&
-							futureMovement[2] ==
-								entity->getTargetMovement()[2] &&
-							futureMovement[2] != 0.0f) {
-							tmpFutureMovement[0] = futureMovement[0];
-							tmpFutureMovement[2] = 0.0f;
+						if (futureMovement.x == entity->getTargetMovement().x &&
+							futureMovement.x != 0.0f &&
+							futureMovement.z == entity->getTargetMovement().z &&
+							futureMovement.z != 0.0f) {
+							tmpFutureMovement.x = futureMovement.x;
+							tmpFutureMovement.z = 0.0f;
 							collisionDetected =
 								checkCollision(entity, tmpFutureMovement,
 											   collidedEntities,
 											   collidedTriggers) !=
 								collidedEntities.size();
 							if (!collisionDetected) {
-								futureMovement[2] = 0.0f;
+								futureMovement.z = 0.0f;
 								break;
 							}
-							tmpFutureMovement[0] = 0.0f;
-							tmpFutureMovement[2] = futureMovement[2];
+							tmpFutureMovement.x = 0.0f;
+							tmpFutureMovement.z = futureMovement.z;
 							collisionDetected =
 								checkCollision(entity, tmpFutureMovement,
 											   collidedEntities,
 											   collidedTriggers) !=
 								collidedEntities.size();
 							if (!collisionDetected) {
-								futureMovement[0] = 0.0f;
+								futureMovement.x = 0.0f;
 								break;
 							}
 						}
@@ -200,8 +197,8 @@ void GameEngine::moveEntities(void) {
 
 						// Slightly decrease futureMovement to see if smaller
 						// movement can be performed
-						futureMovement[0] /= 2.0f;
-						futureMovement[2] /= 2.0f;
+						futureMovement.x /= 2.0f;
+						futureMovement.z /= 2.0f;
 					}
 				} while (collisionDetected);
 
@@ -209,22 +206,21 @@ void GameEngine::moveEntities(void) {
 				// for (auto triggerEntity : collidedTriggers) {
 				// }
 				if (!collisionDetected) {
-					entity->moveFromPosition(futureMovement);
+					entity->translate(futureMovement);
 				}
 			} else {
 				// Skip checks if entity doesnt have a collider
-				entity->moveFromPosition(entity->getTargetMovement());
+				entity->translate(entity->getTargetMovement());
 			}
 		}
 	}
 }
 
-size_t GameEngine::checkCollision(Entity *entity,
-								  std::vector<float> &futureMovement,
+size_t GameEngine::checkCollision(Entity *entity, glm::vec3 &futureMovement,
 								  std::vector<Entity *> &collidedEntities,
 								  std::vector<Entity *> &collidedTriggers) {
 	// Init
-	std::vector<float> futurePos = std::vector<float>(3, 0);
+	glm::vec3 futurePos = glm::vec3();
 	LineInfo lineA;
 	LineInfo lineB;
 	collidedTriggers.clear();
@@ -234,17 +230,17 @@ size_t GameEngine::checkCollision(Entity *entity,
 	// If lines are vertical, create Rectangle Collider only
 	// once
 	Collider moveCollider(Collider::Rectangle, 0.0f, 0.0f);
-	std::vector<float> centerPos(3, 0);
+	glm::vec3 centerPos = glm::vec3();
 	if (lineA.isVertical) {
 		moveCollider.width = abs(lineA.startX - lineB.startX) / 2.0f;
 		moveCollider.height = abs(lineA.startZ - lineA.endZ) / 2.0f;
-		centerPos[0] = (lineA.startX + lineB.startX) / 2;
-		centerPos[2] = (lineA.startZ + lineA.endZ) / 2;
+		centerPos.x = (lineA.startX + lineB.startX) / 2;
+		centerPos.z = (lineA.startZ + lineA.endZ) / 2;
 	}
 
 	// Simulate movement
-	futurePos[0] = entity->getPosition()[0] + futureMovement[0];
-	futurePos[2] = entity->getPosition()[2] + futureMovement[2];
+	futurePos.x = entity->getPosition().x + futureMovement.x;
+	futurePos.z = entity->getPosition().z + futureMovement.z;
 
 	size_t idxToTest = 0;
 	for (auto entityToTest : collidedEntities) {
@@ -267,16 +263,15 @@ size_t GameEngine::checkCollision(Entity *entity,
 	return idxToTest;
 }
 
-void GameEngine::getMovementLines(Entity *entity,
-								  std::vector<float> &targetMovement,
+void GameEngine::getMovementLines(Entity *entity, glm::vec3 &targetMovement,
 								  LineInfo *lineA, LineInfo *lineB) {
 	// Find points that will determine Lines
-	lineA->startX = entity->getPosition()[0];
-	lineA->startZ = entity->getPosition()[2];
-	lineB->startX = entity->getPosition()[0];
-	lineB->startZ = entity->getPosition()[2];
+	lineA->startX = entity->getPosition().x;
+	lineA->startZ = entity->getPosition().z;
+	lineB->startX = entity->getPosition().x;
+	lineB->startZ = entity->getPosition().z;
 	// Avoid division by 0 if movement is only along 'z' axis
-	if (targetMovement[0] == 0.0f) {
+	if (targetMovement.x == 0.0f) {
 		lineA->startX += entity->getCollider()->width;
 		lineB->startX -= entity->getCollider()->width;
 		lineA->isVertical = true;
@@ -286,8 +281,8 @@ void GameEngine::getMovementLines(Entity *entity,
 	} else {
 		// Find 'm' of direction from center to target center
 		float m =
-			targetMovement[2] / targetMovement[0];  // TargetMovement is already
-													// a delta of coords
+			targetMovement.z / targetMovement.x;  // TargetMovement is already
+												  // a delta of coords
 		lineA->m = m;
 		lineB->m = m;
 		lineA->isVertical = false;
@@ -298,24 +293,24 @@ void GameEngine::getMovementLines(Entity *entity,
 			// Rectangle
 			// TODO: for now we increase Z when we want to go down, but will
 			// change soon
-			if ((targetMovement[0] > 0.0f && targetMovement[2] > 0.0f) ||
-				(targetMovement[0] < 0.0f && targetMovement[2] < 0.0f)) {
+			if ((targetMovement.x > 0.0f && targetMovement.z < 0.0f) ||
+				(targetMovement.x < 0.0f && targetMovement.z > 0.0f)) {
 				// We are going Down-Right or Up-Left, take TopRight(A) and
 				// BottomLeft(B) corners
 				lineA->startX += entity->getCollider()->width;
-				lineA->startZ -= entity->getCollider()
+				lineA->startZ += entity->getCollider()
 									 ->height;  // TODO: Change minus to plus
 				lineB->startX -= entity->getCollider()->width;
-				lineB->startZ += entity->getCollider()
+				lineB->startZ -= entity->getCollider()
 									 ->height;  // TODO: Change plus to minus
 			} else {
 				// We are going Down-Left or Up-Right, take TopLeft(A) and
 				// BottomRight(B) corners
 				lineA->startX -= entity->getCollider()->width;
-				lineA->startZ -= entity->getCollider()
+				lineA->startZ += entity->getCollider()
 									 ->height;  // TODO: Change minus to plus
 				lineB->startX += entity->getCollider()->width;
-				lineB->startZ += entity->getCollider()
+				lineB->startZ -= entity->getCollider()
 									 ->height;  // TODO: Change plus to minus
 			}
 		} else {
@@ -323,8 +318,8 @@ void GameEngine::getMovementLines(Entity *entity,
 			// mPrime = - 1 / m
 			float mPerpendicular = -(1.0f / m);
 			// q of line that will intercept startA and startB
-			float q = entity->getPosition()[2] -
-					  mPerpendicular * entity->getPosition()[0];
+			float q = entity->getPosition().z -
+					  mPerpendicular * entity->getPosition().x;
 
 			float xOffset = mPerpendicular * entity->getCollider()->width;
 			lineA->startX += xOffset;
@@ -341,10 +336,10 @@ void GameEngine::getMovementLines(Entity *entity,
 	}
 
 	// Add end point infos
-	lineA->endX = lineA->startX + targetMovement[0];
-	lineA->endZ = lineA->startZ + targetMovement[2];
-	lineB->endX = lineB->startX + targetMovement[0];
-	lineB->endZ = lineB->startZ + targetMovement[2];
+	lineA->endX = lineA->startX + targetMovement.x;
+	lineA->endZ = lineA->startZ + targetMovement.z;
+	lineB->endX = lineB->startX + targetMovement.x;
+	lineB->endZ = lineB->startZ + targetMovement.z;
 }
 
 bool GameEngine::hasCollisionCourse(LineInfo &lineA, LineInfo &lineB,
@@ -356,9 +351,9 @@ bool GameEngine::hasCollisionCourse(LineInfo &lineA, LineInfo &lineB,
 		Collider testCollider(Collider::Rectangle,
 							  abs(lineA.startX - lineB.startX) / 2,
 							  abs(lineA.startZ - lineA.endZ) / 2);
-		std::vector<float> centerPos(3, 0);
-		centerPos[0] = (lineA.startX + lineB.startX) / 2;
-		centerPos[2] = (lineA.startZ + lineA.endZ) / 2;
+		glm::vec3 centerPos = glm::vec3();
+		centerPos.x = (lineA.startX + lineB.startX) / 2;
+		centerPos.z = (lineA.startZ + lineA.endZ) / 2;
 		// return false;
 		return doCollide(&testCollider, centerPos, entityB);
 	}
@@ -368,10 +363,10 @@ bool GameEngine::hasCollisionCourse(LineInfo &lineA, LineInfo &lineB,
 	if (colliderB->shape == Collider::Rectangle) {
 		// Rectangle
 		// TODO:: change sign for Z when up is positive
-		float leftX = entityB->getPosition()[0] - colliderB->width;
-		float rightX = entityB->getPosition()[0] + colliderB->width;
-		float upZ = entityB->getPosition()[2] - colliderB->height;
-		float downZ = entityB->getPosition()[2] + colliderB->height;
+		float leftX = entityB->getPosition().x - colliderB->width;
+		float rightX = entityB->getPosition().x + colliderB->width;
+		float upZ = entityB->getPosition().z + colliderB->height;
+		float downZ = entityB->getPosition().z - colliderB->height;
 		LineInfo tmpLine(leftX, upZ, rightX, upZ);
 		if (isLineLineCollision(lineA, tmpLine) ||
 			isLineLineCollision(lineB, tmpLine)) {
@@ -398,11 +393,11 @@ bool GameEngine::hasCollisionCourse(LineInfo &lineA, LineInfo &lineB,
 		// 1) Circle intersects with (at least one) line and point of
 		// intersection is between start end end
 		float xSquareCoeff = 1.0f;
-		float xCoeff = -(2.0f * entityB->getPosition()[0]);
+		float xCoeff = -(2.0f * entityB->getPosition().x);
 		float zSquareCoeff = 1.0f;
-		float zCoeff = -(2.0f * entityB->getPosition()[2]);
-		float cCoeff = colliderB->width + pow(entityB->getPosition()[0], 2) +
-					   pow(entityB->getPosition()[2], 2);
+		float zCoeff = -(2.0f * entityB->getPosition().z);
+		float cCoeff = colliderB->width + pow(entityB->getPosition().x, 2) +
+					   pow(entityB->getPosition().z, 2);
 		if (isLineCircleCollision(lineA, xSquareCoeff, xCoeff, zSquareCoeff,
 								  zCoeff, cCoeff)) {
 			return true;
@@ -478,18 +473,16 @@ bool GameEngine::isLineCircleCollision(LineInfo &lineA, float &xSquareCoeff,
 	}
 	return false;
 }
-
-bool GameEngine::doCollide(const Collider *colliderA,
-						   const std::vector<float> &posA,
+bool GameEngine::doCollide(const Collider *colliderA, const glm::vec3 &posA,
 						   Entity *entityB) const {
 	const Collider *colliderB = entityB->getCollider();
 	if (!colliderA || !colliderB) return false;
 
 	if (colliderA->shape == colliderB->shape) {
-		float aXCenter = posA[0];
-		float aYCenter = posA[2];
-		float bXCenter = entityB->getPosition()[0];
-		float bYCenter = entityB->getPosition()[2];
+		float aXCenter = posA.x;
+		float aYCenter = posA.z;
+		float bXCenter = entityB->getPosition().x;
+		float bYCenter = entityB->getPosition().z;
 		// Circle with circle
 		if (colliderA->shape == Collider::Circle) {
 			float distance =
@@ -519,75 +512,66 @@ bool GameEngine::doCollide(const Collider *colliderA,
 	return false;
 }
 
-bool GameEngine::collisionCircleRectangle(
-	const Collider *circleCollider, const std::vector<float> &circlePos,
-	const Collider *rectangleCollider,
-	const std::vector<float> &rectanglePos) const {
-	float closestX = circlePos[0];
-	float closestY = circlePos[2];
+bool GameEngine::collisionCircleRectangle(const Collider *circleCollider,
+										  const glm::vec3 &circlePos,
+										  const Collider *rectangleCollider,
+										  const glm::vec3 &rectanglePos) const {
+	float closestX = circlePos.x;
+	float closestY = circlePos.z;
 	// Find closest X of rectangle shape to circle center
-	if (closestX > rectanglePos[0] + rectangleCollider->width)
-		closestX = rectanglePos[0] + rectangleCollider->width;
-	else if (closestX < rectanglePos[0] - rectangleCollider->width)
-		closestX = rectanglePos[0] - rectangleCollider->width;
+	if (closestX > rectanglePos.x + rectangleCollider->width)
+		closestX = rectanglePos.x + rectangleCollider->width;
+	else if (closestX < rectanglePos.x - rectangleCollider->width)
+		closestX = rectanglePos.x - rectangleCollider->width;
 	// Find closest Y of rectangle shape to circle center
-	if (closestY > rectanglePos[2] + rectangleCollider->height)
-		closestY = rectanglePos[2] + rectangleCollider->height;
-	else if (closestY < rectanglePos[2] - rectangleCollider->height)
-		closestY = rectanglePos[2] - rectangleCollider->height;
+	if (closestY > rectanglePos.z + rectangleCollider->height)
+		closestY = rectanglePos.z + rectangleCollider->height;
+	else if (closestY < rectanglePos.z - rectangleCollider->height)
+		closestY = rectanglePos.z - rectangleCollider->height;
 	// Is distance of closer point smaller than circle radius ?
-	return sqrt(pow(circlePos[0] - closestX, 2) +
-				pow(circlePos[2] - closestY, 2)) <= circleCollider->width;
+	return sqrt(pow(circlePos.x - closestX, 2) +
+				pow(circlePos.z - closestY, 2)) <= circleCollider->width;
 }
 
-int GameEngine::run(void) {
-	if (!canRun) return EXIT_FAILURE;
-	int guiRet;
-
+void GameEngine::run(void) {
 	// Init vars
-	running = true;
+	_running = true;
 	restartRequest = false;
 	_lastFrameTs = Clock::now();
 
 	if (!initScene(_sceneIdx)) std::runtime_error("Cannot load scene !");
 
-	audioManager->playStartSound();
+	_audioManager->playStartSound();
 
 	// Start game loop
-	while (running) {
+	while (_running) {
 		// Get delta time in order to synch entities positions
 		_frameTs = Clock::now();
 		_deltaTime = (std::chrono::duration_cast<std::chrono::milliseconds>(
 						  _frameTs - _lastFrameTs)
 						  .count()) /
-					 (double)1000.0;
+					 1000.0f;
 		_lastFrameTs = _frameTs;
 
 		// Update inputs
-		graphicLib->getUserInput();
+		_gameRenderer->getUserInput();
 
 		// TODO: Update game engine statuses (ex. when to quit)
-		if (running) {
-			running = !keyboardMap["ESCAPE"];
+		if (_running) {
+			_running = !keyboardMap["ESCAPE"];
 		}
 
 		// Update game entities states
-		for (auto entity : _activeEntities) {
+		for (auto entity : _allEntities) {
 			entity->Update();
 		}
-
-		// TODO: set position of entities back to prev frame when they
-		// collide
 		moveEntities();
-
-		guiRet = graphicLib->refreshWindow(_activeEntities);
-		if (guiRet != EXIT_SUCCESS || !running) break;
+		_gameRenderer->refreshWindow(_allEntities, _camera);
 	}
 	if (restartRequest) {
 		std::cout << "Starting new game!" << std::endl;
 		return run();
 	}
-	return guiRet;
 }
 
 void GameEngine::buttonStateChanged(std::string buttonName, bool isPressed) {
@@ -600,8 +584,6 @@ void GameEngine::buttonStateChanged(std::string buttonName, bool isPressed) {
 bool GameEngine::isKeyPressed(std::string keyName) {
 	return keyboardMap[keyName];
 }
-
-double GameEngine::getDeltaTime(void) { return _deltaTime; }
 
 static std::map<std::string, bool>
 generateKeyboardMap() {  // static here is "internal linkage"

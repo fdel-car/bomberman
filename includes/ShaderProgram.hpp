@@ -4,16 +4,21 @@
 
 class ShaderProgram {
    public:
-	ShaderProgram(std::string const &vsPath, std::string const &fsPath);
-	virtual ~ShaderProgram(void);
+	ShaderProgram(const char* vertexPath, const char* fragmentPath);
+	~ShaderProgram(void);
 
-	unsigned int getProgram(void) const;
+	GLuint getID(void) const;
+	void setBool(const std::string& name, bool value) const;
+	void setInt(const std::string& name, int value) const;
+	void setFloat(const std::string& name, float value) const;
 
    private:
-	unsigned int _shaderProgram;
+	GLuint _ID;
 
 	ShaderProgram(void);
-	ShaderProgram(ShaderProgram const &src);
+	ShaderProgram(ShaderProgram const& src);
 
-	ShaderProgram &operator=(ShaderProgram const &rhs);
+	ShaderProgram& operator=(ShaderProgram const& rhs);
+
+	void _checkCompileErrors(GLuint shader, std::string type);
 };

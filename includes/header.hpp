@@ -19,6 +19,7 @@
 #include <GLFW/glfw3.h>
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
+#include "glm/gtc/type_ptr.hpp"
 
 template <typename T>
 std::string toString(const T& val) {
@@ -26,5 +27,3 @@ std::string toString(const T& val) {
 	oss << val;
 	return oss.str();
 }
-
-const char* getFileContent(std::string const& filename);

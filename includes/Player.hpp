@@ -4,15 +4,16 @@
 
 class Player : public Entity {
    public:
-	Player(std::vector<float> position, std::vector<float> rotation);
+	Player(glm::vec3 position, glm::vec3 eulerAngles);
 	~Player(void);
-	Player(Player const &src);
-	Player &operator=(Player const &rhs);
 
 	virtual void Update(void);
 
    private:
-	Player(void);
-
 	float _speed;
+
+	Player(void);
+	Player(Player const &src);
+
+	Player &operator=(Player const &rhs);
 };
