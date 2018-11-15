@@ -25,6 +25,8 @@
 #define KEY_DOWN "DOWN"
 #define KEY_ESCAPE "ESCAPE"
 
+#define EPSILON 0.05f
+
 typedef std::chrono::high_resolution_clock Clock;
 
 class GameRenderer;
