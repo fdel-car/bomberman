@@ -2,9 +2,8 @@
 
 #include "AGameScene.hpp"
 #include "AudioManager.hpp"
+#include "Camera.hpp"
 #include "Collider.hpp"
-#include "Entity.hpp"
-#include "header.hpp"
 
 #define MAP_SIZE 40
 
@@ -29,46 +28,11 @@ typedef std::chrono::high_resolution_clock Clock;
 class GameRenderer;
 
 class GameEngine {
-   private:
-	static std::map<std::string, bool> keyboardMap;
-
-	GameEngine(void);
-	GameEngine(GameEngine const &src);
-
-	GameEngine &operator=(GameEngine const &rhs);
-
-	bool initScene(int newSceneIdx);
-	void checkCollisions(void);
-	bool doCollide(Entity *entityA, Entity *entityB);
-	bool collisionCircleRectangle(Entity *circleEntity, Entity *rectEntity);
-
-	// Graphic libraries vars
-	GameRenderer *graphicLib;
-	int squareSize;
-	int xOffset;
-	int yOffset;
-	Clock::time_point _frameTs;
-	Clock::time_point _lastFrameTs;
-	double _deltaTime;
-	AudioManager *audioManager;
-
-	// Game model vars
-	bool running;
-	int mapH;
-	int mapW;
-	bool restartRequest;
-	// std::tuple<int, int> playerPos;
-
-	// Scene management vars
-	int _sceneIdx;
-	std::vector<AGameScene *> _gameScenes;
-	std::vector<Entity *> _activeEntities;
-
    public:
 	GameEngine(std::vector<AGameScene *> gameScenes);
 	~GameEngine(void);
 
-	int run();
+	void run();
 
 	// Functions needed by Renderer
 	int getSquareSize(void);
@@ -76,6 +40,7 @@ class GameEngine {
 	int getYOffset(void);
 	int getMapW(void);
 	int getMapH(void);
+	GameRenderer const *getGameRenderer(void) const;
 	Entity *getFirstEntityWithName(std::string entityName);
 	// std::vector<Entity *> getEntitiesWithName(std::string entityName);
 	// Entity *getFirstEntityWithLabel(std::string entityLabel);
@@ -84,7 +49,68 @@ class GameEngine {
 
 	// Functions needed by entities
 	bool isKeyPressed(std::string keyName);
-	double getDeltaTime();
+	float getDeltaTime();
 
-	bool canRun;
+   private:
+	struct LineInfo {  // Equation of a line: z = mx + q
+	   public:
+		LineInfo(void);
+		LineInfo(float startX, float startZ, float endX, float endZ);
+
+		float m;
+		float q;
+		bool isVertical;  // if line is vertical then m = inf
+		float startX;
+		float startZ;
+		float endX;
+		float endZ;
+	};
+	static std::map<std::string, bool> keyboardMap;
+
+	GameEngine(void);
+	GameEngine(GameEngine const &src);
+
+	GameEngine &operator=(GameEngine const &rhs);
+
+	bool initScene(int newSceneIdx);
+	void _clearTmpEntities(void);
+	void moveEntities(void);
+	size_t checkCollision(Entity *entity, glm::vec3 &futureMovement,
+						  std::vector<Entity *> &collidedEntities,
+						  std::vector<Entity *> &collidedTriggers);
+	void getMovementLines(Entity *entity, glm::vec3 &targetMovement,
+						  LineInfo *lineA, LineInfo *lineB);
+	bool hasCollisionCourse(LineInfo &lineA, LineInfo &lineB, Entity *entityB);
+	bool isLineLineCollision(LineInfo &lineA, LineInfo &lineB);
+	bool isLineCircleCollision(LineInfo &lineA, float &xSquareCoeff,
+							   float &xCoeff, float &zSquareCoeff,
+							   float &zCoeff, float &cCoeff);
+	bool doCollide(const Collider *colliderA, const glm::vec3 &posA,
+				   Entity *entityB) const;
+	bool collisionCircleRectangle(const Collider *circleCollider,
+								  const glm::vec3 &circlePos,
+								  const Collider *rectangleCollider,
+								  const glm::vec3 &rectanglePos) const;
+
+	// Graphic libraries vars
+	GameRenderer *_gameRenderer;
+	int squareSize;
+	int xOffset;
+	int yOffset;
+	Clock::time_point _frameTs;
+	Clock::time_point _lastFrameTs;
+	double _deltaTime;
+	AudioManager *_audioManager;
+
+	// Game model vars
+	bool _running;
+	int mapH;
+	int mapW;
+	bool restartRequest;
+
+	// Scene management vars
+	int _sceneIdx;
+	std::vector<AGameScene *> _gameScenes;
+	std::vector<Entity *> _allEntities;
+	Camera *_camera;
 };

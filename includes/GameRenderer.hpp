@@ -1,17 +1,19 @@
 #pragma once
 
+#include "Camera.hpp"
 #include "Collider.hpp"
-#include "header.hpp"
+#include "ShaderProgram.hpp"
+#include "Shape.hpp"
 
 #include "GUI/GUI.hpp"
 
-// Custom Defines
-#define WHITE_SHADER 1
-#define GREEN_SHADER 2
-#define RED_SHADER 3
-#define CYAN_SHADER 4
-#define YELLOW_SHADER 5
-#define GRAY_SHADER 6
+// // Custom Defines
+// #define WHITE_SHADER 1
+// #define GREEN_SHADER 2
+// #define RED_SHADER 3
+// #define CYAN_SHADER 4
+// #define YELLOW_SHADER 5
+// #define GRAY_SHADER 6
 
 class GameEngine;
 
@@ -23,8 +25,9 @@ class GameRenderer {
 	~GameRenderer(void);
 
 	void getUserInput(void);
-	int refreshWindow(std::vector<Entity *> &entities);
+	void refreshWindow(std::vector<Entity *> &entities, Camera *camera);
 	void closeWindow(void);
+	Shape *getShape(std::string shapeName) const;
 
 	bool active;
 
@@ -38,42 +41,47 @@ class GameRenderer {
 
 	GameRenderer &operator=(GameRenderer const &rhs);
 
-	void _initShaders(int type);
-	void _initScene(void);
-	void initProgram(void);
+	void _initShaders(void);
+	void _initShapes(void);
+	// void initProgram(void);
 	// void drawGUI(void);
-	void createBorder(void);
-	void createGrid(void);
-	void drawGUI(void);
-	void drawPlayer(Entity *player);
-	void drawSquare(Entity *wall);
-	void makeVAO(GLuint &vbo);
+	// void createBorder(void);
+	// void createGrid(void);
+	// void drawGUI(void);
+	// void drawPlayer(Entity *player);
+	// void drawSquare(Entity *wall);
+	// void makeVAO(GLuint &vbo);
 
 	static GameEngine *_gameEngine;
 
 	// General vars
 	GLFWwindow *_window;
-	int width = 0;
-	int height = 0;
-	int xOffset;
-	int yOffset;
-	int squareSize;
-	float startX;
-	float startY;
-	float squarePercentY;
-	float squarePercentX;
+	int _width = 0;
+	int _height = 0;
+	// int xOffset;
+	// int yOffset;
+	// int squareSize;
+	// float startX;
+	// float startY;
+	// float squarePercentY;
+	// float squarePercentX;
 
 	// Nuklear vars
 	GUI *graphicUI;
 
 	// Rendering vars
-	GLuint _shaderProgram;
-	std::list<unsigned int> _models;
-	GLuint vbo;
-	GLuint vao;
-	const char *vertexShader;
-	const char *fragmentShader;
-	GLuint vs;
-	GLuint fs;
-	GLuint shaderProgram;
+	std::map<std::string, ShaderProgram *> _shaderPrograms;
+	std::map<std::string, Shape *> _shapes;
+
+	glm::mat4 _projection;
+	GLint _projectionLoc;
+	GLint _viewLoc;
+	GLint _modelLoc;
+	// GLuint vbo;
+	// GLuint vao;
+	// const char *vertexShader;
+	// const char *fragmentShader;
+	// GLuint vs;
+	// GLuint fs;
+	// GLuint shaderProgram;
 };

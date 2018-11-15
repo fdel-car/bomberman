@@ -18,10 +18,11 @@ set(SRCS
   srcs/GameEngine.cpp
   srcs/GameRenderer.cpp
   srcs/ShaderProgram.cpp
-  srcs/Model.cpp
-  srcs/LevelOne.cpp
+  srcs/Camera.cpp
+  srcs/Shape.cpp
   srcs/Player.cpp
   srcs/GUI/GUI.cpp
+  srcs/scenes/Factory.cpp
 )
 
 include_directories(includes)
@@ -29,9 +30,10 @@ set(HEADERS
   includes/glad/glad.h
   includes/KHR/khrplatform.h
   includes/nuklear/nuklear.h
+  includes/tiny_obj_loader/tiny_obj_loader.h
   includes/glm/glm.hpp
   includes/glm/gtc/matrix_transform.hpp
-  includes/nuklear_glfw_gl3.h
+  includes/glm/gtc/type_ptr.hpp
   includes/header.hpp
   includes/Entity.hpp
   includes/AGameScene.hpp
@@ -40,10 +42,11 @@ set(HEADERS
   includes/GameEngine.hpp
   includes/GameRenderer.hpp
   includes/ShaderProgram.hpp
-  includes/Model.hpp
-  includes/LevelOne.hpp
+  includes/Camera.hpp
+  includes/Shape.hpp
   includes/Player.hpp
   includes/GUI/GUI.hpp
+  srcs/scenes/Factory.hpp
 )
 
 add_executable(super_bomberman ${SRCS} ${HEADERS})

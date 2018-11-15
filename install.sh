@@ -37,6 +37,12 @@ if [ ! -d "includes/glm" ]; then
 	rm -rf glm
 fi
 
+# tiny_obj_loader install
+if [ ! -d "includes/tiny_obj_loader" ]; then
+    mkdir includes/tiny_obj_loader
+    curl https://raw.githubusercontent.com/syoyo/tinyobjloader/master/tiny_obj_loader.h -o includes/tiny_obj_loader/tiny_obj_loader.h
+fi
+
 # Nuklear install
 if [ ! -d "includes/nuklear" ]; then
     mkdir includes/nuklear
