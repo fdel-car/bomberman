@@ -5,6 +5,7 @@ layout (location = 2) in vec3 color;
 
 out vec3 _normal;
 out vec3 _color;
+out vec3 _fragPos;
 
 uniform mat4 projection;
 uniform mat4 view;
@@ -15,4 +16,5 @@ void main()
     gl_Position = projection * view * model * vec4(position, 1.0f);
     _normal = normal;
     _color = color;
+    _fragPos = vec3(model * vec4(position, 1.0f));
 }

@@ -76,10 +76,18 @@ class GameRenderer {
 	std::map<std::string, ShaderProgram *> _shaderPrograms;
 	std::map<std::string, Shape *> _shapes;
 
+	// Camera
 	glm::mat4 _projection;
 	GLint _projectionLoc;
 	GLint _viewLoc;
 	GLint _modelLoc;
+	
+	// Light
+	GLint _lightDirLoc;
+	GLint _viewPosLoc;
+	GLint _lightColorLoc;
+
+
 	// GLuint vbo;
 	// GLuint vao;
 	// const char *vertexShader;
