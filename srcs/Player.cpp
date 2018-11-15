@@ -11,7 +11,7 @@ Player::Player(glm::vec3 position, glm::vec3 eulerAngles)
 
 Player::~Player(void) {}
 
-void Player::Update(void) {
+void Player::update(void) {
 	float deltaTime = _gameEngine->getDeltaTime();
 
 	// // Update position based on keyboard

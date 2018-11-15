@@ -41,16 +41,6 @@ GameEngine::~GameEngine(void) {
 	delete _gameRenderer;
 }
 
-int GameEngine::getSquareSize(void) { return squareSize; }
-
-int GameEngine::getXOffset(void) { return xOffset; }
-
-int GameEngine::getYOffset(void) { return yOffset; }
-
-int GameEngine::getMapW(void) { return mapW; }
-
-int GameEngine::getMapH(void) { return mapH; }
-
 float GameEngine::getDeltaTime(void) { return _deltaTime; }
 
 GameRenderer const *GameEngine::getGameRenderer(void) const {
@@ -75,6 +65,7 @@ bool GameEngine::initScene(int newSceneIdx) {
 	_clearTmpEntities();
 	_gameScenes[newSceneIdx]->load();
 	_camera = _gameScenes[newSceneIdx]->getCamera();
+	_camera->initEntity(this);
 	for (auto entity : _gameScenes[newSceneIdx]->getEntities()) {
 		_allEntities.push_back(entity);
 		_allEntities.back()->initEntity(this);
@@ -562,8 +553,9 @@ void GameEngine::run(void) {
 		}
 
 		// Update game entities states
+		_camera->update();
 		for (auto entity : _allEntities) {
-			entity->Update();
+			entity->update();
 		}
 		moveEntities();
 		_gameRenderer->refreshWindow(_allEntities, _camera);
