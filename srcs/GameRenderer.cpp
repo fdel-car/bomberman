@@ -54,6 +54,18 @@ void GameRenderer::_initShaders(void) {
 		glGetUniformLocation(_shaderPrograms["4.1"]->getID(), "projection");
 	_viewLoc = glGetUniformLocation(_shaderPrograms["4.1"]->getID(), "view");
 	_modelLoc = glGetUniformLocation(_shaderPrograms["4.1"]->getID(), "model");
+	_lightDirLoc =
+		glGetUniformLocation(_shaderPrograms["4.1"]->getID(), "lightDir");
+	_viewPosLoc =
+		glGetUniformLocation(_shaderPrograms["4.1"]->getID(), "viewPos");
+	_lightColorLoc =
+		glGetUniformLocation(_shaderPrograms["4.1"]->getID(), "lightColor");
+
+	// Set permanent values
+	glUniform3fv(_lightDirLoc, 1,
+				 glm::value_ptr(glm::vec3(-0.2f, -1.0f, -0.3f)));
+	glUniform3fv(_lightColorLoc, 1,
+				 glm::value_ptr(glm::vec3(1.0f, 1.0f, 1.0f)));
 }
 
 void GameRenderer::_initShapes(void) {
@@ -79,13 +91,13 @@ void GameRenderer::refreshWindow(std::vector<Entity *> &entities,
 					   glm::value_ptr(camera->getViewMatrix()));
 	glUniformMatrix4fv(_projectionLoc, 1, GL_FALSE,
 					   glm::value_ptr(camera->getProjectionMatrix()));
-
+	glUniform3fv(_viewPosLoc, 1, glm::value_ptr(camera->getPosition()));
 	for (auto entity : entities) {
 		// entity->rotate(glm::vec3(0.0, 1.0, 0.0), 1.0);
 		glUniformMatrix4fv(_modelLoc, 1, GL_FALSE,
 						   glm::value_ptr(entity->getModelMatrix()));
 		glBindVertexArray((entity->getShape())->getVAO());
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		// glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		glDrawArrays(GL_TRIANGLES, 0, entity->getShape()->getSize());
 		// glBindVertexArray(0);
 	}
