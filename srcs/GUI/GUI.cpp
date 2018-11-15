@@ -713,6 +713,7 @@ void GUI::uiDialogBox(const char * name, std::string imgName, const char * text,
 	int textWidth = (WINDOW_W / 4) * 3 - (imgWidth - (WINDOW_W / 4)) - 40;
 	if (uiStartBlock("dialog", name, rect, 0)) {
 		uiHeader(name, NK_TEXT_CENTERED, fontTitle);
+		uiApplyDefaultFont();
 		uiApplyFont(fontText);
 		nk_layout_row_begin(&glfw.ctx, NK_STATIC, dialogBoxHeight, 2);
 		if (isImgLeft) {
@@ -746,4 +747,30 @@ void GUI::uiDialogBox(const char * name, std::string imgName, const char * text,
 	}
 	uiEndBlock();
 	uiApplyDefaultFont();
+}
+
+bool GUI::uiHorizontalSelection(int widgetWidth, std::string leftText, std::string rightText) {
+	bool tmp = false;
+	widgetWidth -= 100;
+    nk_layout_row_begin(&glfw.ctx, NK_STATIC, 30, 4);
+	nk_layout_row_push(&glfw.ctx, widgetWidth / 2);
+    nk_label(&glfw.ctx, leftText.c_str(), NK_TEXT_LEFT);
+    nk_layout_row_push(&glfw.ctx, 30);
+	if (_media->myImages.find("chevronGauche") != _media->myImages.end()) {
+		if (nk_button_image(&glfw.ctx, _media->myImages.at("chevronGauche"))) {
+			std::cout << "left" << std::endl;
+			tmp = true;
+		}
+	}
+    nk_layout_row_push(&glfw.ctx, widgetWidth / 2);
+    nk_label(&glfw.ctx, rightText.c_str(), NK_TEXT_CENTERED);
+    nk_layout_row_push(&glfw.ctx, 30);
+	if (_media->myImages.find("chevronDroit") != _media->myImages.end()) {
+		if (nk_button_image(&glfw.ctx, _media->myImages.at("chevronDroit"))) {
+			std::cout << "right" << std::endl;
+			tmp = true;
+		}
+	}
+    nk_layout_row_end(&glfw.ctx);
+	return tmp;
 }

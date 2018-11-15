@@ -102,6 +102,7 @@ public:
 	void uiWidget(float height, std::string fontName = "");
 	void uiWidgetCentered(float height, std::string fontName = "");
 	void uiDialogBox(const char * name, std::string imgName, const char * text, bool isImgLeft, size_t maxCharPerLine, int nbrOfLine, nk_flags textPosition = NK_TEXT_LEFT, std::string fontText = "", std::string fontTitle = "");
+	bool uiHorizontalSelection(int widgetWidth, std::string leftText, std::string rightText);
 
 private:
 	/*

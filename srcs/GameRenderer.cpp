@@ -47,17 +47,19 @@ GameRenderer::GameRenderer(GameEngine *gameEngine) {
 
 	std::vector< std::tuple< float, const char *, std::string > > vFontPath;
 	vFontPath.push_back(std::tuple<float, const char *, std::string> (42.0f, "/Users/vklaouse/Desktop/BOMBERMA.TTF", "BOMBERMA.TTF"));
-		vFontPath.push_back(std::tuple<float, const char *, std::string> (18.0f, "/Users/vklaouse/Desktop/BOMBERMA.TTF", "BOMBERMA.TTF"));
+	vFontPath.push_back(std::tuple<float, const char *, std::string> (18.0f, "/Users/vklaouse/Desktop/BOMBERMA.TTF", "BOMBERMA.TTF"));
 	vFontPath.push_back(std::tuple<float, const char *, std::string> (18.0f, "/Users/vklaouse/Desktop/Amatic-Bold.ttf", "Amatic-Bold.ttf"));
 	vFontPath.push_back(std::tuple<float, const char *, std::string> (18.0f, "/Users/vklaouse/Desktop/DroidSans.ttf", "DroidSans.ttf"));
 
 	std::vector< std::tuple< const char *, std::string > > vImagePath;
-	vImagePath.push_back(std::tuple< const char *, std::string > ("/Users/vklaouse/Desktop/toto.png", "toto.png"));
+	vImagePath.push_back(std::tuple< const char *, std::string > ("/Users/vklaouse/Desktop/toto.png", "image1.png"));
 	vImagePath.push_back(std::tuple< const char *, std::string > ("/Users/vklaouse/Desktop/image1.png", "image2.png"));
+	vImagePath.push_back(std::tuple< const char *, std::string > ("/Users/vklaouse/Desktop/chevronDroit.png", "chevronDroit"));
+	vImagePath.push_back(std::tuple< const char *, std::string > ("/Users/vklaouse/Desktop/chevronGauche.png", "chevronGauche"));
 
 	graphicUI = new GUI(_window, vFontPath, vImagePath);
-	graphicUI->uiSetDefaultFont("18_DroidSans.ttf");
-	graphicUI->setStyle(THEME_RED);
+	graphicUI->uiSetDefaultFont("18_BOMBERMA.TTF");
+	graphicUI->setStyle(THEME_DARK);
 
 
 	// _initShaders();
@@ -401,11 +403,20 @@ int GameRenderer::refreshWindow(std::vector<Entity *> &entities) {
 		_window,
 		toString(static_cast<int>(1 / _gameEngine->getDeltaTime())).c_str());
 	graphicUI->nkNewFrame();
-	struct nk_rect rect = nk_rect(0, 0, 300, 300);
+	struct nk_rect rect = nk_rect(0, 0, 500, 300);
 	if (graphicUI->uiStartBlock("test1", "Demo", rect, NK_WINDOW_TITLE | NK_WINDOW_BORDER)) {
 		// graphicUI->uiSetFont("14_DroidSans.ttf");
 		graphicUI->uiHeader("Left", NK_TEXT_LEFT);
 		graphicUI->uiHeader("Right", NK_TEXT_RIGHT, "18_BOMBERMA.TTF");
+		if (graphicUI->uiHorizontalSelection(500, "Premier", "Choix1")) {
+			std::cout << "Change1" << std::endl;
+		}
+		if (graphicUI->uiHorizontalSelection(500, "Second", "Choix2")) {
+			std::cout << "Change2" << std::endl;
+		}
+		if (graphicUI->uiHorizontalSelection(500, "Third", "Choix3")) {
+			std::cout << "Change3" << std::endl;
+		}
 		// if (nk_button_label(&GUI::glfw.ctx, "Button"))
 			// std::cout << "Coucou" << std::endl;
 	}
