@@ -1,13 +1,14 @@
 #include "Entity.hpp"
 #include "GameEngine.hpp"
+#include "GameRenderer.hpp"
 
 Entity::Entity(glm::vec3 position, glm::vec3 eulerAngles, Collider *collider,
-			   Shape *shape, bool isTmp)
+			   std::string shapeName)
 	: _position(position),
 	  _modelMatrix(glm::mat4(1.0f)),
 	  _collider(collider),
-	  _shape(shape),
-	  _isTmp(isTmp) {
+	  _shapeName(shapeName),
+	  _isTmp(true) {
 	// std::cout << "Euler Angles: " << eulerAngles.x << ' ' << eulerAngles.y
 	// 		  << ' ' << eulerAngles.z << std::endl;
 
@@ -38,6 +39,7 @@ Entity::Entity(glm::vec3 position, glm::vec3 eulerAngles, Collider *collider,
 	// _modelMatrix =
 	// glm::rotate(_modelMatrix, rotQuaternion.w, glm::vec3(0.0, 0.0, 1.0));
 	(void)eulerAngles;
+	_gameEngine = nullptr;
 }
 
 Entity::~Entity(void) {
@@ -71,4 +73,7 @@ void Entity::rotateY(float angle) {
 							   glm::vec3(0.0, 1.0, 0.0));
 }
 
-void Entity::setGameEngine(GameEngine *gameEngine) { _gameEngine = gameEngine; }
+void Entity::initEntity(GameEngine *gameEngine) {
+	_gameEngine = gameEngine;
+	_shape = _gameEngine->getGameRenderer()->getShape(_shapeName);
+}

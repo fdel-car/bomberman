@@ -70,8 +70,11 @@ void GameRenderer::_initShaders(void) {
 	glUseProgram(_shaderPrograms["4.1"]->getID());
 
 	// Init projection matrix
-	_projection = glm::perspective(
-		glm::radians(45.0f), (float)_width / (float)_height, 0.1f, 100.0f);
+	float const aspectRatio = (float)_width / (float)_height;
+	// _projection = glm::perspective(glm::radians(45.0f), aspectRatio,
+	// 0.1f, 100.0f);
+	_projection = glm::ortho(-aspectRatio * 10.0f, aspectRatio * 10.0f, -10.0f,
+							 10.0f, 0.1f, 100.0f);
 
 	// Init GLint uniform identfiers
 	_projectionLoc =
@@ -157,9 +160,9 @@ void GameRenderer::_initShaders(void) {
 }
 
 void GameRenderer::_initShapes(void) {
-	_shapes["Floor"] = new Shape("assets/objs/floor/floor.obj");
+	_shapes["Cube"] = new Shape("assets/objs/cube/cube.obj");
 	_shapes["Player"] = new Shape("assets/objs/player/player.obj");
-	_shapes["Bomb"] = new Shape("assets/objs/bomb/bomb.obj");
+	// _shapes["Bomb"] = new Shape("assets/objs/bomb/bomb.obj");
 }
 
 void GameRenderer::getUserInput(void) { glfwPollEvents(); }
@@ -196,7 +199,7 @@ void GameRenderer::refreshWindow(std::vector<Entity *> &entities,
 		glUniformMatrix4fv(_modelLoc, 1, GL_FALSE,
 						   glm::value_ptr(entity->getModelMatrix()));
 		glBindVertexArray((entity->getShape())->getVAO());
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		// glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		glDrawArrays(GL_TRIANGLES, 0, entity->getShape()->getSize());
 		// glBindVertexArray(0);
 	}
@@ -206,8 +209,9 @@ void GameRenderer::refreshWindow(std::vector<Entity *> &entities,
 	glfwSwapBuffers(_window);
 }
 
-std::map<std::string, Shape *> GameRenderer::getShapes() const {
-	return _shapes;
+Shape *GameRenderer::getShape(std::string shapeName) const {
+	if (_shapes.find(shapeName) != _shapes.end()) return _shapes.at(shapeName);
+	return nullptr;
 }
 
 void GameRenderer::closeWindow() {

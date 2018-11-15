@@ -8,17 +8,18 @@ class GameEngine;
 class Entity {
    public:
 	Entity(glm::vec3 position, glm::vec3 eulerAngles, Collider *collider,
-		   Shape *shape, bool isTmp);
+		   std::string shapeName);
 	virtual ~Entity(void);
 
-	virtual void Update(void);
 	GameEngine *getGameEngine(void) const;
 	const glm::vec3 &getPosition(void) const;
 	const glm::mat4 &getModelMatrix(void) const;
 	const Collider *getCollider(void) const;
 	const Shape *getShape(void) const;
 	bool getTmpState(void) const;
-	void setGameEngine(GameEngine *gameEngine);
+	void initEntity(GameEngine *gameEngine);
+
+	virtual void Update(void);
 
 	void rotate(glm::vec3 axis, float angle);
 	void rotateY(float angle);
@@ -28,11 +29,13 @@ class Entity {
 	// Animation *anim;
 	// bool isTrigger;
 
-   protected:
+   private:
 	glm::vec3 _position;
 	glm::mat4 _modelMatrix;
 
+   protected:
 	Collider *_collider;
+	std::string _shapeName;
 	Shape *_shape;
 
 	std::string _name;

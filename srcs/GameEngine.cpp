@@ -1,5 +1,6 @@
 #include "GameEngine.hpp"
 #include "GameRenderer.hpp"
+#include "Player.hpp"
 
 GameEngine::GameEngine() : _gameScenes(std::vector<AGameScene *>()) {}
 
@@ -40,6 +41,12 @@ int GameEngine::getMapW(void) { return mapW; }
 
 int GameEngine::getMapH(void) { return mapH; }
 
+float GameEngine::getDeltaTime(void) { return _deltaTime; }
+
+GameRenderer const *GameEngine::getGameRenderer(void) const {
+	return _gameRenderer;
+}
+
 // Entity *GameEngine::getFirstEntityWithName(std::string entityName) {
 // 	Entity *foundElem = nullptr;
 // 	for (auto entity : _allEntities) {
@@ -58,15 +65,14 @@ bool GameEngine::initScene(int newSceneIdx) {
 	_clearTmpEntities();
 	_gameScenes[newSceneIdx]->load();
 	_camera = _gameScenes[newSceneIdx]->getCamera();
-	for (auto data : _gameScenes[newSceneIdx]->getData()) {
-		_allEntities.push_back(
-			new Entity(data.pos, data.eulerAngles, data.collider,
-					   (_gameRenderer->getShapes())[data.shapeName], true));
-		_allEntities.back()->setGameEngine(this);
+	for (auto entity : _gameScenes[newSceneIdx]->getEntities()) {
+		_allEntities.push_back(entity);
+		_allEntities.back()->initEntity(this);
 	}
 	return true;
 }
 
+// /!\ Function not tested yet
 void GameEngine::_clearTmpEntities(void) {
 	size_t idx = 0;
 	for (auto entity : _allEntities) {
@@ -170,7 +176,7 @@ void GameEngine::run(void) {
 		_deltaTime = (std::chrono::duration_cast<std::chrono::milliseconds>(
 						  _frameTs - _lastFrameTs)
 						  .count()) /
-					 static_cast<double>(1000.0);
+					 1000.0f;
 		_lastFrameTs = _frameTs;
 
 		// Update inputs
@@ -207,8 +213,6 @@ void GameEngine::buttonStateChanged(std::string buttonName, bool isPressed) {
 bool GameEngine::isKeyPressed(std::string keyName) {
 	return keyboardMap[keyName];
 }
-
-double GameEngine::getDeltaTime(void) { return _deltaTime; }
 
 static std::map<std::string, bool>
 generateKeyboardMap() {  // static here is "internal linkage"

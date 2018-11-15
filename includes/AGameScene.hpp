@@ -6,12 +6,12 @@ class AGameScene {
    public:
 	AGameScene(void);
 	virtual ~AGameScene(void) {}
-	SceneData const getData() const;
+	std::vector<Entity *> const getEntities() const;
 	Camera *getCamera() const;
 	virtual void load(void) = 0;
 
    protected:
-	SceneData _vector;
+	std::vector<Entity *> _entities;
 	Camera *_camera;
 
 	AGameScene(AGameScene const &src);

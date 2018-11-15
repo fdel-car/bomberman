@@ -42,6 +42,7 @@ class GameEngine {
 	int getYOffset(void);
 	int getMapW(void);
 	int getMapH(void);
+	GameRenderer const *getGameRenderer(void) const;
 	Entity *getFirstEntityWithName(std::string entityName);
 	// std::vector<Entity *> getEntitiesWithName(std::string entityName);
 	// Entity *getFirstEntityWithLabel(std::string entityLabel);
@@ -50,7 +51,7 @@ class GameEngine {
 
 	// Functions needed by entities
 	bool isKeyPressed(std::string keyName);
-	double getDeltaTime();
+	float getDeltaTime();
 
    private:
 	static std::map<std::string, bool> keyboardMap;

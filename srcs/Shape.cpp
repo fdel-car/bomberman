@@ -19,6 +19,10 @@ Shape::Shape(std::string const &objPath) : _size(0) {
 	std::vector<float> vertices = std::vector<float>();
 	std::vector<unsigned int> indices = std::vector<unsigned int>();
 
+	float r = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
+	float g = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
+	float b = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
+
 	for (size_t s = 0; s < shapes.size(); s++) {
 		size_t index_offset = 0;
 		for (size_t f = 0; f < shapes[s].mesh.num_face_vertices.size(); f++) {
@@ -38,14 +42,17 @@ Shape::Shape(std::string const &objPath) : _size(0) {
 				vertices.push_back(attrib.normals[3 * idx.normal_index + 1]);
 				vertices.push_back(attrib.normals[3 * idx.normal_index + 2]);
 
+				// Push normals inside vertices vector
+				vertices.push_back(r);
+				vertices.push_back(g);
+				vertices.push_back(b);
+
 				// indices.push_back(idx.vertex_index);
 				_size++;
 			}
 			index_offset += fv;
 		}
 	}
-	std::cout << _size << std::endl;
-
 	glGenVertexArrays(1, &_VAO);
 	glGenBuffers(1, &_VBO);
 	glGenBuffers(1, &_EBO);
@@ -61,14 +68,19 @@ Shape::Shape(std::string const &objPath) : _size(0) {
 	// indices.size(), 			 &indices.front(), GL_STATIC_DRAW);
 
 	// Positions
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float),
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float),
 						  (void *)0);
 	glEnableVertexAttribArray(0);
 
-	// // Normals
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float),
+	// Normals
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float),
 						  (void *)(3 * sizeof(float)));
 	glEnableVertexAttribArray(1);
+
+	// Colors
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float),
+						  (void *)(3 * sizeof(float)));
+	glEnableVertexAttribArray(2);
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);

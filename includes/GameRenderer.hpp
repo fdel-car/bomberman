@@ -30,7 +30,7 @@ class GameRenderer {
 	void getUserInput(void);
 	void refreshWindow(std::vector<Entity *> &entities, Camera *camera);
 	void closeWindow(void);
-	std::map<std::string, Shape *> getShapes(void) const;
+	Shape *getShape(std::string shapeName) const;
 
 	bool active;
 
