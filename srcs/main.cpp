@@ -1,7 +1,13 @@
 #include "GameEngine.hpp"
 #include "scenes/Factory.hpp"
 
+std::string _assetsDir;
+
 int main(void) {
+	_assetsDir = __FILE__;
+	_assetsDir.erase(_assetsDir.begin() + _assetsDir.rfind("/srcs/") + 1,
+					 _assetsDir.end());
+	_assetsDir += "assets/";
 	try {
 		/* Initialize random seed: */
 		srand(time(NULL));

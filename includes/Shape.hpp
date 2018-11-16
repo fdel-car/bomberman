@@ -4,7 +4,7 @@
 
 class Shape {
    public:
-	Shape(std::string const &objPath);
+	Shape(std::string const &objDirName);
 	virtual ~Shape(void);
 
 	size_t getSize(void) const;
@@ -20,5 +20,4 @@ class Shape {
 
 	GLuint _VAO;
 	GLuint _VBO;
-	GLuint _EBO;
 };

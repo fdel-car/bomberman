@@ -2,15 +2,22 @@
 #define TINYOBJLOADER_IMPLEMENTATION
 #include "tiny_obj_loader/tiny_obj_loader.h"
 
-Shape::Shape(std::string const &objPath) : _size(0) {
+extern std::string _assetsDir;
+
+Shape::Shape(std::string const &objDirName) : _size(0) {
 	tinyobj::attrib_t attrib;
 	std::vector<tinyobj::shape_t> shapes;
 	std::vector<tinyobj::material_t> materials;
 	std::string warn;
 	std::string err;
 
-	tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err,
-					 objPath.c_str());
+	tinyobj::LoadObj(
+		&attrib, &shapes, &materials, &warn, &err,
+		(_assetsDir + "/objs/" + objDirName + '/' + objDirName + ".obj")
+			.c_str(),
+		(_assetsDir + "/objs/" + objDirName + '/').c_str());
+
+	// Error output
 	if (!warn.empty())
 		std::cout << "\033[0;33m:WARN:\033[0m " << warn << std::endl;
 	if (!err.empty())
@@ -23,6 +30,7 @@ Shape::Shape(std::string const &objPath) : _size(0) {
 	float g = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
 	float b = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
 
+	std::cout << shapes.size() << std::endl;
 	for (size_t s = 0; s < shapes.size(); s++) {
 		size_t index_offset = 0;
 		for (size_t f = 0; f < shapes[s].mesh.num_face_vertices.size(); f++) {
@@ -51,21 +59,20 @@ Shape::Shape(std::string const &objPath) : _size(0) {
 				_size++;
 			}
 			index_offset += fv;
+
+			// Per-face material
+			// std::cout << shapes[s].mesh.material_ids[f] << std::endl;
 		}
+		std::cout << s << std::endl;
 	}
 	glGenVertexArrays(1, &_VAO);
 	glGenBuffers(1, &_VBO);
-	glGenBuffers(1, &_EBO);
 
 	glBindVertexArray(_VAO);
 
 	glBindBuffer(GL_ARRAY_BUFFER, _VBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vertices.size(),
 				 &vertices.front(), GL_STATIC_DRAW);
-
-	// glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _EBO);
-	// glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) *
-	// indices.size(), 			 &indices.front(), GL_STATIC_DRAW);
 
 	// Positions
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float),

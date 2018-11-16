@@ -3,6 +3,8 @@
 #include "GameEngine.hpp"
 #include "Shape.hpp"
 
+extern std::string _assetsDir;
+
 GameRenderer::GameRenderer(GameEngine *gameEngine) {
 	_gameEngine = gameEngine;
 	glfwSetErrorCallback(errorCallback);
@@ -46,7 +48,8 @@ GameRenderer::~GameRenderer(void) {
 
 void GameRenderer::_initShaders(void) {
 	_shaderPrograms["4.1"] =
-		new ShaderProgram("assets/shaders/4.1.vs", "assets/shaders/4.1.fs");
+		new ShaderProgram(_assetsDir + "../srcs/shaders/4.1.vs",
+						  _assetsDir + "../srcs/shaders/4.1.fs");
 	glUseProgram(_shaderPrograms["4.1"]->getID());
 
 	// Init GLint uniform identfiers
@@ -69,9 +72,8 @@ void GameRenderer::_initShaders(void) {
 }
 
 void GameRenderer::_initShapes(void) {
-	_shapes["Cube"] = new Shape("assets/objs/cube/cube.obj");
-	_shapes["Player"] = new Shape("assets/objs/player/player.obj");
-	// _shapes["Bomb"] = new Shape("assets/objs/bomb/bomb.obj");
+	_shapes["Cube"] = new Shape("cube");
+	_shapes["Player"] = new Shape("player");
 }
 
 void GameRenderer::getUserInput(void) { glfwPollEvents(); }
@@ -93,16 +95,14 @@ void GameRenderer::refreshWindow(std::vector<Entity *> &entities,
 					   glm::value_ptr(camera->getProjectionMatrix()));
 	glUniform3fv(_viewPosLoc, 1, glm::value_ptr(camera->getPosition()));
 	for (auto entity : entities) {
-		// entity->rotate(glm::vec3(0.0, 1.0, 0.0), 1.0);
 		glUniformMatrix4fv(_modelLoc, 1, GL_FALSE,
 						   glm::value_ptr(entity->getModelMatrix()));
 		glBindVertexArray((entity->getShape())->getVAO());
 		// glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		glDrawArrays(GL_TRIANGLES, 0, entity->getShape()->getSize());
-		// glBindVertexArray(0);
 	}
+	glBindVertexArray(0);
 
-	(void)entities;
 	// Put everything to screen
 	glfwSwapBuffers(_window);
 }

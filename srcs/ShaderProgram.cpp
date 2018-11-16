@@ -1,6 +1,7 @@
 #include "ShaderProgram.hpp"
 
-ShaderProgram::ShaderProgram(const char* vertexPath, const char* fragmentPath) {
+ShaderProgram::ShaderProgram(std::string const& vertexPath,
+							 std::string const& fragmentPath) {
 	std::string vertexCode;
 	std::string fragmentCode;
 	std::ifstream vShaderFile;
@@ -8,8 +9,8 @@ ShaderProgram::ShaderProgram(const char* vertexPath, const char* fragmentPath) {
 	vShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
 	fShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
 	try {
-		vShaderFile.open(vertexPath);
-		fShaderFile.open(fragmentPath);
+		vShaderFile.open(vertexPath.c_str());
+		fShaderFile.open(fragmentPath.c_str());
 		std::stringstream vShaderStream, fShaderStream;
 		vShaderStream << vShaderFile.rdbuf();
 		fShaderStream << fShaderFile.rdbuf();
@@ -18,9 +19,8 @@ ShaderProgram::ShaderProgram(const char* vertexPath, const char* fragmentPath) {
 		vertexCode = vShaderStream.str();
 		fragmentCode = fShaderStream.str();
 	} catch (const std::ifstream::failure& err) {
-		throw(std::runtime_error("Could not read the file " +
-								 static_cast<std::string>(vertexPath) + " or " +
-								 static_cast<std::string>(fragmentPath) + "."));
+		throw(std::runtime_error("Could not read the file " + vertexPath +
+								 " or " + fragmentPath + "."));
 	}
 	const char* vShaderCode = vertexCode.c_str();
 	const char* fShaderCode = fragmentCode.c_str();
