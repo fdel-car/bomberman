@@ -1,6 +1,7 @@
 #pragma once
 
-#include "AGameScene.hpp"
+#include "Entity.hpp"
+#include "Camera.hpp"
 
 class AGame {
 
@@ -8,11 +9,18 @@ class AGame {
 		AGame(void);
 		virtual ~AGame(void);
 
-		std::vector<AGameScene *> & getGameScenes();
+		virtual bool loadScene(size_t sceneIdx) = 0;
+
 		std::vector<std::tuple<float, std::string, std::string>> & getNeededFont();
+		std::vector<Entity *> const getEntities() const;
+		Camera *getCamera() const;
+
+		void unload(void);
 
 	protected:
-		std::vector<AGameScene *> gameScenes;
+		size_t _sceneIdx;
+	 	std::vector<Entity *> _entities;
+	 	Camera *_camera;
 		std::vector< std::tuple< float, std::string, std::string > > vNeededFont;
 
 };

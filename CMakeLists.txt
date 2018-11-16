@@ -12,9 +12,9 @@ set(SRCS
   srcs/main.cpp
   srcs/glad/glad.cpp
   srcs/Entity.cpp
-  srcs/AGameScene.cpp
   srcs/AudioManager.cpp
   srcs/Collider.cpp
+  srcs/AGame.cpp
   srcs/GameEngine.cpp
   srcs/GameRenderer.cpp
   srcs/ShaderProgram.cpp
@@ -22,11 +22,8 @@ set(SRCS
   srcs/Shape.cpp
   srcs/Player.cpp
   srcs/GUI/GUI.cpp
-  srcs/AGame.cpp
   srcs/scenes/BomberManGame.cpp
-  srcs/scenes/MainMenu.cpp
   srcs/scenes/MainMenuCam.cpp
-  srcs/scenes/Level01.cpp
   srcs/scenes/Level01Cam.cpp
 )
 
@@ -41,9 +38,9 @@ set(HEADERS
   includes/glm/gtc/type_ptr.hpp
   includes/header.hpp
   includes/Entity.hpp
-  includes/AGameScene.hpp
   includes/AudioManager.hpp
   includes/Collider.hpp
+  includes/AGame.hpp
   includes/GameEngine.hpp
   includes/GameRenderer.hpp
   includes/ShaderProgram.hpp
@@ -51,11 +48,8 @@ set(HEADERS
   includes/Shape.hpp
   includes/Player.hpp
   includes/GUI/GUI.hpp
-  includes/AGame.hpp
   includes/scenes/BomberManGame.hpp
-  includes/scenes/MainMenu.hpp
   includes/scenes/MainMenuCam.hpp
-  includes/scenes/Level01.hpp
   includes/scenes/Level01Cam.hpp
 )
 

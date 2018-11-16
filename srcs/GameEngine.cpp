@@ -66,15 +66,17 @@ GameRenderer const *GameEngine::getGameRenderer(void) const {
 // 	return foundElem;
 // }
 
-bool GameEngine::initScene(int newSceneIdx) {
-	if (!_game || newSceneIdx < 0 || newSceneIdx >= static_cast<int>(_game->getGameScenes().size()))
+bool GameEngine::initScene(size_t newSceneIdx) {
+	if (!_game)
 		return false;
 	_sceneIdx = newSceneIdx;
+	if (!_game->loadScene(_sceneIdx))
+		return false;
+
 	_clearTmpEntities();
-	_game->getGameScenes()[newSceneIdx]->load();
-	_camera = _game->getGameScenes()[newSceneIdx]->getCamera();
+	_camera = _game->getCamera();
 	_allEntities.clear();
-	for (auto entity : _game->getGameScenes()[newSceneIdx]->getEntities()) {
+	for (auto entity : _game->getEntities()) {
 		_allEntities.push_back(entity);
 		_allEntities.back()->initEntity(this);
 	}

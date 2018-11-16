@@ -13,8 +13,7 @@ struct nk GUI::glfw = nk();
 
 GUI::GUI(GLFWwindow *window, std::vector< std::tuple< float, std::string, std::string > > vFontPath, std::vector< std::tuple< std::string, std::string > > vImagePath)
 			: _media(new media()) {
-	struct nk_font_atlas tmpAtlas;
-	GUI::glfw.atlas = &tmpAtlas;
+	GUI::glfw.atlas = new nk_font_atlas();
 	_nkInit(window);
 	_nkFontStashBegin();
 	if (!vFontPath.empty())
@@ -457,7 +456,7 @@ void GUI::_nkDeviceDestroy() {
 }
 
 void GUI::_nkShutdown() {
-	// nk_font_atlas_clear(GUI::glfw.atlas);
+	nk_font_atlas_clear(GUI::glfw.atlas);
     nk_free(&GUI::glfw.ctx);
     _nkDeviceDestroy();
     memset(&glfw, 0, sizeof(glfw));

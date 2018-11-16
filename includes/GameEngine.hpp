@@ -1,7 +1,6 @@
 #pragma once
 
 #include "AGame.hpp"
-#include "AGameScene.hpp"
 #include "AudioManager.hpp"
 #include "Camera.hpp"
 #include "Collider.hpp"
@@ -74,7 +73,7 @@ class GameEngine {
 
 	GameEngine &operator=(GameEngine const &rhs);
 
-	bool initScene(int newSceneIdx);
+	bool initScene(size_t newSceneIdx);
 	void _clearTmpEntities(void);
 	void moveEntities(void);
 	size_t checkCollision(Entity *entity, glm::vec3 &futureMovement,

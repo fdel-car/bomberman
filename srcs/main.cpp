@@ -9,6 +9,7 @@ int main(void) {
 		AGame * myGame = new BomberManGame();
 		GameEngine gameEngine(myGame);
 		gameEngine.run();
+		delete myGame;
 	} catch (const std::runtime_error &err) {
 		std::cerr << err.what() << std::endl;
 		return EXIT_FAILURE;

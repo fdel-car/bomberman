@@ -43,7 +43,7 @@ GameRenderer::GameRenderer(GameEngine *gameEngine, AGame * game) {
 	// // Get the size of each square in the game screen
 	// squarePercentY = startY / (_gameEngine->getMapH() / 2.0f);
 	// squarePercentX = (-startX) / (_gameEngine->getMapW() / 2.0f);
-
+// (void)game;
 	_initGUI(game);
 	_initShaders();
 	_initShapes();
@@ -212,35 +212,6 @@ void GameRenderer::refreshWindow(std::vector<Entity *> &entities,
 	glfwSetWindowTitle(
 		_window,
 		toString(static_cast<int>(1 / _gameEngine->getDeltaTime())).c_str());
-
-
-
-	// graphicUI->nkNewFrame();
-	// struct nk_rect rect = nk_rect(0, 0, 500, 300);
-	// if (graphicUI->uiStartBlock("test1", "Demo", rect, NK_WINDOW_TITLE | NK_WINDOW_BORDER)) {
-	// 	// graphicUI->uiSetFont("14_DroidSans.ttf");
-	// 	graphicUI->uiHeader("Left", NK_TEXT_LEFT);
-	// 	graphicUI->uiHeader("Right", NK_TEXT_RIGHT, "18_BOMBERMA.TTF");
-	// 	if (graphicUI->uiHorizontalSelection(500, "Premier", "Choix1")) {
-	// 		std::cout << "Change1" << std::endl;
-	// 	}
-	// 	if (graphicUI->uiHorizontalSelection(500, "Second", "Choix2")) {
-	// 		std::cout << "Change2" << std::endl;
-	// 	}
-	// 	if (graphicUI->uiHorizontalSelection(500, "Third", "Choix3")) {
-	// 		std::cout << "Change3" << std::endl;
-	// 	}
-	// 	// if (nk_button_label(&GUI::glfw.ctx, "Button"))
-	// 		// std::cout << "Coucou" << std::endl;
-	// }
-	// graphicUI->uiEndBlock();
-	// // if (uiStartBlock(ds)) {
-	// //
-	// // }
-	// // uiEndBlock();
-	// graphicUI->uiDialogBox("Bomber Man", "image1.png", "AHAHAHAHAHAH AH", true, 40, 1, NK_TEXT_CENTERED, "42_BOMBERMA.TTF", "18_BOMBERMA.TTF");
-	// // graphicUI->drawGUI();
-	// graphicUI->nkRender();
 
 	glUseProgram(_shaderPrograms["4.1"]->getID());
 	// glm::mat4 view = glm::mat4(1.0f);

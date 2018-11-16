@@ -23,8 +23,16 @@ void MainMenuCam::drawGUI(GUI * graphicUI) {
 
 	if (graphicUI->uiStartBlock("MainMenu2", "", nk_rect(xPos  - (xPos / 2), (WINDOW_H / 5) * 4, (WINDOW_W / 5), 60), NK_WINDOW_NO_SCROLLBAR)) {
 		graphicUI->uiWidget(50);
-	    if (graphicUI->uiButton(NK_TEXT_LEFT, "Credits", "", "14_BOMBERMA"))
-	        std::cout << "1" << std::endl;
+		if (graphicUI->uiHover()) {
+		    if (graphicUI->uiButton(0, "Settings", "settings", "14_BOMBERMA"))
+		        std::cout << "3" << std::endl;
+		}
+		else {
+			if (graphicUI->uiButton(NK_TEXT_RIGHT, "Settings", "", "14_BOMBERMA")) {
+				std::cout << "3" << std::endl;
+				_newSceneIdx = 1;
+			}
+		}
 	}
 	graphicUI->uiEndBlock();
 
@@ -39,17 +47,9 @@ void MainMenuCam::drawGUI(GUI * graphicUI) {
 
 	if (graphicUI->uiStartBlock("MainMenu4", "", nk_rect(xPos * 4 - (xPos / 2), (WINDOW_H / 5) * 4, (WINDOW_W / 5), 60), NK_WINDOW_NO_SCROLLBAR)) {
 		graphicUI->uiWidget(50);
-		if (graphicUI->uiHover()) {
-		    if (graphicUI->uiButton(0, "Settings", "settings", "14_BOMBERMA"))
-		        std::cout << "3" << std::endl;
+	    if (graphicUI->uiButton(NK_TEXT_RIGHT, "Credit", "", "14_BOMBERMA")) {
+			std::cout << "2" << std::endl;
 		}
-		else {
-			if (graphicUI->uiButton(NK_TEXT_RIGHT, "Settings", "", "14_BOMBERMA")) {
-				std::cout << "2" << std::endl;
-				_newSceneIdx = 1;
-			}
-		}
-		// graphicUI->uiHorizontalSelection((WINDOW_W / 5), "Left3", "Right3");
 	}
 	graphicUI->uiEndBlock();
 

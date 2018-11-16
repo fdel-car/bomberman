@@ -1,19 +1,27 @@
 #include "AGame.hpp"
-#include "scenes/MainMenu.hpp"
-#include "scenes/Level01.hpp"
 
 AGame::AGame(void) { }
 
-AGame::~AGame(void) {
-	for (auto scene : gameScenes) {
-		delete scene;
-	}
+AGame::~AGame(void) { unload(); }
+
+std::vector<Entity *> const AGame::getEntities(void) const {
+	return _entities;
 }
 
-std::vector<AGameScene *> & AGame::getGameScenes() {
-	return gameScenes;
-}
+Camera *AGame::getCamera(void) const { return _camera; }
 
 std::vector<std::tuple<float, std::string, std::string>> & AGame::getNeededFont() {
 	return vNeededFont;
+}
+
+void AGame::unload(void) {
+	if (_camera != nullptr) {
+		delete _camera;
+		_camera = nullptr;
+	}
+	for (auto entity : _entities) {
+		delete entity;
+		entity = nullptr;
+	}
+	_entities.clear();
 }
