@@ -20,7 +20,5 @@ int main(void) {
 		std::cerr << err.what() << std::endl;
 		return EXIT_FAILURE;
 	}
-	while (42)
-		;
 	return EXIT_SUCCESS;
 }
