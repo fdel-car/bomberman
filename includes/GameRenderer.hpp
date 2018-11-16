@@ -46,7 +46,7 @@ class GameRenderer {
 
 	GameRenderer &operator=(GameRenderer const &rhs);
 
-	void _initShaders(void);
+	void _initShader(void);
 	void _initModels(void);
 	// void drawGUI(void);
 	static GameEngine *_gameEngine;
@@ -60,7 +60,7 @@ class GameRenderer {
 	GUI *graphicUI;
 
 	// Rendering vars
-	std::map<std::string, ShaderProgram *> _shaderPrograms;
+	ShaderProgram *_shaderProgram;
 	std::map<std::string, Model *> _models;
 
 	// Camera
