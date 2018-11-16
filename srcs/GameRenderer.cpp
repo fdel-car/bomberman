@@ -52,18 +52,7 @@ GameRenderer::~GameRenderer(void) {
 void GameRenderer::_initGUI(AGame *game) {
 	std::vector<std::tuple<float, std::string, std::string>> vFontPath =
 		game->getNeededFont();
-	std::cout << vFontPath.size() << std::endl;
-
-	std::vector<std::tuple<std::string, std::string>> vImagePath;
-	vImagePath.push_back(std::tuple<std::string, std::string>(
-		(_assetsDir + "GUI/icons/chevronDroit.png"), "chevronDroit"));
-	vImagePath.push_back(std::tuple<std::string, std::string>(
-		(_assetsDir + "GUI/icons/chevronGauche.png"), "chevronGauche"));
-	vImagePath.push_back(std::tuple<std::string, std::string>(
-		(_assetsDir + "GUI/icons/settings.png"), "settings"));
-	graphicUI = new GUI(_window, vFontPath, vImagePath);
-	graphicUI->uiSetDefaultFont("18_BOMBERMA");
-	graphicUI->setStyle(THEME_DARK);
+	graphicUI = new GUI(_window, vFontPath);
 }
 
 void GameRenderer::_initShader(void) {
@@ -133,6 +122,11 @@ Model *GameRenderer::getModel(std::string modelName) const {
 	if (_models.find(modelName) != _models.end()) return _models.at(modelName);
 	return nullptr;
 }
+
+GUI *GameRenderer::getGUI() {
+	return graphicUI;
+}
+
 
 int GameRenderer::getWidth(void) const { return _width; }
 

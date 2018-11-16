@@ -7,7 +7,8 @@ class MainMenuCam : public Camera {
 		MainMenuCam(glm::vec3 const &pos, glm::vec3 const &eulerAngles);
 		virtual ~MainMenuCam(void);
 
-		void drawGUI(GUI * graphicUI);
+		virtual void drawGUI(GUI * graphicUI);
+		virtual void configGUI(GUI *graphicUI);
 
 	private:
 		MainMenuCam(void);

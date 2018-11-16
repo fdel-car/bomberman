@@ -7,7 +7,8 @@ class Level01Cam : public Camera {
 		Level01Cam(glm::vec3 const &pos, glm::vec3 const &eulerAngles);
 		virtual ~Level01Cam(void);
 
-		void drawGUI(GUI * graphicUI);
+		virtual void drawGUI(GUI * graphicUI);
+		virtual void configGUI(GUI *graphicUI);
 
 	private:
 		Level01Cam(void);

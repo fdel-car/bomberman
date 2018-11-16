@@ -85,8 +85,9 @@ public:
 	** Style
 	*/
 
-	void setStyle(enum theme theme);
-	// void setAssetFont(std::vector<std::tuple<float,std::string,std::string>> vFontPath);
+	void getDefaultStyle(enum theme theme, std::map<int, nk_color> * styleMap);
+	void setStyle(std::map<int, nk_color> & styleMap);
+	void setAssetImage(std::vector<std::tuple<std::string,std::string>> vFontImage);
 
 	bool uiStartBlock(const char * id, const char * title, struct nk_rect bounds, nk_flags flags);
 	void uiEndBlock();
@@ -96,7 +97,7 @@ public:
 	void uiSetImage(std::string imgName);
 	void uiHeader(const char * title, nk_flags flags, int rowSize, std::string fontName = "");
 	void uiWidget(float height, std::string fontName = "");
-	bool uiButton(nk_flags flags, std::string text = "", std::string imgName = "", std::string fontName = "");
+	bool uiButton(int width, int height, nk_flags flags, std::string text = "", std::string imgName = "", std::string fontName = "");
 	void uiWidgetCentered(float height, std::string fontName = "");
 	void uiDialogBox(const char * name, std::string imgName, const char * text, bool isImgLeft, size_t maxCharPerLine, int nbrOfLine, nk_flags textPosition = NK_TEXT_LEFT, std::string fontText = "", std::string fontTitle = "");
 	bool uiHorizontalSelection(int widgetWidth, std::string leftText, std::string rightText);

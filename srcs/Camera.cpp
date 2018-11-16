@@ -20,6 +20,11 @@ glm::mat4 const &Camera::getViewMatrix(void) const { return _view; };
 
 glm::mat4 const &Camera::getProjectionMatrix(void) const { return _projection; }
 
+std::vector<std::tuple<std::string, std::string>>
+	&Camera::getNeededImage() {
+	return vNeededImage;
+}
+
 // void Camera::updateProjectionMatrix()
 
 void Camera::initEntity(GameEngine *gameEngine) {
@@ -32,6 +37,11 @@ void Camera::initEntity(GameEngine *gameEngine) {
 	_projection = glm::ortho(-_aspectRatio * length, _aspectRatio * length,
 							 -length, length, 0.1f, 100.0f);
 }
+
+void Camera::configGUI(GUI *graphicUI) {
+	(void)graphicUI;
+}
+
 
 void Camera::update(void) {
 	float deltaTime = _gameEngine->getDeltaTime();

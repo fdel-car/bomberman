@@ -5,7 +5,7 @@
 
 extern std::string _assetsDir;
 
-BomberManGame::BomberManGame(void) : AGame() {
+BomberManGame::BomberManGame(void) {
 	vNeededFont.push_back(std::tuple<float, std::string, std::string>(
 		48.0f, (_assetsDir + "GUI/fonts/BOMBERMA.TTF"), "BOMBERMA"));
 	vNeededFont.push_back(std::tuple<float, std::string, std::string>(
@@ -32,8 +32,8 @@ bool BomberManGame::loadScene(size_t sceneIdx) {
 		_entities.push_back(
 			new Player(glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 0.0, 45.0f)));
 	} else if (sceneIdx == 1) {
-		_camera = new Level01Cam(glm::vec3(0.0, 10.0, 0.0),
-								 glm::vec3(-90.0, 0.0, 0.0));
+		_camera = new Level01Cam(glm::vec3(0.0, 10.0, 10.0),
+								 glm::vec3(-45.0, 0.0, 0.0));
 
 		_entities.push_back(
 			new Player(glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 0.0, 0.0f)));

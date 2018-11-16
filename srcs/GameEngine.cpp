@@ -63,6 +63,7 @@ bool GameEngine::initScene(size_t newSceneIdx) {
 	_clearTmpEntities();
 	_camera = _game->getCamera();
 	_camera->initEntity(this);
+	_camera->configGUI(_gameRenderer->getGUI());
 
 	for (auto entity : _game->getEntities()) {
 		_allEntities.push_back(entity);

@@ -31,6 +31,7 @@ class GameRenderer {
 	Model *getModel(std::string modelName) const;
 	int getWidth(void) const;
 	int getHeight(void) const;
+	GUI *getGUI();
 
 	bool active;
 
