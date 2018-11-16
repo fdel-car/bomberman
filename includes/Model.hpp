@@ -9,6 +9,7 @@ class Model {
 
 	size_t getSize(void) const;
 	GLuint getVAO(void) const;
+	GLuint getVBO(void) const;
 
    private:
 	Model(void);

@@ -14,6 +14,8 @@ class ShaderProgram {
 	void setFloat(const std::string& name, float value) const;
 
    private:
+	GLuint _vs;
+	GLuint _fs;
 	GLuint _ID;
 
 	ShaderProgram(void);

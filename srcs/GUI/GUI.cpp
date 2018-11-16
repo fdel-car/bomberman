@@ -28,10 +28,7 @@ GUI::~GUI() {
 	delete _media;
 }
 
-/*
-** Prepare window for build a GUI
-*/
-
+// Prepare window for build a GUI
 void GUI::nkNewFrame() {
 	int i;
 	double x, y;
@@ -51,7 +48,7 @@ void GUI::nkNewFrame() {
 		nk_input_unicode(ctx, GUI::glfw.text[i]);
 
 #ifdef NK_GLFW_GL3_MOUSE_GRABBING
-	/* optional grabbing behavior */
+	// Optional grabbing behavior
 	if (ctx->input.mouse.grab)
 		glfwSetInputMode(GUI::glfw.win, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
 	else if (ctx->input.mouse.ungrab)
@@ -144,10 +141,7 @@ void GUI::nkNewFrame() {
 	GUI::glfw.scroll = nk_vec2(0, 0);
 }
 
-/*
-** Prepare window display the GUI
-*/
-
+// Prepare window display the GUI
 void GUI::nkRender() {
 	struct device *dev = &GUI::glfw.ogl;
 	struct nk_buffer vbuf, ebuf;
@@ -160,7 +154,7 @@ void GUI::nkRender() {
 	ortho[0][0] /= (GLfloat)GUI::glfw.width;
 	ortho[1][1] /= (GLfloat)GUI::glfw.height;
 
-	/* setup global state */
+	// Setup global state
 	glEnable(GL_BLEND);
 	glBlendEquation(GL_FUNC_ADD);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -169,19 +163,19 @@ void GUI::nkRender() {
 	glEnable(GL_SCISSOR_TEST);
 	glActiveTexture(GL_TEXTURE0);
 
-	/* setup program */
+	// Setup program
 	glUseProgram(dev->prog);
 	glUniform1i(dev->uniform_tex, 0);
 	glUniformMatrix4fv(dev->uniform_proj, 1, GL_FALSE, &ortho[0][0]);
 	glViewport(0, 0, (GLsizei)GUI::glfw.display_width,
 			   (GLsizei)GUI::glfw.display_height);
 	{
-		/* convert from command queue into draw list and draw to screen */
+		// Convert from command queue into draw list and draw to screen
 		const struct nk_draw_command *cmd;
 		void *vertices, *elements;
 		const nk_draw_index *offset = NULL;
 
-		/* allocate vertex and element buffer */
+		// Allocate vertex and element buffer
 		glBindVertexArray(dev->vao);
 		glBindBuffer(GL_ARRAY_BUFFER, dev->vbo);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, dev->ebo);
@@ -190,12 +184,11 @@ void GUI::nkRender() {
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, MAX_VERTEX_BUFFER, NULL,
 					 GL_STREAM_DRAW);
 
-		/* load draw vertices & elements directly into vertex + element buffer
-		 */
+		// Load draw vertices & elements directly into vertex + element buffer
 		vertices = glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
 		elements = glMapBuffer(GL_ELEMENT_ARRAY_BUFFER, GL_WRITE_ONLY);
 		{
-			/* fill convert configuration */
+			// Fill convert configuration
 			struct nk_convert_config config;
 			static const struct nk_draw_vertex_layout_element vertex_layout[] =
 				{{NK_VERTEX_POSITION, NK_FORMAT_FLOAT,
@@ -217,7 +210,7 @@ void GUI::nkRender() {
 			config.shape_AA = NK_ANTI_ALIASING_ON;
 			config.line_AA = NK_ANTI_ALIASING_ON;
 
-			/* setup buffers to load vertices and elements */
+			// Setup buffers to load vertices and elements
 			nk_buffer_init_fixed(&vbuf, vertices, (size_t)MAX_VERTEX_BUFFER);
 			nk_buffer_init_fixed(&ebuf, elements, (size_t)MAX_VERTEX_BUFFER);
 			nk_convert(&GUI::glfw.ctx, &dev->cmds, &vbuf, &ebuf, &config);
@@ -225,7 +218,7 @@ void GUI::nkRender() {
 		glUnmapBuffer(GL_ARRAY_BUFFER);
 		glUnmapBuffer(GL_ELEMENT_ARRAY_BUFFER);
 
-		/* iterate over and execute each draw command */
+		// Iterate over and execute each draw command
 		nk_draw_foreach(cmd, &GUI::glfw.ctx, &dev->cmds) {
 			if (!cmd->elem_count) continue;
 			glBindTexture(GL_TEXTURE_2D, (GLuint)cmd->texture.id);
@@ -242,7 +235,7 @@ void GUI::nkRender() {
 		nk_clear(&GUI::glfw.ctx);
 	}
 
-	/* default OpenGL state */
+	// Default OpenGL state
 	glUseProgram(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
@@ -251,10 +244,7 @@ void GUI::nkRender() {
 	glDisable(GL_SCISSOR_TEST);
 }
 
-/*
-** Init font
-*/
-
+// Init font
 void GUI::_deviceUploadAtlas(const void *image, int width, int height) {
 	struct device *dev = &GUI::glfw.ogl;
 	glGenTextures(1, &dev->font_tex);
@@ -335,10 +325,7 @@ void GUI::_setImages(
 	}
 }
 
-/*
-** Init nuklear for use GUI
-*/
-
+// Init nuklear for use GUI
 void GUI::_nkInit(GLFWwindow *win) {
 	GUI::glfw.win = win;
 	glfwSetScrollCallback(win, GUI::nkScrollCallback);
@@ -453,7 +440,7 @@ void GUI::_nkDeviceCreate(void) {
 	dev->attrib_col = glGetAttribLocation(dev->prog, "Color");
 
 	{
-		/* buffer setup */
+		// Buffer setup
 		GLsizei vs = sizeof(struct nk_vertex);
 		size_t vp = offsetof(struct nk_vertex, position);
 		size_t vt = offsetof(struct nk_vertex, uv);
@@ -485,10 +472,7 @@ void GUI::_nkDeviceCreate(void) {
 	glBindVertexArray(0);
 }
 
-/*
-** Free GUI (nuklear)
-*/
-
+// Free GUI (nuklear)
 void GUI::_nkDeviceDestroy() {
 	struct device *dev = &GUI::glfw.ogl;
 	glDetachShader(dev->prog, dev->vert_shdr);
@@ -497,6 +481,7 @@ void GUI::_nkDeviceDestroy() {
 	glDeleteShader(dev->frag_shdr);
 	glDeleteProgram(dev->prog);
 	glDeleteTextures(1, &dev->font_tex);
+	glDeleteVertexArrays(1, &dev->vao);
 	glDeleteBuffers(1, &dev->vbo);
 	glDeleteBuffers(1, &dev->ebo);
 	nk_buffer_free(&dev->cmds);
@@ -506,7 +491,6 @@ void GUI::_nkShutdown() {
 	nk_font_atlas_clear(GUI::glfw.atlas);
 	nk_free(&GUI::glfw.ctx);
 	_nkDeviceDestroy();
-	memset(&glfw, 0, sizeof(glfw));
 }
 
 /*
@@ -648,7 +632,8 @@ vFontImage) {
 }
 
 // NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE |
-//  NK_WINDOW_MINIMIZABLE | NK_WINDOW_TITLE
+// NK_WINDOW_MINIMIZABLE | NK_WINDOW_TITLE
+
 bool GUI::uiStartBlock(const char *id, const char *title, struct nk_rect bounds,
 					   nk_flags flags) {
 	if (nk_begin_titled(&GUI::glfw.ctx, id, title, bounds, flags)) return true;

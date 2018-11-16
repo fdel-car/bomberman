@@ -1,6 +1,6 @@
 #include "AGame.hpp"
 #include "GameEngine.hpp"
-#include "scenes/BomberManGame.hpp"
+#include "scenes/BombermanGame.hpp"
 
 std::string _assetsDir;
 // contributor
@@ -12,7 +12,7 @@ int main(void) {
 	try {
 		/* Initialize random seed: */
 		srand(time(NULL));
-		AGame *myGame = new BomberManGame();
+		AGame *myGame = new BombermanGame();
 		GameEngine gameEngine(myGame);
 		gameEngine.run();
 		delete myGame;

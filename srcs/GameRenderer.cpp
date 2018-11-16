@@ -89,11 +89,6 @@ void GameRenderer::refreshWindow(std::vector<Entity *> &entities,
 	glEnable(GL_DEPTH_TEST);
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	// glfwSetWindowTitle(
-	// 	_window,
-	// 	toString(static_cast<int>(1 / _gameEngine->getDeltaTime())).c_str());
-
 	glUseProgram(_shaderProgram->getID());
 	glUniformMatrix4fv(_viewLoc, 1, GL_FALSE,
 					   glm::value_ptr(camera->getViewMatrix()));
@@ -105,10 +100,15 @@ void GameRenderer::refreshWindow(std::vector<Entity *> &entities,
 		glUniformMatrix4fv(_modelLoc, 1, GL_FALSE,
 						   glm::value_ptr(entity->getModelMatrix()));
 		glBindVertexArray((entity->getModel())->getVAO());
+		glBindBuffer(GL_ARRAY_BUFFER, (entity->getModel())->getVBO());
 		// glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		glDrawArrays(GL_TRIANGLES, 0, entity->getModel()->getSize());
 	}
+	// Default OpenGL state
+	glUseProgram(0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
+	glDisable(GL_DEPTH_TEST);
 
 	graphicUI->nkNewFrame();
 	camera->drawGUI(graphicUI);

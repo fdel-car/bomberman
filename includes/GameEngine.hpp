@@ -31,7 +31,7 @@ class GameRenderer;
 
 class GameEngine {
    public:
-	GameEngine(AGame * game);
+	GameEngine(AGame *game);
 	~GameEngine(void);
 
 	void run();
@@ -46,7 +46,7 @@ class GameEngine {
 
 	// Functions needed by entities
 	bool isKeyPressed(std::string keyName);
-	std::map<std::string, bool> & getKeyboardMap();
+	std::map<std::string, bool> &getKeyboardMap();
 	float getDeltaTime();
 
    private:
@@ -103,7 +103,7 @@ class GameEngine {
 
 	// Scene management vars
 	int _sceneIdx;
-	AGame * _game;
+	AGame *_game;
 	std::vector<Entity *> _allEntities;
 	Camera *_camera;
 };

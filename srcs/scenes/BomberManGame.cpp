@@ -1,11 +1,11 @@
-#include "scenes/BomberManGame.hpp"
+#include "scenes/BombermanGame.hpp"
 #include "Player.hpp"
 #include "scenes/Level01Cam.hpp"
 #include "scenes/MainMenuCam.hpp"
 
 extern std::string _assetsDir;
 
-BomberManGame::BomberManGame(void) {
+BombermanGame::BombermanGame(void) : AGame() {
 	vNeededFont.push_back(std::tuple<float, std::string, std::string>(
 		48.0f, (_assetsDir + "GUI/fonts/BOMBERMA.TTF"), "BOMBERMA"));
 	vNeededFont.push_back(std::tuple<float, std::string, std::string>(
@@ -22,9 +22,9 @@ BomberManGame::BomberManGame(void) {
 		14.0f, (_assetsDir + "GUI/fonts/BOMBERMA.TTF"), "BOMBERMA"));
 }
 
-BomberManGame::~BomberManGame(void) {}
+BombermanGame::~BombermanGame(void) {}
 
-bool BomberManGame::loadScene(size_t sceneIdx) {
+bool BombermanGame::loadScene(size_t sceneIdx) {
 	unload();
 	if (sceneIdx == 0) {
 		_camera = new MainMenuCam(glm::vec3(0.0, 10.0, 0.0),
