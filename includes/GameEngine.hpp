@@ -23,6 +23,8 @@
 #define KEY_DOWN "DOWN"
 #define KEY_ESCAPE "ESCAPE"
 
+#define EPSILON 0.01f
+
 typedef std::chrono::high_resolution_clock Clock;
 
 class GameRenderer;
@@ -35,13 +37,8 @@ class GameEngine {
 	void run();
 
 	// Functions needed by Renderer
-	int getSquareSize(void);
-	int getXOffset(void);
-	int getYOffset(void);
-	int getMapW(void);
-	int getMapH(void);
 	GameRenderer const *getGameRenderer(void) const;
-	Entity *getFirstEntityWithName(std::string entityName);
+	// Entity *getFirstEntityWithName(std::string entityName);
 	// std::vector<Entity *> getEntitiesWithName(std::string entityName);
 	// Entity *getFirstEntityWithLabel(std::string entityLabel);
 	// std::vector<Entity *> getEntitiesWithLabel(std::string entityLabel);
@@ -95,9 +92,6 @@ class GameEngine {
 
 	// Graphic libraries vars
 	GameRenderer *_gameRenderer;
-	int squareSize;
-	int xOffset;
-	int yOffset;
 	Clock::time_point _frameTs;
 	Clock::time_point _lastFrameTs;
 	double _deltaTime;
@@ -105,8 +99,6 @@ class GameEngine {
 
 	// Game model vars
 	bool _running;
-	int mapH;
-	int mapW;
 	bool restartRequest;
 
 	// Scene management vars

@@ -4,7 +4,8 @@
 
 class ShaderProgram {
    public:
-	ShaderProgram(const char* vertexPath, const char* fragmentPath);
+	ShaderProgram(std::string const& vertexPath,
+				  std::string const& fragmentPath);
 	~ShaderProgram(void);
 
 	GLuint getID(void) const;

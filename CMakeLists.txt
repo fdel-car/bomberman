@@ -19,7 +19,7 @@ set(SRCS
   srcs/GameRenderer.cpp
   srcs/ShaderProgram.cpp
   srcs/Camera.cpp
-  srcs/Shape.cpp
+  srcs/Model.cpp
   srcs/Player.cpp
   srcs/GUI/GUI.cpp
   srcs/scenes/BomberManGame.cpp
@@ -45,7 +45,7 @@ set(HEADERS
   includes/GameRenderer.hpp
   includes/ShaderProgram.hpp
   includes/Camera.hpp
-  includes/Shape.hpp
+  includes/Model.hpp
   includes/Player.hpp
   includes/GUI/GUI.hpp
   includes/scenes/BomberManGame.hpp

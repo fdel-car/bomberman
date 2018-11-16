@@ -11,18 +11,8 @@ Player::Player(glm::vec3 position, glm::vec3 eulerAngles)
 
 Player::~Player(void) {}
 
-void Player::Update(void) {
+void Player::update(void) {
 	float deltaTime = _gameEngine->getDeltaTime();
-
-	// // Update position based on keyboard
-	// if (_gameEngine->isKeyPressed(KEY_A))
-	// 	this->translate(glm::vec3(1.0, 0.0, 0.0) * _speed * deltaTime);
-	// if (_gameEngine->isKeyPressed(KEY_D))
-	// 	this->translate(glm::vec3(-1.0, 0.0, 0.0) * _speed * deltaTime);
-	// if (_gameEngine->isKeyPressed(KEY_W))
-	// 	this->translate(glm::vec3(0.0, 0.0, 1.0) * _speed * deltaTime);
-	// if (_gameEngine->isKeyPressed(KEY_S))
-	// 	this->translate(glm::vec3(0.0, 0.0, -1.0) * _speed * deltaTime);
 
 	int xSign = 0;
 	int zSign = 0;
@@ -31,10 +21,10 @@ void Player::Update(void) {
 	float zDirection = 0.0f;
 
 	// Update position based on keyboard
-	if (_gameEngine->isKeyPressed(KEY_D)) xSign -= 1;
-	if (_gameEngine->isKeyPressed(KEY_A)) xSign += 1;
-	if (_gameEngine->isKeyPressed(KEY_S)) zSign -= 1;
-	if (_gameEngine->isKeyPressed(KEY_W)) zSign += 1;
+	if (_gameEngine->isKeyPressed(KEY_A)) xSign -= 1;
+	if (_gameEngine->isKeyPressed(KEY_D)) xSign += 1;
+	if (_gameEngine->isKeyPressed(KEY_W)) zSign -= 1;
+	if (_gameEngine->isKeyPressed(KEY_S)) zSign += 1;
 	if (xSign == 0 && zSign == 0) {
 		// TODO: check for joystick input
 	} else {

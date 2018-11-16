@@ -21,8 +21,7 @@ GameEngine::LineInfo::LineInfo(float startX, float startZ, float endX,
 	}
 }
 
-GameEngine::GameEngine(AGame * game)
-	: _game(game) {
+GameEngine::GameEngine(AGame *game) : _game(game) {
 	_running = false;
 
 	// Create interface class
@@ -38,16 +37,6 @@ GameEngine::~GameEngine(void) {
 	delete _audioManager;
 	delete _gameRenderer;
 }
-
-int GameEngine::getSquareSize(void) { return squareSize; }
-
-int GameEngine::getXOffset(void) { return xOffset; }
-
-int GameEngine::getYOffset(void) { return yOffset; }
-
-int GameEngine::getMapW(void) { return mapW; }
-
-int GameEngine::getMapH(void) { return mapH; }
 
 float GameEngine::getDeltaTime(void) { return _deltaTime; }
 
@@ -67,15 +56,14 @@ GameRenderer const *GameEngine::getGameRenderer(void) const {
 // }
 
 bool GameEngine::initScene(size_t newSceneIdx) {
-	if (!_game)
-		return false;
+	if (!_game) return false;
 	_sceneIdx = newSceneIdx;
-	if (!_game->loadScene(_sceneIdx))
-		return false;
+	if (!_game->loadScene(_sceneIdx)) return false;
 
 	_clearTmpEntities();
 	_camera = _game->getCamera();
-	_allEntities.clear();
+	_camera->initEntity(this);
+
 	for (auto entity : _game->getEntities()) {
 		_allEntities.push_back(entity);
 		_allEntities.back()->initEntity(this);
@@ -105,7 +93,7 @@ void GameEngine::moveEntities(void) {
 	LineInfo lineB;
 
 	size_t idx = 0;
-	size_t idxToTest = 0;
+	size_t idxOfCollision = 0;
 	for (auto entity : _allEntities) {
 		if (entity->getTargetMovement().x != 0.0f ||
 			entity->getTargetMovement().z != 0.0f) {
@@ -122,91 +110,220 @@ void GameEngine::moveEntities(void) {
 				// targetMovement to suitable pos
 				futureMovement.x = entity->getTargetMovement().x;
 				futureMovement.z = entity->getTargetMovement().z;
-				do {
-					collisionDetected =
+				bool firstLoop = true;
+				bool isShortcut = false;
+				while (collidedEntities.size() != 0) {
+					idxOfCollision =
 						checkCollision(entity, futureMovement, collidedEntities,
-									   collidedTriggers) !=
-						collidedEntities.size();
+									   collidedTriggers);
 
-					if (collisionDetected) {
+					// Update entities to check collisions with
+					if (idxOfCollision != 0) {
+						collidedEntities.erase(
+							collidedEntities.begin(),
+							collidedEntities.begin() + idxOfCollision);
+					}
+
+					// If some collisions are detected, try with a different
+					// movement
+					if (collidedEntities.size() != 0) {
+						// Safe break to avoid infinite loop
 						float absX = abs(futureMovement.x);
 						float absZ = abs(futureMovement.z);
-						// Safe break to avoid infinite loop
-						if (absX <= 0.05f && absZ <= 0.05f) {
+
+						// Special test that need to be done only on first loop
+						if (firstLoop) {
+							// Try moving indipendently
+							// one of the two axis (Only if its a two-axis move)
+							if (futureMovement.x != 0.0f &&
+								futureMovement.z != 0.0f) {
+								tmpFutureMovement.x = futureMovement.x;
+								tmpFutureMovement.z = 0.0f;
+								idxOfCollision = checkCollision(
+									entity, tmpFutureMovement, collidedEntities,
+									collidedTriggers);
+								if (idxOfCollision == collidedEntities.size()) {
+									isShortcut = true;
+									break;
+								}
+								tmpFutureMovement.x = 0.0f;
+								tmpFutureMovement.z = futureMovement.z;
+								idxOfCollision = checkCollision(
+									entity, tmpFutureMovement, collidedEntities,
+									collidedTriggers);
+								if (idxOfCollision == collidedEntities.size()) {
+									isShortcut = true;
+									break;
+								}
+							}
+
+							// Special cases for Circle, will be able to
+							// "circle around" obstacles more easily if more
+							// than half is outside collision
+							if (collider->shape == Collider::Circle) {
+								// Only try to move along the most important
+								// targetMovement
+								if (absX >= absZ) {
+									// Try slide under obstacle
+									float colliderZ =
+										collidedEntities[0]->getPosition().z +
+										collidedEntities[0]
+											->getCollider()
+											->height;
+									if (entity->getPosition().z > colliderZ) {
+										tmpFutureMovement.z =
+											colliderZ -
+											(entity->getPosition().z -
+											 entity->getCollider()->height);
+										if (tmpFutureMovement.z > (absX / 2)) {
+											tmpFutureMovement.z = absX / 2;
+										}
+										if (tmpFutureMovement.z < 0.0f)
+											tmpFutureMovement.z = EPSILON;
+										else if (tmpFutureMovement.z < EPSILON)
+											tmpFutureMovement.z += EPSILON;
+										// Move along X will be less than Z so
+										// that no collision will occur
+										tmpFutureMovement.x =
+											tmpFutureMovement.z * 0.5f;
+										if (futureMovement.x < 0)
+											tmpFutureMovement.x *= -1.0f;
+										idxOfCollision = checkCollision(
+											entity, tmpFutureMovement,
+											collidedEntities, collidedTriggers);
+										if (idxOfCollision ==
+											collidedEntities.size()) {
+											isShortcut = true;
+											break;
+										}
+									}
+									// Try slide over obstacle
+									colliderZ -= 2.0f * collidedEntities[0]
+															->getCollider()
+															->height;
+									if (entity->getPosition().z < colliderZ) {
+										tmpFutureMovement.z =
+											(entity->getPosition().z +
+											 entity->getCollider()->height) -
+											colliderZ;
+										if (tmpFutureMovement.z > (absX / 2)) {
+											tmpFutureMovement.z = absX / 2;
+										}
+										if (tmpFutureMovement.z < 0.0f)
+											tmpFutureMovement.z = EPSILON;
+										else if (tmpFutureMovement.z < EPSILON)
+											tmpFutureMovement.z += EPSILON;
+										// Move along X will be less than Z so
+										// that no collision will occur
+										tmpFutureMovement.x =
+											tmpFutureMovement.z * 0.5f;
+										if (futureMovement.x < 0)
+											tmpFutureMovement.x *= -1.0f;
+										tmpFutureMovement.z *= -1;
+										idxOfCollision = checkCollision(
+											entity, tmpFutureMovement,
+											collidedEntities, collidedTriggers);
+										if (idxOfCollision ==
+											collidedEntities.size()) {
+											isShortcut = true;
+											break;
+										}
+									}
+								}
+								if (absZ >= absX) {
+									// Try slide right of obstacle
+									float colliderX =
+										collidedEntities[0]->getPosition().x +
+										collidedEntities[0]
+											->getCollider()
+											->width;
+									if (entity->getPosition().x > colliderX) {
+										tmpFutureMovement.x =
+											colliderX -
+											(entity->getPosition().x -
+											 entity->getCollider()->width);
+										if (tmpFutureMovement.x > (absZ / 2)) {
+											tmpFutureMovement.x = absZ / 2;
+										}
+										if (tmpFutureMovement.x < 0.0f)
+											tmpFutureMovement.x = EPSILON;
+										else if (tmpFutureMovement.x < EPSILON)
+											tmpFutureMovement.x += EPSILON;
+										// Move along Z will be less than X so
+										// that no collision will occur
+										tmpFutureMovement.z =
+											tmpFutureMovement.x * 0.5f;
+										if (futureMovement.z < 0)
+											tmpFutureMovement.z *= -1.0f;
+										idxOfCollision = checkCollision(
+											entity, tmpFutureMovement,
+											collidedEntities, collidedTriggers);
+										if (idxOfCollision ==
+											collidedEntities.size()) {
+											isShortcut = true;
+											break;
+										}
+									}
+									// Try slide over obstacle
+									colliderX -= 2.0f * collidedEntities[0]
+															->getCollider()
+															->width;
+									if (entity->getPosition().x < colliderX) {
+										tmpFutureMovement.x =
+											(entity->getPosition().x +
+											 entity->getCollider()->width) -
+											colliderX;
+										if (tmpFutureMovement.x > (absZ / 2)) {
+											tmpFutureMovement.x = absZ / 2;
+										}
+										if (tmpFutureMovement.x < 0.0f)
+											tmpFutureMovement.x = EPSILON;
+										else if (tmpFutureMovement.x < EPSILON)
+											tmpFutureMovement.x += EPSILON;
+										// Move along X will be less than Z so
+										// that no collision will occur
+										tmpFutureMovement.z =
+											tmpFutureMovement.x * 0.5f;
+										if (futureMovement.z < 0)
+											tmpFutureMovement.z *= -1.0f;
+										tmpFutureMovement.x *= -1;
+										idxOfCollision = checkCollision(
+											entity, tmpFutureMovement,
+											collidedEntities, collidedTriggers);
+										if (idxOfCollision ==
+											collidedEntities.size()) {
+											isShortcut = true;
+											break;
+										}
+									}
+								}
+							}
+
+							firstLoop = false;
+						}
+
+						// Slightly decrease futureMovement to see if
+						// smaller movement can be performed
+						futureMovement.x /= 2.0f;
+						futureMovement.z /= 2.0f;
+
+						if (absX <= EPSILON && absZ <= EPSILON) {
 							collidedTriggers.clear();
 							break;
 						}
-
-						// Update entities to check collisions with
-						if (idxToTest != 0)
-							collidedEntities.erase(
-								collidedEntities.begin(),
-								collidedEntities.begin() + idxToTest - 1);
-
-						// If is first time then try moving indipendently one
-						// of the two axis (Only if its a two-axis move)
-						if (futureMovement.x == entity->getTargetMovement().x &&
-							futureMovement.x != 0.0f &&
-							futureMovement.z == entity->getTargetMovement().z &&
-							futureMovement.z != 0.0f) {
-							tmpFutureMovement.x = futureMovement.x;
-							tmpFutureMovement.z = 0.0f;
-							collisionDetected =
-								checkCollision(entity, tmpFutureMovement,
-											   collidedEntities,
-											   collidedTriggers) !=
-								collidedEntities.size();
-							if (!collisionDetected) {
-								futureMovement.z = 0.0f;
-								break;
-							}
-							tmpFutureMovement.x = 0.0f;
-							tmpFutureMovement.z = futureMovement.z;
-							collisionDetected =
-								checkCollision(entity, tmpFutureMovement,
-											   collidedEntities,
-											   collidedTriggers) !=
-								collidedEntities.size();
-							if (!collisionDetected) {
-								futureMovement.x = 0.0f;
-								break;
-							}
-						}
-
-						// TODO: Special cases for Circle, will be able to
-						// "circle around" obstacles more easily if
-						// (collider->shape == Collider::Circle && false) {
-						// 	// Only try to move along the most important
-						// 	// targetMovement
-						// 	if (absX >= absZ) {
-						// 		// Only attempt horizontal slide if centerX is
-						// 		// outside
-						// 		tmpFutureMovement[0] = futureMovement[0];
-						// 		tmpFutureMovement[2] = futureMovement[2];
-						// 		collisionDetected =
-						// 			checkCollision(entity, tmpFutureMovement,
-						// 						   collidedEntities,
-						// 						   collidedTriggers) !=
-						// 			collidedEntities.size();
-						// 		if (!collisionDetected) {
-						// 			futureMovement[0] = tmpFutureMovement[0];
-						// 			futureMovement[2] = tmpFutureMovement[2];
-						// 			break;
-						// 		}
-						// 	}
-						// }
-
-						// Slightly decrease futureMovement to see if smaller
-						// movement can be performed
-						futureMovement.x /= 2.0f;
-						futureMovement.z /= 2.0f;
 					}
-				} while (collisionDetected);
+				}
+
+				if (isShortcut) {
+					futureMovement.x = tmpFutureMovement.x;
+					futureMovement.z = tmpFutureMovement.z;
+					collidedEntities.clear();
+				}
 
 				// TODO: trigger all triggers
 				// for (auto triggerEntity : collidedTriggers) {
 				// }
-				if (!collisionDetected) {
+				if (collidedEntities.size() == 0) {
 					entity->translate(futureMovement);
 				}
 			} else {
@@ -214,12 +331,14 @@ void GameEngine::moveEntities(void) {
 				entity->translate(entity->getTargetMovement());
 			}
 		}
+		idx++;
 	}
 }
 
 size_t GameEngine::checkCollision(Entity *entity, glm::vec3 &futureMovement,
 								  std::vector<Entity *> &collidedEntities,
 								  std::vector<Entity *> &collidedTriggers) {
+	if (collidedEntities.size() == 0) return 0;
 	// Init
 	glm::vec3 futurePos = glm::vec3();
 	LineInfo lineA;
@@ -294,24 +413,24 @@ void GameEngine::getMovementLines(Entity *entity, glm::vec3 &targetMovement,
 			// Rectangle
 			// TODO: for now we increase Z when we want to go down, but will
 			// change soon
-			if ((targetMovement.x > 0.0f && targetMovement.z < 0.0f) ||
-				(targetMovement.x < 0.0f && targetMovement.z > 0.0f)) {
+			if ((targetMovement.x > 0.0f && targetMovement.z > 0.0f) ||
+				(targetMovement.x < 0.0f && targetMovement.z < 0.0f)) {
 				// We are going Down-Right or Up-Left, take TopRight(A) and
 				// BottomLeft(B) corners
 				lineA->startX += entity->getCollider()->width;
-				lineA->startZ += entity->getCollider()
+				lineA->startZ -= entity->getCollider()
 									 ->height;  // TODO: Change minus to plus
 				lineB->startX -= entity->getCollider()->width;
-				lineB->startZ -= entity->getCollider()
+				lineB->startZ += entity->getCollider()
 									 ->height;  // TODO: Change plus to minus
 			} else {
 				// We are going Down-Left or Up-Right, take TopLeft(A) and
 				// BottomRight(B) corners
 				lineA->startX -= entity->getCollider()->width;
-				lineA->startZ += entity->getCollider()
+				lineA->startZ -= entity->getCollider()
 									 ->height;  // TODO: Change minus to plus
 				lineB->startX += entity->getCollider()->width;
-				lineB->startZ -= entity->getCollider()
+				lineB->startZ += entity->getCollider()
 									 ->height;  // TODO: Change plus to minus
 			}
 		} else {
@@ -325,13 +444,14 @@ void GameEngine::getMovementLines(Entity *entity, glm::vec3 &targetMovement,
 			float xOffset = mPerpendicular * entity->getCollider()->width;
 			lineA->startX += xOffset;
 			lineB->startX -= xOffset;
-			// since we have 'mPerpendicular', 'q' and 'x' we can easily get 'z'
+			// since we have 'mPerpendicular', 'q' and 'x' we can easily get
+			// 'z'
 			lineA->startZ = mPerpendicular * lineA->startX + q;
 			lineB->startZ = mPerpendicular * lineB->startX + q;
 		}
 
-		// With m and boh starting points, we can easily get 'q' for lineA and
-		// lineB
+		// With m and boh starting points, we can easily get 'q' for lineA
+		// and lineB
 		lineA->q = lineA->startZ - m * lineA->startX;
 		lineB->q = lineB->startZ - m * lineB->startX;
 	}
@@ -366,8 +486,8 @@ bool GameEngine::hasCollisionCourse(LineInfo &lineA, LineInfo &lineB,
 		// TODO:: change sign for Z when up is positive
 		float leftX = entityB->getPosition().x - colliderB->width;
 		float rightX = entityB->getPosition().x + colliderB->width;
-		float upZ = entityB->getPosition().z + colliderB->height;
-		float downZ = entityB->getPosition().z - colliderB->height;
+		float upZ = entityB->getPosition().z - colliderB->height;
+		float downZ = entityB->getPosition().z + colliderB->height;
 		LineInfo tmpLine(leftX, upZ, rightX, upZ);
 		if (isLineLineCollision(lineA, tmpLine) ||
 			isLineLineCollision(lineB, tmpLine)) {
@@ -478,24 +598,32 @@ bool GameEngine::doCollide(const Collider *colliderA, const glm::vec3 &posA,
 						   Entity *entityB) const {
 	const Collider *colliderB = entityB->getCollider();
 	if (!colliderA || !colliderB) return false;
-
 	if (colliderA->shape == colliderB->shape) {
 		float aXCenter = posA.x;
-		float aYCenter = posA.z;
+		float aZCenter = posA.z;
 		float bXCenter = entityB->getPosition().x;
-		float bYCenter = entityB->getPosition().z;
+		float bZCenter = entityB->getPosition().z;
 		// Circle with circle
 		if (colliderA->shape == Collider::Circle) {
 			float distance =
-				sqrt(pow(aXCenter - bXCenter, 2) + pow(aYCenter - bYCenter, 2));
-			return (distance <= colliderA->width + colliderB->width);
+				sqrt(pow(aXCenter - bXCenter, 2) + pow(aZCenter - bZCenter, 2));
+			distance -= colliderA->width +
+						colliderB->width;  // If value is greater than 0
+										   // then there is no collision
+			return (distance <= EPSILON);
 		}
 		// Rectangle with rectangle
 		else if (colliderA->shape == Collider::Rectangle) {
-			return (abs(aXCenter - bXCenter) <=
-						colliderA->width + colliderB->width &&
-					abs(aYCenter - bYCenter) <=
-						colliderA->height + colliderB->height);
+			float distance = abs(aXCenter - bXCenter);
+			distance -= colliderA->width +
+						colliderB->width;  // If value is greater than 0
+										   // then there is no collision
+			if (distance <= EPSILON) {
+				// Do same for Z
+				distance = abs(aZCenter - bZCenter);
+				distance -= colliderA->height + colliderB->height;
+				return (distance <= EPSILON);
+			}
 		}
 	}
 	// Circle with rectangle
@@ -518,20 +646,22 @@ bool GameEngine::collisionCircleRectangle(const Collider *circleCollider,
 										  const Collider *rectangleCollider,
 										  const glm::vec3 &rectanglePos) const {
 	float closestX = circlePos.x;
-	float closestY = circlePos.z;
+	float closestZ = circlePos.z;
 	// Find closest X of rectangle shape to circle center
 	if (closestX > rectanglePos.x + rectangleCollider->width)
 		closestX = rectanglePos.x + rectangleCollider->width;
 	else if (closestX < rectanglePos.x - rectangleCollider->width)
 		closestX = rectanglePos.x - rectangleCollider->width;
-	// Find closest Y of rectangle shape to circle center
-	if (closestY > rectanglePos.z + rectangleCollider->height)
-		closestY = rectanglePos.z + rectangleCollider->height;
-	else if (closestY < rectanglePos.z - rectangleCollider->height)
-		closestY = rectanglePos.z - rectangleCollider->height;
+	// Find closest Z of rectangle shape to circle center
+	if (closestZ > rectanglePos.z + rectangleCollider->height)
+		closestZ = rectanglePos.z + rectangleCollider->height;
+	else if (closestZ < rectanglePos.z - rectangleCollider->height)
+		closestZ = rectanglePos.z - rectangleCollider->height;
 	// Is distance of closer point smaller than circle radius ?
-	return sqrt(pow(circlePos.x - closestX, 2) +
-				pow(circlePos.z - closestY, 2)) <= circleCollider->width;
+	return ((sqrt(pow(circlePos.x - closestX, 2) +
+				  pow(circlePos.z - closestZ, 2))) -
+				circleCollider->width <=
+			EPSILON);
 }
 
 void GameEngine::run(void) {
@@ -560,17 +690,19 @@ void GameEngine::run(void) {
 		// TODO: Update game engine statuses (ex. when to quit)
 		if (_running) {
 			_running = !keyboardMap["ESCAPE"];
-			if (!_running)
-				break ;
+			if (!_running) break;
 		}
-		_camera->Update();
+
+		// Update game camera
+		_camera->update();
 		newSceneIdx = _camera->getNewSceneIdx();
 		if (newSceneIdx != -1) {
-			break ;
+			break;
 		}
+
 		// Update game entities states
 		for (auto entity : _allEntities) {
-			entity->Update();
+			entity->update();
 		}
 		moveEntities();
 		_gameRenderer->refreshWindow(_allEntities, _camera);

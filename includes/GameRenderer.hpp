@@ -2,8 +2,8 @@
 
 #include "Camera.hpp"
 #include "Collider.hpp"
+#include "Model.hpp"
 #include "ShaderProgram.hpp"
-#include "Shape.hpp"
 
 #include "GUI/GUI.hpp"
 
@@ -23,13 +23,14 @@ class AGame;
 
 class GameRenderer {
    public:
-	GameRenderer(GameEngine *gameEngine, AGame * game);
+	GameRenderer(GameEngine *gameEngine, AGame *game);
 	~GameRenderer(void);
 
 	void getUserInput(void);
 	void refreshWindow(std::vector<Entity *> &entities, Camera *camera);
-	void closeWindow(void);
-	Shape *getShape(std::string shapeName) const;
+	Model *getModel(std::string modelName) const;
+	int getWidth(void) const;
+	int getHeight(void) const;
 
 	bool active;
 
@@ -43,48 +44,29 @@ class GameRenderer {
 
 	GameRenderer &operator=(GameRenderer const &rhs);
 
-	void _initShaders(void);
-	void _initShapes(void);
-	void _initGUI(AGame * game);
-	// void initProgram(void);
-	// void drawGUI(void);
-	// void createBorder(void);
-	// void createGrid(void);
-	// void drawGUI(void);
-	// void drawPlayer(Entity *player);
-	// void drawSquare(Entity *wall);
-	// void makeVAO(GLuint &vbo);
-
+	void _initGUI(AGame *game);
+	void _initShader(void);
+	void _initModels(void);
 	static GameEngine *_gameEngine;
 
 	// General vars
 	GLFWwindow *_window;
 	int _width = 0;
 	int _height = 0;
-	// int xOffset;
-	// int yOffset;
-	// int squareSize;
-	// float startX;
-	// float startY;
-	// float squarePercentY;
-	// float squarePercentX;
 
 	// Nuklear vars
 	GUI *graphicUI;
 
 	// Rendering vars
-	std::map<std::string, ShaderProgram *> _shaderPrograms;
-	std::map<std::string, Shape *> _shapes;
+	ShaderProgram *_shaderProgram;
+	std::map<std::string, Model *> _models;
 
+	// Camera
 	glm::mat4 _projection;
 	GLint _projectionLoc;
 	GLint _viewLoc;
 	GLint _modelLoc;
-	// GLuint vbo;
-	// GLuint vao;
-	// const char *vertexShader;
-	// const char *fragmentShader;
-	// GLuint vs;
-	// GLuint fs;
-	// GLuint shaderProgram;
+	GLint _lightDirLoc;
+	GLint _viewPosLoc;
+	GLint _lightColorLoc;
 };
