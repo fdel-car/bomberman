@@ -3,7 +3,7 @@
 #include "scenes/BomberManGame.hpp"
 
 std::string _assetsDir;
-
+// contributor
 int main(void) {
 	_assetsDir = __FILE__;
 	_assetsDir.erase(_assetsDir.begin() + _assetsDir.rfind("/srcs/") + 1,
