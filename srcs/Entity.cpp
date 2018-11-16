@@ -3,17 +3,17 @@
 #include "GameRenderer.hpp"
 
 Entity::Entity(glm::vec3 position, glm::vec3 eulerAngles, Collider *collider,
-			   std::string shapeName)
+			   std::string modelName)
 	: _position(position),
 	  _modelMatrix(glm::mat4(1.0f)),
-	  _shapeName(shapeName),
+	  _modelName(modelName),
 	  _collider(collider),
 	  _isTmp(true),
 	  _targetMovement(glm::vec3()) {
 	_rotation = glm::quat(glm::radians(eulerAngles));
 	glm::mat4 translationMatrix = glm::translate(glm::mat4(1.0f), position);
 	_modelMatrix = translationMatrix * glm::mat4_cast(_rotation);
-	_name = _shapeName;
+	_name = _modelName;
 	_gameEngine = nullptr;
 }
 
@@ -31,7 +31,7 @@ const glm::mat4 &Entity::getModelMatrix(void) const { return _modelMatrix; }
 
 const Collider *Entity::getCollider(void) const { return _collider; }
 
-const Shape *Entity::getShape(void) const { return _shape; }
+const Model *Entity::getModel(void) const { return _model; }
 
 bool Entity::getTmpState(void) const { return _isTmp; }
 
@@ -72,7 +72,7 @@ void Entity::rotateY(float angle) {
 
 void Entity::initEntity(GameEngine *gameEngine) {
 	_gameEngine = gameEngine;
-	_shape = _gameEngine->getGameRenderer()->getShape(_shapeName);
+	_model = _gameEngine->getGameRenderer()->getModel(_modelName);
 }
 
 std::ostream &operator<<(std::ostream &o, Entity const &entity) {

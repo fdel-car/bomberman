@@ -1,7 +1,7 @@
 #include "GameRenderer.hpp"
 #include "Entity.hpp"
 #include "GameEngine.hpp"
-#include "Shape.hpp"
+#include "Model.hpp"
 
 extern std::string _assetsDir;
 
@@ -38,7 +38,7 @@ GameRenderer::GameRenderer(GameEngine *gameEngine) {
 	// graphicUI = new GUI(window);
 
 	_initShaders();
-	_initShapes();
+	_initModels();
 }
 
 GameRenderer::~GameRenderer(void) {
@@ -71,9 +71,9 @@ void GameRenderer::_initShaders(void) {
 				 glm::value_ptr(glm::vec3(1.0f, 1.0f, 1.0f)));
 }
 
-void GameRenderer::_initShapes(void) {
-	_shapes["Cube"] = new Shape("cube");
-	_shapes["Player"] = new Shape("player");
+void GameRenderer::_initModels(void) {
+	_models["Cube"] = new Model("cube");
+	_models["Player"] = new Model("player");
 }
 
 void GameRenderer::getUserInput(void) { glfwPollEvents(); }
@@ -88,27 +88,28 @@ void GameRenderer::refreshWindow(std::vector<Entity *> &entities,
 	// 	toString(static_cast<int>(1 / _gameEngine->getDeltaTime())).c_str());
 
 	glUseProgram(_shaderPrograms["4.1"]->getID());
-
 	glUniformMatrix4fv(_viewLoc, 1, GL_FALSE,
 					   glm::value_ptr(camera->getViewMatrix()));
 	glUniformMatrix4fv(_projectionLoc, 1, GL_FALSE,
 					   glm::value_ptr(camera->getProjectionMatrix()));
 	glUniform3fv(_viewPosLoc, 1, glm::value_ptr(camera->getPosition()));
+
 	for (auto entity : entities) {
 		glUniformMatrix4fv(_modelLoc, 1, GL_FALSE,
 						   glm::value_ptr(entity->getModelMatrix()));
-		glBindVertexArray((entity->getShape())->getVAO());
+		glBindVertexArray((entity->getModel())->getVAO());
 		// glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-		glDrawArrays(GL_TRIANGLES, 0, entity->getShape()->getSize());
+		glDrawArrays(GL_TRIANGLES, 0, entity->getModel()->getSize());
 	}
+
 	glBindVertexArray(0);
 
 	// Put everything to screen
 	glfwSwapBuffers(_window);
 }
 
-Shape *GameRenderer::getShape(std::string shapeName) const {
-	if (_shapes.find(shapeName) != _shapes.end()) return _shapes.at(shapeName);
+Model *GameRenderer::getModel(std::string modelName) const {
+	if (_models.find(modelName) != _models.end()) return _models.at(modelName);
 	return nullptr;
 }
 

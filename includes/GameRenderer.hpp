@@ -2,8 +2,8 @@
 
 #include "Camera.hpp"
 #include "Collider.hpp"
+#include "Model.hpp"
 #include "ShaderProgram.hpp"
-#include "Shape.hpp"
 
 #define MAX_VERTEX_BUFFER 512 * 1024
 #define MAX_ELEMENT_BUFFER 128 * 1024
@@ -30,7 +30,7 @@ class GameRenderer {
 	void getUserInput(void);
 	void refreshWindow(std::vector<Entity *> &entities, Camera *camera);
 	void closeWindow(void);
-	Shape *getShape(std::string shapeName) const;
+	Model *getModel(std::string modelName) const;
 	int getWidth(void) const;
 	int getHeight(void) const;
 
@@ -47,7 +47,7 @@ class GameRenderer {
 	GameRenderer &operator=(GameRenderer const &rhs);
 
 	void _initShaders(void);
-	void _initShapes(void);
+	void _initModels(void);
 	// void drawGUI(void);
 	static GameEngine *_gameEngine;
 
@@ -61,7 +61,7 @@ class GameRenderer {
 
 	// Rendering vars
 	std::map<std::string, ShaderProgram *> _shaderPrograms;
-	std::map<std::string, Shape *> _shapes;
+	std::map<std::string, Model *> _models;
 
 	// Camera
 	glm::mat4 _projection;

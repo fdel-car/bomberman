@@ -1,10 +1,10 @@
-#include "Shape.hpp"
+#include "Model.hpp"
 #define TINYOBJLOADER_IMPLEMENTATION
 #include "tiny_obj_loader/tiny_obj_loader.h"
 
 extern std::string _assetsDir;
 
-Shape::Shape(std::string const &objDirName) : _size(0) {
+Model::Model(std::string const &objDirName) : _size(0) {
 	tinyobj::attrib_t attrib;
 	std::vector<tinyobj::shape_t> shapes;
 	std::vector<tinyobj::material_t> materials;
@@ -26,10 +26,6 @@ Shape::Shape(std::string const &objDirName) : _size(0) {
 	std::vector<float> vertices = std::vector<float>();
 	std::vector<unsigned int> indices = std::vector<unsigned int>();
 
-	float r = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
-	float g = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
-	float b = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
-
 	std::cout << shapes.size() << std::endl;
 	for (size_t s = 0; s < shapes.size(); s++) {
 		size_t index_offset = 0;
@@ -49,11 +45,6 @@ Shape::Shape(std::string const &objDirName) : _size(0) {
 				vertices.push_back(attrib.normals[3 * idx.normal_index + 0]);
 				vertices.push_back(attrib.normals[3 * idx.normal_index + 1]);
 				vertices.push_back(attrib.normals[3 * idx.normal_index + 2]);
-
-				// Push colors inside vertices vector
-				vertices.push_back(r);
-				vertices.push_back(g);
-				vertices.push_back(b);
 
 				// indices.push_back(idx.vertex_index);
 				_size++;
@@ -75,25 +66,20 @@ Shape::Shape(std::string const &objDirName) : _size(0) {
 				 &vertices.front(), GL_STATIC_DRAW);
 
 	// Positions
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float),
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float),
 						  (void *)0);
 	glEnableVertexAttribArray(0);
 
 	// Normals
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float),
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float),
 						  (void *)(3 * sizeof(float)));
 	glEnableVertexAttribArray(1);
-
-	// Colors
-	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float),
-						  (void *)(6 * sizeof(float)));
-	glEnableVertexAttribArray(2);
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 }
 
-Shape::~Shape(void) {}
+Model::~Model(void) {}
 
-GLuint Shape::getVAO(void) const { return _VAO; }
-size_t Shape::getSize(void) const { return _size; }
+GLuint Model::getVAO(void) const { return _VAO; }
+size_t Model::getSize(void) const { return _size; }

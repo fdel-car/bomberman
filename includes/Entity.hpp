@@ -1,21 +1,21 @@
 #pragma once
 
 #include "Collider.hpp"
-#include "Shape.hpp"
+#include "Model.hpp"
 
 class GameEngine;
 
 class Entity {
    public:
 	Entity(glm::vec3 position, glm::vec3 eulerAngles, Collider *collider,
-		   std::string shapeName);
+		   std::string modelName);
 	virtual ~Entity(void);
 
 	GameEngine *getGameEngine(void) const;
 	const glm::vec3 &getPosition(void) const;
 	const glm::mat4 &getModelMatrix(void) const;
 	const Collider *getCollider(void) const;
-	const Shape *getShape(void) const;
+	const Model *getModel(void) const;
 	bool getTmpState(void) const;
 	glm::vec3 getEulerAngles(void) const;
 	std::string const &getName(void) const;
@@ -40,11 +40,11 @@ class Entity {
 	Entity &operator=(Entity const &rhs);
 
    protected:
-	std::string _shapeName;
+	std::string _modelName;
 	std::string _name;
 	std::string _tag;
 
-	Shape *_shape;
+	Model *_model;
 	Collider *_collider;
 	GameEngine *_gameEngine;
 	bool _isTmp;
