@@ -22,7 +22,7 @@ set(SRCS
   srcs/Model.cpp
   srcs/Player.cpp
   srcs/GUI/GUI.cpp
-  srcs/scenes/BomberManGame.cpp
+  srcs/scenes/BombermanGame.cpp
   srcs/scenes/MainMenuCam.cpp
   srcs/scenes/Level01Cam.cpp
 )
@@ -48,7 +48,7 @@ set(HEADERS
   includes/Model.hpp
   includes/Player.hpp
   includes/GUI/GUI.hpp
-  includes/scenes/BomberManGame.hpp
+  includes/scenes/BombermanGame.hpp
   includes/scenes/MainMenuCam.hpp
   includes/scenes/Level01Cam.hpp
 )

@@ -46,7 +46,6 @@ Model::Model(std::string const &objDirName) : _size(0) {
 				vertices.push_back(attrib.normals[3 * idx.normal_index + 1]);
 				vertices.push_back(attrib.normals[3 * idx.normal_index + 2]);
 
-				// indices.push_back(idx.vertex_index);
 				_size++;
 			}
 			index_offset += fv;
@@ -79,8 +78,11 @@ Model::Model(std::string const &objDirName) : _size(0) {
 	glBindVertexArray(0);
 }
 
-Model::~Model(void) {}
+Model::~Model(void) {
+	glDeleteVertexArrays(1, &_VAO);
+	glDeleteBuffers(1, &_VBO);
+}
 
 GLuint Model::getVAO(void) const { return _VAO; }
-// GLuint Model::getVBO(void) const { return _VBO; }
+GLuint Model::getVBO(void) const { return _VBO; }
 size_t Model::getSize(void) const { return _size; }

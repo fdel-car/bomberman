@@ -672,7 +672,6 @@ void GameEngine::run(void) {
 
 	if (!initScene(_sceneIdx)) std::runtime_error("Cannot load scene !");
 
-	_audioManager->playStartSound();
 	int newSceneIdx = -1;
 	// Start game loop
 	while (_running) {
