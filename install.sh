@@ -37,6 +37,12 @@ if [ ! -d "includes/glm" ]; then
 	rm -rf glm
 fi
 
+# stb_image install
+if [ ! -d "includes/stb_image" ]; then
+    mkdir includes/stb_image
+    curl -L -o includes/stb_image/stb_image.h "https://drive.google.com/uc?export=download&id=1u29S1t-cOXgSlJv_e8D8Qjn929VyT2Go"
+fi
+
 # tiny_obj_loader install
 if [ ! -d "includes/tiny_obj_loader" ]; then
     mkdir includes/tiny_obj_loader

@@ -16,7 +16,7 @@
 #include "header.hpp"
 #include <GLFW/glfw3.h>
 #include "nuklear/nuklear.h"
-#include "stb/stb_image.h"
+#include "stb_image/stb_image.h"
 
 enum theme {THEME_BLACK, THEME_WHITE, THEME_RED, THEME_BLUE, THEME_DARK};
 
