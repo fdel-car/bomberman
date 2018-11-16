@@ -2,8 +2,6 @@
 #include "GameRenderer.hpp"
 #include "Player.hpp"
 
-GameEngine::GameEngine() : _gameScenes(std::vector<AGameScene *>()) {}
-
 GameEngine::LineInfo::LineInfo(void)
 	: m(0.0f),
 	  q(0.0f),
@@ -23,12 +21,12 @@ GameEngine::LineInfo::LineInfo(float startX, float startZ, float endX,
 	}
 }
 
-GameEngine::GameEngine(std::vector<AGameScene *> gameScenes)
-	: _gameScenes(gameScenes) {
+GameEngine::GameEngine(AGame * game)
+	: _game(game) {
 	_running = false;
 
 	// Create interface class
-	_gameRenderer = new GameRenderer(this);
+	_gameRenderer = new GameRenderer(this, game);
 	// Create audio manager
 	_audioManager = new AudioManager();
 
@@ -69,13 +67,14 @@ GameRenderer const *GameEngine::getGameRenderer(void) const {
 // }
 
 bool GameEngine::initScene(int newSceneIdx) {
-	if (newSceneIdx < 0 || newSceneIdx >= static_cast<int>(_gameScenes.size()))
+	if (!_game || newSceneIdx < 0 || newSceneIdx >= static_cast<int>(_game->getGameScenes().size()))
 		return false;
 	_sceneIdx = newSceneIdx;
 	_clearTmpEntities();
-	_gameScenes[newSceneIdx]->load();
-	_camera = _gameScenes[newSceneIdx]->getCamera();
-	for (auto entity : _gameScenes[newSceneIdx]->getEntities()) {
+	_game->getGameScenes()[newSceneIdx]->load();
+	_camera = _game->getGameScenes()[newSceneIdx]->getCamera();
+	_allEntities.clear();
+	for (auto entity : _game->getGameScenes()[newSceneIdx]->getEntities()) {
 		_allEntities.push_back(entity);
 		_allEntities.back()->initEntity(this);
 	}
@@ -542,7 +541,7 @@ void GameEngine::run(void) {
 	if (!initScene(_sceneIdx)) std::runtime_error("Cannot load scene !");
 
 	_audioManager->playStartSound();
-
+	int newSceneIdx = -1;
 	// Start game loop
 	while (_running) {
 		// Get delta time in order to synch entities positions
@@ -562,7 +561,11 @@ void GameEngine::run(void) {
 			if (!_running)
 				break ;
 		}
-
+		_camera->Update();
+		newSceneIdx = _camera->getNewSceneIdx();
+		if (newSceneIdx != -1) {
+			break ;
+		}
 		// Update game entities states
 		for (auto entity : _allEntities) {
 			entity->Update();
@@ -570,9 +573,9 @@ void GameEngine::run(void) {
 		moveEntities();
 		_gameRenderer->refreshWindow(_allEntities, _camera);
 	}
-	if (restartRequest) {
-		std::cout << "Starting new game!" << std::endl;
-		return run();
+	if (newSceneIdx != -1) {
+		_sceneIdx = newSceneIdx;
+		run();
 	}
 }
 

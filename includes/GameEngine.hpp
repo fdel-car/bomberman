@@ -1,5 +1,6 @@
 #pragma once
 
+#include "AGame.hpp"
 #include "AGameScene.hpp"
 #include "AudioManager.hpp"
 #include "Camera.hpp"
@@ -29,7 +30,7 @@ class GameRenderer;
 
 class GameEngine {
    public:
-	GameEngine(std::vector<AGameScene *> gameScenes);
+	GameEngine(AGame * game);
 	~GameEngine(void);
 
 	void run();
@@ -49,6 +50,7 @@ class GameEngine {
 
 	// Functions needed by entities
 	bool isKeyPressed(std::string keyName);
+	std::map<std::string, bool> & getKeyboardMap();
 	float getDeltaTime();
 
    private:
@@ -110,7 +112,7 @@ class GameEngine {
 
 	// Scene management vars
 	int _sceneIdx;
-	std::vector<AGameScene *> _gameScenes;
+	AGame * _game;
 	std::vector<Entity *> _allEntities;
 	Camera *_camera;
 };

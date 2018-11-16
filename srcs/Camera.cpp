@@ -1,7 +1,7 @@
 #include "Camera.hpp"
 
 Camera::Camera(glm::vec3 const &pos, glm::vec3 const &eulerAngles)
-	: Entity(pos, eulerAngles, nullptr, "") {
+	: Entity(pos, eulerAngles, nullptr, ""), _newSceneIdx(-1) {
 	// All of that initialisation is temporary
 	glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
 	glm::vec3 cameraInvDir = glm::normalize(getPosition() - cameraTarget);
@@ -9,6 +9,14 @@ Camera::Camera(glm::vec3 const &pos, glm::vec3 const &eulerAngles)
 	glm::vec3 cameraRight = glm::normalize(glm::cross(up, cameraInvDir));
 	glm::vec3 cameraUp = glm::cross(cameraInvDir, cameraRight);
 	_view = glm::lookAt(getPosition(), cameraInvDir * -1.0f, cameraUp);
+}
+
+int Camera::getNewSceneIdx(void) {
+	return _newSceneIdx;
+}
+
+void Camera::drawGUI(GUI * graphicUI) {
+	(void)graphicUI;
 }
 
 Camera::~Camera(void) {}

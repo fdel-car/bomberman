@@ -19,9 +19,11 @@ class GameEngine;
 
 class Entity;
 
+class AGame;
+
 class GameRenderer {
    public:
-	GameRenderer(GameEngine *gameEngine);
+	GameRenderer(GameEngine *gameEngine, AGame * game);
 	~GameRenderer(void);
 
 	void getUserInput(void);
@@ -43,6 +45,7 @@ class GameRenderer {
 
 	void _initShaders(void);
 	void _initShapes(void);
+	void _initGUI(AGame * game);
 	// void initProgram(void);
 	// void drawGUI(void);
 	// void createBorder(void);

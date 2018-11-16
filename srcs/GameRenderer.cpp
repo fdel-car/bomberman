@@ -2,8 +2,9 @@
 #include "Entity.hpp"
 #include "GameEngine.hpp"
 #include "Shape.hpp"
+#include "AGame.hpp"
 
-GameRenderer::GameRenderer(GameEngine *gameEngine) {
+GameRenderer::GameRenderer(GameEngine *gameEngine, AGame * game) {
 	_gameEngine = gameEngine;
 	glfwSetErrorCallback(errorCallback);
 	if (!glfwInit()) throw new std::runtime_error("Failed to initialize GLFW");
@@ -43,25 +44,7 @@ GameRenderer::GameRenderer(GameEngine *gameEngine) {
 	// squarePercentY = startY / (_gameEngine->getMapH() / 2.0f);
 	// squarePercentX = (-startX) / (_gameEngine->getMapW() / 2.0f);
 
-
-
-	std::vector< std::tuple< float, const char *, std::string > > vFontPath;
-	vFontPath.push_back(std::tuple<float, const char *, std::string> (42.0f, "/Users/vklaouse/Desktop/BOMBERMA.TTF", "BOMBERMA.TTF"));
-	vFontPath.push_back(std::tuple<float, const char *, std::string> (18.0f, "/Users/vklaouse/Desktop/BOMBERMA.TTF", "BOMBERMA.TTF"));
-	vFontPath.push_back(std::tuple<float, const char *, std::string> (18.0f, "/Users/vklaouse/Desktop/Amatic-Bold.ttf", "Amatic-Bold.ttf"));
-	vFontPath.push_back(std::tuple<float, const char *, std::string> (18.0f, "/Users/vklaouse/Desktop/DroidSans.ttf", "DroidSans.ttf"));
-
-	std::vector< std::tuple< const char *, std::string > > vImagePath;
-	vImagePath.push_back(std::tuple< const char *, std::string > ("/Users/vklaouse/Desktop/toto.png", "image1.png"));
-	vImagePath.push_back(std::tuple< const char *, std::string > ("/Users/vklaouse/Desktop/image1.png", "image2.png"));
-	vImagePath.push_back(std::tuple< const char *, std::string > ("/Users/vklaouse/Desktop/chevronDroit.png", "chevronDroit"));
-	vImagePath.push_back(std::tuple< const char *, std::string > ("/Users/vklaouse/Desktop/chevronGauche.png", "chevronGauche"));
-
-	graphicUI = new GUI(_window, vFontPath, vImagePath);
-	graphicUI->uiSetDefaultFont("18_BOMBERMA.TTF");
-	graphicUI->setStyle(THEME_DARK);
-
-
+	_initGUI(game);
 	_initShaders();
 	_initShapes();
 }
@@ -70,6 +53,33 @@ GameRenderer::~GameRenderer(void) {
 	delete graphicUI;
 	closeWindow();
 	return;
+}
+
+void GameRenderer::_initGUI(AGame * game) {
+	std::string path = __FILE__;
+	for (size_t i = path.size() - 1; i > 0; i--) {
+		if (path[i] == '/') {
+			path.erase(path.begin() + i + 1, path.end());
+			break ;
+		}
+	}
+	std::vector< std::tuple< float, std::string, std::string > > vFontPath = game->getNeededFont();
+	std::cout << vFontPath.size() << std::endl;
+	// vFontPath.push_back(std::tuple<float, std::string, std::string> (48.0f, (path + "../assets/assetsGUI/fonts/BOMBERMA.TTF"), "BOMBERMA"));
+	// vFontPath.push_back(std::tuple<float, std::string, std::string> (42.0f, (path + "../assets/assetsGUI/fonts/BOMBERMA.TTF"), "BOMBERMA"));
+	// vFontPath.push_back(std::tuple<float, std::string, std::string> (24.0f, (path + "../assets/assetsGUI/fonts/BOMBERMA.TTF"), "BOMBERMA"));
+	// vFontPath.push_back(std::tuple<float, std::string, std::string> (22.0f, (path + "../assets/assetsGUI/fonts/BOMBERMA.TTF"), "BOMBERMA"));
+	// vFontPath.push_back(std::tuple<float, std::string, std::string> (20.0f, (path + "../assets/assetsGUI/fonts/BOMBERMA.TTF"), "BOMBERMA"));
+	// vFontPath.push_back(std::tuple<float, std::string, std::string> (18.0f, (path + "../assets/assetsGUI/fonts/BOMBERMA.TTF"), "BOMBERMA"));
+	// vFontPath.push_back(std::tuple<float, std::string, std::string> (14.0f, (path + "../assets/assetsGUI/fonts/BOMBERMA.TTF"), "BOMBERMA"));
+
+	std::vector< std::tuple< std::string, std::string > > vImagePath;
+	vImagePath.push_back(std::tuple< std::string, std::string > ((path + "../assets/assetsGUI/icons/chevronDroit.png"), "chevronDroit"));
+	vImagePath.push_back(std::tuple< std::string, std::string > ((path + "../assets/assetsGUI/icons/chevronGauche.png"), "chevronGauche"));
+	vImagePath.push_back(std::tuple< std::string, std::string > ((path + "../assets/assetsGUI/icons/settings.png"), "settings"));
+	graphicUI = new GUI(_window, vFontPath, vImagePath);
+	graphicUI->uiSetDefaultFont("18_BOMBERMA");
+	graphicUI->setStyle(THEME_DARK);
 }
 
 // void GameRenderer::makeVAO(GLuint &vbo) {
@@ -204,32 +214,33 @@ void GameRenderer::refreshWindow(std::vector<Entity *> &entities,
 		toString(static_cast<int>(1 / _gameEngine->getDeltaTime())).c_str());
 
 
-	graphicUI->nkNewFrame();
-	struct nk_rect rect = nk_rect(0, 0, 500, 300);
-	if (graphicUI->uiStartBlock("test1", "Demo", rect, NK_WINDOW_TITLE | NK_WINDOW_BORDER)) {
-		// graphicUI->uiSetFont("14_DroidSans.ttf");
-		graphicUI->uiHeader("Left", NK_TEXT_LEFT);
-		graphicUI->uiHeader("Right", NK_TEXT_RIGHT, "18_BOMBERMA.TTF");
-		if (graphicUI->uiHorizontalSelection(500, "Premier", "Choix1")) {
-			std::cout << "Change1" << std::endl;
-		}
-		if (graphicUI->uiHorizontalSelection(500, "Second", "Choix2")) {
-			std::cout << "Change2" << std::endl;
-		}
-		if (graphicUI->uiHorizontalSelection(500, "Third", "Choix3")) {
-			std::cout << "Change3" << std::endl;
-		}
-		// if (nk_button_label(&GUI::glfw.ctx, "Button"))
-			// std::cout << "Coucou" << std::endl;
-	}
-	graphicUI->uiEndBlock();
-	// if (uiStartBlock(ds)) {
-	//
+
+	// graphicUI->nkNewFrame();
+	// struct nk_rect rect = nk_rect(0, 0, 500, 300);
+	// if (graphicUI->uiStartBlock("test1", "Demo", rect, NK_WINDOW_TITLE | NK_WINDOW_BORDER)) {
+	// 	// graphicUI->uiSetFont("14_DroidSans.ttf");
+	// 	graphicUI->uiHeader("Left", NK_TEXT_LEFT);
+	// 	graphicUI->uiHeader("Right", NK_TEXT_RIGHT, "18_BOMBERMA.TTF");
+	// 	if (graphicUI->uiHorizontalSelection(500, "Premier", "Choix1")) {
+	// 		std::cout << "Change1" << std::endl;
+	// 	}
+	// 	if (graphicUI->uiHorizontalSelection(500, "Second", "Choix2")) {
+	// 		std::cout << "Change2" << std::endl;
+	// 	}
+	// 	if (graphicUI->uiHorizontalSelection(500, "Third", "Choix3")) {
+	// 		std::cout << "Change3" << std::endl;
+	// 	}
+	// 	// if (nk_button_label(&GUI::glfw.ctx, "Button"))
+	// 		// std::cout << "Coucou" << std::endl;
 	// }
-	// uiEndBlock();
-	graphicUI->uiDialogBox("Bomber Man", "image1.png", "AHAHAHAHAHAH AH", true, 40, 1, NK_TEXT_CENTERED, "42_BOMBERMA.TTF", "18_BOMBERMA.TTF");
-	// graphicUI->drawGUI();
-	graphicUI->nkRender();
+	// graphicUI->uiEndBlock();
+	// // if (uiStartBlock(ds)) {
+	// //
+	// // }
+	// // uiEndBlock();
+	// graphicUI->uiDialogBox("Bomber Man", "image1.png", "AHAHAHAHAHAH AH", true, 40, 1, NK_TEXT_CENTERED, "42_BOMBERMA.TTF", "18_BOMBERMA.TTF");
+	// // graphicUI->drawGUI();
+	// graphicUI->nkRender();
 
 	glUseProgram(_shaderPrograms["4.1"]->getID());
 	// glm::mat4 view = glm::mat4(1.0f);
@@ -242,14 +253,17 @@ void GameRenderer::refreshWindow(std::vector<Entity *> &entities,
 		glUniformMatrix4fv(_modelLoc, 1, GL_FALSE,
 						   glm::value_ptr(entity->getModelMatrix()));
 
-		glBindBuffer(GL_ARRAY_BUFFER, (entity->getShape())->getVBO());				   
+		glBindBuffer(GL_ARRAY_BUFFER, (entity->getShape())->getVBO());
 		glBindVertexArray((entity->getShape())->getVAO());
 		// glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		glDrawArrays(GL_TRIANGLES, 0, entity->getShape()->getSize());
 		// glBindVertexArray(0);
 	}
 
-	(void)entities;
+	graphicUI->nkNewFrame();
+	camera->drawGUI(graphicUI);
+	graphicUI->nkRender();
+	// (void)entities;
 	// Put everything to screen
 	glfwSwapBuffers(_window);
 }

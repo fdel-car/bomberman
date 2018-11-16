@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Entity.hpp"
+#include "GUI/GUI.hpp"
 
 class Camera : public Entity {
    public:
@@ -8,8 +9,11 @@ class Camera : public Entity {
 	virtual ~Camera(void);
 
 	glm::mat4 const &getViewMatrix(void) const;
+	virtual void drawGUI(GUI * graphicUI);
+	int getNewSceneIdx(void);
 
-   private:
+  protected:
+	int _newSceneIdx;
 	glm::mat4 _view;
 
 	Camera(void);

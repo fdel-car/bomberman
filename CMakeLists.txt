@@ -22,7 +22,12 @@ set(SRCS
   srcs/Shape.cpp
   srcs/Player.cpp
   srcs/GUI/GUI.cpp
-  srcs/scenes/Factory.cpp
+  srcs/AGame.cpp
+  srcs/scenes/BomberManGame.cpp
+  srcs/scenes/MainMenu.cpp
+  srcs/scenes/MainMenuCam.cpp
+  srcs/scenes/Level01.cpp
+  srcs/scenes/Level01Cam.cpp
 )
 
 include_directories(includes)
@@ -46,7 +51,12 @@ set(HEADERS
   includes/Shape.hpp
   includes/Player.hpp
   includes/GUI/GUI.hpp
-  srcs/scenes/Factory.hpp
+  includes/AGame.hpp
+  includes/scenes/BomberManGame.hpp
+  includes/scenes/MainMenu.hpp
+  includes/scenes/MainMenuCam.hpp
+  includes/scenes/Level01.hpp
+  includes/scenes/Level01Cam.hpp
 )
 
 add_executable(super_bomberman ${SRCS} ${HEADERS})

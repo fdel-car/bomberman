@@ -67,15 +67,10 @@ class GUI {
 
 public:
 
-	GUI();
 	GUI(GLFWwindow *window,
-		std::vector<std::tuple<float,const char *,std::string>> vFontPath = std::vector<std::tuple<float,const char *,std::string>>(),
-		std::vector<std::tuple<const char *,std::string>> vImagePath = std::vector<std::tuple<const char *,std::string>>());
+		std::vector<std::tuple<float,std::string,std::string>> vFontPath = std::vector<std::tuple<float,std::string,std::string>>(),
+		std::vector<std::tuple<std::string,std::string>> vImagePath = std::vector<std::tuple<std::string,std::string>>());
 	~GUI();
-
-	GUI &operator=(GUI const &rhs);
-
-	void drawGUI();
 
 	static struct nk glfw;
 
@@ -91,6 +86,7 @@ public:
 	*/
 
 	void setStyle(enum theme theme);
+	// void setAssetFont(std::vector<std::tuple<float,std::string,std::string>> vFontPath);
 
 	bool uiStartBlock(const char * id, const char * title, struct nk_rect bounds, nk_flags flags);
 	void uiEndBlock();
@@ -98,13 +94,20 @@ public:
 	void uiApplyDefaultFont();
 	void uiSetDefaultFont(std::string fontName);
 	void uiSetImage(std::string imgName);
-	void uiHeader(const char * title, nk_flags flags, std::string fontName = "");
+	void uiHeader(const char * title, nk_flags flags, int rowSize, std::string fontName = "");
 	void uiWidget(float height, std::string fontName = "");
+	bool uiButton(nk_flags flags, std::string text = "", std::string imgName = "", std::string fontName = "");
 	void uiWidgetCentered(float height, std::string fontName = "");
 	void uiDialogBox(const char * name, std::string imgName, const char * text, bool isImgLeft, size_t maxCharPerLine, int nbrOfLine, nk_flags textPosition = NK_TEXT_LEFT, std::string fontText = "", std::string fontTitle = "");
 	bool uiHorizontalSelection(int widgetWidth, std::string leftText, std::string rightText);
+	bool uiHover();
 
 private:
+
+	GUI();
+	GUI(GUI const &src);
+	GUI &operator=(GUI const &rhs);
+
 	/*
 	** Contain all fonts && images/icons
 	*/
@@ -131,8 +134,8 @@ private:
 	void _nkFontStashBegin();
 	void _nkFontStashEnd();
 	void _deviceUploadAtlas(const void *image, int width, int height);
-	void _setFonts(std::vector< std::tuple< float, const char *, std::string > > &vFontPath);
-	void _setImages(std::vector< std::tuple< const char *, std::string > > &vImagePath);
+	void _setFonts(std::vector< std::tuple< float, std::string, std::string > > &vFontPath);
+	void _setImages(std::vector< std::tuple< std::string, std::string > > &vImagePath);
 	struct nk_image iconLoad(const char *filename);
 
 	/*

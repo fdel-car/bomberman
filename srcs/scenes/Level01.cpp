@@ -1,12 +1,14 @@
-#include "Factory.hpp"
+#include "scenes/Level01.hpp"
+#include "scenes/Level01Cam.hpp"
 #include "Player.hpp"
 
-Factory::Factory(void) {}
+Level01::Level01(void) {}
 
-Factory::~Factory(void) {}
+Level01::~Level01(void) {}
 
-void Factory::load(void) {
-	_camera = new Camera(glm::vec3(0.0, 10.0, 0.0), glm::vec3(0.0, 0.0, 0.0));
+void Level01::load(void) {
+	_camera = new Level01Cam(glm::vec3(0.0, 10.0, 0.0), glm::vec3(0.0, 0.0, 0.0));
+
 	_entities.push_back(
 		new Player(glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 0.0, 45.0f)));
 	_entities.push_back(

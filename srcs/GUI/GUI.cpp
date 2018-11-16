@@ -11,9 +11,7 @@
 
 struct nk GUI::glfw = nk();
 
-GUI::GUI() { }
-
-GUI::GUI(GLFWwindow *window, std::vector< std::tuple< float, const char *, std::string > > vFontPath, std::vector< std::tuple< const char *, std::string > > vImagePath)
+GUI::GUI(GLFWwindow *window, std::vector< std::tuple< float, std::string, std::string > > vFontPath, std::vector< std::tuple< std::string, std::string > > vImagePath)
 			: _media(new media()) {
 	struct nk_font_atlas tmpAtlas;
 	GUI::glfw.atlas = &tmpAtlas;
@@ -26,61 +24,9 @@ GUI::GUI(GLFWwindow *window, std::vector< std::tuple< float, const char *, std::
 		_setImages(vImagePath);
 }
 
-
 GUI::~GUI() {
 	_nkShutdown();
 	delete _media;
-}
-
-void GUI::drawGUI() {
-	enum
-	{
-		EASY,
-		HARD
-	};
-	static int op = EASY;
-	static int property = 20;
-	// static int property2 = 20;
-	struct nk_rect rect = nk_rect(50, 50, 430, 550);
-	if (nk_begin_titled(&GUI::glfw.ctx, "Demo", "Toto", rect,
-				 NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE |
-					 NK_WINDOW_MINIMIZABLE | NK_WINDOW_TITLE))
-	{
-
-		nk_layout_row_static(&GUI::glfw.ctx, 30, 80, 1);
-		if (nk_button_label(&GUI::glfw.ctx, "button")) {
-			fprintf(stdout, "button pressed\n");
-			// nk_style_set_font(&GUI::glfw.ctx, &_media->font_18->handle);
-		}
-
-		nk_layout_row_dynamic(&GUI::glfw.ctx, 30, 2);
-		if (nk_option_label(&GUI::glfw.ctx, "easy", op == EASY))
-			op = EASY;
-		if (nk_option_label(&GUI::glfw.ctx, "hard", op == HARD))
-			op = HARD;
-
-		nk_layout_row_dynamic(&GUI::glfw.ctx, 25, 1);
-		nk_property_int(&GUI::glfw.ctx, "Compression:", 0, &property, 100, 10, 1);
-
-		nk_layout_row_dynamic(&GUI::glfw.ctx, 20, 1);
-		nk_label(&GUI::glfw.ctx, "background:", NK_TEXT_LEFT);
-		nk_layout_row_dynamic(&GUI::glfw.ctx, 25, 1);
-		// if (nk_window_is_hovered(&GUI::glfw.ctx))
-			// std::cout << "hover" << std::endl;
-		if (nk_tree_push(&GUI::glfw.ctx, NK_TREE_TAB, "Tree", NK_MINIMIZED)) {
-			nk_layout_row_dynamic(&GUI::glfw.ctx, 120, 1);
-		    nk_tree_pop(&GUI::glfw.ctx);
-		}
-		// nk_style_set_font(&GUI::glfw.ctx, &_media->font_18->handle);
-	    nk_layout_row_dynamic(&GUI::glfw.ctx, 20, 1);
-	    nk_label(&GUI::glfw.ctx, "title", NK_TEXT_LEFT);
-		static const float ratio[] = {0.15f, 0.50f, 0.35f};
-	    // nk_style_set_font(&GUI::glfw.ctx, &_media->font_18->handle);
-	    nk_layout_row(&GUI::glfw.ctx, NK_DYNAMIC, 170, 3, ratio);
-	    nk_spacing(&GUI::glfw.ctx, 1);
-		nk_image(&GUI::glfw.ctx, _media->myImages.at("image1.png"));
-	}
-	nk_end(&GUI::glfw.ctx);
 }
 
 /*
@@ -318,20 +264,20 @@ struct nk_image GUI::iconLoad(const char *filename) {
     return nk_image_id((int)tex);
 }
 
-void GUI::_setFonts(std::vector< std::tuple< float, const char *, std::string > > &vFontPath) {
+void GUI::_setFonts(std::vector< std::tuple< float, std::string, std::string > > &vFontPath) {
 	struct nk_font * tmpFont;
 	for (const auto & font : vFontPath) {
-		tmpFont = nk_font_atlas_add_from_file(GUI::glfw.atlas, std::get<1>(font), std::get<0>(font), 0);
+		tmpFont = nk_font_atlas_add_from_file(GUI::glfw.atlas, std::get<1>(font).c_str(), std::get<0>(font), 0);
 		if (tmpFont)
 			_media->myFonts[std::to_string((int)std::get<0>(font)) + "_" + std::get<2>(font)] = tmpFont;
 	}
 }
 
-void GUI::_setImages(std::vector< std::tuple< const char *, std::string > > &vImagePath) {
+void GUI::_setImages(std::vector< std::tuple< std::string, std::string > > &vImagePath) {
 	glEnable(GL_TEXTURE_2D);
 	struct nk_image tmpImage;
 	for (const auto & img : vImagePath) {
-		tmpImage = iconLoad(std::get<0>(img));
+		tmpImage = iconLoad(std::get<0>(img).c_str());
 		_media->myImages[std::get<1>(img)] = tmpImage;
 	}
 }
@@ -617,7 +563,7 @@ void GUI::setStyle(enum theme theme) {
     }
 	else if (theme == THEME_DARK) {
         table[NK_COLOR_TEXT] = nk_rgba(210, 210, 210, 255);
-        table[NK_COLOR_WINDOW] = nk_rgba(57, 67, 71, 215);
+        table[NK_COLOR_WINDOW] = nk_rgba(57, 67, 71, 0); //215
         table[NK_COLOR_HEADER] = nk_rgba(51, 51, 56, 220);
         table[NK_COLOR_BORDER] = nk_rgba(46, 46, 46, 255);
         table[NK_COLOR_BUTTON] = nk_rgba(48, 83, 111, 255);
@@ -651,6 +597,11 @@ void GUI::setStyle(enum theme theme) {
     }
 }
 
+// void GUI::setAssetFont(std::vector<std::tuple<float,std::string,std::string>> vFontPath) {
+// 	if (!vFontPath.empty())
+// 		_setFonts(vFontPath);
+// }
+
 // NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE |
    //  NK_WINDOW_MINIMIZABLE | NK_WINDOW_TITLE
 bool GUI::uiStartBlock(const char * id, const char * title, struct nk_rect bounds, nk_flags flags) {
@@ -683,9 +634,9 @@ void GUI::uiSetImage(std::string imgName) {
 		nk_image(&glfw.ctx, _media->myImages.at(imgName));
 }
 
-void GUI::uiHeader(const char * title, nk_flags flags, std::string fontName) {
+void GUI::uiHeader(const char * title, nk_flags flags, int rowSize, std::string fontName) {
     uiApplyFont(fontName);
-    nk_layout_row_dynamic(&glfw.ctx, 20, 1);
+    nk_layout_row_dynamic(&glfw.ctx, rowSize, 1);
     nk_label(&glfw.ctx, title, flags);
 	uiApplyDefaultFont();
 }
@@ -696,6 +647,25 @@ void GUI::uiWidget(float height, std::string fontName) {
     nk_layout_row(&glfw.ctx, NK_DYNAMIC, height, 2, ratio);
     nk_spacing(&glfw.ctx, 1);
 	uiApplyDefaultFont();
+}
+
+bool GUI::uiButton(nk_flags flags, std::string text, std::string imgName, std::string fontName) {
+	uiApplyFont(fontName);
+	if (imgName.compare("") != 0 && text.compare("") != 0 && _media->myImages.find(imgName) != _media->myImages.end()) {
+		if (nk_button_image_label(&glfw.ctx, _media->myImages.at(imgName), text.c_str(), flags))
+			return true;
+	}
+	else if (imgName.compare("") && _media->myImages.find(imgName) != _media->myImages.end()) {
+		if (nk_button_image(&glfw.ctx, _media->myImages.at(imgName)))
+			return true;
+	}
+	else {
+		if (nk_button_label(&glfw.ctx, text.c_str()))
+			return true;
+	}
+
+	uiApplyDefaultFont();
+	return false;
 }
 
 void GUI::uiWidgetCentered(float height, std::string fontName) {
@@ -712,7 +682,7 @@ void GUI::uiDialogBox(const char * name, std::string imgName, const char * text,
 	int dialogBoxHeight = (WINDOW_H / 4) - 45;
 	int textWidth = (WINDOW_W / 4) * 3 - (imgWidth - (WINDOW_W / 4)) - 40;
 	if (uiStartBlock("dialog", name, rect, 0)) {
-		uiHeader(name, NK_TEXT_CENTERED, fontTitle);
+		uiHeader(name, NK_TEXT_CENTERED, 20, fontTitle);
 		uiApplyDefaultFont();
 		uiApplyFont(fontText);
 		nk_layout_row_begin(&glfw.ctx, NK_STATIC, dialogBoxHeight, 2);
@@ -773,4 +743,10 @@ bool GUI::uiHorizontalSelection(int widgetWidth, std::string leftText, std::stri
 	}
     nk_layout_row_end(&glfw.ctx);
 	return tmp;
+}
+
+bool GUI::uiHover() {
+	if (nk_window_is_hovered(&glfw.ctx))
+		return true;
+	return false;
 }
