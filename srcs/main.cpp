@@ -14,7 +14,7 @@ int main(void) {
 		srand(time(NULL));
 		AGame *myGame = new BomberManGame();
 		GameEngine gameEngine(myGame);
-		gameEngine.run();
+		// gameEngine.run();
 		delete myGame;
 	} catch (const std::runtime_error &err) {
 		std::cerr << err.what() << std::endl;

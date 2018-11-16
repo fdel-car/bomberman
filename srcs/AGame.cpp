@@ -1,6 +1,6 @@
 #include "AGame.hpp"
 
-AGame::AGame(void) {}
+AGame::AGame(void) : _camera(nullptr) {}
 
 AGame::~AGame(void) { unload(); }
 
