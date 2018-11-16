@@ -670,8 +670,7 @@ void GameEngine::run(void) {
 	restartRequest = false;
 	_lastFrameTs = Clock::now();
 
-	if (!initScene(_sceneIdx)) std::runtime_error("Cannot load scene !");
-
+	if (!initScene(_sceneIdx)) throw std::runtime_error("Cannot load scene!");
 	int newSceneIdx = -1;
 	// Start game loop
 	while (_running) {

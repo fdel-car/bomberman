@@ -10,7 +10,7 @@ Camera *AGame::getCamera(void) const { return _camera; }
 
 std::vector<std::tuple<float, std::string, std::string>>
 	&AGame::getNeededFont() {
-	return vNeededFont;
+	return _neededFonts;
 }
 
 void AGame::unload(void) {

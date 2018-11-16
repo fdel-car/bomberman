@@ -33,3 +33,9 @@ std::string toString(const T& val) {
 #define WINDOW_H 720
 // #define WINDOW_W 2560
 // #define WINDOW_H 1400
+
+typedef struct s_vertex {
+	glm::vec3 position;
+	glm::vec3 normal;
+	// glm::vec2 texCoords;
+} t_vertex;

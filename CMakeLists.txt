@@ -20,11 +20,12 @@ set(SRCS
   srcs/ShaderProgram.cpp
   srcs/Camera.cpp
   srcs/Model.cpp
+  srcs/Mesh.cpp
   srcs/Player.cpp
   srcs/GUI/GUI.cpp
   srcs/scenes/BombermanGame.cpp
   srcs/scenes/MainMenuCam.cpp
-  srcs/scenes/Level01Cam.cpp
+  srcs/scenes/FactoryCam.cpp
 )
 
 include_directories(includes)
@@ -46,11 +47,12 @@ set(HEADERS
   includes/ShaderProgram.hpp
   includes/Camera.hpp
   includes/Model.hpp
+  includes/Mesh.hpp
   includes/Player.hpp
   includes/GUI/GUI.hpp
   includes/scenes/BombermanGame.hpp
   includes/scenes/MainMenuCam.hpp
-  includes/scenes/Level01Cam.hpp
+  includes/scenes/FactoryCam.hpp
 )
 
 add_executable(super_bomberman ${SRCS} ${HEADERS})

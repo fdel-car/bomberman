@@ -50,6 +50,10 @@ glm::vec3 Entity::getEulerAngles() const {
 	return glm::degrees(glm::eulerAngles(_rotation));
 }
 
+void Entity::scale(glm::vec3 scale) {
+	_modelMatrix = glm::scale(_modelMatrix, scale);
+}
+
 void Entity::rotate(glm::vec3 axis, float angle) {
 	float length = glm::length(axis);
 	if (1.0f > length + FLT_EPSILON ||

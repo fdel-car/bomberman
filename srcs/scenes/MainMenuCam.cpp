@@ -13,7 +13,7 @@ void MainMenuCam::drawGUI(GUI *graphicUI) {
 	if (graphicUI->uiStartBlock("MainMenu0", "",
 								nk_rect(0, (WINDOW_H / 5) * 1, WINDOW_W, 50),
 								NK_WINDOW_NO_SCROLLBAR)) {
-		graphicUI->uiHeader("MainTitle", NK_TEXT_CENTERED, 48, "48_BOMBERMA");
+		graphicUI->uiHeader("MainTitle", NK_TEXT_CENTERED, 48, "48_BOMBERMAN");
 	}
 	graphicUI->uiEndBlock();
 
@@ -21,7 +21,7 @@ void MainMenuCam::drawGUI(GUI *graphicUI) {
 			"MainMenu1", "",
 			nk_rect(xPos * 2, (WINDOW_H / 5) * 2, (WINDOW_W / 5), 50),
 			NK_WINDOW_NO_SCROLLBAR)) {
-		graphicUI->uiHorizontalSelection((WINDOW_W / 5), "Left2", "Right2");
+		graphicUI->uiHorizontalSelection((WINDOW_W / 5), "Left", "Right");
 	}
 	graphicUI->uiEndBlock();
 
@@ -31,11 +31,11 @@ void MainMenuCam::drawGUI(GUI *graphicUI) {
 			NK_WINDOW_NO_SCROLLBAR)) {
 		graphicUI->uiWidget(50);
 		if (graphicUI->uiHover()) {
-			if (graphicUI->uiButton(0, "Settings", "settings", "14_BOMBERMA"))
+			if (graphicUI->uiButton(0, "Settings", "settings", "14_BOMBERMAN"))
 				std::cout << "3" << std::endl;
 		} else {
 			if (graphicUI->uiButton(NK_TEXT_RIGHT, "Settings", "",
-									"14_BOMBERMA")) {
+									"14_BOMBERMAN")) {
 				std::cout << "3" << std::endl;
 				_newSceneIdx = 1;
 			}
@@ -48,7 +48,7 @@ void MainMenuCam::drawGUI(GUI *graphicUI) {
 			nk_rect(xPos * 2, (WINDOW_H / 5) * 4, (WINDOW_W / 5), 60),
 			NK_WINDOW_NO_SCROLLBAR)) {
 		graphicUI->uiWidget(50);
-		if (graphicUI->uiButton(NK_TEXT_RIGHT, "Level 1", "", "14_BOMBERMA")) {
+		if (graphicUI->uiButton(NK_TEXT_RIGHT, "Level 1", "", "14_BOMBERMAN")) {
 			std::cout << "2" << std::endl;
 			_newSceneIdx = 1;
 		}
@@ -60,7 +60,7 @@ void MainMenuCam::drawGUI(GUI *graphicUI) {
 										(WINDOW_H / 5) * 4, (WINDOW_W / 5), 60),
 								NK_WINDOW_NO_SCROLLBAR)) {
 		graphicUI->uiWidget(50);
-		if (graphicUI->uiButton(NK_TEXT_RIGHT, "Credit", "", "14_BOMBERMA")) {
+		if (graphicUI->uiButton(NK_TEXT_RIGHT, "Credit", "", "14_BOMBERMAN")) {
 			std::cout << "2" << std::endl;
 		}
 	}
@@ -70,5 +70,5 @@ void MainMenuCam::drawGUI(GUI *graphicUI) {
 	// 	_newSceneIdx = 1;
 	// if (_gameEngine->isKeyPressed("Q"))
 	// 	graphicUI->uiDialogBox("Bomber Man", "image1.png", "AHAHAHAHAHAH AH",
-	// false, 40, 1, NK_TEXT_CENTERED, "42_BOMBERMA.TTF", "18_BOMBERMA.TTF");
+	// false, 40, 1, NK_TEXT_CENTERED, "42_BOMBERMAN.ttf", "18_BOMBERMAN.ttf");
 }

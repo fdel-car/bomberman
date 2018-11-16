@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Mesh.hpp"
 #include "header.hpp"
 
 class Model {
@@ -7,9 +8,7 @@ class Model {
 	Model(std::string const &objDirName);
 	virtual ~Model(void);
 
-	size_t getSize(void) const;
-	GLuint getVAO(void) const;
-	GLuint getVBO(void) const;
+	std::vector<Mesh *> const getMeshes(void) const;
 
    private:
 	Model(void);
@@ -17,8 +16,5 @@ class Model {
 
 	Model &operator=(Model const &rhs);
 
-	size_t _size;
-
-	GLuint _VAO;
-	GLuint _VBO;
+	std::vector<Mesh *> _meshes;
 };
