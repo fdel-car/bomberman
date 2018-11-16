@@ -63,7 +63,7 @@ void GameRenderer::_initShaders(void) {
 
 	// Set permanent values
 	glUniform3fv(_lightDirLoc, 1,
-				 glm::value_ptr(glm::vec3(-0.2f, -1.0f, -0.3f)));
+				 glm::value_ptr(glm::normalize(glm::vec3(0.2f, -1.0f, -0.3f))));
 	glUniform3fv(_lightColorLoc, 1,
 				 glm::value_ptr(glm::vec3(1.0f, 1.0f, 1.0f)));
 }
@@ -81,9 +81,9 @@ void GameRenderer::refreshWindow(std::vector<Entity *> &entities,
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	// glfwSetWindowTitle(_window,
-	// 				   toString(static_cast<int>(1 /
-	// _gameEngine->getDeltaTime())).c_str());
+	// glfwSetWindowTitle(
+	// 	_window,
+	// 	toString(static_cast<int>(1 / _gameEngine->getDeltaTime())).c_str());
 
 	glUseProgram(_shaderPrograms["4.1"]->getID());
 

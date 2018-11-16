@@ -6,9 +6,7 @@ Factory::Factory(void) {}
 Factory::~Factory(void) {}
 
 void Factory::load(void) {
-	_camera =
-		new Camera(glm::vec3(0.0, 25.0, 10.0), glm::vec3(-70.0, 0.0, 0.0));
-	std::cout << *_camera;
+	_camera = new Camera(glm::vec3(0.0, 10.0, 4.0), glm::vec3(-75.0, 0.0, 0.0));
 
 	_entities.push_back(
 		new Player(glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 0.0, 0.0f)));

@@ -15,6 +15,7 @@ class Camera : public Entity {
 
    private:
 	float _speed;
+	float _aspectRatio;
 	glm::mat4 _view;
 	glm::mat4 _projection;
 
@@ -22,6 +23,8 @@ class Camera : public Entity {
 
 	Camera(void);
 	Camera(Camera const &src);
+
+	void _updateData(void);
 
 	Camera &operator=(Camera const &rhs);
 };
