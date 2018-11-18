@@ -30,25 +30,13 @@ void MainMenuCam::configGUI(GUI *graphicUI) {
 	_lvlChoice.push_back("Level Three");
 	_myChoice = 0;
 	_changeSettings = false;
+	_slowTitle = false;
 }
 
 void MainMenuCam::drawGUI(GUI * graphicUI) {
 
 	if (!_changeSettings) {
-		static int extraSizeTitle = 40;
-		static bool titleIsGrowing = true;
-		if (extraSizeTitle < 48 && titleIsGrowing)
-			extraSizeTitle++;
-		else if (extraSizeTitle > 40 && !titleIsGrowing)
-			extraSizeTitle--;
-		else
-			titleIsGrowing = !titleIsGrowing;
-		if (graphicUI->uiStartBlock("Title", "",
-									nk_rect(0, (WINDOW_H / 5) * 1, WINDOW_W, 50),
-									NK_WINDOW_NO_SCROLLBAR)) {
-			graphicUI->uiHeader("Super Bomberman", NK_TEXT_CENTERED, 48, std::to_string(extraSizeTitle) + "_BOMBERMA");
-		}
-		graphicUI->uiEndBlock();
+		_movingTitle(graphicUI);
 
 		if (graphicUI->uiStartBlock(
 				"Levels", "",
@@ -61,10 +49,41 @@ void MainMenuCam::drawGUI(GUI * graphicUI) {
 		}
 		graphicUI->uiEndBlock();
 
-		_btnPlay(graphicUI);
-		_btnSettings(graphicUI);
-		_btnCredits(graphicUI);
-		_btnExit(graphicUI);
+		activeStyle[NK_COLOR_BUTTON_ACTIVE] = nk_rgba(51, 55, 67, 0);
+		activeStyle[NK_COLOR_BORDER] = nk_rgba(51, 55, 67, 0);
+		activeStyle[NK_COLOR_BUTTON] = nk_rgba(51, 55, 67, 0);
+		activeStyle[NK_COLOR_BUTTON_HOVER] = nk_rgba(51, 55, 67, 0);
+		graphicUI->setStyle(activeStyle);
+		static int extraSizePlay = 0;
+		static bool isPlayButtonHover = false;
+		if (_btnHover(graphicUI, (WINDOW_W / 5), 60, (WINDOW_W / 5) * 2,
+			(WINDOW_H / 5) * 2.7, 20, "_BOMBERMA", &extraSizePlay, 10,
+			&isPlayButtonHover, "Play"))
+			std::cout << "Play" << std::endl;
+		activeStyle = defaultStyle;
+		graphicUI->setStyle(activeStyle);
+
+		static int extraSizeSetting = 0;
+		static bool isSettingButtonHover = false;
+		if (_btnHover(graphicUI, (WINDOW_W / 5), 60, (WINDOW_W / 5) - ((WINDOW_W / 5) / 2),
+			(WINDOW_H / 5) * 4, 14, "_BOMBERMA", &extraSizeSetting, 10,
+			&isSettingButtonHover, "Settings", "settings"))
+			_changeSettings = true;
+
+		static int extraSizeCredits = 0;
+		static bool isCreditButtonHover = false;
+		if (_btnHover(graphicUI, (WINDOW_W / 5), 60, (WINDOW_W / 5) * 2,
+			(WINDOW_H / 5) * 4, 14, "_BOMBERMA", &extraSizeCredits, 10,
+			&isCreditButtonHover, "Credits"))
+			_newSceneIdx = 1;
+
+		static int extraSizeExit = 0;
+		static bool isExitButtonHover = false;
+		if (_btnHover(graphicUI, (WINDOW_W / 5), 60,
+			(WINDOW_W / 5) * 4 - ((WINDOW_W / 5) / 2),
+			(WINDOW_H / 5) * 4, 14, "_BOMBERMA", &extraSizeExit, 10,
+			&isExitButtonHover, "Exit"))
+			std::cout << "Exits" << std::endl;
 	}
 	else
 		_settings(graphicUI);
@@ -120,154 +139,57 @@ void MainMenuCam::_settings(GUI *graphicUI) {
 	graphicUI->setStyle(activeStyle);
 }
 
-void MainMenuCam::_btnPlay(GUI * graphicUI) {
-	static int extraSizePlay = 0;
-	static bool isPlayButtonHover = false;
-	int rectWidth = (WINDOW_W / 5);
-	int rectHeight = 60;
-	int xRectPos = (WINDOW_W / 5) * 2;
-	int yRectPos = (WINDOW_H / 5) * 2.7;
-	int fontSize = 20;
-	std::string fontName = "_BOMBERMA";
-	if (extraSizePlay < 10 && isPlayButtonHover)
-		extraSizePlay++;
-	else if (extraSizePlay > 0 && !isPlayButtonHover)
-		extraSizePlay--;
-	rectWidth += extraSizePlay;
-	rectHeight += extraSizePlay;
-	xRectPos -= extraSizePlay / 2;
-	yRectPos -= extraSizePlay / 2;
-	fontName = std::to_string(fontSize + extraSizePlay) + fontName;
-	activeStyle[NK_COLOR_BUTTON_ACTIVE] = nk_rgba(51, 55, 67, 0);
-	activeStyle[NK_COLOR_BORDER] = nk_rgba(51, 55, 67, 0);
-	activeStyle[NK_COLOR_BUTTON] = nk_rgba(51, 55, 67, 0);
-	activeStyle[NK_COLOR_BUTTON_HOVER] = nk_rgba(51, 55, 67, 0);
-	graphicUI->setStyle(activeStyle);
+bool MainMenuCam::_btnHover(GUI *graphicUI, int rectWidth, int rectHeight,
+	int xRectPos, int yRectPos, int fontSize, std::string fontName, int *extraSize, int maxSize,
+	bool *isButtonHover, std::string btnName, std::string btnImageHover, std::string btnImage) {
+	bool ret = false;
+	if (*extraSize < maxSize && *isButtonHover)
+		*extraSize += 1;
+	else if (*extraSize > 0 && !*isButtonHover)
+		*extraSize -= 1;
+	rectWidth += *extraSize;
+	rectHeight += *extraSize;
+	xRectPos -= *extraSize / 2;
+	yRectPos -= *extraSize / 2;
+	fontName = std::to_string(fontSize + *extraSize) + fontName;
 	if (graphicUI->uiStartBlock(
-			"Play", "",
+			btnName.c_str(), "",
 			nk_rect(xRectPos, yRectPos, rectWidth, rectHeight),
 			NK_WINDOW_NO_SCROLLBAR)) {
 		if (graphicUI->uiHover()) {
-			isPlayButtonHover = true;
-			if (graphicUI->uiButton(rectWidth, rectHeight, 0, "Play", "", fontName)) {
-				std::cout << "3" << std::endl;
+			*isButtonHover = true;
+			if (graphicUI->uiButton(rectWidth, rectHeight, 0, btnName.c_str(), btnImageHover.c_str(), fontName)) {
+				ret = true;
 			}
 		} else {
-			isPlayButtonHover = false;
-			if (graphicUI->uiButton(rectWidth, rectHeight, 0, "Play", "", fontName)) { }
+			*isButtonHover = false;
+			if (graphicUI->uiButton(rectWidth, rectHeight, 0, btnName.c_str(), btnImage.c_str(), fontName)) {
+				ret = true;
+			}
 		}
 	}
 	graphicUI->uiEndBlock();
-	activeStyle = defaultStyle;
-	graphicUI->setStyle(activeStyle);
+	return ret;
 }
 
-void MainMenuCam::_btnSettings(GUI * graphicUI) {
-	static int extraSizeSetting = 0;
-	static bool isSettingButtonHover = false;
-	int rectWidth = (WINDOW_W / 5);
-	int rectHeight = 60;
-	int xRectPos = (WINDOW_W / 5) - ((WINDOW_W / 5) / 2);
-	int yRectPos = (WINDOW_H / 5) * 4;
-	int fontSize = 14;
-	std::string fontName = "_BOMBERMA";
-	if (extraSizeSetting < 10 && isSettingButtonHover)
-		extraSizeSetting++;
-	else if (extraSizeSetting > 0 && !isSettingButtonHover)
-		extraSizeSetting--;
-	rectWidth += extraSizeSetting;
-	rectHeight += extraSizeSetting;
-	xRectPos -= extraSizeSetting / 2;
-	yRectPos -= extraSizeSetting / 2;
-	fontName = std::to_string(fontSize + extraSizeSetting) + fontName;
-	if (graphicUI->uiStartBlock(
-			"Setting", "",
-			nk_rect(xRectPos, yRectPos, rectWidth, rectHeight),
-			NK_WINDOW_NO_SCROLLBAR)) {
-		if (graphicUI->uiHover()) {
-			isSettingButtonHover = true;
-			if (graphicUI->uiButton(rectWidth, rectHeight, 0, "Settings", "settings", fontName)) {
-				_changeSettings = true;
-			}
-		} else {
-			isSettingButtonHover = false;
-			if (graphicUI->uiButton(rectWidth, rectHeight, 0, "Settings", "", fontName)) { }
-		}
+void MainMenuCam::_movingTitle(GUI *graphicUI) {
+	static int extraSizeTitle = 40;
+	static bool titleIsGrowing = true;
+	if (_slowTitle) {
+		_slowTitle = !_slowTitle;
+		if (extraSizeTitle < 48 && titleIsGrowing)
+			extraSizeTitle++;
+		else if (extraSizeTitle > 40 && !titleIsGrowing)
+			extraSizeTitle--;
+		else
+			titleIsGrowing = !titleIsGrowing;
 	}
-	graphicUI->uiEndBlock();
-}
-
-void MainMenuCam::_btnCredits(GUI * graphicUI) {
-	static int extraSizeCredits = 0;
-	static bool isCreditButtonHover = false;
-	int rectWidth = (WINDOW_W / 5);
-	int rectHeight = 60;
-	int xRectPos = (WINDOW_W / 5) * 2;
-	int yRectPos = (WINDOW_H / 5) * 4;
-	int fontSize = 14;
-	std::string fontName = "_BOMBERMA";
-	if (extraSizeCredits < 10 && isCreditButtonHover)
-		extraSizeCredits++;
-	else if (extraSizeCredits > 0 && !isCreditButtonHover)
-		extraSizeCredits--;
-	rectWidth += extraSizeCredits;
-	rectHeight += extraSizeCredits;
-	xRectPos -= extraSizeCredits / 2;
-	yRectPos -= extraSizeCredits / 2;
-	fontName = std::to_string(fontSize + extraSizeCredits) + fontName;
-	if (graphicUI->uiStartBlock(
-			"Credits", "",
-			nk_rect(xRectPos, yRectPos, rectWidth, rectHeight),
-			NK_WINDOW_NO_SCROLLBAR)) {
-		if (graphicUI->uiHover()) {
-			isCreditButtonHover = true;
-			if (graphicUI->uiButton(rectWidth, rectHeight, 0, "Credits", "", fontName)) {
-				std::cout << "2" << std::endl;
-				_newSceneIdx = 1;
-			}
-		}
-		else {
-			isCreditButtonHover = false;
-			if (graphicUI->uiButton(rectWidth, rectHeight, 0, "Credits", "", fontName)) { }
-		}
-	}
-	graphicUI->uiEndBlock();
-}
-
-void MainMenuCam::_btnExit(GUI * graphicUI) {
-	static int extraSizeExit = 0;
-	static bool isExitButtonHover = false;
-	int rectWidth = (WINDOW_W / 5);
-	int rectHeight = 60;
-	int xRectPos = (WINDOW_W / 5) * 4 - ((WINDOW_W / 5) / 2);
-	int yRectPos = (WINDOW_H / 5) * 4;
-	int fontSize = 14;
-	std::string fontName = "_BOMBERMA";
-	if (extraSizeExit < 10 && isExitButtonHover)
-		extraSizeExit++;
-	else if (extraSizeExit > 0 && !isExitButtonHover)
-		extraSizeExit--;
-	rectWidth += extraSizeExit;
-	rectHeight += extraSizeExit;
-	xRectPos -= extraSizeExit / 2;
-	yRectPos -= extraSizeExit / 2;
-	fontName = std::to_string(fontSize + extraSizeExit) + fontName;
-	if (graphicUI->uiStartBlock(
-			"Exit", "",
-			nk_rect(xRectPos, yRectPos, rectWidth, rectHeight),
-			NK_WINDOW_NO_SCROLLBAR)) {
-		if (graphicUI->uiHover()) {
-			isExitButtonHover = true;
-			if (graphicUI->uiButton(rectWidth, rectHeight, 0, "Exit", "", fontName)) {
-				std::cout << "2" << std::endl;
-			}
-		}
-		else {
-			isExitButtonHover = false;
-			if (graphicUI->uiButton(rectWidth, rectHeight, 0, "Exit", "", fontName)) {
-				std::cout << "2" << std::endl;
-			}
-		}
+	else
+		_slowTitle = !_slowTitle;
+	if (graphicUI->uiStartBlock("Title", "",
+								nk_rect(0, (WINDOW_H / 5) * 1, WINDOW_W, 50),
+								NK_WINDOW_NO_SCROLLBAR)) {
+		graphicUI->uiHeader("Super Bomberman", NK_TEXT_CENTERED, 48, std::to_string(extraSizeTitle) + "_BOMBERMA");
 	}
 	graphicUI->uiEndBlock();
 }
