@@ -14,6 +14,7 @@ void Level01Cam::configGUI(GUI *graphicUI) {
 	graphicUI->setStyle(defaultStyle);
 	activeStyle = defaultStyle;
 	_pauseMenu = false;
+	_slowDialogue = false;
 }
 
 void Level01Cam::drawGUI(GUI * graphicUI) {
@@ -40,5 +41,32 @@ void Level01Cam::drawGUI(GUI * graphicUI) {
 		}
 		graphicUI->uiEndBlock();
 	}
-	// graphicUI->uiDialogBox("Bomber Man", "image1.png", "NONONONONONONONO", false, 30, 1, NK_TEXT_CENTERED, "42_BOMBERMA.TTF", "18_BOMBERMA.TTF");
+	static int searchWord = 0;
+	static int lastWord = 0;
+	static int startStrIdx = 0;
+	std::string str = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
+	_displayDialogue(graphicUI, &searchWord, &lastWord, &startStrIdx, "Bomberman", "",
+		str, false, 130, 3, NK_TEXT_LEFT, "12_BOMBERMA", "18_BOMBERMA");
+}
+
+void Level01Cam::_displayDialogue(GUI * graphicUI, int *searchWord, int *lastWord,
+						int *startStrIdx, std::string name, std::string imgName,
+						std::string str, bool isImgLeft, size_t maxCharPerLine,
+						int nbrOfLine, nk_flags textPosition,
+						std::string fontText, std::string fontTitle) {
+	if (_slowDialogue) {
+		if (*searchWord < (int)str.size()) {
+			*searchWord += 1;
+			if (str[*searchWord] == ' ')
+				*lastWord = *searchWord;
+		}
+		else
+			*lastWord = *searchWord;
+		if (*lastWord  - *startStrIdx >= 130 * 3)
+			*startStrIdx += 130 * 2;
+	}
+	_slowDialogue = !_slowDialogue;
+	std::string displayableStr = str.substr(*startStrIdx, *lastWord - *startStrIdx);
+	graphicUI->uiDialogBox(name.c_str(), imgName, displayableStr.c_str(), isImgLeft,
+		maxCharPerLine, nbrOfLine, textPosition, fontText, fontTitle);
 }

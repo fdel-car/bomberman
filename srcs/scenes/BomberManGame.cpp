@@ -58,6 +58,10 @@ BombermanGame::BombermanGame(void) : AGame() {
 		15.0f, (_assetsDir + "GUI/fonts/BOMBERMA.TTF"), "BOMBERMA"));
 	vNeededFont.push_back(std::tuple<float, std::string, std::string>(
 		14.0f, (_assetsDir + "GUI/fonts/BOMBERMA.TTF"), "BOMBERMA"));
+	vNeededFont.push_back(std::tuple<float, std::string, std::string>(
+		13.0f, (_assetsDir + "GUI/fonts/BOMBERMA.TTF"), "BOMBERMA"));
+	vNeededFont.push_back(std::tuple<float, std::string, std::string>(
+		12.0f, (_assetsDir + "GUI/fonts/BOMBERMA.TTF"), "BOMBERMA"));
 }
 
 BombermanGame::~BombermanGame(void) {}
