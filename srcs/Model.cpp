@@ -26,7 +26,7 @@ Model::Model(std::string const &objDirName) : _size(0) {
 	std::vector<float> vertices = std::vector<float>();
 	std::vector<unsigned int> indices = std::vector<unsigned int>();
 
-	std::cout << shapes.size() << std::endl;
+	// std::cout << shapes.size() << std::endl;
 	for (size_t s = 0; s < shapes.size(); s++) {
 		size_t index_offset = 0;
 		for (size_t f = 0; f < shapes[s].mesh.num_face_vertices.size(); f++) {
@@ -53,7 +53,7 @@ Model::Model(std::string const &objDirName) : _size(0) {
 			// Per-face material
 			// std::cout << shapes[s].mesh.material_ids[f] << std::endl;
 		}
-		std::cout << s << std::endl;
+		// std::cout << s << std::endl;
 	}
 	glGenVertexArrays(1, &_VAO);
 	glGenBuffers(1, &_VBO);

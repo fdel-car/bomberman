@@ -15,4 +15,6 @@ class Level01Cam : public Camera {
 		Level01Cam(Level01Cam const &src);
 		Level01Cam &operator=(Level01Cam const &rhs);
 
+		bool _pauseMenu;
+
 };

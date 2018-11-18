@@ -631,9 +631,6 @@ vFontImage) {
 		_setImages(vFontImage);
 }
 
-// NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE |
-// NK_WINDOW_MINIMIZABLE | NK_WINDOW_TITLE
-
 bool GUI::uiStartBlock(const char *id, const char *title, struct nk_rect bounds,
 					   nk_flags flags) {
 	if (nk_begin_titled(&GUI::glfw.ctx, id, title, bounds, flags)) return true;
@@ -762,25 +759,31 @@ void GUI::uiDialogBox(const char *name, std::string imgName, const char *text,
 }
 
 bool GUI::uiHorizontalSelection(int widgetWidth, std::string leftText,
-								std::string rightText) {
+								std::string rightText, int *choice, int maxSize) {
 	bool tmp = false;
 	widgetWidth -= 100;
 	nk_layout_row_begin(&glfw.ctx, NK_STATIC, 30, 4);
-	nk_layout_row_push(&glfw.ctx, widgetWidth / 2);
+	if (leftText.size() != 0)
+		nk_layout_row_push(&glfw.ctx, widgetWidth / 2);
 	nk_label(&glfw.ctx, leftText.c_str(), NK_TEXT_LEFT);
 	nk_layout_row_push(&glfw.ctx, 30);
 	if (_media->myImages.find("chevronGauche") != _media->myImages.end()) {
 		if (nk_button_image(&glfw.ctx, _media->myImages.at("chevronGauche"))) {
-			std::cout << "left" << std::endl;
+			if (*choice > 0)
+				*choice -= 1;
 			tmp = true;
 		}
 	}
-	nk_layout_row_push(&glfw.ctx, widgetWidth / 2);
+	if (leftText.size() != 0)
+		nk_layout_row_push(&glfw.ctx, widgetWidth / 2);
+	else
+		nk_layout_row_push(&glfw.ctx, widgetWidth);
 	nk_label(&glfw.ctx, rightText.c_str(), NK_TEXT_CENTERED);
 	nk_layout_row_push(&glfw.ctx, 30);
 	if (_media->myImages.find("chevronDroit") != _media->myImages.end()) {
 		if (nk_button_image(&glfw.ctx, _media->myImages.at("chevronDroit"))) {
-			std::cout << "right" << std::endl;
+			if (*choice < maxSize)
+				*choice += 1;
 			tmp = true;
 		}
 	}
@@ -791,4 +794,20 @@ bool GUI::uiHorizontalSelection(int widgetWidth, std::string leftText,
 bool GUI::uiHover() {
 	if (nk_window_is_hovered(&glfw.ctx)) return true;
 	return false;
+}
+
+void GUI::uiHorizontalEditString(int widgetWidth, std::string leftText, nk_flags flags, char* fieldBuffer,
+									int *len, int max, nk_plugin_filter filter) {
+	widgetWidth -= 100;
+	nk_layout_row_begin(&glfw.ctx, NK_STATIC, 30, 2);
+	nk_layout_row_push(&glfw.ctx, widgetWidth);
+	nk_label(&glfw.ctx, leftText.c_str(), NK_TEXT_LEFT);
+	nk_layout_row_push(&glfw.ctx, 50);
+	uiEditString(flags, fieldBuffer, len, max, filter);
+	nk_layout_row_end(&glfw.ctx);
+}
+
+void GUI::uiEditString(nk_flags flags, char* fieldBuffer, int *len,
+											int max, nk_plugin_filter filter) {
+	nk_edit_string(&glfw.ctx, flags, fieldBuffer, len, max, filter);
 }

@@ -100,8 +100,10 @@ public:
 	bool uiButton(int width, int height, nk_flags flags, std::string text = "", std::string imgName = "", std::string fontName = "");
 	void uiWidgetCentered(float height, std::string fontName = "");
 	void uiDialogBox(const char * name, std::string imgName, const char * text, bool isImgLeft, size_t maxCharPerLine, int nbrOfLine, nk_flags textPosition = NK_TEXT_LEFT, std::string fontText = "", std::string fontTitle = "");
-	bool uiHorizontalSelection(int widgetWidth, std::string leftText, std::string rightText);
+	bool uiHorizontalSelection(int widgetWidth, std::string leftText, std::string rightText, int *choice, int maxSize);
 	bool uiHover();
+	void uiEditString(nk_flags flags, char* fieldBuffer, int *len, int max, nk_plugin_filter filter);
+	void uiHorizontalEditString(int widgetWidth, std::string leftText, nk_flags flags, char* fieldBuffer, int *len, int max, nk_plugin_filter filter);
 
 private:
 

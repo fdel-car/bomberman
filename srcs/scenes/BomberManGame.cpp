@@ -9,15 +9,53 @@ BombermanGame::BombermanGame(void) : AGame() {
 	vNeededFont.push_back(std::tuple<float, std::string, std::string>(
 		48.0f, (_assetsDir + "GUI/fonts/BOMBERMA.TTF"), "BOMBERMA"));
 	vNeededFont.push_back(std::tuple<float, std::string, std::string>(
+		47.0f, (_assetsDir + "GUI/fonts/BOMBERMA.TTF"), "BOMBERMA"));
+	vNeededFont.push_back(std::tuple<float, std::string, std::string>(
+		46.0f, (_assetsDir + "GUI/fonts/BOMBERMA.TTF"), "BOMBERMA"));
+	vNeededFont.push_back(std::tuple<float, std::string, std::string>(
+		45.0f, (_assetsDir + "GUI/fonts/BOMBERMA.TTF"), "BOMBERMA"));
+	vNeededFont.push_back(std::tuple<float, std::string, std::string>(
+		44.0f, (_assetsDir + "GUI/fonts/BOMBERMA.TTF"), "BOMBERMA"));
+	vNeededFont.push_back(std::tuple<float, std::string, std::string>(
+		43.0f, (_assetsDir + "GUI/fonts/BOMBERMA.TTF"), "BOMBERMA"));
+	vNeededFont.push_back(std::tuple<float, std::string, std::string>(
 		42.0f, (_assetsDir + "GUI/fonts/BOMBERMA.TTF"), "BOMBERMA"));
+	vNeededFont.push_back(std::tuple<float, std::string, std::string>(
+		41.0f, (_assetsDir + "GUI/fonts/BOMBERMA.TTF"), "BOMBERMA"));
+	vNeededFont.push_back(std::tuple<float, std::string, std::string>(
+		40.0f, (_assetsDir + "GUI/fonts/BOMBERMA.TTF"), "BOMBERMA"));
+	vNeededFont.push_back(std::tuple<float, std::string, std::string>(
+		30.0f, (_assetsDir + "GUI/fonts/BOMBERMA.TTF"), "BOMBERMA"));
+	vNeededFont.push_back(std::tuple<float, std::string, std::string>(
+		29.0f, (_assetsDir + "GUI/fonts/BOMBERMA.TTF"), "BOMBERMA"));
+	vNeededFont.push_back(std::tuple<float, std::string, std::string>(
+		28.0f, (_assetsDir + "GUI/fonts/BOMBERMA.TTF"), "BOMBERMA"));
+	vNeededFont.push_back(std::tuple<float, std::string, std::string>(
+		27.0f, (_assetsDir + "GUI/fonts/BOMBERMA.TTF"), "BOMBERMA"));
+	vNeededFont.push_back(std::tuple<float, std::string, std::string>(
+		26.0f, (_assetsDir + "GUI/fonts/BOMBERMA.TTF"), "BOMBERMA"));
+	vNeededFont.push_back(std::tuple<float, std::string, std::string>(
+		25.0f, (_assetsDir + "GUI/fonts/BOMBERMA.TTF"), "BOMBERMA"));
 	vNeededFont.push_back(std::tuple<float, std::string, std::string>(
 		24.0f, (_assetsDir + "GUI/fonts/BOMBERMA.TTF"), "BOMBERMA"));
 	vNeededFont.push_back(std::tuple<float, std::string, std::string>(
+		23.0f, (_assetsDir + "GUI/fonts/BOMBERMA.TTF"), "BOMBERMA"));
+	vNeededFont.push_back(std::tuple<float, std::string, std::string>(
 		22.0f, (_assetsDir + "GUI/fonts/BOMBERMA.TTF"), "BOMBERMA"));
+	vNeededFont.push_back(std::tuple<float, std::string, std::string>(
+		21.0f, (_assetsDir + "GUI/fonts/BOMBERMA.TTF"), "BOMBERMA"));
 	vNeededFont.push_back(std::tuple<float, std::string, std::string>(
 		20.0f, (_assetsDir + "GUI/fonts/BOMBERMA.TTF"), "BOMBERMA"));
 	vNeededFont.push_back(std::tuple<float, std::string, std::string>(
+		19.0f, (_assetsDir + "GUI/fonts/BOMBERMA.TTF"), "BOMBERMA"));
+	vNeededFont.push_back(std::tuple<float, std::string, std::string>(
 		18.0f, (_assetsDir + "GUI/fonts/BOMBERMA.TTF"), "BOMBERMA"));
+	vNeededFont.push_back(std::tuple<float, std::string, std::string>(
+		17.0f, (_assetsDir + "GUI/fonts/BOMBERMA.TTF"), "BOMBERMA"));
+	vNeededFont.push_back(std::tuple<float, std::string, std::string>(
+		16.0f, (_assetsDir + "GUI/fonts/BOMBERMA.TTF"), "BOMBERMA"));
+	vNeededFont.push_back(std::tuple<float, std::string, std::string>(
+		15.0f, (_assetsDir + "GUI/fonts/BOMBERMA.TTF"), "BOMBERMA"));
 	vNeededFont.push_back(std::tuple<float, std::string, std::string>(
 		14.0f, (_assetsDir + "GUI/fonts/BOMBERMA.TTF"), "BOMBERMA"));
 }

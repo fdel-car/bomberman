@@ -10,23 +10,35 @@ Level01Cam::~Level01Cam(void) {}
 void Level01Cam::configGUI(GUI *graphicUI) {
 	graphicUI->setAssetImage(vNeededImage);
 
-	graphicUI->getDefaultStyle(THEME_DARK, &defaultStyle);
-	defaultStyle[NK_COLOR_WINDOW] = nk_rgba(57, 67, 71, 215);
+	graphicUI->getDefaultStyle(THEME_RED, &defaultStyle);
 	graphicUI->setStyle(defaultStyle);
 	activeStyle = defaultStyle;
+	_pauseMenu = false;
 }
 
 void Level01Cam::drawGUI(GUI * graphicUI) {
-	if (_gameEngine->isKeyPressed("I"))
-		_newSceneIdx = 0;
-	int xPos = (WINDOW_W / 5);
-	if (graphicUI->uiStartBlock("MainMenu34", "", nk_rect(xPos * 2, (WINDOW_H / 5) * 4, (WINDOW_W / 5), 60), NK_WINDOW_NO_SCROLLBAR)) {
-	    if (graphicUI->uiButton((WINDOW_W / 5), 60, NK_TEXT_RIGHT, "", "settings", "14_BOMBERMA")) {
-			std::cout << "2" << std::endl;
-			_newSceneIdx = 1;
+	if (_pauseMenu || _gameEngine->isKeyPressed("E")) {
+		_pauseMenu = true;
+		if (graphicUI->uiStartBlock(
+			"PauseMenu", "Pause",
+			nk_rect((WINDOW_W / 2) - (WINDOW_W / 8),
+			(WINDOW_H / 3), WINDOW_W / 4, WINDOW_H / 3),
+			NK_WINDOW_NO_SCROLLBAR | NK_WINDOW_BORDER | NK_WINDOW_TITLE)) {
+			if (graphicUI->uiButton(WINDOW_W / 4, (WINDOW_H / 9) - 8, 0,
+				"Resume", "", "14_BOMBERMA")) {
+				_pauseMenu = false;
+			}
+			if (graphicUI->uiButton(WINDOW_W / 4, (WINDOW_H / 9) - 8, 0,
+				"Restart level", "", "14_BOMBERMA")) {
+				_newSceneIdx = 1;
+			}
+			if (graphicUI->uiButton(WINDOW_W / 4, (WINDOW_H / 9) - 8, 0,
+				"Quit level", "", "14_BOMBERMA")) {
+				_newSceneIdx = 0;
+			}
+			if (graphicUI->uiButton(0, 0, 0, "", "", "")) { }
 		}
+		graphicUI->uiEndBlock();
 	}
-	graphicUI->uiEndBlock();
-
 	// graphicUI->uiDialogBox("Bomber Man", "image1.png", "NONONONONONONONO", false, 30, 1, NK_TEXT_CENTERED, "42_BOMBERMA.TTF", "18_BOMBERMA.TTF");
 }

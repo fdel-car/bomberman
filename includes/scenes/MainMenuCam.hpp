@@ -15,4 +15,14 @@ class MainMenuCam : public Camera {
 		MainMenuCam(MainMenuCam const &src);
 		MainMenuCam &operator=(MainMenuCam const &rhs);
 
+		void _btnPlay(GUI *graphicUI);
+		void _btnSettings(GUI *graphicUI);
+		void _btnCredits(GUI *graphicUI);
+		void _btnExit(GUI *graphicUI);
+		void _settings(GUI *graphicUI);
+
+		std::vector<std::string> _lvlChoice;
+		int _myChoice;
+		bool _changeSettings;
+
 };
