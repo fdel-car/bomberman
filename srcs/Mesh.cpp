@@ -1,7 +1,7 @@
 #include "Mesh.hpp"
 
 Mesh::Mesh(std::vector<t_vertex> const &vertices, t_material const &material)
-	: _size(vertices.size()) {
+	: _size(vertices.size()), _material(material) {
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
 
@@ -23,12 +23,17 @@ Mesh::Mesh(std::vector<t_vertex> const &vertices, t_material const &material)
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
-	(void)material;
 }
 
 Mesh::~Mesh(void) {
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
+}
+
+void Mesh::draw(void) const {
+	glBindVertexArray(VAO);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glDrawArrays(GL_TRIANGLES, 0, _size);
 }
 
 size_t Mesh::getSize(void) const { return _size; }

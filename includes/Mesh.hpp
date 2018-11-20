@@ -12,13 +12,14 @@ class Mesh {
 	virtual ~Mesh(void);
 
 	size_t getSize(void) const;
+	void draw(void) const;
 
 	GLuint VAO;
 	GLuint VBO;
 
    private:
 	size_t _size;
-	t_material material;
+	t_material _material;
 
 	Mesh(void);
 	Mesh(Mesh const &src);

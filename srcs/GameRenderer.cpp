@@ -106,11 +106,7 @@ void GameRenderer::refreshWindow(std::vector<Entity *> &entities,
 	for (auto entity : entities) {
 		glUniformMatrix4fv(_modelLoc, 1, GL_FALSE,
 						   glm::value_ptr(entity->getModelMatrix()));
-		for (auto mesh : entity->getModel()->getMeshes()) {
-			glBindVertexArray(mesh->VAO);
-			glBindBuffer(GL_ARRAY_BUFFER, mesh->VBO);
-			glDrawArrays(GL_TRIANGLES, 0, mesh->getSize());
-		}
+		entity->getModel()->draw();
 	}
 
 	// Default OpenGL state
