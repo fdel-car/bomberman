@@ -30,7 +30,12 @@ Mesh::~Mesh(void) {
 	glDeleteBuffers(1, &VBO);
 }
 
-void Mesh::draw(void) const {
+void Mesh::draw(ShaderProgram const &shaderProgram) const {
+	shaderProgram.setVec3("material.ambientColor", _material.diffuseColor);
+	shaderProgram.setVec3("material.diffuseColor", _material.diffuseColor);
+	shaderProgram.setVec3("material.specularColor", _material.diffuseColor);
+	shaderProgram.setFloat("material.shininess", _material.shininess);
+
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glDrawArrays(GL_TRIANGLES, 0, _size);

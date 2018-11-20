@@ -55,9 +55,16 @@ Model::Model(std::string const &objDirName) {
 	for (auto vertices : meshesVertices) {
 		t_material material;
 
-		material.diffuse =
+		material.ambientColor =
+			glm::vec3(materials[idx].ambient[0], materials[idx].ambient[1],
+					  materials[idx].ambient[2]);
+		material.diffuseColor =
 			glm::vec3(materials[idx].diffuse[0], materials[idx].diffuse[1],
 					  materials[idx].diffuse[2]);
+		material.specularColor =
+			glm::vec3(materials[idx].specular[0], materials[idx].specular[1],
+					  materials[idx].specular[2]);
+		material.shininess = materials[idx].shininess;
 
 		_meshes.push_back(new Mesh(vertices, material));
 		idx++;
@@ -68,8 +75,8 @@ Model::~Model(void) {
 	for (auto mesh : _meshes) delete mesh;
 }
 
-void Model::draw(void) const {
-	for (const auto mesh : _meshes) mesh->draw();
+void Model::draw(ShaderProgram const &shaderProgram) const {
+	for (const auto mesh : _meshes) mesh->draw(shaderProgram);
 }
 
 std::vector<Mesh *> const Model::getMeshes(void) const { return _meshes; }

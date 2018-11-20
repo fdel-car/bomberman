@@ -1,9 +1,13 @@
 #pragma once
 
+#include "ShaderProgram.hpp"
 #include "header.hpp"
 
 typedef struct s_material {
-	glm::vec3 diffuse;
+	glm::vec3 ambientColor;
+	glm::vec3 diffuseColor;
+	glm::vec3 specularColor;
+	float shininess;
 } t_material;
 
 class Mesh {
@@ -12,7 +16,7 @@ class Mesh {
 	virtual ~Mesh(void);
 
 	size_t getSize(void) const;
-	void draw(void) const;
+	void draw(ShaderProgram const &shaderProgram) const;
 
 	GLuint VAO;
 	GLuint VBO;

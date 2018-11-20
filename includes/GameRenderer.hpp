@@ -61,13 +61,4 @@ class GameRenderer {
 	// Rendering vars
 	ShaderProgram *_shaderProgram;
 	std::map<std::string, Model *> _models;
-
-	// Camera
-	glm::mat4 _projection;
-	GLint _projectionLoc;
-	GLint _viewLoc;
-	GLint _modelLoc;
-	GLint _lightDirLoc;
-	GLint _viewPosLoc;
-	GLint _lightColorLoc;
 };
