@@ -2,6 +2,14 @@
 
 #include "AGame.hpp"
 
+struct Save {
+   public:
+	std::string upKey = "W";
+	std::string downKey = "S";
+};
+
+// class json;
+
 class BombermanGame : public AGame {
 	typedef void (BombermanGame::*Scene)(void);
 

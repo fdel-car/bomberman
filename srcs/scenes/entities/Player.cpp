@@ -1,4 +1,4 @@
-#include "Player.hpp"
+#include "scenes/entities/Player.hpp"
 #include "GameEngine.hpp"
 
 Player::Player(glm::vec3 position, glm::vec3 eulerAngles)

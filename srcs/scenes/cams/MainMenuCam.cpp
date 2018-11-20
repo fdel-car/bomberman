@@ -1,6 +1,5 @@
-#include "scenes/MainMenuCam.hpp"
+#include "scenes/cams/MainMenuCam.hpp"
 #include "GameEngine.hpp"
-#include "Player.hpp"
 
 extern std::string _assetsDir;
 

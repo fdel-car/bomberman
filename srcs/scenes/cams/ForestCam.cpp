@@ -1,6 +1,5 @@
-#include "scenes/ForestCam.hpp"
+#include "scenes/cams/ForestCam.hpp"
 #include "GameEngine.hpp"
-#include "Player.hpp"
 
 ForestCam::ForestCam(glm::vec3 const &pos, glm::vec3 const &eulerAngles)
 	: Camera(pos, eulerAngles) {}
