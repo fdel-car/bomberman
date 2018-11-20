@@ -1,9 +1,9 @@
 #include "scenes/entities/Player.hpp"
 #include "GameEngine.hpp"
 
-Player::Player(glm::vec3 position, glm::vec3 eulerAngles)
+Player::Player(glm::vec3 position, glm::vec3 eulerAngles, Entity *gameManager)
 	: Entity(position, eulerAngles, new Collider(Collider::Circle, 1.0f, 1.0f),
-			 "Player") {
+			 "Player", gameManager) {
 	_name = "Player";
 	_tag = "Player";
 	_speed = 8.0f;

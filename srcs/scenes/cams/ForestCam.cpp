@@ -104,11 +104,13 @@ void ForestCam::drawGUI(GUI *graphicUI) {
 		"voluptate velit esse cillum dolore eu fugiat nulla pariatur. "
 		"Excepteur sint occaecat cupidatat non proident, sunt in culpa qui "
 		"officia deserunt mollit anim id est laborum.";
-	size_t maxCharPerLine = ((WINDOW_W / 4) * 3 - (((WINDOW_H / 4) - 45) - (WINDOW_W / 4)) - 40) / 8.5;
+	size_t maxCharPerLine =
+		((WINDOW_W / 4) * 3 - (((WINDOW_H / 4) - 45) - (WINDOW_W / 4)) - 40) /
+		8.5;
 	int nbrOfLine = (((WINDOW_H / 4) - 45) / 22) - 2;
 	_displayDialogue(graphicUI, &searchWord, &lastWord, &startStrIdx,
-					 "Bomberman", "", str, false, maxCharPerLine, nbrOfLine, NK_TEXT_LEFT,
-					 "12_BOMBERMAN", "18_BOMBERMAN");
+					 "Bomberman", "", str, false, maxCharPerLine, nbrOfLine,
+					 NK_TEXT_LEFT, "12_BOMBERMAN", "18_BOMBERMAN");
 }
 
 void ForestCam::_displayDialogue(GUI *graphicUI, int *searchWord, int *lastWord,
@@ -132,4 +134,8 @@ void ForestCam::_displayDialogue(GUI *graphicUI, int *searchWord, int *lastWord,
 	graphicUI->uiDialogBox(name.c_str(), imgName, displayableStr.c_str(),
 						   isImgLeft, maxCharPerLine, nbrOfLine, textPosition,
 						   fontText, fontTitle);
+}
+
+void ForestCam::tellPosition(Entity *entity) {
+	std::cout << *entity << std::endl;
 }

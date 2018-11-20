@@ -4,7 +4,8 @@
 
 class Player : public Entity {
    public:
-	Player(glm::vec3 position, glm::vec3 eulerAngles);
+	Player(glm::vec3 position, glm::vec3 eulerAngles,
+		   Entity *gameManager = nullptr);
 	~Player(void);
 
 	virtual void update(void);

@@ -7,8 +7,10 @@ class GameEngine;
 
 class Entity {
    public:
+	static void resetSpawnedEntities(void);
+
 	Entity(glm::vec3 position, glm::vec3 eulerAngles, Collider *collider,
-		   std::string modelName);
+		   std::string modelName, Entity *sceneManager = nullptr);
 	virtual ~Entity(void);
 
 	GameEngine *getGameEngine(void) const;
@@ -18,17 +20,19 @@ class Entity {
 	const Model *getModel(void) const;
 	bool getTmpState(void) const;
 	glm::vec3 getEulerAngles(void) const;
+	size_t const &getId(void) const;
 	std::string const &getName(void) const;
+	glm::vec3 &getTargetMovement(void);
 
 	virtual void update(void);
 	virtual void initEntity(GameEngine *gameEngine);
+	virtual void tellPosition(Entity *entity);
 
 	void scale(glm::vec3 scale);
 	void rotate(glm::vec3 axis, float angle);
 	void rotateY(float angle);
-	void translate(glm::vec3 translation);
-	glm::vec3 &getTargetMovement(void);
 	void moveFromPosition(glm::vec3 &newPos);
+	void translate(glm::vec3 translation);
 
 	// Texture *texture;
 	// Animation *anim;
@@ -41,7 +45,11 @@ class Entity {
 	Entity &operator=(Entity const &rhs);
 
    protected:
+	static size_t _spawnedEntities;
+
+	size_t _id;
 	std::string _modelName;
+	Entity *_sceneManager;
 	std::string _name;
 	std::string _tag;
 

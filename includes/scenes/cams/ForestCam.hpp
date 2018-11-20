@@ -9,6 +9,7 @@ class ForestCam : public Camera {
 
 	virtual void drawGUI(GUI *graphicUI);
 	virtual void configGUI(GUI *graphicUI);
+	virtual void tellPosition(Entity *entity);
 
    private:
 	ForestCam(void);

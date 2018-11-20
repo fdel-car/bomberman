@@ -4,7 +4,8 @@
 
 class Enemy : public Entity {
    public:
-	Enemy(glm::vec3 position, glm::vec3 eulerAngles);
+	Enemy(glm::vec3 position, glm::vec3 eulerAngles,
+		  Entity *gameManager = nullptr);
 	~Enemy(void);
 
 	virtual void update(void);
