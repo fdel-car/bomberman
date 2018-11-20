@@ -1,10 +1,9 @@
 #include "GameLogic.hpp"
 #include "GameRenderer.hpp"
 
-#include "Player.hpp" // TODO: this should be done by a "game initializer" and not by the game engine!
+#include "Player.hpp"  // TODO: this should be done by a "game initializer" and not by the game engine!
 
-GameLogic::GameLogic()
-{
+GameLogic::GameLogic() {
 	canRun = false;
 	running = false;
 
@@ -21,8 +20,7 @@ GameLogic::GameLogic()
 	// std::cout << "ALLER1" << std::endl;
 	graphicLib = new GameRenderer(this);
 	// std::cout << "ALLER2" << std::endl;
-	if (!graphicLib)
-	{
+	if (!graphicLib) {
 		std::cerr << "GameRenderer couldn't load !" << std::endl;
 		return;
 	}
@@ -31,30 +29,27 @@ GameLogic::GameLogic()
 	audioManager = new AudioManager();
 
 	// std::cout << "ALLER4" << std::endl;
-	if (!audioManager)
-	{
+	if (!audioManager) {
 		std::cerr << "AudioManager couldn't load !" << std::endl;
 		return;
 	}
 	// std::cout << "ALLER5" << std::endl;
 
-	// TODO: this should be done by a "game initializer" and not by the game engine!
+	// TODO: this should be done by a "game initializer" and not by the game
+	// engine!
 	entities.push_back(new Player());
 
 	// Everything good
 	canRun = true;
 }
 
-GameLogic::GameLogic(GameLogic const &src)
-{
+GameLogic::GameLogic(GameLogic const &src) {
 	*this = src;
 	return;
 }
 
-GameLogic::~GameLogic(void)
-{
-	for (auto entity : entities)
-	{
+GameLogic::~GameLogic(void) {
+	for (auto entity : entities) {
 		delete entity;
 	}
 	delete (audioManager);
@@ -62,94 +57,61 @@ GameLogic::~GameLogic(void)
 	return;
 }
 
-int GameLogic::getSquareSize(void)
-{
-	return squareSize;
-}
+int GameLogic::getSquareSize(void) { return squareSize; }
 
-int GameLogic::getXOffset(void)
-{
-	return xOffset;
-}
+int GameLogic::getXOffset(void) { return xOffset; }
 
-int GameLogic::getYOffset(void)
-{
-	return yOffset;
-}
+int GameLogic::getYOffset(void) { return yOffset; }
 
-int GameLogic::getMapW(void)
-{
-	return mapW;
-}
+int GameLogic::getMapW(void) { return mapW; }
 
-int GameLogic::getMapH(void)
-{
-	return mapH;
-}
+int GameLogic::getMapH(void) { return mapH; }
 
-int GameLogic::getPlayerDirection(void)
-{
-	return playerDirection;
-}
+int GameLogic::getPlayerDirection(void) { return playerDirection; }
 
-bool GameLogic::getIsPlayerAlive(void)
-{
-	return isPlayerAlive;
-}
+bool GameLogic::getIsPlayerAlive(void) { return isPlayerAlive; }
 
-std::tuple<int, int> &GameLogic::getPlayerPos(void)
-{
-	return playerPos;
-}
+std::tuple<int, int> &GameLogic::getPlayerPos(void) { return playerPos; }
 
-GameLogic &GameLogic::operator=(GameLogic const &rhs)
-{
+GameLogic &GameLogic::operator=(GameLogic const &rhs) {
 	this->canRun = rhs.canRun;
 	return *this;
 }
 
-void GameLogic::printUsage(void)
-{
+void GameLogic::printUsage(void) {
 	std::cerr << "Usage: ./bomberman" << std::endl;
 }
 
-void GameLogic::changeLibraryRequest(std::string keyCode)
-{
+void GameLogic::changeLibraryRequest(std::string keyCode) {
 	int requestedIndex = std::stoi(keyCode);
 
 	std::cout << "Change index of library to: " << requestedIndex << std::endl;
-	if (requestedIndex >= 0 && requestedIndex <= 0)
-	{
+	if (requestedIndex >= 0 && requestedIndex <= 0) {
 		dlIndex = requestedIndex;
 	}
 }
 
-void GameLogic::updateGameState(void)
-{
+void GameLogic::updateGameState(void) {
 	// Get all pool events in library
 	graphicLib->getUserInput();
 
-	// Check if we want to close window, in this case no need to do further calculations
-	if (dlIndex == 0)
-	{
+	// Check if we want to close window, in this case no need to do further
+	// calculations
+	if (dlIndex == 0) {
 		running = false;
 	}
 
-	if (isPlayerAlive && running)
-	{
-		if (playerDirectionRequested > 0)
-		{
+	if (isPlayerAlive && running) {
+		if (playerDirectionRequested > 0) {
 			playerDirection = playerDirectionRequested;
 			playerDirectionRequested = -1;
 
-			if (playerCanMove())
-			{
+			if (playerCanMove()) {
 				movePlayer(playerPos, playerDirection);
 			}
 
-			//player actual moving
-			if (!isPlayerAlive)
-			{
+			// player actual moving
+			if (!isPlayerAlive) {
 				std::cerr << "Game Over! (Press 'R' to restart)" << std::endl;
 				audioManager->playDeathSound();
 			}
@@ -157,27 +119,22 @@ void GameLogic::updateGameState(void)
 	}
 }
 
-int GameLogic::renderGame(void)
-{
-	if (dlIndex < 0 || dlIndex > 1)
-	{
+int GameLogic::renderGame(void) {
+	if (dlIndex < 0 || dlIndex > 1) {
 		std::cerr << "Wrong number given.." << std::endl;
 		return EXIT_FAILURE;
 	}
 
 	// Draw window with game infos
-	if (graphicLib && !hasShownDeath)
-	{
+	if (graphicLib && !hasShownDeath) {
 		graphicLib->refreshWindow();
-		if (!isPlayerAlive)
-			hasShownDeath = true;
+		if (!isPlayerAlive) hasShownDeath = true;
 	}
 
 	return EXIT_SUCCESS;
 }
 
-void GameLogic::initPlayer(void)
-{
+void GameLogic::initPlayer(void) {
 	isPlayerAlive = true;
 	hasShownDeath = false;
 
@@ -188,8 +145,7 @@ void GameLogic::initPlayer(void)
 	playerDirectionRequested = -1;
 }
 
-bool GameLogic::playerCanMove(void)
-{
+bool GameLogic::playerCanMove(void) {
 	// Check for player
 	int headX = std::get<0>(playerPos);
 	int headY = std::get<1>(playerPos);
@@ -205,8 +161,7 @@ bool GameLogic::playerCanMove(void)
 	return true;
 }
 
-void GameLogic::movePlayer(std::tuple<int, int> &playerPos, int &playerDir)
-{
+void GameLogic::movePlayer(std::tuple<int, int> &playerPos, int &playerDir) {
 	// Advance based on direction
 	if (playerDir == UP)
 		std::get<1>(playerPos) = std::get<1>(playerPos) - 1;
@@ -218,24 +173,21 @@ void GameLogic::movePlayer(std::tuple<int, int> &playerPos, int &playerDir)
 		std::get<0>(playerPos) = std::get<0>(playerPos) + 1;
 }
 
-void GameLogic::changeDirectionTo(int &playerDirection, int &playerDirectionRequested, int newDir)
-{
+void GameLogic::changeDirectionTo(int &playerDirection,
+								  int &playerDirectionRequested, int newDir) {
 	playerDirectionRequested = newDir;
-	if ((newDir == UP || newDir == DOWN) && (playerDirection == LEFT || playerDirection == RIGHT))
-	{
+	if ((newDir == UP || newDir == DOWN) &&
+		(playerDirection == LEFT || playerDirection == RIGHT)) {
 		playerDirectionRequested = newDir;
-	}
-	else if ((newDir == LEFT || newDir == RIGHT) && (playerDirection == UP || playerDirection == DOWN))
-	{
+	} else if ((newDir == LEFT || newDir == RIGHT) &&
+			   (playerDirection == UP || playerDirection == DOWN)) {
 		playerDirectionRequested = newDir;
 	}
 }
 
-int GameLogic::run(void)
-{
+int GameLogic::run(void) {
 	// std::cout << "COUCOU1" << std::endl;
-	if (!canRun)
-		return EXIT_FAILURE;
+	if (!canRun) return EXIT_FAILURE;
 	int guiRet;
 
 	// init vars
@@ -250,8 +202,7 @@ int GameLogic::run(void)
 	audioManager->playStartSound();
 
 	// Start game loop
-	while (running)
-	{
+	while (running) {
 		// Get delta time in order to synch entities positions
 		pastFrameLength = difftime(timer, time(NULL));
 		timer = time(NULL);
@@ -261,8 +212,7 @@ int GameLogic::run(void)
 		graphicLib->getUserInput();
 
 		// TODO: Update game engine statuses (ex. when to quit)
-		if (running)
-		{
+		if (running) {
 			running = !keyboardMap["ESCAPE"];
 		}
 
@@ -277,32 +227,29 @@ int GameLogic::run(void)
 		updateGameState();
 
 		guiRet = renderGame();
-		if (guiRet != EXIT_SUCCESS || !running)
-			break;
+		if (guiRet != EXIT_SUCCESS || !running) break;
 	}
-	if (restartRequest)
-	{
+	if (restartRequest) {
 		// std::cout << "Starting new game!" << std::endl;
 		return run();
 	}
 	return guiRet;
 }
 
-void GameLogic::buttonStateChanged(std::string buttonName, bool isPressed)
-{
+void GameLogic::buttonStateChanged(std::string buttonName, bool isPressed) {
 	// std::map<std::string, bool> mapKey;
 	// mapKey[buttonName] = isPressed;
-	// std::string key = !button ? "NULL" : std::string(button); // GLFW sends NULL pointer for Escape key..
-	// std::cout << "key '" << buttonName << "' new status: " << isPressed << std::endl;
-	if (keyboardMap.find(buttonName) == keyboardMap.end())
-	{
+	// std::string key = !button ? "NULL" : std::string(button); // GLFW sends
+	// NULL pointer for Escape key.. std::cout << "key '" << buttonName << "'
+	// new status: " << isPressed << std::endl;
+	if (keyboardMap.find(buttonName) == keyboardMap.end()) {
 		std::runtime_error("Unkown Mapping for '" + buttonName + "' !");
 	}
 	keyboardMap[buttonName] = isPressed;
 }
 
-static std::map<std::string, bool> generateKeyboardMap()
-{ // static here is "internal linkage"
+static std::map<std::string, bool>
+generateKeyboardMap() {  // static here is "internal linkage"
 	std::map<std::string, bool> m = std::map<std::string, bool>();
 	m["UNKNOWN"] = false;
 	m["SPACE"] = false;

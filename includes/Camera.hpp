@@ -10,7 +10,7 @@ class Camera : public Entity {
 
 	glm::mat4 const &getViewMatrix(void) const;
 	glm::mat4 const &getProjectionMatrix(void) const;
-	std::vector<std::tuple<std::string, std::string>> & getNeededImage();
+	std::vector<std::tuple<std::string, std::string>> &getNeededImage();
 
 	virtual void drawGUI(GUI *graphicUI);
 	virtual void update(void);

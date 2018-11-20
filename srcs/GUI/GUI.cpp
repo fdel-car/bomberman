@@ -497,127 +497,239 @@ void GUI::_nkShutdown() {
 ** Style
 */
 
-void GUI::getDefaultStyle(enum theme theme, std::map<int, nk_color> * styleMap) {
+void GUI::getDefaultStyle(enum theme theme, std::map<int, nk_color> *styleMap) {
 	if (theme == THEME_WHITE) {
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_TEXT, nk_rgba(70, 70, 70, 255)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_WINDOW, nk_rgba(175, 175, 175, 255)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_HEADER, nk_rgba(175, 175, 175, 255)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_BORDER, nk_rgba(0, 0, 0, 255)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_BUTTON, nk_rgba(185, 185, 185, 255)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_BUTTON_HOVER, nk_rgba(170, 170, 170, 255)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_BUTTON_ACTIVE, nk_rgba(160, 160, 160, 255)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_TOGGLE, nk_rgba(150, 150, 150, 255)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_TOGGLE_HOVER, nk_rgba(120, 120, 120, 255)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_TOGGLE_CURSOR, nk_rgba(175, 175, 175, 255)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_SELECT, nk_rgba(190, 190, 190, 255)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_SELECT_ACTIVE, nk_rgba(175, 175, 175, 255)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_SLIDER, nk_rgba(190, 190, 190, 255)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_SLIDER_CURSOR, nk_rgba(80, 80, 80, 255)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_SLIDER_CURSOR_HOVER, nk_rgba(70, 70, 70, 255)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_SLIDER_CURSOR_ACTIVE, nk_rgba(60, 60, 60, 255)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_PROPERTY, nk_rgba(175, 175, 175, 255)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_EDIT, nk_rgba(150, 150, 150, 255)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_EDIT_CURSOR, nk_rgba(0, 0, 0, 255)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_COMBO, nk_rgba(175, 175, 175, 255)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_CHART, nk_rgba(160, 160, 160, 255)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_CHART_COLOR, nk_rgba(45, 45, 45, 255)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_CHART_COLOR_HIGHLIGHT, nk_rgba(255, 0, 0, 255)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_SCROLLBAR, nk_rgba(180, 180, 180, 255)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_SCROLLBAR_CURSOR, nk_rgba(140, 140, 140, 255)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_SCROLLBAR_CURSOR_HOVER, nk_rgba(150, 150, 150, 255)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_SCROLLBAR_CURSOR_ACTIVE, nk_rgba(160, 160, 160, 255)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_TAB_HEADER, nk_rgba(180, 180, 180, 255)));
+		styleMap->insert(
+			std::pair<int, nk_color>(NK_COLOR_TEXT, nk_rgba(70, 70, 70, 255)));
+		styleMap->insert(std::pair<int, nk_color>(NK_COLOR_WINDOW,
+												  nk_rgba(175, 175, 175, 255)));
+		styleMap->insert(std::pair<int, nk_color>(NK_COLOR_HEADER,
+												  nk_rgba(175, 175, 175, 255)));
+		styleMap->insert(
+			std::pair<int, nk_color>(NK_COLOR_BORDER, nk_rgba(0, 0, 0, 255)));
+		styleMap->insert(std::pair<int, nk_color>(NK_COLOR_BUTTON,
+												  nk_rgba(185, 185, 185, 255)));
+		styleMap->insert(std::pair<int, nk_color>(NK_COLOR_BUTTON_HOVER,
+												  nk_rgba(170, 170, 170, 255)));
+		styleMap->insert(std::pair<int, nk_color>(NK_COLOR_BUTTON_ACTIVE,
+												  nk_rgba(160, 160, 160, 255)));
+		styleMap->insert(std::pair<int, nk_color>(NK_COLOR_TOGGLE,
+												  nk_rgba(150, 150, 150, 255)));
+		styleMap->insert(std::pair<int, nk_color>(NK_COLOR_TOGGLE_HOVER,
+												  nk_rgba(120, 120, 120, 255)));
+		styleMap->insert(std::pair<int, nk_color>(NK_COLOR_TOGGLE_CURSOR,
+												  nk_rgba(175, 175, 175, 255)));
+		styleMap->insert(std::pair<int, nk_color>(NK_COLOR_SELECT,
+												  nk_rgba(190, 190, 190, 255)));
+		styleMap->insert(std::pair<int, nk_color>(NK_COLOR_SELECT_ACTIVE,
+												  nk_rgba(175, 175, 175, 255)));
+		styleMap->insert(std::pair<int, nk_color>(NK_COLOR_SLIDER,
+												  nk_rgba(190, 190, 190, 255)));
+		styleMap->insert(std::pair<int, nk_color>(NK_COLOR_SLIDER_CURSOR,
+												  nk_rgba(80, 80, 80, 255)));
+		styleMap->insert(std::pair<int, nk_color>(NK_COLOR_SLIDER_CURSOR_HOVER,
+												  nk_rgba(70, 70, 70, 255)));
+		styleMap->insert(std::pair<int, nk_color>(NK_COLOR_SLIDER_CURSOR_ACTIVE,
+												  nk_rgba(60, 60, 60, 255)));
+		styleMap->insert(std::pair<int, nk_color>(NK_COLOR_PROPERTY,
+												  nk_rgba(175, 175, 175, 255)));
+		styleMap->insert(std::pair<int, nk_color>(NK_COLOR_EDIT,
+												  nk_rgba(150, 150, 150, 255)));
+		styleMap->insert(std::pair<int, nk_color>(NK_COLOR_EDIT_CURSOR,
+												  nk_rgba(0, 0, 0, 255)));
+		styleMap->insert(std::pair<int, nk_color>(NK_COLOR_COMBO,
+												  nk_rgba(175, 175, 175, 255)));
+		styleMap->insert(std::pair<int, nk_color>(NK_COLOR_CHART,
+												  nk_rgba(160, 160, 160, 255)));
+		styleMap->insert(std::pair<int, nk_color>(NK_COLOR_CHART_COLOR,
+												  nk_rgba(45, 45, 45, 255)));
+		styleMap->insert(std::pair<int, nk_color>(
+			NK_COLOR_CHART_COLOR_HIGHLIGHT, nk_rgba(255, 0, 0, 255)));
+		styleMap->insert(std::pair<int, nk_color>(NK_COLOR_SCROLLBAR,
+												  nk_rgba(180, 180, 180, 255)));
+		styleMap->insert(std::pair<int, nk_color>(NK_COLOR_SCROLLBAR_CURSOR,
+												  nk_rgba(140, 140, 140, 255)));
+		styleMap->insert(std::pair<int, nk_color>(
+			NK_COLOR_SCROLLBAR_CURSOR_HOVER, nk_rgba(150, 150, 150, 255)));
+		styleMap->insert(std::pair<int, nk_color>(
+			NK_COLOR_SCROLLBAR_CURSOR_ACTIVE, nk_rgba(160, 160, 160, 255)));
+		styleMap->insert(std::pair<int, nk_color>(NK_COLOR_TAB_HEADER,
+												  nk_rgba(180, 180, 180, 255)));
 	} else if (theme == THEME_RED) {
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_TEXT, nk_rgba(190, 190, 190, 255)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_WINDOW, nk_rgba(30, 33, 40, 215)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_HEADER, nk_rgba(181, 45, 69, 220)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_BORDER, nk_rgba(51, 55, 67, 255)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_BUTTON, nk_rgba(181, 45, 69, 255)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_BUTTON_HOVER, nk_rgba(190, 50, 70, 255)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_BUTTON_ACTIVE, nk_rgba(195, 55, 75, 255)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_TOGGLE, nk_rgba(51, 55, 67, 255)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_TOGGLE_HOVER, nk_rgba(45, 60, 60, 255)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_TOGGLE_CURSOR, nk_rgba(181, 45, 69, 255)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_SELECT, nk_rgba(51, 55, 67, 255)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_SELECT_ACTIVE, nk_rgba(181, 45, 69, 255)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_SLIDER, nk_rgba(51, 55, 67, 255)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_SLIDER_CURSOR, nk_rgba(181, 45, 69, 255)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_SLIDER_CURSOR_HOVER, nk_rgba(186, 50, 74, 255)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_SLIDER_CURSOR_ACTIVE, nk_rgba(191, 55, 79, 255)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_PROPERTY, nk_rgba(51, 55, 67, 255)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_EDIT, nk_rgba(51, 55, 67, 225)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_EDIT_CURSOR, nk_rgba(190, 190, 190, 255)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_COMBO, nk_rgba(51, 55, 67, 255)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_CHART, nk_rgba(51, 55, 67, 255)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_CHART_COLOR, nk_rgba(170, 40, 60, 255)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_CHART_COLOR_HIGHLIGHT, nk_rgba(255, 0, 0, 255)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_SCROLLBAR, nk_rgba(30, 33, 40, 255)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_SCROLLBAR_CURSOR, nk_rgba(64, 84, 95, 255)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_SCROLLBAR_CURSOR_HOVER, nk_rgba(70, 90, 100, 255)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_SCROLLBAR_CURSOR_ACTIVE, nk_rgba(75, 95, 105, 255)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_TAB_HEADER, nk_rgba(181, 45, 69, 220)));
+		styleMap->insert(std::pair<int, nk_color>(NK_COLOR_TEXT,
+												  nk_rgba(190, 190, 190, 255)));
+		styleMap->insert(std::pair<int, nk_color>(NK_COLOR_WINDOW,
+												  nk_rgba(30, 33, 40, 215)));
+		styleMap->insert(std::pair<int, nk_color>(NK_COLOR_HEADER,
+												  nk_rgba(181, 45, 69, 220)));
+		styleMap->insert(std::pair<int, nk_color>(NK_COLOR_BORDER,
+												  nk_rgba(51, 55, 67, 255)));
+		styleMap->insert(std::pair<int, nk_color>(NK_COLOR_BUTTON,
+												  nk_rgba(181, 45, 69, 255)));
+		styleMap->insert(std::pair<int, nk_color>(NK_COLOR_BUTTON_HOVER,
+												  nk_rgba(190, 50, 70, 255)));
+		styleMap->insert(std::pair<int, nk_color>(NK_COLOR_BUTTON_ACTIVE,
+												  nk_rgba(195, 55, 75, 255)));
+		styleMap->insert(std::pair<int, nk_color>(NK_COLOR_TOGGLE,
+												  nk_rgba(51, 55, 67, 255)));
+		styleMap->insert(std::pair<int, nk_color>(NK_COLOR_TOGGLE_HOVER,
+												  nk_rgba(45, 60, 60, 255)));
+		styleMap->insert(std::pair<int, nk_color>(NK_COLOR_TOGGLE_CURSOR,
+												  nk_rgba(181, 45, 69, 255)));
+		styleMap->insert(std::pair<int, nk_color>(NK_COLOR_SELECT,
+												  nk_rgba(51, 55, 67, 255)));
+		styleMap->insert(std::pair<int, nk_color>(NK_COLOR_SELECT_ACTIVE,
+												  nk_rgba(181, 45, 69, 255)));
+		styleMap->insert(std::pair<int, nk_color>(NK_COLOR_SLIDER,
+												  nk_rgba(51, 55, 67, 255)));
+		styleMap->insert(std::pair<int, nk_color>(NK_COLOR_SLIDER_CURSOR,
+												  nk_rgba(181, 45, 69, 255)));
+		styleMap->insert(std::pair<int, nk_color>(NK_COLOR_SLIDER_CURSOR_HOVER,
+												  nk_rgba(186, 50, 74, 255)));
+		styleMap->insert(std::pair<int, nk_color>(NK_COLOR_SLIDER_CURSOR_ACTIVE,
+												  nk_rgba(191, 55, 79, 255)));
+		styleMap->insert(std::pair<int, nk_color>(NK_COLOR_PROPERTY,
+												  nk_rgba(51, 55, 67, 255)));
+		styleMap->insert(
+			std::pair<int, nk_color>(NK_COLOR_EDIT, nk_rgba(51, 55, 67, 225)));
+		styleMap->insert(std::pair<int, nk_color>(NK_COLOR_EDIT_CURSOR,
+												  nk_rgba(190, 190, 190, 255)));
+		styleMap->insert(
+			std::pair<int, nk_color>(NK_COLOR_COMBO, nk_rgba(51, 55, 67, 255)));
+		styleMap->insert(
+			std::pair<int, nk_color>(NK_COLOR_CHART, nk_rgba(51, 55, 67, 255)));
+		styleMap->insert(std::pair<int, nk_color>(NK_COLOR_CHART_COLOR,
+												  nk_rgba(170, 40, 60, 255)));
+		styleMap->insert(std::pair<int, nk_color>(
+			NK_COLOR_CHART_COLOR_HIGHLIGHT, nk_rgba(255, 0, 0, 255)));
+		styleMap->insert(std::pair<int, nk_color>(NK_COLOR_SCROLLBAR,
+												  nk_rgba(30, 33, 40, 255)));
+		styleMap->insert(std::pair<int, nk_color>(NK_COLOR_SCROLLBAR_CURSOR,
+												  nk_rgba(64, 84, 95, 255)));
+		styleMap->insert(std::pair<int, nk_color>(
+			NK_COLOR_SCROLLBAR_CURSOR_HOVER, nk_rgba(70, 90, 100, 255)));
+		styleMap->insert(std::pair<int, nk_color>(
+			NK_COLOR_SCROLLBAR_CURSOR_ACTIVE, nk_rgba(75, 95, 105, 255)));
+		styleMap->insert(std::pair<int, nk_color>(NK_COLOR_TAB_HEADER,
+												  nk_rgba(181, 45, 69, 220)));
 	} else if (theme == THEME_BLUE) {
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_TEXT, nk_rgba(20, 20, 20, 255)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_WINDOW, nk_rgba(202, 212, 214, 215)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_HEADER, nk_rgba(137, 182, 224, 220)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_BORDER, nk_rgba(140, 159, 173, 255)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_BUTTON, nk_rgba(137, 182, 224, 255)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_BUTTON_HOVER, nk_rgba(142, 187, 229, 255)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_BUTTON_ACTIVE, nk_rgba(147, 192, 234, 255)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_TOGGLE, nk_rgba(177, 210, 210, 255)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_TOGGLE_HOVER, nk_rgba(182, 215, 215, 255)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_TOGGLE_CURSOR, nk_rgba(137, 182, 224, 255)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_SELECT, nk_rgba(177, 210, 210, 255)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_SELECT_ACTIVE, nk_rgba(137, 182, 224, 255)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_SLIDER, nk_rgba(177, 210, 210, 255)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_SLIDER_CURSOR, nk_rgba(137, 182, 224, 245)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_SLIDER_CURSOR_HOVER, nk_rgba(142, 188, 229, 255)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_SLIDER_CURSOR_ACTIVE, nk_rgba(147, 193, 234, 255)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_PROPERTY, nk_rgba(210, 210, 210, 255)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_EDIT, nk_rgba(210, 210, 210, 225)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_EDIT_CURSOR, nk_rgba(20, 20, 20, 255)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_COMBO, nk_rgba(210, 210, 210, 255)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_CHART, nk_rgba(210, 210, 210, 255)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_CHART_COLOR, nk_rgba(137, 182, 224, 255)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_CHART_COLOR_HIGHLIGHT, nk_rgba(255, 0, 0, 255)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_SCROLLBAR, nk_rgba(190, 200, 200, 255)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_SCROLLBAR_CURSOR, nk_rgba(64, 84, 95, 255)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_SCROLLBAR_CURSOR_HOVER, nk_rgba(70, 90, 100, 255)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_SCROLLBAR_CURSOR_ACTIVE, nk_rgba(75, 95, 105, 255)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_TAB_HEADER, nk_rgba(156, 193, 220, 255)));
+		styleMap->insert(
+			std::pair<int, nk_color>(NK_COLOR_TEXT, nk_rgba(20, 20, 20, 255)));
+		styleMap->insert(std::pair<int, nk_color>(NK_COLOR_WINDOW,
+												  nk_rgba(202, 212, 214, 215)));
+		styleMap->insert(std::pair<int, nk_color>(NK_COLOR_HEADER,
+												  nk_rgba(137, 182, 224, 220)));
+		styleMap->insert(std::pair<int, nk_color>(NK_COLOR_BORDER,
+												  nk_rgba(140, 159, 173, 255)));
+		styleMap->insert(std::pair<int, nk_color>(NK_COLOR_BUTTON,
+												  nk_rgba(137, 182, 224, 255)));
+		styleMap->insert(std::pair<int, nk_color>(NK_COLOR_BUTTON_HOVER,
+												  nk_rgba(142, 187, 229, 255)));
+		styleMap->insert(std::pair<int, nk_color>(NK_COLOR_BUTTON_ACTIVE,
+												  nk_rgba(147, 192, 234, 255)));
+		styleMap->insert(std::pair<int, nk_color>(NK_COLOR_TOGGLE,
+												  nk_rgba(177, 210, 210, 255)));
+		styleMap->insert(std::pair<int, nk_color>(NK_COLOR_TOGGLE_HOVER,
+												  nk_rgba(182, 215, 215, 255)));
+		styleMap->insert(std::pair<int, nk_color>(NK_COLOR_TOGGLE_CURSOR,
+												  nk_rgba(137, 182, 224, 255)));
+		styleMap->insert(std::pair<int, nk_color>(NK_COLOR_SELECT,
+												  nk_rgba(177, 210, 210, 255)));
+		styleMap->insert(std::pair<int, nk_color>(NK_COLOR_SELECT_ACTIVE,
+												  nk_rgba(137, 182, 224, 255)));
+		styleMap->insert(std::pair<int, nk_color>(NK_COLOR_SLIDER,
+												  nk_rgba(177, 210, 210, 255)));
+		styleMap->insert(std::pair<int, nk_color>(NK_COLOR_SLIDER_CURSOR,
+												  nk_rgba(137, 182, 224, 245)));
+		styleMap->insert(std::pair<int, nk_color>(NK_COLOR_SLIDER_CURSOR_HOVER,
+												  nk_rgba(142, 188, 229, 255)));
+		styleMap->insert(std::pair<int, nk_color>(NK_COLOR_SLIDER_CURSOR_ACTIVE,
+												  nk_rgba(147, 193, 234, 255)));
+		styleMap->insert(std::pair<int, nk_color>(NK_COLOR_PROPERTY,
+												  nk_rgba(210, 210, 210, 255)));
+		styleMap->insert(std::pair<int, nk_color>(NK_COLOR_EDIT,
+												  nk_rgba(210, 210, 210, 225)));
+		styleMap->insert(std::pair<int, nk_color>(NK_COLOR_EDIT_CURSOR,
+												  nk_rgba(20, 20, 20, 255)));
+		styleMap->insert(std::pair<int, nk_color>(NK_COLOR_COMBO,
+												  nk_rgba(210, 210, 210, 255)));
+		styleMap->insert(std::pair<int, nk_color>(NK_COLOR_CHART,
+												  nk_rgba(210, 210, 210, 255)));
+		styleMap->insert(std::pair<int, nk_color>(NK_COLOR_CHART_COLOR,
+												  nk_rgba(137, 182, 224, 255)));
+		styleMap->insert(std::pair<int, nk_color>(
+			NK_COLOR_CHART_COLOR_HIGHLIGHT, nk_rgba(255, 0, 0, 255)));
+		styleMap->insert(std::pair<int, nk_color>(NK_COLOR_SCROLLBAR,
+												  nk_rgba(190, 200, 200, 255)));
+		styleMap->insert(std::pair<int, nk_color>(NK_COLOR_SCROLLBAR_CURSOR,
+												  nk_rgba(64, 84, 95, 255)));
+		styleMap->insert(std::pair<int, nk_color>(
+			NK_COLOR_SCROLLBAR_CURSOR_HOVER, nk_rgba(70, 90, 100, 255)));
+		styleMap->insert(std::pair<int, nk_color>(
+			NK_COLOR_SCROLLBAR_CURSOR_ACTIVE, nk_rgba(75, 95, 105, 255)));
+		styleMap->insert(std::pair<int, nk_color>(NK_COLOR_TAB_HEADER,
+												  nk_rgba(156, 193, 220, 255)));
 	} else if (theme == THEME_DARK) {
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_TEXT, nk_rgba(210, 210, 210, 255)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_WINDOW, nk_rgba(57, 67, 71, 215)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_HEADER, nk_rgba(51, 51, 56, 220)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_BORDER, nk_rgba(46, 46, 46, 255)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_BUTTON, nk_rgba(48, 83, 111, 255)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_BUTTON_HOVER, nk_rgba(58, 93, 121, 255)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_BUTTON_ACTIVE, nk_rgba(63, 98, 126, 255)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_TOGGLE, nk_rgba(50, 58, 61, 255)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_TOGGLE_HOVER, nk_rgba(45, 53, 56, 255)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_TOGGLE_CURSOR, nk_rgba(48, 83, 111, 255)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_SELECT, nk_rgba(57, 67, 61, 255)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_SELECT_ACTIVE, nk_rgba(48, 83, 111, 255)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_SLIDER, nk_rgba(50, 58, 61, 255)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_SLIDER_CURSOR, nk_rgba(48, 83, 111, 245)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_SLIDER_CURSOR_HOVER, nk_rgba(53, 88, 116, 255)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_SLIDER_CURSOR_ACTIVE, nk_rgba(58, 93, 121, 255)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_PROPERTY, nk_rgba(50, 58, 61, 255)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_EDIT, nk_rgba(50, 58, 61, 225)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_EDIT_CURSOR, nk_rgba(210, 210, 210, 255)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_COMBO, nk_rgba(50, 58, 61, 255)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_CHART, nk_rgba(50, 58, 61, 255)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_CHART_COLOR, nk_rgba(48, 83, 111, 255)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_CHART_COLOR_HIGHLIGHT, nk_rgba(255, 0, 0, 255)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_SCROLLBAR, nk_rgba(50, 58, 61, 255)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_SCROLLBAR_CURSOR, nk_rgba(48, 83, 111, 255)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_SCROLLBAR_CURSOR_HOVER, nk_rgba(53, 88, 116, 255)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_SCROLLBAR_CURSOR_ACTIVE, nk_rgba(58, 93, 121, 255)));
-		styleMap->insert( std::pair<int,nk_color>(NK_COLOR_TAB_HEADER, nk_rgba(48, 83, 111, 255)));
+		styleMap->insert(std::pair<int, nk_color>(NK_COLOR_TEXT,
+												  nk_rgba(210, 210, 210, 255)));
+		styleMap->insert(std::pair<int, nk_color>(NK_COLOR_WINDOW,
+												  nk_rgba(57, 67, 71, 215)));
+		styleMap->insert(std::pair<int, nk_color>(NK_COLOR_HEADER,
+												  nk_rgba(51, 51, 56, 220)));
+		styleMap->insert(std::pair<int, nk_color>(NK_COLOR_BORDER,
+												  nk_rgba(46, 46, 46, 255)));
+		styleMap->insert(std::pair<int, nk_color>(NK_COLOR_BUTTON,
+												  nk_rgba(48, 83, 111, 255)));
+		styleMap->insert(std::pair<int, nk_color>(NK_COLOR_BUTTON_HOVER,
+												  nk_rgba(58, 93, 121, 255)));
+		styleMap->insert(std::pair<int, nk_color>(NK_COLOR_BUTTON_ACTIVE,
+												  nk_rgba(63, 98, 126, 255)));
+		styleMap->insert(std::pair<int, nk_color>(NK_COLOR_TOGGLE,
+												  nk_rgba(50, 58, 61, 255)));
+		styleMap->insert(std::pair<int, nk_color>(NK_COLOR_TOGGLE_HOVER,
+												  nk_rgba(45, 53, 56, 255)));
+		styleMap->insert(std::pair<int, nk_color>(NK_COLOR_TOGGLE_CURSOR,
+												  nk_rgba(48, 83, 111, 255)));
+		styleMap->insert(std::pair<int, nk_color>(NK_COLOR_SELECT,
+												  nk_rgba(57, 67, 61, 255)));
+		styleMap->insert(std::pair<int, nk_color>(NK_COLOR_SELECT_ACTIVE,
+												  nk_rgba(48, 83, 111, 255)));
+		styleMap->insert(std::pair<int, nk_color>(NK_COLOR_SLIDER,
+												  nk_rgba(50, 58, 61, 255)));
+		styleMap->insert(std::pair<int, nk_color>(NK_COLOR_SLIDER_CURSOR,
+												  nk_rgba(48, 83, 111, 245)));
+		styleMap->insert(std::pair<int, nk_color>(NK_COLOR_SLIDER_CURSOR_HOVER,
+												  nk_rgba(53, 88, 116, 255)));
+		styleMap->insert(std::pair<int, nk_color>(NK_COLOR_SLIDER_CURSOR_ACTIVE,
+												  nk_rgba(58, 93, 121, 255)));
+		styleMap->insert(std::pair<int, nk_color>(NK_COLOR_PROPERTY,
+												  nk_rgba(50, 58, 61, 255)));
+		styleMap->insert(
+			std::pair<int, nk_color>(NK_COLOR_EDIT, nk_rgba(50, 58, 61, 225)));
+		styleMap->insert(std::pair<int, nk_color>(NK_COLOR_EDIT_CURSOR,
+												  nk_rgba(210, 210, 210, 255)));
+		styleMap->insert(
+			std::pair<int, nk_color>(NK_COLOR_COMBO, nk_rgba(50, 58, 61, 255)));
+		styleMap->insert(
+			std::pair<int, nk_color>(NK_COLOR_CHART, nk_rgba(50, 58, 61, 255)));
+		styleMap->insert(std::pair<int, nk_color>(NK_COLOR_CHART_COLOR,
+												  nk_rgba(48, 83, 111, 255)));
+		styleMap->insert(std::pair<int, nk_color>(
+			NK_COLOR_CHART_COLOR_HIGHLIGHT, nk_rgba(255, 0, 0, 255)));
+		styleMap->insert(std::pair<int, nk_color>(NK_COLOR_SCROLLBAR,
+												  nk_rgba(50, 58, 61, 255)));
+		styleMap->insert(std::pair<int, nk_color>(NK_COLOR_SCROLLBAR_CURSOR,
+												  nk_rgba(48, 83, 111, 255)));
+		styleMap->insert(std::pair<int, nk_color>(
+			NK_COLOR_SCROLLBAR_CURSOR_HOVER, nk_rgba(53, 88, 116, 255)));
+		styleMap->insert(std::pair<int, nk_color>(
+			NK_COLOR_SCROLLBAR_CURSOR_ACTIVE, nk_rgba(58, 93, 121, 255)));
+		styleMap->insert(std::pair<int, nk_color>(NK_COLOR_TAB_HEADER,
+												  nk_rgba(48, 83, 111, 255)));
 	}
 }
 
-void GUI::setStyle(std::map<int, nk_color> & styleMap) {
+void GUI::setStyle(std::map<int, nk_color> &styleMap) {
 	nk_color table[NK_COLOR_COUNT];
 	for (const auto &style : styleMap) {
 		table[style.first] = style.second;
@@ -625,10 +737,9 @@ void GUI::setStyle(std::map<int, nk_color> & styleMap) {
 	nk_style_from_table(&glfw.ctx, table);
 }
 
-void GUI::setAssetImage(std::vector<std::tuple<std::string,std::string>>
-vFontImage) {
-	if (!vFontImage.empty())
-		_setImages(vFontImage);
+void GUI::setAssetImage(
+	std::vector<std::tuple<std::string, std::string>> vFontImage) {
+	if (!vFontImage.empty()) _setImages(vFontImage);
 }
 
 bool GUI::uiStartBlock(const char *id, const char *title, struct nk_rect bounds,
@@ -676,12 +787,12 @@ void GUI::uiWidget(float height, std::string fontName) {
 	uiApplyDefaultFont();
 }
 
-bool GUI::uiButton(int width, int height, nk_flags flags, std::string text, std::string imgName,
-				   std::string fontName) {
+bool GUI::uiButton(int width, int height, nk_flags flags, std::string text,
+				   std::string imgName, std::string fontName) {
 	width -= 15;
 	height -= 10;
-    nk_layout_row_begin(&glfw.ctx, NK_STATIC, height, 1);
-   	nk_layout_row_push(&glfw.ctx, width);
+	nk_layout_row_begin(&glfw.ctx, NK_STATIC, height, 1);
+	nk_layout_row_push(&glfw.ctx, width);
 	uiApplyFont(fontName);
 	if (imgName.compare("") != 0 && text.compare("") != 0 &&
 		_media->myImages.find(imgName) != _media->myImages.end()) {
@@ -759,18 +870,17 @@ void GUI::uiDialogBox(const char *name, std::string imgName, const char *text,
 }
 
 bool GUI::uiHorizontalSelection(int widgetWidth, std::string leftText,
-								std::string rightText, int *choice, int maxSize) {
+								std::string rightText, int *choice,
+								int maxSize) {
 	bool tmp = false;
 	widgetWidth -= 100;
 	nk_layout_row_begin(&glfw.ctx, NK_STATIC, 30, 4);
-	if (leftText.size() != 0)
-		nk_layout_row_push(&glfw.ctx, widgetWidth / 2);
+	if (leftText.size() != 0) nk_layout_row_push(&glfw.ctx, widgetWidth / 2);
 	nk_label(&glfw.ctx, leftText.c_str(), NK_TEXT_LEFT);
 	nk_layout_row_push(&glfw.ctx, 30);
 	if (_media->myImages.find("chevronGauche") != _media->myImages.end()) {
 		if (nk_button_image(&glfw.ctx, _media->myImages.at("chevronGauche"))) {
-			if (*choice > 0)
-				*choice -= 1;
+			if (*choice > 0) *choice -= 1;
 			tmp = true;
 		}
 	}
@@ -782,8 +892,7 @@ bool GUI::uiHorizontalSelection(int widgetWidth, std::string leftText,
 	nk_layout_row_push(&glfw.ctx, 30);
 	if (_media->myImages.find("chevronDroit") != _media->myImages.end()) {
 		if (nk_button_image(&glfw.ctx, _media->myImages.at("chevronDroit"))) {
-			if (*choice < maxSize)
-				*choice += 1;
+			if (*choice < maxSize) *choice += 1;
 			tmp = true;
 		}
 	}
@@ -796,8 +905,9 @@ bool GUI::uiHover() {
 	return false;
 }
 
-void GUI::uiHorizontalEditString(int widgetWidth, std::string leftText, nk_flags flags, char* fieldBuffer,
-									int *len, int max, nk_plugin_filter filter) {
+void GUI::uiHorizontalEditString(int widgetWidth, std::string leftText,
+								 nk_flags flags, char *fieldBuffer, int *len,
+								 int max, nk_plugin_filter filter) {
 	widgetWidth -= 100;
 	nk_layout_row_begin(&glfw.ctx, NK_STATIC, 30, 2);
 	nk_layout_row_push(&glfw.ctx, widgetWidth);
@@ -807,7 +917,7 @@ void GUI::uiHorizontalEditString(int widgetWidth, std::string leftText, nk_flags
 	nk_layout_row_end(&glfw.ctx);
 }
 
-void GUI::uiEditString(nk_flags flags, char* fieldBuffer, int *len,
-											int max, nk_plugin_filter filter) {
+void GUI::uiEditString(nk_flags flags, char *fieldBuffer, int *len, int max,
+					   nk_plugin_filter filter) {
 	nk_edit_string(&glfw.ctx, flags, fieldBuffer, len, max, filter);
 }

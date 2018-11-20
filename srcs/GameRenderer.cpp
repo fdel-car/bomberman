@@ -123,10 +123,7 @@ Model *GameRenderer::getModel(std::string modelName) const {
 	return nullptr;
 }
 
-GUI *GameRenderer::getGUI() {
-	return graphicUI;
-}
-
+GUI *GameRenderer::getGUI() { return graphicUI; }
 
 int GameRenderer::getWidth(void) const { return _width; }
 
