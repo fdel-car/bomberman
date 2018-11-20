@@ -43,6 +43,52 @@ GameRenderer const *GameEngine::getGameRenderer(void) const {
 	return _gameRenderer;
 }
 
+void GameEngine::run(void) {
+	// Init vars
+	_running = true;
+	_lastFrameTs = Clock::now();
+
+	if (!initScene(_sceneIdx)) throw std::runtime_error("Cannot load scene!");
+	int newSceneIdx = -1;
+	// Start game loop
+	while (_running) {
+		// Get delta time in order to synch entities positions
+		_frameTs = Clock::now();
+		_deltaTime = (std::chrono::duration_cast<std::chrono::milliseconds>(
+						  _frameTs - _lastFrameTs)
+						  .count()) /
+					 1000.0f;
+		_lastFrameTs = _frameTs;
+
+		// Update inputs
+		_gameRenderer->getUserInput();
+
+		// TODO: Update game engine statuses (ex. when to quit)
+		if (_running) {
+			_running = !keyboardMap["ESCAPE"];
+			if (!_running) break;
+		}
+
+		// Update game camera
+		_camera->update();
+		newSceneIdx = _camera->getNewSceneIdx();
+		if (newSceneIdx != -1) break;
+		newSceneIdx = _game->getSceneIndexByName(_camera->getNewSceneName());
+		if (newSceneIdx != -1) break;
+
+		// Update game entities states
+		for (auto entity : _allEntities) {
+			entity->update();
+		}
+		moveEntities();
+		_gameRenderer->refreshWindow(_allEntities, _camera);
+	}
+	if (newSceneIdx != -1) {
+		_sceneIdx = newSceneIdx;
+		run();
+	}
+}
+
 // Entity *GameEngine::getFirstEntityWithName(std::string entityName) {
 // 	Entity *foundElem = nullptr;
 // 	for (auto entity : _allEntities) {
@@ -662,52 +708,6 @@ bool GameEngine::collisionCircleRectangle(const Collider *circleCollider,
 				  pow(circlePos.z - closestZ, 2))) -
 				circleCollider->width <=
 			EPSILON);
-}
-
-void GameEngine::run(void) {
-	// Init vars
-	_running = true;
-	_lastFrameTs = Clock::now();
-
-	if (!initScene(_sceneIdx)) throw std::runtime_error("Cannot load scene!");
-	int newSceneIdx = -1;
-	// Start game loop
-	while (_running) {
-		// Get delta time in order to synch entities positions
-		_frameTs = Clock::now();
-		_deltaTime = (std::chrono::duration_cast<std::chrono::milliseconds>(
-						  _frameTs - _lastFrameTs)
-						  .count()) /
-					 1000.0f;
-		_lastFrameTs = _frameTs;
-
-		// Update inputs
-		_gameRenderer->getUserInput();
-
-		// TODO: Update game engine statuses (ex. when to quit)
-		if (_running) {
-			_running = !keyboardMap["ESCAPE"];
-			if (!_running) break;
-		}
-
-		// Update game camera
-		_camera->update();
-		newSceneIdx = _camera->getNewSceneIdx();
-		if (newSceneIdx != -1) break;
-		newSceneIdx = _game->getSceneIndexByName(_camera->getNewSceneName());
-		if (newSceneIdx != -1) break;
-
-		// Update game entities states
-		for (auto entity : _allEntities) {
-			entity->update();
-		}
-		moveEntities();
-		_gameRenderer->refreshWindow(_allEntities, _camera);
-	}
-	if (newSceneIdx != -1) {
-		_sceneIdx = newSceneIdx;
-		run();
-	}
 }
 
 void GameEngine::buttonStateChanged(std::string buttonName, bool isPressed) {

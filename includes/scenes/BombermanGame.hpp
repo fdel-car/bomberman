@@ -24,4 +24,5 @@ class BombermanGame : public AGame {
 
 	void _mainMenu(void);
 	void _forest(void);
+	void _fab(void);
 };

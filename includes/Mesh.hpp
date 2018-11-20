@@ -2,9 +2,13 @@
 
 #include "header.hpp"
 
+typedef struct s_material {
+	glm::vec3 diffuse;
+} t_material;
+
 class Mesh {
    public:
-	Mesh(std::vector<t_vertex> const &vertices);
+	Mesh(std::vector<t_vertex> const &vertices, t_material const &material);
 	virtual ~Mesh(void);
 
 	size_t getSize(void) const;
@@ -14,6 +18,7 @@ class Mesh {
 
    private:
 	size_t _size;
+	t_material material;
 
 	Mesh(void);
 	Mesh(Mesh const &src);

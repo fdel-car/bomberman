@@ -71,8 +71,9 @@ void GameRenderer::_initShader(void) {
 		glGetUniformLocation(_shaderProgram->getID(), "lightColor");
 
 	// Set permanent values
-	glUniform3fv(_lightDirLoc, 1,
-				 glm::value_ptr(glm::normalize(glm::vec3(0.2f, -1.0f, -0.3f))));
+	glUniform3fv(
+		_lightDirLoc, 1,
+		glm::value_ptr(glm::normalize(glm::vec3(0.0f, 0.5f, 0.8f) * -1.0f)));
 	glUniform3fv(_lightColorLoc, 1,
 				 glm::value_ptr(glm::vec3(1.0f, 1.0f, 1.0f)));
 }
@@ -82,16 +83,21 @@ void GameRenderer::_initModels(void) {
 	_models["Player"] = new Model("player");
 	_models["Bomb"] = new Model("bomb");
 	_models["Enemy"] = new Model("enemy");
+	_models["Tree"] = new Model("tree");
 }
 
 void GameRenderer::getUserInput(void) { glfwPollEvents(); }
 
 void GameRenderer::refreshWindow(std::vector<Entity *> &entities,
 								 Camera *camera) {
+	// Custom OpenGL state
 	glEnable(GL_DEPTH_TEST);
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glUseProgram(_shaderProgram->getID());
+	// glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+	// Shared uniform values
 	glUniformMatrix4fv(_viewLoc, 1, GL_FALSE,
 					   glm::value_ptr(camera->getViewMatrix()));
 	glUniformMatrix4fv(_projectionLoc, 1, GL_FALSE,
@@ -104,14 +110,15 @@ void GameRenderer::refreshWindow(std::vector<Entity *> &entities,
 		for (auto mesh : entity->getModel()->getMeshes()) {
 			glBindVertexArray(mesh->VAO);
 			glBindBuffer(GL_ARRAY_BUFFER, mesh->VBO);
-			// glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 			glDrawArrays(GL_TRIANGLES, 0, mesh->getSize());
 		}
 	}
+
 	// Default OpenGL state
 	glUseProgram(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	glDisable(GL_DEPTH_TEST);
 
 	graphicUI->nkNewFrame();
