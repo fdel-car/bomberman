@@ -1,6 +1,5 @@
-#include "scenes/MainMenuCam.hpp"
+#include "scenes/cams/MainMenuCam.hpp"
 #include "GameEngine.hpp"
-#include "Player.hpp"
 
 extern std::string _assetsDir;
 
@@ -76,7 +75,6 @@ void MainMenuCam::drawGUI(GUI *graphicUI) {
 					  (WINDOW_H / 5) * 4, 14, "_BOMBERMAN", &extraSizeCredits,
 					  10, &isCreditButtonHover, "Credits"))
 			std::cout << "Hey hey, nothing happened. bad luck." << std::endl;
-		// _newSceneIdx = 1;
 
 		static int extraSizeExit = 0;
 		static bool isExitButtonHover = false;
@@ -150,8 +148,15 @@ void MainMenuCam::_settings(GUI *graphicUI) {
 										  NK_EDIT_FIELD, test5, &len5, 2,
 										  nk_filter_default);
 
-		if (graphicUI->uiButton((WINDOW_W / 2) - 11, 50, 0, "Back"))
+		int btnWidth = (WINDOW_W / 4) - 18;
+		graphicUI->uiRowMultipleElem(true, 60, 3);
+		graphicUI->uiAddElemInRow(btnWidth);
+		if (graphicUI->uiButton(btnWidth, 50, 0, "Default", "", "", false))
 			_changeSettings = false;
+		graphicUI->uiAddElemInRow(btnWidth);
+		if (graphicUI->uiButton(btnWidth, 50, 0, "Save", "", "", false))
+			_changeSettings = false;
+		graphicUI->uiRowMultipleElem(false);
 	}
 	graphicUI->uiEndBlock();
 	activeStyle = defaultStyle;
@@ -202,7 +207,7 @@ void MainMenuCam::_movingTitle(GUI *graphicUI) {
 		_slowTitle = !_slowTitle;
 		if (extraSizeTitle < 48 && titleIsGrowing)
 			extraSizeTitle++;
-		else if (extraSizeTitle > 40 && !titleIsGrowing)
+		else if (extraSizeTitle > 38 && !titleIsGrowing)
 			extraSizeTitle--;
 		else
 			titleIsGrowing = !titleIsGrowing;

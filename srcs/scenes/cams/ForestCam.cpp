@@ -1,6 +1,5 @@
-#include "scenes/ForestCam.hpp"
+#include "scenes/cams/ForestCam.hpp"
 #include "GameEngine.hpp"
-#include "Player.hpp"
 
 ForestCam::ForestCam(glm::vec3 const &pos, glm::vec3 const &eulerAngles)
 	: Camera(pos, eulerAngles) {}
@@ -127,8 +126,7 @@ void ForestCam::_displayDialogue(GUI *graphicUI, int *searchWord, int *lastWord,
 		if (*lastWord - *startStrIdx >= (int)maxCharPerLine * (nbrOfLine - 1))
 			*startStrIdx += maxCharPerLine;
 	}
-	// _slowDialogue = !_slowDialogue;
-	_slowDialogue = true;
+	_slowDialogue = !_slowDialogue;
 	std::string displayableStr =
 		str.substr(*startStrIdx, *lastWord - *startStrIdx);
 	graphicUI->uiDialogBox(name.c_str(), imgName, displayableStr.c_str(),

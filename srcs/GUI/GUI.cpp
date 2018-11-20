@@ -788,11 +788,13 @@ void GUI::uiWidget(float height, std::string fontName) {
 }
 
 bool GUI::uiButton(int width, int height, nk_flags flags, std::string text,
-				   std::string imgName, std::string fontName) {
+				   std::string imgName, std::string fontName, bool isAlone) {
 	width -= 15;
 	height -= 10;
-	nk_layout_row_begin(&glfw.ctx, NK_STATIC, height, 1);
-	nk_layout_row_push(&glfw.ctx, width);
+	if (isAlone) {
+		nk_layout_row_begin(&glfw.ctx, NK_STATIC, height, 1);
+		nk_layout_row_push(&glfw.ctx, width);
+	}
 	uiApplyFont(fontName);
 	if (imgName.compare("") != 0 && text.compare("") != 0 &&
 		_media->myImages.find(imgName) != _media->myImages.end()) {
@@ -806,7 +808,7 @@ bool GUI::uiButton(int width, int height, nk_flags flags, std::string text,
 	} else {
 		if (nk_button_label(&glfw.ctx, text.c_str())) return true;
 	}
-	nk_layout_row_end(&glfw.ctx);
+	if (isAlone) nk_layout_row_end(&glfw.ctx);
 	uiApplyDefaultFont();
 	return false;
 }
@@ -920,4 +922,17 @@ void GUI::uiHorizontalEditString(int widgetWidth, std::string leftText,
 void GUI::uiEditString(nk_flags flags, char *fieldBuffer, int *len, int max,
 					   nk_plugin_filter filter) {
 	nk_edit_string(&glfw.ctx, flags, fieldBuffer, len, max, filter);
+}
+
+void GUI::uiRowMultipleElem(bool isSart, int height, int nbrOfElem,
+							nk_layout_format flags) {
+	if (isSart) {
+		nk_layout_row_begin(&glfw.ctx, flags, height, nbrOfElem);
+		return ;
+	}
+	nk_layout_row_end(&glfw.ctx);
+}
+
+void GUI::uiAddElemInRow(int width) {
+	nk_layout_row_push(&glfw.ctx, width);
 }

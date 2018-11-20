@@ -1,6 +1,5 @@
 #include "GameEngine.hpp"
 #include "GameRenderer.hpp"
-#include "Player.hpp"
 
 GameEngine::LineInfo::LineInfo(void)
 	: m(0.0f),

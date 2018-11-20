@@ -21,11 +21,12 @@ set(SRCS
   srcs/Camera.cpp
   srcs/Model.cpp
   srcs/Mesh.cpp
-  srcs/Player.cpp
   srcs/GUI/GUI.cpp
+
   srcs/scenes/BombermanGame.cpp
-  srcs/scenes/MainMenuCam.cpp
-  srcs/scenes/ForestCam.cpp
+  srcs/scenes/cams/MainMenuCam.cpp
+  srcs/scenes/cams/ForestCam.cpp
+  srcs/scenes/entities/Player.cpp
 )
 
 include_directories(includes)
@@ -37,6 +38,7 @@ set(HEADERS
   includes/glm/glm.hpp
   includes/glm/gtc/matrix_transform.hpp
   includes/glm/gtc/type_ptr.hpp
+  includes/json/json.hpp
   includes/header.hpp
   includes/Entity.hpp
   includes/AudioManager.hpp
@@ -48,11 +50,12 @@ set(HEADERS
   includes/Camera.hpp
   includes/Model.hpp
   includes/Mesh.hpp
-  includes/Player.hpp
   includes/GUI/GUI.hpp
+
   includes/scenes/BombermanGame.hpp
-  includes/scenes/MainMenuCam.hpp
-  includes/scenes/ForestCam.hpp
+  includes/scenes/cams/MainMenuCam.hpp
+  includes/scenes/cams/ForestCam.hpp
+  includes/scenes/entities/Player.hpp
 )
 
 add_executable(super_bomberman ${SRCS} ${HEADERS})
