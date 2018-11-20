@@ -3,7 +3,7 @@
 
 Enemy::Enemy(glm::vec3 position, glm::vec3 eulerAngles)
 	: Entity(position, eulerAngles,
-			 new Collider(Collider::Circle, 0.75f, 0.75f), "Enemy") {
+			 new Collider(Collider::Circle, 0.48f, 0.48f), "Enemy") {
 	_name = "Enemy";
 	_tag = "Enemy";
 	_speed = 8.0f;

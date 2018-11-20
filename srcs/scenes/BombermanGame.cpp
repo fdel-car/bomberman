@@ -1,5 +1,4 @@
 #include "scenes/BombermanGame.hpp"
-#include "scenes/cams/FabCam.hpp"
 #include "scenes/cams/ForestCam.hpp"
 #include "scenes/cams/MainMenuCam.hpp"
 #include "scenes/entities/Enemy.hpp"
@@ -107,40 +106,37 @@ void BombermanGame::_mainMenu(void) {
 }
 
 void BombermanGame::_forest(void) {
-	_camera =
-		new ForestCam(glm::vec3(0.0, 10.0, 3.0), glm::vec3(-75.0, 0.0, 0.0));
+	_camera = new ForestCam(glm::vec3(0.0f, 28.0f, 16.8f),
+							glm::vec3(-60.0f, 0.0f, 0.0f));
 	_entities.push_back(
-		new Player(glm::vec3(2.0, 0.0, -2.0), glm::vec3(0.0, 0.0, 0.0f)));
+		new Player(glm::vec3(-7.0f, 0.5f, -7.0f), glm::vec3(0.0f, 0.0f, 0.0f)));
 	_entities.push_back(
-		new Entity(glm::vec3(-2.0, 0.0, 0.0), glm::vec3(0.0, 0.0, 0.0f),
-				   new Collider(Collider::Rectangle, 1.0f, 1.0f), "Cube"));
-	_entities.push_back(
-		new Enemy(glm::vec3(-5.0, 0.0, 0.0), glm::vec3(0.0, 0.0, 0.0f)));
+		new Enemy(glm::vec3(7.0f, 0.5f, 7.0f), glm::vec3(0.0f, 0.0f, 0.0f)));
+	_entities.push_back(new Entity(
+		glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 0.0, 0.0f), nullptr, "Floor"));
+	_entities.back()->scale(glm::vec3(0.3f, 0.3f, 0.3f));
+	for (int x = -8; x <= 8; x++) {
+		for (int z = -8; z <= 8; z++) {
+			if ((x % 2 == 0 && z % 2 == 0) || abs(x) == 8 || abs(z) == 8) {
+				_entities.push_back(new Entity(
+					glm::vec3(x, 0.5f, z), glm::vec3(0.0, 0.0, 0.0f),
+					new Collider(Collider::Rectangle, 0.5f, 0.5f), "Box"));
+				_entities.back()->scale(glm::vec3(1.0f, 0.75f, 1.0f));
+			}
+		}
+	}
 
-	// _camera = new ForestCam(glm::vec3(0.0, 0.0, 5.0), glm::vec3(0.0, 0.0,
-	// 0.0)); _entities.push_back( new Player(glm::vec3(2.0, 0.0, -2.0),
-	// glm::vec3(0.0, 0.0, 0.0f))); _entities.push_back(new
-	// Entity(glm::vec3(0.0, 0.0, 0.0),
-	//    glm::vec3(0.0, 0.0, 0.0f), nullptr, "Tree"));
-	// _entities.push_back(new Entity(glm::vec3(2.0, 0.0, 3.0),
-	// 							   glm::vec3(0.0, 0.0, 0.0f), nullptr, "Tree"));
-}
-
-void BombermanGame::_fab(void) {
-	_camera = new FabCam(glm::vec3(0.0, 0.0, 5.0), glm::vec3(0.0, 0.0, 0.0));
-	// _entities.push_back(
-	// 	new Player(glm::vec3(2.0, 0.0, -2.0), glm::vec3(0.0, 0.0, 0.0f)));
-	_entities.push_back(new Entity(glm::vec3(0.0, 0.0, 0.0),
+	// Few trees
+	_entities.push_back(new Entity(glm::vec3(-12.0, 0.0, -4.0),
 								   glm::vec3(0.0, 0.0, 0.0f), nullptr, "Tree"));
-	// _entities.push_back(new Entity(glm::vec3(2.0, 0.0, 3.0),
-	// 							   glm::vec3(0.0, 0.0, 0.0f), nullptr, "Tree"));
+	_entities.push_back(new Entity(glm::vec3(11.0, 0.0, 2.0),
+								   glm::vec3(0.0, 0.0, 0.0f), nullptr, "Tree"));
+	_entities.back()->rotateY(95.0f);
 }
 
 void BombermanGame::_initScenes(void) {
 	_scenesNames.push_back("MainMenu");
 	_scenesMap[_scenesNames.back()] = &BombermanGame::_mainMenu;
-	_scenesNames.push_back("Fab");
-	_scenesMap[_scenesNames.back()] = &BombermanGame::_fab;
 	_scenesNames.push_back("Forest");
 	_scenesMap[_scenesNames.back()] = &BombermanGame::_forest;
 }

@@ -410,18 +410,18 @@ size_t GameEngine::checkCollision(Entity *entity, glm::vec3 &futureMovement,
 
 	size_t idxToTest = 0;
 	for (auto entityToTest : collidedEntities) {
-		// TODO: skip collision with object that cannot collide
-		// with
-
-		// 2) Check if final position collides with smth
-		// 3) Check if any other obj collides with lineA/lineB
-		if (doCollide(entity->getCollider(), futurePos, entityToTest) ||
-			(lineA.isVertical &&
-			 doCollide(&moveCollider, centerPos, entityToTest)) ||
-			(!lineA.isVertical &&
-			 hasCollisionCourse(lineA, lineB, entityToTest))) {
-			// TODO: handle if is physical collision or trigger
-			break;
+		// TODO: skip collision with object that cannot collide with ?
+		if (entityToTest->getCollider() != nullptr) {
+			// 2) Check if final position collides with smth
+			// 3) Check if any other obj collides with lineA/lineB
+			if (doCollide(entity->getCollider(), futurePos, entityToTest) ||
+				(lineA.isVertical &&
+				 doCollide(&moveCollider, centerPos, entityToTest)) ||
+				(!lineA.isVertical &&
+				 hasCollisionCourse(lineA, lineB, entityToTest))) {
+				// TODO: handle if is physical collision or trigger
+				break;
+			}
 		}
 		idxToTest++;
 	}

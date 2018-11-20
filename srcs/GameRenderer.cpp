@@ -62,16 +62,17 @@ void GameRenderer::_initShader(void) {
 
 	// Set permanent values
 	_shaderProgram->setVec3("lightDir",
-							glm::normalize(glm::vec3(0.0f, 0.0f, -1.0f)));
+							glm::normalize(glm::vec3(0.0f, -0.6f, -0.5f)));
 	_shaderProgram->setVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
 }
 
 void GameRenderer::_initModels(void) {
-	_models["Cube"] = new Model("cube");
+	_models["Box"] = new Model("box");
 	_models["Player"] = new Model("player");
 	_models["Bomb"] = new Model("bomb");
 	_models["Enemy"] = new Model("enemy");
 	_models["Tree"] = new Model("tree");
+	_models["Floor"] = new Model("floor");
 }
 
 void GameRenderer::getUserInput(void) { glfwPollEvents(); }
@@ -85,9 +86,8 @@ void GameRenderer::refreshWindow(std::vector<Entity *> &entities,
 	glUseProgram(_shaderProgram->getID());
 	// glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-	// _shaderProgram->setMat4("view", camera->getViewMatrix());
-	_shaderProgram->setMat4(
-		"PV", camera->getProjectionMatrix() * camera->getViewMatrix());
+	_shaderProgram->setMat4("V", camera->getViewMatrix());
+	_shaderProgram->setMat4("P", camera->getProjectionMatrix());
 	_shaderProgram->setVec3("cameraPos", camera->getPosition());
 	for (auto entity : entities) {
 		_shaderProgram->setMat4("M", entity->getModelMatrix());

@@ -22,10 +22,8 @@ set(SRCS
   srcs/Model.cpp
   srcs/Mesh.cpp
   srcs/GUI/GUI.cpp
-
   srcs/scenes/BombermanGame.cpp
   srcs/scenes/cams/MainMenuCam.cpp
-  srcs/scenes/cams/FabCam.cpp
   srcs/scenes/cams/ForestCam.cpp
   srcs/scenes/entities/Player.cpp
   srcs/scenes/entities/Enemy.cpp
@@ -53,10 +51,8 @@ set(HEADERS
   includes/Model.hpp
   includes/Mesh.hpp
   includes/GUI/GUI.hpp
-
   includes/scenes/BombermanGame.hpp
   includes/scenes/cams/MainMenuCam.hpp
-  includes/scenes/cams/FabCam.hpp
   includes/scenes/cams/ForestCam.hpp
   includes/scenes/entities/Player.hpp
   includes/scenes/entities/Enemy.hpp

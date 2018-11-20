@@ -35,11 +35,8 @@ void Camera::initEntity(GameEngine *gameEngine) {
 	Entity::initEntity(gameEngine);
 	_aspectRatio = (float)gameEngine->getGameRenderer()->getWidth() /
 				   (float)gameEngine->getGameRenderer()->getHeight();
-	// _projection =
-	// glm::perspective(glm::radians(45.0f), _aspectRatio, 0.1f, 100.0f);
-	float length = glm::length(glm::vec3() - getPosition());
-	_projection = glm::ortho(-_aspectRatio * length, _aspectRatio * length,
-							 -length, length, 0.1f, 100.0f);
+	_projection =
+		glm::perspective(glm::radians(30.0f), _aspectRatio, 0.1f, 100.0f);
 }
 
 void Camera::configGUI(GUI *graphicUI) { (void)graphicUI; }
@@ -56,9 +53,4 @@ void Camera::update(void) {
 	}
 }
 
-void Camera::_updateData(void) {
-	_view = glm::inverse(getModelMatrix());
-	float length = glm::length(glm::vec3() - getPosition());
-	_projection = glm::ortho(-_aspectRatio * length, _aspectRatio * length,
-							 -length, length, 0.1f, 100.0f);
-}
+void Camera::_updateData(void) { _view = glm::inverse(getModelMatrix()); }

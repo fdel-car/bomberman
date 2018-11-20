@@ -1,8 +1,8 @@
-# Blender MTL File: ''
+# Blender MTL File: 'None'
 # Material Count: 2
 
 newmtl Fuze
-Ns 96.078431
+Ns 94.117647
 Ka 1.000000 1.000000 1.000000
 Kd 0.750000 0.750000 0.750000
 Ks 0.500000 0.500000 0.500000
@@ -10,13 +10,12 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
 illum 2
-map_Bump -bm 0.050000 Normal.png
-map_Kd  Albedo.png
-map_Ks  Metal.png
-map_Ns  Rough.png
+map_Kd Albedo.png
+map_Bump Normal.png
+map_Ks Metal.png
 
 newmtl Metal
-Ns 96.078431
+Ns 94.117647
 Ka 1.000000 1.000000 1.000000
 Kd 0.240000 0.240000 0.240000
 Ks 0.500000 0.500000 0.500000
@@ -24,7 +23,6 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
 illum 2
-map_Bump -bm 0.050000 Normal.png
-map_Kd  Albedo.png
-map_Ks  Metal.png
-map_Ns  Rough.png
+map_Kd Albedo.png
+map_Bump Normal.png
+map_Ks Metal.png

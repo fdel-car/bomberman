@@ -2,8 +2,8 @@
 #include "GameEngine.hpp"
 
 Player::Player(glm::vec3 position, glm::vec3 eulerAngles)
-	: Entity(position, eulerAngles, new Collider(Collider::Circle, 1.0f, 1.0f),
-			 "Player") {
+	: Entity(position, eulerAngles,
+			 new Collider(Collider::Circle, 0.48f, 0.48f), "Player") {
 	_name = "Player";
 	_tag = "Player";
 	_speed = 8.0f;
