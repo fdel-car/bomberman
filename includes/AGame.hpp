@@ -20,5 +20,5 @@ class AGame {
 	size_t _sceneIdx;
 	std::vector<Entity *> _entities;
 	Camera *_camera;
-	std::vector<std::tuple<float, std::string, std::string>> vNeededFont;
+	std::vector<std::tuple<float, std::string, std::string>> _neededFonts;
 };

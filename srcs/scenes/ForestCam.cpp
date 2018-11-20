@@ -1,13 +1,13 @@
-#include "scenes/Level01Cam.hpp"
+#include "scenes/ForestCam.hpp"
 #include "GameEngine.hpp"
 #include "Player.hpp"
 
-Level01Cam::Level01Cam(glm::vec3 const &pos, glm::vec3 const &eulerAngles)
+ForestCam::ForestCam(glm::vec3 const &pos, glm::vec3 const &eulerAngles)
 	: Camera(pos, eulerAngles) {}
 
-Level01Cam::~Level01Cam(void) {}
+ForestCam::~ForestCam(void) {}
 
-void Level01Cam::configGUI(GUI *graphicUI) {
+void ForestCam::configGUI(GUI *graphicUI) {
 	graphicUI->setAssetImage(vNeededImage);
 
 	graphicUI->getDefaultStyle(THEME_RED, &defaultStyle);
@@ -17,7 +17,7 @@ void Level01Cam::configGUI(GUI *graphicUI) {
 	_slowDialogue = false;
 }
 
-void Level01Cam::drawGUI(GUI *graphicUI) {
+void ForestCam::drawGUI(GUI *graphicUI) {
 	if (_pauseMenu || _gameEngine->isKeyPressed("E")) {
 		_pauseMenu = true;
 		if (graphicUI->uiStartBlock(
@@ -26,15 +26,15 @@ void Level01Cam::drawGUI(GUI *graphicUI) {
 						WINDOW_W / 4, WINDOW_H / 3),
 				NK_WINDOW_NO_SCROLLBAR | NK_WINDOW_BORDER | NK_WINDOW_TITLE)) {
 			if (graphicUI->uiButton(WINDOW_W / 4, (WINDOW_H / 9) - 8, 0,
-									"Resume", "", "14_BOMBERMA")) {
+									"Resume", "", "14_BOMBERMAN")) {
 				_pauseMenu = false;
 			}
 			if (graphicUI->uiButton(WINDOW_W / 4, (WINDOW_H / 9) - 8, 0,
-									"Restart level", "", "14_BOMBERMA")) {
+									"Restart level", "", "14_BOMBERMAN")) {
 				_newSceneIdx = 1;
 			}
 			if (graphicUI->uiButton(WINDOW_W / 4, (WINDOW_H / 9) - 8, 0,
-									"Quit level", "", "14_BOMBERMA")) {
+									"Quit level", "", "14_BOMBERMAN")) {
 				_newSceneIdx = 0;
 			}
 			if (graphicUI->uiButton(0, 0, 0, "", "", "")) {
@@ -62,16 +62,15 @@ void Level01Cam::drawGUI(GUI *graphicUI) {
 		"officia deserunt mollit anim id est laborum.";
 	_displayDialogue(graphicUI, &searchWord, &lastWord, &startStrIdx,
 					 "Bomberman", "", str, false, 130, 3, NK_TEXT_LEFT,
-					 "12_BOMBERMA", "18_BOMBERMA");
+					 "12_BOMBERMAN", "18_BOMBERMAN");
 }
 
-void Level01Cam::_displayDialogue(GUI *graphicUI, int *searchWord,
-								  int *lastWord, int *startStrIdx,
-								  std::string name, std::string imgName,
-								  std::string str, bool isImgLeft,
-								  size_t maxCharPerLine, int nbrOfLine,
-								  nk_flags textPosition, std::string fontText,
-								  std::string fontTitle) {
+void ForestCam::_displayDialogue(GUI *graphicUI, int *searchWord, int *lastWord,
+								 int *startStrIdx, std::string name,
+								 std::string imgName, std::string str,
+								 bool isImgLeft, size_t maxCharPerLine,
+								 int nbrOfLine, nk_flags textPosition,
+								 std::string fontText, std::string fontTitle) {
 	if (_slowDialogue) {
 		if (*searchWord < (int)str.size()) {
 			*searchWord += 1;

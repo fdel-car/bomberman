@@ -23,6 +23,7 @@ class Entity {
 	virtual void update(void);
 	virtual void initEntity(GameEngine *gameEngine);
 
+	void scale(glm::vec3 scale);
 	void rotate(glm::vec3 axis, float angle);
 	void rotateY(float angle);
 	void translate(glm::vec3 translation);

@@ -80,6 +80,7 @@ void GameRenderer::_initShader(void) {
 void GameRenderer::_initModels(void) {
 	_models["Cube"] = new Model("cube");
 	_models["Player"] = new Model("player");
+	_models["Bomb"] = new Model("bomb");
 }
 
 void GameRenderer::getUserInput(void) { glfwPollEvents(); }
@@ -99,10 +100,12 @@ void GameRenderer::refreshWindow(std::vector<Entity *> &entities,
 	for (auto entity : entities) {
 		glUniformMatrix4fv(_modelLoc, 1, GL_FALSE,
 						   glm::value_ptr(entity->getModelMatrix()));
-		glBindVertexArray((entity->getModel())->getVAO());
-		glBindBuffer(GL_ARRAY_BUFFER, (entity->getModel())->getVBO());
-		// glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-		glDrawArrays(GL_TRIANGLES, 0, entity->getModel()->getSize());
+		for (auto mesh : entity->getModel()->getMeshes()) {
+			glBindVertexArray(mesh->VAO);
+			glBindBuffer(GL_ARRAY_BUFFER, mesh->VBO);
+			// glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+			glDrawArrays(GL_TRIANGLES, 0, mesh->getSize());
+		}
 	}
 	// Default OpenGL state
 	glUseProgram(0);

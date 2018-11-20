@@ -18,7 +18,7 @@ MainMenuCam::~MainMenuCam(void) {}
 
 void MainMenuCam::configGUI(GUI *graphicUI) {
 	graphicUI->setAssetImage(vNeededImage);
-	graphicUI->uiSetDefaultFont("18_BOMBERMA");
+	graphicUI->uiSetDefaultFont("18_BOMBERMAN");
 	graphicUI->getDefaultStyle(THEME_RED, &defaultStyle);
 	defaultStyle[NK_COLOR_WINDOW] = nk_rgba(57, 67, 71, 0);
 	graphicUI->setStyle(defaultStyle);
@@ -58,8 +58,8 @@ void MainMenuCam::drawGUI(GUI *graphicUI) {
 		static int extraSizePlay = 0;
 		static bool isPlayButtonHover = false;
 		if (_btnHover(graphicUI, (WINDOW_W / 5), 60, (WINDOW_W / 5) * 2,
-					  (WINDOW_H / 5) * 2.7, 20, "_BOMBERMA", &extraSizePlay, 10,
-					  &isPlayButtonHover, "Play"))
+					  (WINDOW_H / 5) * 2.7, 20, "_BOMBERMAN", &extraSizePlay,
+					  10, &isPlayButtonHover, "Play"))
 			std::cout << "Play" << std::endl;
 		activeStyle = defaultStyle;
 		graphicUI->setStyle(activeStyle);
@@ -68,14 +68,14 @@ void MainMenuCam::drawGUI(GUI *graphicUI) {
 		static bool isSettingButtonHover = false;
 		if (_btnHover(graphicUI, (WINDOW_W / 5), 60,
 					  (WINDOW_W / 5) - ((WINDOW_W / 5) / 2), (WINDOW_H / 5) * 4,
-					  14, "_BOMBERMA", &extraSizeSetting, 10,
+					  14, "_BOMBERMAN", &extraSizeSetting, 10,
 					  &isSettingButtonHover, "Settings", "settings"))
 			_changeSettings = true;
 
 		static int extraSizeCredits = 0;
 		static bool isCreditButtonHover = false;
 		if (_btnHover(graphicUI, (WINDOW_W / 5), 60, (WINDOW_W / 5) * 2,
-					  (WINDOW_H / 5) * 4, 14, "_BOMBERMA", &extraSizeCredits,
+					  (WINDOW_H / 5) * 4, 14, "_BOMBERMAN", &extraSizeCredits,
 					  10, &isCreditButtonHover, "Credits"))
 			_newSceneIdx = 1;
 
@@ -83,7 +83,7 @@ void MainMenuCam::drawGUI(GUI *graphicUI) {
 		static bool isExitButtonHover = false;
 		if (_btnHover(graphicUI, (WINDOW_W / 5), 60,
 					  (WINDOW_W / 5) * 4 - ((WINDOW_W / 5) / 2),
-					  (WINDOW_H / 5) * 4, 14, "_BOMBERMA", &extraSizeExit, 10,
+					  (WINDOW_H / 5) * 4, 14, "_BOMBERMAN", &extraSizeExit, 10,
 					  &isExitButtonHover, "Exit"))
 			std::cout << "Exits" << std::endl;
 	} else
@@ -97,7 +97,7 @@ void MainMenuCam::_settings(GUI *graphicUI) {
 								nk_rect((WINDOW_W / 4), (WINDOW_H / 3) / 2,
 										WINDOW_W / 2, (WINDOW_H / 3) * 2),
 								NK_WINDOW_BORDER | NK_WINDOW_TITLE)) {
-		graphicUI->uiHeader("Options", NK_TEXT_CENTERED, 30, "24_BOMBERMA");
+		graphicUI->uiHeader("Options", NK_TEXT_CENTERED, 30, "24_BOMBERMAN");
 		if (graphicUI->uiHorizontalSelection(WINDOW_W / 2, "Test1",
 											 _lvlChoice[_myChoice], &_myChoice,
 											 _lvlChoice.size() - 1)) {
@@ -119,7 +119,7 @@ void MainMenuCam::_settings(GUI *graphicUI) {
 											 _lvlChoice.size() - 1)) {
 		}
 
-		graphicUI->uiHeader("Controls", NK_TEXT_CENTERED, 30, "24_BOMBERMA");
+		graphicUI->uiHeader("Controls", NK_TEXT_CENTERED, 30, "24_BOMBERMAN");
 		static int len1 = 0;
 		static char test1[1];
 		graphicUI->uiHorizontalEditString(WINDOW_W / 2, "button1",
@@ -213,7 +213,7 @@ void MainMenuCam::_movingTitle(GUI *graphicUI) {
 								nk_rect(0, (WINDOW_H / 5) * 1, WINDOW_W, 50),
 								NK_WINDOW_NO_SCROLLBAR)) {
 		graphicUI->uiHeader("Super Bomberman", NK_TEXT_CENTERED, 48,
-							std::to_string(extraSizeTitle) + "_BOMBERMA");
+							std::to_string(extraSizeTitle) + "_BOMBERMAN");
 	}
 	graphicUI->uiEndBlock();
 }

@@ -4,7 +4,7 @@
 
 extern std::string _assetsDir;
 
-Model::Model(std::string const &objDirName) : _size(0) {
+Model::Model(std::string const &objDirName) {
 	tinyobj::attrib_t attrib;
 	std::vector<tinyobj::shape_t> shapes;
 	std::vector<tinyobj::material_t> materials;
@@ -23,66 +23,45 @@ Model::Model(std::string const &objDirName) : _size(0) {
 	if (!err.empty())
 		std::cerr << "\033[0;31m:ERROR:\033[0m " << err << std::endl;
 
-	std::vector<float> vertices = std::vector<float>();
-	std::vector<unsigned int> indices = std::vector<unsigned int>();
-
-	// std::cout << shapes.size() << std::endl;
-	for (size_t s = 0; s < shapes.size(); s++) {
+	std::cout << objDirName << ".obj" << std::endl;
+	std::cout << "Shape count: " << shapes.size() << std::endl;
+	std::cout << "material count: " << materials.size() << std::endl;
+	std::vector<std::vector<t_vertex>> meshesVertices(materials.size());
+	for (size_t s = 0; s < 1 /* shapes.size() */; s++) {
 		size_t index_offset = 0;
 		for (size_t f = 0; f < shapes[s].mesh.num_face_vertices.size(); f++) {
 			size_t fv =
 				shapes[s].mesh.num_face_vertices[f];  // Will always be 3 since
 													  // we triangulate the .obj
+			// Per-face material ID
+			int materialID = shapes[s].mesh.material_ids[f];
+			t_vertex vertex;
+
 			for (size_t v = 0; v < fv; v++) {
 				tinyobj::index_t idx = shapes[s].mesh.indices[index_offset + v];
 
-				// Push positions inside vertices vector
-				vertices.push_back(attrib.vertices[3 * idx.vertex_index + 0]);
-				vertices.push_back(attrib.vertices[3 * idx.vertex_index + 1]);
-				vertices.push_back(attrib.vertices[3 * idx.vertex_index + 2]);
+				vertex.position.x = attrib.vertices[3 * idx.vertex_index + 0];
+				vertex.position.y = attrib.vertices[3 * idx.vertex_index + 1];
+				vertex.position.z = attrib.vertices[3 * idx.vertex_index + 2];
 
-				// Push normals inside vertices vector
-				vertices.push_back(attrib.normals[3 * idx.normal_index + 0]);
-				vertices.push_back(attrib.normals[3 * idx.normal_index + 1]);
-				vertices.push_back(attrib.normals[3 * idx.normal_index + 2]);
+				vertex.normal.x = attrib.normals[3 * idx.normal_index + 0];
+				vertex.normal.y = attrib.normals[3 * idx.normal_index + 1];
+				vertex.normal.z = attrib.normals[3 * idx.normal_index + 2];
 
-				_size++;
+				meshesVertices[materialID].push_back(vertex);
 			}
 			index_offset += fv;
-
-			// Per-face material
-			// std::cout << shapes[s].mesh.material_ids[f] << std::endl;
 		}
 		// std::cout << s << std::endl;
 	}
-	glGenVertexArrays(1, &_VAO);
-	glGenBuffers(1, &_VBO);
 
-	glBindVertexArray(_VAO);
-
-	glBindBuffer(GL_ARRAY_BUFFER, _VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vertices.size(),
-				 &vertices.front(), GL_STATIC_DRAW);
-
-	// Positions
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float),
-						  (void *)0);
-	glEnableVertexAttribArray(0);
-
-	// Normals
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float),
-						  (void *)(3 * sizeof(float)));
-	glEnableVertexAttribArray(1);
-
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindVertexArray(0);
+	for (auto vertices : meshesVertices) {
+		_meshes.push_back(new Mesh(vertices));
+	}
 }
 
 Model::~Model(void) {
-	glDeleteVertexArrays(1, &_VAO);
-	glDeleteBuffers(1, &_VBO);
+	for (auto mesh : _meshes) delete mesh;
 }
 
-GLuint Model::getVAO(void) const { return _VAO; }
-GLuint Model::getVBO(void) const { return _VBO; }
-size_t Model::getSize(void) const { return _size; }
+std::vector<Mesh *> const Model::getMeshes(void) const { return _meshes; }

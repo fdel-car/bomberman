@@ -2,18 +2,18 @@
 
 #include "Camera.hpp"
 
-class Level01Cam : public Camera {
+class ForestCam : public Camera {
    public:
-	Level01Cam(glm::vec3 const &pos, glm::vec3 const &eulerAngles);
-	virtual ~Level01Cam(void);
+	ForestCam(glm::vec3 const &pos, glm::vec3 const &eulerAngles);
+	virtual ~ForestCam(void);
 
 	virtual void drawGUI(GUI *graphicUI);
 	virtual void configGUI(GUI *graphicUI);
 
    private:
-	Level01Cam(void);
-	Level01Cam(Level01Cam const &src);
-	Level01Cam &operator=(Level01Cam const &rhs);
+	ForestCam(void);
+	ForestCam(ForestCam const &src);
+	ForestCam &operator=(ForestCam const &rhs);
 
 	void _displayDialogue(GUI *graphicUI, int *searchWord, int *lastWord,
 						  int *startStrIdx, std::string name,
