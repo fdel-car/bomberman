@@ -12,6 +12,8 @@ class Enemy : public Entity {
 
    private:
 	float _speed;
+	float _cooldown = 0.0f;
+	bool changeDir;
 
 	Enemy(void);
 	Enemy(Enemy const &src);

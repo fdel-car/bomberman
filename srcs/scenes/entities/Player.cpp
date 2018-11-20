@@ -2,16 +2,18 @@
 #include "GameEngine.hpp"
 
 Player::Player(glm::vec3 position, glm::vec3 eulerAngles, Entity *gameManager)
-	: Entity(position, eulerAngles, new Collider(Collider::Circle, 1.0f, 1.0f),
+	: Entity(position, eulerAngles, new Collider(Collider::Circle, 0.4f, 0.4f),
 			 "Player", gameManager) {
 	_name = "Player";
 	_tag = "Player";
 	_speed = 8.0f;
+	scale(glm::vec3(0.5 * 0.8, 0.5 * 0.8, 0.5 * 0.8));
 }
 
 Player::~Player(void) {}
 
 void Player::update(void) {
+	_targetMovement *= 0;
 	float deltaTime = _gameEngine->getDeltaTime();
 
 	int xSign = 0;
@@ -33,7 +35,7 @@ void Player::update(void) {
 		zDirection = static_cast<float>(zSign);
 		xSign = abs(xSign);
 		zSign = abs(zSign);
-		float totalMagnitude = abs(xSign) + abs(zSign);
+		float totalMagnitude = xSign + zSign;
 		xDirection *= sqrt(xSign / totalMagnitude);
 		zDirection *= sqrt(zSign / totalMagnitude);
 	}

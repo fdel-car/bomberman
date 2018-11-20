@@ -109,10 +109,10 @@ void BombermanGame::_mainMenu(void) {
 void BombermanGame::_forest(void) {
 	_camera =
 		new ForestCam(glm::vec3(0.0, 10.0, 3.0), glm::vec3(-75.0, 0.0, 0.0));
-	_entities.push_back(new Player(glm::vec3(2.0, 0.0, -2.0),
+	_entities.push_back(new Player(glm::vec3(-3.0, 0.0, 0.0),
 								   glm::vec3(0.0, 0.0, 0.0f), _camera));
 	_entities.push_back(new Entity(
-		glm::vec3(-2.0, 0.0, 0.0), glm::vec3(0.0, 0.0, 0.0f),
+		glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 0.0, 0.0f),
 		new Collider(Collider::Rectangle, 0.5f, 0.5f), "Cube", _camera));
 	_entities.push_back(new Enemy(glm::vec3(-5.0, 0.0, 0.0),
 								  glm::vec3(0.0, 0.0, 0.0f), _camera));

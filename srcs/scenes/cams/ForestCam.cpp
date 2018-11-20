@@ -2,7 +2,9 @@
 #include "GameEngine.hpp"
 
 ForestCam::ForestCam(glm::vec3 const &pos, glm::vec3 const &eulerAngles)
-	: Camera(pos, eulerAngles) {}
+	: Camera(pos, eulerAngles),
+	  _entitiesInSquares(
+		  std::vector<std::map<size_t, Entity *>>(mapWidth * mapHeight)) {}
 
 ForestCam::~ForestCam(void) {}
 
@@ -46,63 +48,6 @@ void ForestCam::drawGUI(GUI *graphicUI) {
 	static int startStrIdx = 0;
 	std::string str =
 		"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do "
-		"eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim "
-		"ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut "
-		"aliquip ex ea commodo consequat. Duis aute irure dolor in "
-		"reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla "
-		"pariatur. Excepteur sint occaecat cupidatat non proident, sunt in "
-		"culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum "
-		"dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor "
-		"incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, "
-		"quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea "
-		"commodo consequat. Duis aute irure dolor in reprehenderit in "
-		"voluptate velit esse cillum dolore eu fugiat nulla pariatur. "
-		"Excepteur sint occaecat cupidatat non proident, sunt in culpa qui "
-		"eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim "
-		"ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut "
-		"aliquip ex ea commodo consequat. Duis aute irure dolor in "
-		"reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla "
-		"pariatur. Excepteur sint occaecat cupidatat non proident, sunt in "
-		"culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum "
-		"dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor "
-		"incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, "
-		"quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea "
-		"commodo consequat. Duis aute irure dolor in reprehenderit in "
-		"voluptate velit esse cillum dolore eu fugiat nulla pariatur. "
-		"Excepteur sint occaecat cupidatat non proident, sunt in culpa qui "
-		"eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim "
-		"ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut "
-		"aliquip ex ea commodo consequat. Duis aute irure dolor in "
-		"reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla "
-		"pariatur. Excepteur sint occaecat cupidatat non proident, sunt in "
-		"culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum "
-		"dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor "
-		"incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, "
-		"quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea "
-		"commodo consequat. Duis aute irure dolor in reprehenderit in "
-		"voluptate velit esse cillum dolore eu fugiat nulla pariatur. "
-		"Excepteur sint occaecat cupidatat non proident, sunt in culpa qui "
-		"eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim "
-		"ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut "
-		"aliquip ex ea commodo consequat. Duis aute irure dolor in "
-		"reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla "
-		"pariatur. Excepteur sint occaecat cupidatat non proident, sunt in "
-		"culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum "
-		"dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor "
-		"incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, "
-		"quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea "
-		"commodo consequat. Duis aute irure dolor in reprehenderit in "
-		"voluptate velit esse cillum dolore eu fugiat nulla pariatur. "
-		"Excepteur sint occaecat cupidatat non proident, sunt in culpa qui "
-		"reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla "
-		"pariatur. Excepteur sint occaecat cupidatat non proident, sunt in "
-		"culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum "
-		"dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor "
-		"incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, "
-		"quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea "
-		"commodo consequat. Duis aute irure dolor in reprehenderit in "
-		"voluptate velit esse cillum dolore eu fugiat nulla pariatur. "
-		"Excepteur sint occaecat cupidatat non proident, sunt in culpa qui "
 		"officia deserunt mollit anim id est laborum.";
 	size_t maxCharPerLine =
 		((WINDOW_W / 4) * 3 - (((WINDOW_H / 4) - 45) - (WINDOW_W / 4)) - 40) /
@@ -137,5 +82,82 @@ void ForestCam::_displayDialogue(GUI *graphicUI, int *searchWord, int *lastWord,
 }
 
 void ForestCam::tellPosition(Entity *entity) {
-	std::cout << *entity << std::endl;
+	// if (_entitiesInfos.find(entity->getId()) != _entitiesInfos.end()) {
+	std::vector<size_t> allNewSquareWeAreIn;
+
+	// Get these to be faster later
+	const glm::vec3 &entityPos = entity->getPosition();
+	const Collider *entityCol = entity->getCollider();
+
+	// TopLeft
+	size_t xCoord =
+		static_cast<size_t>(entityPos.x - entityCol->width + 0.0001f + xOffset);
+	size_t zCoord = static_cast<size_t>(entityPos.z - entityCol->height +
+										0.0001f + zOffset);
+	size_t vectorIdx = zCoord * mapWidth + xCoord;
+	allNewSquareWeAreIn.push_back(vectorIdx);
+	// TopRight
+	xCoord =
+		static_cast<size_t>(entityPos.x + entityCol->width - 0.0001f + xOffset);
+	zCoord = static_cast<size_t>(entityPos.z - entityCol->height + 0.0001f +
+								 zOffset);
+	vectorIdx = zCoord * mapWidth + xCoord;
+	if (allNewSquareWeAreIn.front() != vectorIdx)
+		allNewSquareWeAreIn.push_back(vectorIdx);
+	// Bottom-Left
+	xCoord =
+		static_cast<size_t>(entityPos.x - entityCol->width + 0.0001f + xOffset);
+	zCoord = static_cast<size_t>(entityPos.z + entityCol->height - 0.0001f +
+								 zOffset);
+	vectorIdx = zCoord * mapWidth + xCoord;
+	if (allNewSquareWeAreIn.front() != vectorIdx &&
+		allNewSquareWeAreIn.back() != vectorIdx)
+		allNewSquareWeAreIn.push_back(vectorIdx);
+	// Bottom-Right
+	xCoord =
+		static_cast<size_t>(entityPos.x + entityCol->width - 0.0001f + xOffset);
+	zCoord = static_cast<size_t>(entityPos.z + entityCol->height - 0.0001f +
+								 zOffset);
+	vectorIdx = zCoord * mapWidth + xCoord;
+	if (std::find(allNewSquareWeAreIn.begin(), allNewSquareWeAreIn.end(),
+				  vectorIdx) == allNewSquareWeAreIn.end())
+		allNewSquareWeAreIn.push_back(vectorIdx);
+
+	// Clear entity old Idx saved in _entitiesInSquares
+	for (auto savedIdx : _entitiesInfos[entity->getId()]) {
+		if (std::find(allNewSquareWeAreIn.begin(), allNewSquareWeAreIn.end(),
+					  savedIdx) == allNewSquareWeAreIn.end()) {
+			_entitiesInSquares[savedIdx].erase(entity->getId());
+		}
+	}
+
+	// Add new Idxs
+	for (auto newIdx : allNewSquareWeAreIn) {
+		if (std::find(_entitiesInfos[entity->getId()].begin(),
+					  _entitiesInfos[entity->getId()].end(),
+					  newIdx) == _entitiesInfos[entity->getId()].end()) {
+			_entitiesInSquares[newIdx].insert(
+				std::pair<size_t, Entity *>(entity->getId(), entity));
+		}
+	}
+
+	// Write over old infos
+	_entitiesInfos[entity->getId()] = allNewSquareWeAreIn;
+	// }
+
+	// std::cout << *entity << std::endl;
+}
+
+void ForestCam::printMapInfo(void) {
+	std::cout << "-------------------------------------------" << std::endl;
+	size_t i = 0;
+	for (const auto &info : _entitiesInSquares) {
+		if (i % mapWidth != 0) std::cout << " ";
+		if (info.empty())
+			std::cout << "0";
+		else
+			std::cout << "1";
+		i++;
+		if (i % mapHeight == 0) std::cout << std::endl;
+	}
 }
