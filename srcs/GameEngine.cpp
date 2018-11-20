@@ -58,7 +58,7 @@ GameRenderer const *GameEngine::getGameRenderer(void) const {
 bool GameEngine::initScene(size_t newSceneIdx) {
 	if (!_game) return false;
 	_sceneIdx = newSceneIdx;
-	if (!_game->loadScene(_sceneIdx)) return false;
+	if (!_game->loadSceneByIndex(_sceneIdx)) return false;
 
 	_clearTmpEntities();
 	_camera = _game->getCamera();
@@ -668,7 +668,6 @@ bool GameEngine::collisionCircleRectangle(const Collider *circleCollider,
 void GameEngine::run(void) {
 	// Init vars
 	_running = true;
-	restartRequest = false;
 	_lastFrameTs = Clock::now();
 
 	if (!initScene(_sceneIdx)) throw std::runtime_error("Cannot load scene!");
@@ -695,9 +694,9 @@ void GameEngine::run(void) {
 		// Update game camera
 		_camera->update();
 		newSceneIdx = _camera->getNewSceneIdx();
-		if (newSceneIdx != -1) {
-			break;
-		}
+		if (newSceneIdx != -1) break;
+		newSceneIdx = _game->getSceneIndexByName(_camera->getNewSceneName());
+		if (newSceneIdx != -1) break;
 
 		// Update game entities states
 		for (auto entity : _allEntities) {

@@ -10,20 +10,23 @@ class Camera : public Entity {
 
 	glm::mat4 const &getViewMatrix(void) const;
 	glm::mat4 const &getProjectionMatrix(void) const;
-	std::vector<std::tuple<std::string, std::string>> &getNeededImage();
+	std::vector<std::tuple<std::string, std::string>> const &getNeededImages()
+		const;
+	int getNewSceneIdx(void) const;
+	std::string getNewSceneName(void) const;
 
 	virtual void drawGUI(GUI *graphicUI);
 	virtual void update(void);
 	virtual void configGUI(GUI *graphicUI);
 
 	void initEntity(GameEngine *gameEngine);
-	int getNewSceneIdx(void);
 
    protected:
 	int _newSceneIdx;
+	std::string _newSceneName;
 	std::map<int, nk_color> defaultStyle;
 	std::map<int, nk_color> activeStyle;
-	std::vector<std::tuple<std::string, std::string>> vNeededImage;
+	std::vector<std::tuple<std::string, std::string>> _neededImages;
 
    private:
 	float _speed;
