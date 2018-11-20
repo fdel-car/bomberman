@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Mesh.hpp"
-#include "header.hpp"
 
 class Model {
    public:

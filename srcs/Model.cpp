@@ -27,7 +27,7 @@ Model::Model(std::string const &objDirName) {
 	std::cout << "Shape count: " << shapes.size() << std::endl;
 	std::cout << "material count: " << materials.size() << std::endl;
 	std::vector<std::vector<t_vertex>> meshesVertices(materials.size());
-	for (size_t s = 0; s < 1 /* shapes.size() */; s++) {
+	for (size_t s = 0; s < shapes.size(); s++) {
 		size_t index_offset = 0;
 		for (size_t f = 0; f < shapes[s].mesh.num_face_vertices.size(); f++) {
 			size_t fv =
@@ -55,8 +55,16 @@ Model::Model(std::string const &objDirName) {
 		// std::cout << s << std::endl;
 	}
 
+	int idx = 0;
 	for (auto vertices : meshesVertices) {
-		_meshes.push_back(new Mesh(vertices));
+		t_material material;
+
+		material.diffuse =
+			glm::vec3(materials[idx].diffuse[0], materials[idx].diffuse[1],
+					  materials[idx].diffuse[2]);
+
+		_meshes.push_back(new Mesh(vertices, material));
+		idx++;
 	}
 }
 
