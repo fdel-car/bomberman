@@ -1,6 +1,8 @@
 #include "scenes/BombermanGame.hpp"
+#include "scenes/cams/FabCam.hpp"
 #include "scenes/cams/ForestCam.hpp"
 #include "scenes/cams/MainMenuCam.hpp"
+#include "scenes/entities/Enemy.hpp"
 #include "scenes/entities/Player.hpp"
 
 #include <fstream>
@@ -60,25 +62,28 @@ BombermanGame::BombermanGame(void) : AGame() {
 
 	// nlohmann::json j_complete = nlohmann::json::parse(char *txt);
 
-	std::cout << "Reading from file.." << std::endl;
-	std::string line;
-	std::string allLines = "";
+	// std::cout << "Reading from file.." << std::endl;
 	std::ifstream rFile("example.txt");
 	if (rFile.is_open()) {
+		std::string line;
+		std::string allLines = "";
+
 		while (getline(rFile, line)) {
 			std::cout << line << '\n';
 			allLines += line;
 		}
 		rFile.close();
-	}
-	nlohmann::json parsedJson = nlohmann::json::parse(allLines.c_str());
 
-	try {
-		Save saveT = parsedJson;
-		std::cout << "Save val: " << saveT.upKey << std::endl;
-	} catch (std::exception e) {
-		std::cout << "--------------------- Could not convert json to struct"
-				  << std::endl;
+		nlohmann::json parsedJson = nlohmann::json::parse(allLines.c_str());
+
+		try {
+			Save saveT = parsedJson;
+			std::cout << "Save val: " << saveT.upKey << std::endl;
+		} catch (std::exception e) {
+			std::cout
+				<< "--------------------- Could not convert json to struct"
+				<< std::endl;
+		}
 	}
 }
 
@@ -102,9 +107,29 @@ void BombermanGame::_mainMenu(void) {
 }
 
 void BombermanGame::_forest(void) {
-	_camera = new ForestCam(glm::vec3(0.0, 0.0, 5.0), glm::vec3(0.0, 0.0, 0.0));
+	_camera =
+		new ForestCam(glm::vec3(0.0, 10.0, 3.0), glm::vec3(-75.0, 0.0, 0.0));
+	_entities.push_back(
+		new Player(glm::vec3(2.0, 0.0, -2.0), glm::vec3(0.0, 0.0, 0.0f)));
+	_entities.push_back(
+		new Entity(glm::vec3(-2.0, 0.0, 0.0), glm::vec3(0.0, 0.0, 0.0f),
+				   new Collider(Collider::Rectangle, 1.0f, 1.0f), "Cube"));
+	_entities.push_back(
+		new Enemy(glm::vec3(-5.0, 0.0, 0.0), glm::vec3(0.0, 0.0, 0.0f)));
+
+	// _camera = new ForestCam(glm::vec3(0.0, 0.0, 5.0), glm::vec3(0.0, 0.0,
+	// 0.0)); _entities.push_back( new Player(glm::vec3(2.0, 0.0, -2.0),
+	// glm::vec3(0.0, 0.0, 0.0f))); _entities.push_back(new
+	// Entity(glm::vec3(0.0, 0.0, 0.0),
+	//    glm::vec3(0.0, 0.0, 0.0f), nullptr, "Tree"));
+	// _entities.push_back(new Entity(glm::vec3(2.0, 0.0, 3.0),
+	// 							   glm::vec3(0.0, 0.0, 0.0f), nullptr, "Tree"));
+}
+
+void BombermanGame::_fab(void) {
+	_camera = new FabCam(glm::vec3(0.0, 0.0, 5.0), glm::vec3(0.0, 0.0, 0.0));
 	// _entities.push_back(
-	// new Player(glm::vec3(2.0, 0.0, -2.0), glm::vec3(0.0, 0.0, 0.0f)));
+	// 	new Player(glm::vec3(2.0, 0.0, -2.0), glm::vec3(0.0, 0.0, 0.0f)));
 	_entities.push_back(new Entity(glm::vec3(0.0, 0.0, 0.0),
 								   glm::vec3(0.0, 0.0, 0.0f), nullptr, "Tree"));
 	// _entities.push_back(new Entity(glm::vec3(2.0, 0.0, 3.0),
@@ -114,6 +139,8 @@ void BombermanGame::_forest(void) {
 void BombermanGame::_initScenes(void) {
 	_scenesNames.push_back("MainMenu");
 	_scenesMap[_scenesNames.back()] = &BombermanGame::_mainMenu;
+	_scenesNames.push_back("Fab");
+	_scenesMap[_scenesNames.back()] = &BombermanGame::_fab;
 	_scenesNames.push_back("Forest");
 	_scenesMap[_scenesNames.back()] = &BombermanGame::_forest;
 }

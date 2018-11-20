@@ -73,7 +73,7 @@ void GameRenderer::_initShader(void) {
 	// Set permanent values
 	glUniform3fv(
 		_lightDirLoc, 1,
-		glm::value_ptr(glm::normalize(glm::vec3(0.0f, 0.0f, 1.0f) * -1.0f)));
+		glm::value_ptr(glm::normalize(glm::vec3(0.0f, 0.5f, 0.8f) * -1.0f)));
 	glUniform3fv(_lightColorLoc, 1,
 				 glm::value_ptr(glm::vec3(1.0f, 1.0f, 1.0f)));
 }
@@ -82,6 +82,7 @@ void GameRenderer::_initModels(void) {
 	_models["Cube"] = new Model("cube");
 	_models["Player"] = new Model("player");
 	_models["Bomb"] = new Model("bomb");
+	_models["Enemy"] = new Model("enemy");
 	_models["Tree"] = new Model("tree");
 }
 
