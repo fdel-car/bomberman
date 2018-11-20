@@ -8,6 +8,7 @@ class Model {
 	virtual ~Model(void);
 
 	std::vector<Mesh *> const getMeshes(void) const;
+	void draw(ShaderProgram const &shaderProgram) const;
 
    private:
 	Model(void);

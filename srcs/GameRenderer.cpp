@@ -60,22 +60,10 @@ void GameRenderer::_initShader(void) {
 									   _assetsDir + "../srcs/shaders/4.1.fs");
 	glUseProgram(_shaderProgram->getID());
 
-	// Init GLint uniform identfiers
-	_projectionLoc =
-		glGetUniformLocation(_shaderProgram->getID(), "projection");
-	_viewLoc = glGetUniformLocation(_shaderProgram->getID(), "view");
-	_modelLoc = glGetUniformLocation(_shaderProgram->getID(), "model");
-	_lightDirLoc = glGetUniformLocation(_shaderProgram->getID(), "lightDir");
-	_viewPosLoc = glGetUniformLocation(_shaderProgram->getID(), "viewPos");
-	_lightColorLoc =
-		glGetUniformLocation(_shaderProgram->getID(), "lightColor");
-
 	// Set permanent values
-	glUniform3fv(
-		_lightDirLoc, 1,
-		glm::value_ptr(glm::normalize(glm::vec3(0.0f, 0.5f, 0.8f) * -1.0f)));
-	glUniform3fv(_lightColorLoc, 1,
-				 glm::value_ptr(glm::vec3(1.0f, 1.0f, 1.0f)));
+	_shaderProgram->setVec3("lightDir",
+							glm::normalize(glm::vec3(0.0f, 0.0f, -1.0f)));
+	_shaderProgram->setVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
 }
 
 void GameRenderer::_initModels(void) {
@@ -97,21 +85,13 @@ void GameRenderer::refreshWindow(std::vector<Entity *> &entities,
 	glUseProgram(_shaderProgram->getID());
 	// glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-	// Shared uniform values
-	glUniformMatrix4fv(_viewLoc, 1, GL_FALSE,
-					   glm::value_ptr(camera->getViewMatrix()));
-	glUniformMatrix4fv(_projectionLoc, 1, GL_FALSE,
-					   glm::value_ptr(camera->getProjectionMatrix()));
-	glUniform3fv(_viewPosLoc, 1, glm::value_ptr(camera->getPosition()));
-
+	// _shaderProgram->setMat4("view", camera->getViewMatrix());
+	_shaderProgram->setMat4(
+		"PV", camera->getProjectionMatrix() * camera->getViewMatrix());
+	_shaderProgram->setVec3("cameraPos", camera->getPosition());
 	for (auto entity : entities) {
-		glUniformMatrix4fv(_modelLoc, 1, GL_FALSE,
-						   glm::value_ptr(entity->getModelMatrix()));
-		for (auto mesh : entity->getModel()->getMeshes()) {
-			glBindVertexArray(mesh->VAO);
-			glBindBuffer(GL_ARRAY_BUFFER, mesh->VBO);
-			glDrawArrays(GL_TRIANGLES, 0, mesh->getSize());
-		}
+		_shaderProgram->setMat4("M", entity->getModelMatrix());
+		entity->getModel()->draw(*_shaderProgram);
 	}
 
 	// Default OpenGL state
