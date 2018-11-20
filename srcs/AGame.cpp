@@ -21,3 +21,12 @@ void AGame::unload(void) {
 	for (auto entity : _entities) delete entity;
 	_entities.clear();
 }
+
+int AGame::getSceneIndexByName(std::string sceneName) const {
+	int idx = 0;
+	for (const auto &it : _scenesNames) {
+		if (sceneName.compare(it) == 0) return idx;
+		idx++;
+	}
+	return -1;
+}

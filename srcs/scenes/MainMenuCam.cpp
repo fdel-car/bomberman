@@ -4,31 +4,28 @@
 
 extern std::string _assetsDir;
 
-MainMenuCam::MainMenuCam(glm::vec3 const &pos, glm::vec3 const &eulerAngles)
-	: Camera(pos, eulerAngles) {
-	vNeededImage.push_back(std::tuple<std::string, std::string>(
+MainMenuCam::MainMenuCam(glm::vec3 const &pos, glm::vec3 const &eulerAngles,
+						 std::vector<std::string> levelsName)
+	: Camera(pos, eulerAngles), _levelsName(levelsName) {
+	_neededImages.push_back(std::tuple<std::string, std::string>(
 		(_assetsDir + "GUI/icons/chevronDroit.png"), "chevronDroit"));
-	vNeededImage.push_back(std::tuple<std::string, std::string>(
+	_neededImages.push_back(std::tuple<std::string, std::string>(
 		(_assetsDir + "GUI/icons/chevronGauche.png"), "chevronGauche"));
-	vNeededImage.push_back(std::tuple<std::string, std::string>(
+	_neededImages.push_back(std::tuple<std::string, std::string>(
 		(_assetsDir + "GUI/icons/settings.png"), "settings"));
 }
 
 MainMenuCam::~MainMenuCam(void) {}
 
 void MainMenuCam::configGUI(GUI *graphicUI) {
-	graphicUI->setAssetImage(vNeededImage);
+	graphicUI->setAssetImage(_neededImages);
 	graphicUI->uiSetDefaultFont("18_BOMBERMAN");
 	graphicUI->getDefaultStyle(THEME_RED, &defaultStyle);
 	defaultStyle[NK_COLOR_WINDOW] = nk_rgba(57, 67, 71, 0);
 	graphicUI->setStyle(defaultStyle);
 	activeStyle = defaultStyle;
 
-	_lvlChoice.push_back("Tutorial");
-	_lvlChoice.push_back("Level One");
-	_lvlChoice.push_back("Level Two");
-	_lvlChoice.push_back("Level Three");
-	_myChoice = 0;
+	_lvlIndex = 0;
 	_changeSettings = false;
 	_slowTitle = false;
 }
@@ -43,9 +40,9 @@ void MainMenuCam::drawGUI(GUI *graphicUI) {
 						50),
 				NK_WINDOW_NO_SCROLLBAR)) {
 			if (graphicUI->uiHorizontalSelection(
-					(WINDOW_W / 5), "", _lvlChoice[_myChoice], &_myChoice,
-					_lvlChoice.size() - 1)) {
-				std::cout << _myChoice << std::endl;
+					(WINDOW_W / 5), "", _levelsName[_lvlIndex], &_lvlIndex,
+					_levelsName.size() - 1)) {
+				std::cout << _lvlIndex << std::endl;
 			}
 		}
 		graphicUI->uiEndBlock();
@@ -60,7 +57,8 @@ void MainMenuCam::drawGUI(GUI *graphicUI) {
 		if (_btnHover(graphicUI, (WINDOW_W / 5), 60, (WINDOW_W / 5) * 2,
 					  (WINDOW_H / 5) * 2.7, 20, "_BOMBERMAN", &extraSizePlay,
 					  10, &isPlayButtonHover, "Play"))
-			std::cout << "Play" << std::endl;
+			_newSceneName = _levelsName[_lvlIndex];
+
 		activeStyle = defaultStyle;
 		graphicUI->setStyle(activeStyle);
 
@@ -77,7 +75,8 @@ void MainMenuCam::drawGUI(GUI *graphicUI) {
 		if (_btnHover(graphicUI, (WINDOW_W / 5), 60, (WINDOW_W / 5) * 2,
 					  (WINDOW_H / 5) * 4, 14, "_BOMBERMAN", &extraSizeCredits,
 					  10, &isCreditButtonHover, "Credits"))
-			_newSceneIdx = 1;
+			std::cout << "Hey hey, nothing happened. bad luck." << std::endl;
+		// _newSceneIdx = 1;
 
 		static int extraSizeExit = 0;
 		static bool isExitButtonHover = false;
@@ -99,24 +98,24 @@ void MainMenuCam::_settings(GUI *graphicUI) {
 								NK_WINDOW_BORDER | NK_WINDOW_TITLE)) {
 		graphicUI->uiHeader("Options", NK_TEXT_CENTERED, 30, "24_BOMBERMAN");
 		if (graphicUI->uiHorizontalSelection(WINDOW_W / 2, "Test1",
-											 _lvlChoice[_myChoice], &_myChoice,
-											 _lvlChoice.size() - 1)) {
+											 _levelsName[_lvlIndex], &_lvlIndex,
+											 _levelsName.size() - 1)) {
 		}
 		if (graphicUI->uiHorizontalSelection(WINDOW_W / 2, "Test2",
-											 _lvlChoice[_myChoice], &_myChoice,
-											 _lvlChoice.size() - 1)) {
+											 _levelsName[_lvlIndex], &_lvlIndex,
+											 _levelsName.size() - 1)) {
 		}
 		if (graphicUI->uiHorizontalSelection(WINDOW_W / 2, "Test3",
-											 _lvlChoice[_myChoice], &_myChoice,
-											 _lvlChoice.size() - 1)) {
+											 _levelsName[_lvlIndex], &_lvlIndex,
+											 _levelsName.size() - 1)) {
 		}
 		if (graphicUI->uiHorizontalSelection(WINDOW_W / 2, "Test4",
-											 _lvlChoice[_myChoice], &_myChoice,
-											 _lvlChoice.size() - 1)) {
+											 _levelsName[_lvlIndex], &_lvlIndex,
+											 _levelsName.size() - 1)) {
 		}
 		if (graphicUI->uiHorizontalSelection(WINDOW_W / 2, "Test5",
-											 _lvlChoice[_myChoice], &_myChoice,
-											 _lvlChoice.size() - 1)) {
+											 _levelsName[_lvlIndex], &_lvlIndex,
+											 _levelsName.size() - 1)) {
 		}
 
 		graphicUI->uiHeader("Controls", NK_TEXT_CENTERED, 30, "24_BOMBERMAN");

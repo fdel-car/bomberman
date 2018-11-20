@@ -4,7 +4,8 @@
 
 class MainMenuCam : public Camera {
    public:
-	MainMenuCam(glm::vec3 const &pos, glm::vec3 const &eulerAngles);
+	MainMenuCam(glm::vec3 const &pos, glm::vec3 const &eulerAngles,
+				std::vector<std::string> levelsName);
 	virtual ~MainMenuCam(void);
 
 	virtual void drawGUI(GUI *graphicUI);
@@ -23,8 +24,8 @@ class MainMenuCam : public Camera {
 	void _settings(GUI *graphicUI);
 	void _movingTitle(GUI *graphicUI);
 
-	std::vector<std::string> _lvlChoice;
-	int _myChoice;
+	int _lvlIndex;
 	bool _changeSettings;
 	bool _slowTitle;
+	std::vector<std::string> _levelsName;
 };

@@ -8,7 +8,7 @@ ForestCam::ForestCam(glm::vec3 const &pos, glm::vec3 const &eulerAngles)
 ForestCam::~ForestCam(void) {}
 
 void ForestCam::configGUI(GUI *graphicUI) {
-	graphicUI->setAssetImage(vNeededImage);
+	graphicUI->setAssetImage(_neededImages);
 
 	graphicUI->getDefaultStyle(THEME_RED, &defaultStyle);
 	graphicUI->setStyle(defaultStyle);

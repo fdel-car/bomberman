@@ -3,14 +3,23 @@
 #include "GameRenderer.hpp"
 
 Camera::Camera(glm::vec3 const &pos, glm::vec3 const &eulerAngles)
-	: Entity(pos, eulerAngles, nullptr, ""), _newSceneIdx(-1) {
+	: Entity(pos, eulerAngles, nullptr, ""),
+	  _newSceneIdx(-1),
+	  _newSceneName("") {
 	_name = "Camera";
 	_view = glm::inverse(getModelMatrix());
 	_front = _rotation * glm::vec3(0.0, 0.0, -1.0);
 	_speed = 6.0f;
 }
 
-int Camera::getNewSceneIdx(void) { return _newSceneIdx; }
+int Camera::getNewSceneIdx(void) const { return _newSceneIdx; }
+
+std::string Camera::getNewSceneName(void) const { return _newSceneName; }
+
+std::vector<std::tuple<std::string, std::string>> const &
+Camera::getNeededImages() const {
+	return _neededImages;
+}
 
 void Camera::drawGUI(GUI *graphicUI) { (void)graphicUI; }
 
@@ -19,10 +28,6 @@ Camera::~Camera(void) {}
 glm::mat4 const &Camera::getViewMatrix(void) const { return _view; };
 
 glm::mat4 const &Camera::getProjectionMatrix(void) const { return _projection; }
-
-std::vector<std::tuple<std::string, std::string>> &Camera::getNeededImage() {
-	return vNeededImage;
-}
 
 // void Camera::updateProjectionMatrix()
 

@@ -3,18 +3,17 @@
 #include "AGame.hpp"
 
 class BombermanGame : public AGame {
-   public:
-	typedef bool (BombermanGame::*Scene)(void);
+	typedef void (BombermanGame::*Scene)(void);
 
+   public:
 	BombermanGame(void);
 	virtual ~BombermanGame(void);
-	virtual bool loadScene(size_t sceneIdx);
+	virtual bool loadSceneByIndex(int sceneIdx);
 
    private:
-	static std::vector<Scene> _scenes;
+	std::map<std::string, Scene> _scenesMap;
+	void _initScenes(void);
 
-	static std::vector<Scene> _initScenes(void);
-
-	bool _mainMenu(void);
-	bool _forest(void);
+	void _mainMenu(void);
+	void _forest(void);
 };

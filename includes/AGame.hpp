@@ -8,7 +8,8 @@ class AGame {
 	AGame(void);
 	virtual ~AGame(void);
 
-	virtual bool loadScene(size_t sceneIdx) = 0;
+	virtual bool loadSceneByIndex(int sceneIdx) = 0;
+	virtual int getSceneIndexByName(std::string sceneName) const;
 
 	std::vector<std::tuple<float, std::string, std::string>> &getNeededFont();
 	std::vector<Entity *> const getEntities() const;
@@ -17,8 +18,12 @@ class AGame {
 	void unload(void);
 
    protected:
-	size_t _sceneIdx;
+	std::vector<std::string> _scenesNames;
+	int _sceneIdx;
 	std::vector<Entity *> _entities;
 	Camera *_camera;
 	std::vector<std::tuple<float, std::string, std::string>> _neededFonts;
+
+   private:
+	virtual void _initScenes(void) = 0;
 };
