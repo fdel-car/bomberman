@@ -1,6 +1,7 @@
 #include "scenes/BombermanGame.hpp"
 #include "scenes/cams/ForestCam.hpp"
 #include "scenes/cams/MainMenuCam.hpp"
+#include "scenes/entities/Enemy.hpp"
 #include "scenes/entities/Player.hpp"
 
 #include <fstream>
@@ -60,25 +61,28 @@ BombermanGame::BombermanGame(void) : AGame() {
 
 	// nlohmann::json j_complete = nlohmann::json::parse(char *txt);
 
-	std::cout << "Reading from file.." << std::endl;
-	std::string line;
-	std::string allLines = "";
+	// std::cout << "Reading from file.." << std::endl;
 	std::ifstream rFile("example.txt");
 	if (rFile.is_open()) {
+		std::string line;
+		std::string allLines = "";
+
 		while (getline(rFile, line)) {
 			std::cout << line << '\n';
 			allLines += line;
 		}
 		rFile.close();
-	}
-	nlohmann::json parsedJson = nlohmann::json::parse(allLines.c_str());
 
-	try {
-		Save saveT = parsedJson;
-		std::cout << "Save val: " << saveT.upKey << std::endl;
-	} catch (std::exception e) {
-		std::cout << "--------------------- Could not convert json to struct"
-				  << std::endl;
+		nlohmann::json parsedJson = nlohmann::json::parse(allLines.c_str());
+
+		try {
+			Save saveT = parsedJson;
+			std::cout << "Save val: " << saveT.upKey << std::endl;
+		} catch (std::exception e) {
+			std::cout
+				<< "--------------------- Could not convert json to struct"
+				<< std::endl;
+		}
 	}
 }
 
@@ -109,6 +113,8 @@ void BombermanGame::_forest(void) {
 	_entities.push_back(
 		new Entity(glm::vec3(-2.0, 0.0, 0.0), glm::vec3(0.0, 0.0, 0.0f),
 				   new Collider(Collider::Rectangle, 1.0f, 1.0f), "Cube"));
+	_entities.push_back(
+		new Enemy(glm::vec3(-5.0, 0.0, 0.0), glm::vec3(0.0, 0.0, 0.0f)));
 }
 
 void BombermanGame::_initScenes(void) {

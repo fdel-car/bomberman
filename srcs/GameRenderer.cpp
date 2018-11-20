@@ -81,6 +81,7 @@ void GameRenderer::_initModels(void) {
 	_models["Cube"] = new Model("cube");
 	_models["Player"] = new Model("player");
 	_models["Bomb"] = new Model("bomb");
+	_models["Enemy"] = new Model("enemy");
 }
 
 void GameRenderer::getUserInput(void) { glfwPollEvents(); }
