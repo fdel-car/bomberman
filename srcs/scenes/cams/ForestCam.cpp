@@ -58,9 +58,56 @@ void ForestCam::drawGUI(GUI *graphicUI) {
 		"commodo consequat. Duis aute irure dolor in reprehenderit in "
 		"voluptate velit esse cillum dolore eu fugiat nulla pariatur. "
 		"Excepteur sint occaecat cupidatat non proident, sunt in culpa qui "
+		"eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim "
+		"ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut "
+		"aliquip ex ea commodo consequat. Duis aute irure dolor in "
+		"reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla "
+		"pariatur. Excepteur sint occaecat cupidatat non proident, sunt in "
+		"culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum "
+		"dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor "
+		"incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, "
+		"quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea "
+		"commodo consequat. Duis aute irure dolor in reprehenderit in "
+		"voluptate velit esse cillum dolore eu fugiat nulla pariatur. "
+		"Excepteur sint occaecat cupidatat non proident, sunt in culpa qui "
+		"eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim "
+		"ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut "
+		"aliquip ex ea commodo consequat. Duis aute irure dolor in "
+		"reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla "
+		"pariatur. Excepteur sint occaecat cupidatat non proident, sunt in "
+		"culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum "
+		"dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor "
+		"incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, "
+		"quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea "
+		"commodo consequat. Duis aute irure dolor in reprehenderit in "
+		"voluptate velit esse cillum dolore eu fugiat nulla pariatur. "
+		"Excepteur sint occaecat cupidatat non proident, sunt in culpa qui "
+		"eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim "
+		"ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut "
+		"aliquip ex ea commodo consequat. Duis aute irure dolor in "
+		"reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla "
+		"pariatur. Excepteur sint occaecat cupidatat non proident, sunt in "
+		"culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum "
+		"dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor "
+		"incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, "
+		"quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea "
+		"commodo consequat. Duis aute irure dolor in reprehenderit in "
+		"voluptate velit esse cillum dolore eu fugiat nulla pariatur. "
+		"Excepteur sint occaecat cupidatat non proident, sunt in culpa qui "
+		"reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla "
+		"pariatur. Excepteur sint occaecat cupidatat non proident, sunt in "
+		"culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum "
+		"dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor "
+		"incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, "
+		"quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea "
+		"commodo consequat. Duis aute irure dolor in reprehenderit in "
+		"voluptate velit esse cillum dolore eu fugiat nulla pariatur. "
+		"Excepteur sint occaecat cupidatat non proident, sunt in culpa qui "
 		"officia deserunt mollit anim id est laborum.";
+	size_t maxCharPerLine = ((WINDOW_W / 4) * 3 - (((WINDOW_H / 4) - 45) - (WINDOW_W / 4)) - 40) / 8.5;
+	int nbrOfLine = (((WINDOW_H / 4) - 45) / 22) - 2;
 	_displayDialogue(graphicUI, &searchWord, &lastWord, &startStrIdx,
-					 "Bomberman", "", str, false, 130, 3, NK_TEXT_LEFT,
+					 "Bomberman", "", str, false, maxCharPerLine, nbrOfLine, NK_TEXT_LEFT,
 					 "12_BOMBERMAN", "18_BOMBERMAN");
 }
 
@@ -76,7 +123,8 @@ void ForestCam::_displayDialogue(GUI *graphicUI, int *searchWord, int *lastWord,
 			if (str[*searchWord] == ' ') *lastWord = *searchWord;
 		} else
 			*lastWord = *searchWord;
-		if (*lastWord - *startStrIdx >= 130 * 3) *startStrIdx += 130 * 2;
+		if (*lastWord - *startStrIdx >= (int)maxCharPerLine * (nbrOfLine - 1))
+			*startStrIdx += maxCharPerLine;
 	}
 	_slowDialogue = !_slowDialogue;
 	std::string displayableStr =

@@ -97,13 +97,15 @@ public:
 	void uiSetImage(std::string imgName);
 	void uiHeader(const char * title, nk_flags flags, int rowSize, std::string fontName = "");
 	void uiWidget(float height, std::string fontName = "");
-	bool uiButton(int width, int height, nk_flags flags, std::string text = "", std::string imgName = "", std::string fontName = "");
+	bool uiButton(int width, int height, nk_flags flags, std::string text = "", std::string imgName = "", std::string fontName = "", bool isAlone = true);
 	void uiWidgetCentered(float height, std::string fontName = "");
 	void uiDialogBox(const char * name, std::string imgName, const char * text, bool isImgLeft, size_t maxCharPerLine, int nbrOfLine, nk_flags textPosition = NK_TEXT_LEFT, std::string fontText = "", std::string fontTitle = "");
 	bool uiHorizontalSelection(int widgetWidth, std::string leftText, std::string rightText, int *choice, int maxSize);
 	bool uiHover();
 	void uiEditString(nk_flags flags, char* fieldBuffer, int *len, int max, nk_plugin_filter filter);
 	void uiHorizontalEditString(int widgetWidth, std::string leftText, nk_flags flags, char* fieldBuffer, int *len, int max, nk_plugin_filter filter);
+	void uiRowMultipleElem(bool isSart, int height = 30, int nbrOfElem = 1, nk_layout_format flags = NK_STATIC);
+	void uiAddElemInRow(int width);
 
 private:
 
