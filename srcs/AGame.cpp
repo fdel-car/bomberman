@@ -20,6 +20,9 @@ void AGame::unload(void) {
 	}
 	for (auto entity : _entities) delete entity;
 	_entities.clear();
+
+	// Reset counter for next scene
+	Entity::resetSpawnedEntities();
 }
 
 int AGame::getSceneIndexByName(std::string sceneName) const {

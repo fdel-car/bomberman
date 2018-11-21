@@ -9,6 +9,9 @@ class ForestCam : public Camera {
 
 	virtual void drawGUI(GUI *graphicUI);
 	virtual void configGUI(GUI *graphicUI);
+	virtual void tellPosition(Entity *entity);
+
+	void printMapInfo(void);
 
    private:
 	ForestCam(void);
@@ -24,4 +27,10 @@ class ForestCam : public Camera {
 
 	bool _pauseMenu;
 	bool _slowDialogue;
+	size_t mapWidth = 17;
+	size_t mapHeight = 17;
+	float xOffset = 8.5f;
+	float zOffset = 8.5f;
+	std::map<size_t, std::vector<size_t>> _entitiesInfos;
+	std::vector<std::map<size_t, Entity *>> _entitiesInSquares;
 };

@@ -111,19 +111,20 @@ void BombermanGame::_forest(void) {
 	// _entities.push_back(new Entity(glm::vec3(0.0, 0.0, 0.0),
 	// 							   glm::vec3(0.0, 0.0, 0.0f), nullptr,
 	// 							   "Island"));
-	_entities.push_back(
-		new Player(glm::vec3(-7.0f, 0.5f, -7.0f), glm::vec3(0.0f, 0.0f, 0.0f)));
-	_entities.push_back(
-		new Enemy(glm::vec3(7.0f, 0.5f, 7.0f), glm::vec3(0.0f, 0.0f, 0.0f)));
+	_entities.push_back(new Player(glm::vec3(-7.0f, 0.5f, -7.0f),
+								   glm::vec3(0.0f, 0.0f, 0.0f), _camera));
+	_entities.push_back(new Enemy(glm::vec3(7.0f, 0.5f, 7.0f),
+								  glm::vec3(0.0f, 0.0f, 0.0f), _camera));
 	_entities.push_back(new Entity(
 		glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 0.0, 0.0f), nullptr, "Floor"));
 	_entities.back()->scale(glm::vec3(0.3f, 0.3f, 0.3f));
 	for (int x = -8; x <= 8; x++) {
 		for (int z = -8; z <= 8; z++) {
 			if ((x % 2 == 0 && z % 2 == 0) || abs(x) == 8 || abs(z) == 8) {
-				_entities.push_back(new Entity(
-					glm::vec3(x, 0.5f, z), glm::vec3(0.0, 0.0, 0.0f),
-					new Collider(Collider::Rectangle, 0.5f, 0.5f), "Box"));
+				_entities.push_back(
+					new Entity(glm::vec3(x, 0.5f, z), glm::vec3(0.0, 0.0, 0.0f),
+							   new Collider(Collider::Rectangle, 0.5f, 0.5f),
+							   "Box", _camera));
 				_entities.back()->scale(glm::vec3(1.0f, 0.75f, 1.0f));
 			}
 		}

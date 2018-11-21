@@ -1,12 +1,19 @@
 #include "Entity.hpp"
+#include "Camera.hpp"
 #include "GameEngine.hpp"
 #include "GameRenderer.hpp"
 
+size_t Entity::_spawnedEntities = 0;
+
+void Entity::resetSpawnedEntities(void) { _spawnedEntities = 0; }
+
 Entity::Entity(glm::vec3 position, glm::vec3 eulerAngles, Collider *collider,
-			   std::string modelName)
+			   std::string modelName, Entity *sceneManager)
 	: _position(position),
 	  _modelMatrix(glm::mat4(1.0f)),
+	  _id(Entity::_spawnedEntities++),
 	  _modelName(modelName),
+	  _sceneManager(sceneManager),
 	  _collider(collider),
 	  _isTmp(true),
 	  _targetMovement(glm::vec3()) {
@@ -15,6 +22,9 @@ Entity::Entity(glm::vec3 position, glm::vec3 eulerAngles, Collider *collider,
 	_modelMatrix = translationMatrix * glm::mat4_cast(_rotation);
 	_name = _modelName;
 	_gameEngine = nullptr;
+
+	// Signal, if camera is set, where is entity starting pos
+	if (_sceneManager != nullptr) _sceneManager->tellPosition(this);
 }
 
 Entity::~Entity(void) {
@@ -22,6 +32,8 @@ Entity::~Entity(void) {
 }
 
 void Entity::update(void) {}
+
+void Entity::tellPosition(Entity *entity) { (void)entity; }
 
 GameEngine *Entity::getGameEngine(void) const { return _gameEngine; }
 
@@ -35,6 +47,8 @@ const Model *Entity::getModel(void) const { return _model; }
 
 bool Entity::getTmpState(void) const { return _isTmp; }
 
+size_t const &Entity::getId(void) const { return _id; }
+
 std::string const &Entity::getName(void) const { return _name; }
 
 glm::vec3 &Entity::getTargetMovement(void) { return _targetMovement; }
@@ -44,6 +58,9 @@ void Entity::translate(glm::vec3 translation) {
 	_modelMatrix[3][1] += translation.y;
 	_modelMatrix[3][2] += translation.z;
 	_position += translation;
+
+	// Signal, if camera is set, where is entity new pos
+	if (_sceneManager != nullptr) _sceneManager->tellPosition(this);
 }
 
 glm::vec3 Entity::getEulerAngles() const {
@@ -80,7 +97,8 @@ void Entity::initEntity(GameEngine *gameEngine) {
 }
 
 std::ostream &operator<<(std::ostream &o, Entity const &entity) {
-	o << "---------- " << entity.getName() << " ----------" << std::endl;
+	o << "---------- " << entity.getName() << " (Id: " << entity.getId() << ")"
+	  << " ----------" << std::endl;
 
 	glm::vec3 position = entity.getPosition();
 	o << std::fixed << "Position => \033[1;33mx = " << position.x
