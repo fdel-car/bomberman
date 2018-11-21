@@ -1,8 +1,9 @@
 #pragma once
 
 #include "Camera.hpp"
+#include "scenes/GUITools.hpp"
 
-class MainMenuCam : public Camera {
+class MainMenuCam : public Camera, public GUITools {
    public:
 	MainMenuCam(glm::vec3 const &pos, glm::vec3 const &eulerAngles,
 				std::vector<std::string> levelsName);

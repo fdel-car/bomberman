@@ -27,6 +27,7 @@ set(SRCS
   srcs/scenes/cams/ForestCam.cpp
   srcs/scenes/entities/Player.cpp
   srcs/scenes/entities/Enemy.cpp
+  srcs/scenes/GUITools.cpp
 )
 
 include_directories(includes)
@@ -56,6 +57,7 @@ set(HEADERS
   includes/scenes/cams/ForestCam.hpp
   includes/scenes/entities/Player.hpp
   includes/scenes/entities/Enemy.hpp
+  includes/scenes/GUITools.hpp
 )
 
 add_executable(super_bomberman ${SRCS} ${HEADERS})
