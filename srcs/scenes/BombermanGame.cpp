@@ -108,6 +108,9 @@ void BombermanGame::_mainMenu(void) {
 void BombermanGame::_forest(void) {
 	_camera = new ForestCam(glm::vec3(0.0f, 28.0f, 16.8f),
 							glm::vec3(-60.0f, 0.0f, 0.0f));
+	// _entities.push_back(new Entity(glm::vec3(0.0, 0.0, 0.0),
+	// 							   glm::vec3(0.0, 0.0, 0.0f), nullptr,
+	// 							   "Island"));
 	_entities.push_back(
 		new Player(glm::vec3(-7.0f, 0.5f, -7.0f), glm::vec3(0.0f, 0.0f, 0.0f)));
 	_entities.push_back(

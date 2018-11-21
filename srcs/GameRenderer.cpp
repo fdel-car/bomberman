@@ -73,6 +73,7 @@ void GameRenderer::_initModels(void) {
 	_models["Enemy"] = new Model("enemy");
 	_models["Tree"] = new Model("tree");
 	_models["Floor"] = new Model("floor");
+	_models["Island"] = new Model("island");
 }
 
 void GameRenderer::getUserInput(void) { glfwPollEvents(); }
