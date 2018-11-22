@@ -35,6 +35,7 @@ GameRenderer::GameRenderer(GameEngine *gameEngine, AGame *game) {
 	glfwSetKeyCallback(_window, keyCallback);
 
 	_initGUI(game);
+	_initDepthMap();
 	_initShader();
 	_initModels();
 }
@@ -55,16 +56,55 @@ void GameRenderer::_initGUI(AGame *game) {
 	graphicUI = new GUI(_window, vFontPath);
 }
 
+bool GameRenderer::_initDepthMap(void) {
+	// Create framebuffer object for rendering the depth map
+	glGenFramebuffers(1, &_depthMapFBO);
+
+	// Create a 2D texture that we'll use as the framebuffer's depth buffer
+	glGenTextures(1, &_depthMap);
+	glBindTexture(GL_TEXTURE_2D, _depthMap);
+	glTexImage2D(GL_TEXTURE_2D, 0,GL_DEPTH_COMPONENT, SHADOW_W, SHADOW_H, 0,GL_DEPTH_COMPONENT, GL_FLOAT, 0);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	float borderColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+	glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);  
+
+	// attach depth texture as the framebuffer's depth buffer
+	glBindFramebuffer(GL_FRAMEBUFFER, _depthMapFBO);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, _depthMap, 0);
+	glDrawBuffer(GL_NONE);
+	glReadBuffer(GL_NONE);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	// Always check that our framebuffer is ok
+	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+		std::cout << "Failed to initialize Depth Map" << std::endl;
+		return false;
+	}
+	return true;
+}
+
 void GameRenderer::_initShader(void) {
 	_shaderProgram = new ShaderProgram(_srcsDir + "engine/shaders/4.1.vs",
 									   _srcsDir + "engine/shaders/4.1.fs");
+	_shadowShaderProgram = new ShaderProgram(_srcsDir + "engine/shaders/depthMap.vs",
+									   _srcsDir + "engine/shaders/depthMap.fs");
+	
+	// shadow
+	float near_plane = -6.0f, far_plane = 20.0f;
+	_lightPos = glm::vec3(0.0f, 15.0f, 0.0f);
+	_lightProjection = glm::ortho(-20.0f, 20.0f, -20.0f, 20.0f, near_plane, far_plane);
+	_lightView = glm::lookAt(_lightPos, glm::vec3(0,0,0), glm::vec3(0,1,0));
+	
 	glUseProgram(_shaderProgram->getID());
 
 	// Set permanent values
-	_shaderProgram->setVec3("lightDir",
-							glm::normalize(glm::vec3(0.4f, -0.6f, -0.5f)));
+	_shaderProgram->setVec3("lightDir", glm::normalize(glm::vec3(0.4f, -0.6f, -0.5f)));
 	_shaderProgram->setVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
 	_shaderProgram->setInt("textureID", 0);
+	_shaderProgram->setVec3("lightPos", _lightPos);
 }
 
 void GameRenderer::_initModels(void) {
@@ -83,12 +123,47 @@ void GameRenderer::refreshWindow(std::vector<Entity *> &entities,
 	glEnable(GL_DEPTH_TEST);
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	// Shadow
+	/*
+		The projection and view matrix together form a
+		transformation T that transform any 3D position
+		to the light visible coordinate space
+	*/
+	_lightSpaceMatrix = _lightProjection * _lightView;
+
+	glUseProgram(_shadowShaderProgram->getID());
+	
+	glViewport(0, 0, SHADOW_W, SHADOW_H);
+	glBindFramebuffer(GL_FRAMEBUFFER, _depthMapFBO);
+	glClear(GL_DEPTH_BUFFER_BIT);
+
+	_shadowShaderProgram->setMat4("lightSpaceMatrix", _lightSpaceMatrix);
+
+	for (auto entity : entities) {
+		_shadowShaderProgram->setMat4("M", entity->getModelMatrix());
+		entity->getModel()->draw(*_shadowShaderProgram);
+	}
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+
+	// normal
+	glEnable( GL_CULL_FACE );
+	glViewport(0, 0, WINDOW_W, WINDOW_H);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 	glUseProgram(_shaderProgram->getID());
 	// glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 	_shaderProgram->setMat4("V", camera->getViewMatrix());
 	_shaderProgram->setMat4("P", camera->getProjectionMatrix());
 	_shaderProgram->setVec3("cameraPos", camera->getPosition());
+	_shaderProgram->setMat4("lightSpaceMatrix", _lightSpaceMatrix);
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, _depthMap);
+
 	for (auto entity : entities) {
 		_shaderProgram->setMat4("M", entity->getModelMatrix());
 		entity->getModel()->draw(*_shaderProgram);
@@ -100,6 +175,8 @@ void GameRenderer::refreshWindow(std::vector<Entity *> &entities,
 	glBindVertexArray(0);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	glDisable(GL_DEPTH_TEST);
+
+	glDisable( GL_CULL_FACE );
 
 	graphicUI->nkNewFrame();
 	camera->drawGUI(graphicUI);
