@@ -27,6 +27,7 @@ set(SRCS
   srcs/GUI/GUI.cpp
 
   srcs/bomberman/BombermanGame.cpp
+  srcs/bomberman/Save.cpp
   srcs/bomberman/cams/MainMenuCam.cpp
   srcs/bomberman/cams/ForestCam.cpp
   srcs/bomberman/entities/Player.cpp
@@ -60,6 +61,7 @@ set(HEADERS
   includes/GUI/GUI.hpp
 
   includes/bomberman/BombermanGame.hpp
+  includes/bomberman/Save.hpp
   includes/bomberman/cams/MainMenuCam.hpp
   includes/bomberman/cams/ForestCam.hpp
   includes/bomberman/entities/Player.hpp

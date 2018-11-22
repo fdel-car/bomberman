@@ -4,47 +4,15 @@
 #include "bomberman/entities/Enemy.hpp"
 #include "bomberman/entities/Player.hpp"
 
-#include <fstream>
-#include <iomanip>
 #include "json/json.hpp"  // https://github.com/nlohmann/json/blob/develop/single_include/nlohmann/json.hpp
 
 extern std::string _assetsDir;
-
-void to_json(nlohmann::json& j, const Save& p) {
-	j = nlohmann::json{{"upKey", p.upKey},
-					   {"leftKey", p.leftKey},
-					   {"downKey", p.downKey},
-					   {"rightKey", p.rightKey}};
-}
-
-void from_json(const nlohmann::json& j, Save& p) {
-	j.at("upKey").get_to(p.upKey);
-	j.at("leftKey").get_to(p.leftKey);
-	j.at("downKey").get_to(p.downKey);
-	j.at("rightKey").get_to(p.rightKey);
-}
-
-void Save::resetSettings(void) {
-	upKey = "W";
-	leftKey = "A";
-	downKey = "S";
-	rightKey = "D";
-	bombKey = "SPACE";
-}
-
-void Save::resetLevel(void) { level = 0; }
-
-void Save::resetAll(void) {
-	resetSettings();
-	resetLevel();
-}
 
 BombermanGame::BombermanGame(void) : AGame() {
 	for (float size = 12.0f; size <= 48.0f; size += 1.0f)
 		_neededFonts.push_back(std::tuple<float, std::string, std::string>(
 			size, (_assetsDir + "GUI/fonts/BOMBERMAN.ttf"), "BOMBERMAN"));
 	_initScenes();
-	getSave();
 }
 
 BombermanGame::~BombermanGame(void) {}
@@ -60,7 +28,8 @@ bool BombermanGame::loadSceneByIndex(int sceneIdx) {
 void BombermanGame::_mainMenu(void) {
 	_camera = new MainMenuCam(
 		glm::vec3(0.0, 0.0, 10.0), glm::vec3(0.0, 0.0, 0.0),
-		std::vector<std::string>(_scenesNames.begin() + 1, _scenesNames.end()));
+		std::vector<std::string>(_scenesNames.begin() + 1, _scenesNames.end()),
+		save);
 	_entities.push_back(new Entity(glm::vec3(6.0, 1.5, 0.0),
 								   glm::vec3(0.0, 0.0, 0.0f), NULL, "Bomb"));
 	_entities.back()->scale(glm::vec3(10.0));
@@ -73,7 +42,7 @@ void BombermanGame::_forest(void) {
 	// 							   glm::vec3(0.0, 0.0, 0.0f), nullptr,
 	// 							   "Island"));
 	_entities.push_back(new Player(glm::vec3(-7.0f, 0.5f, -7.0f),
-								   glm::vec3(0.0f, 0.0f, 0.0f), _camera));
+								   glm::vec3(0.0f, 0.0f, 0.0f), save, _camera));
 	_entities.push_back(new Enemy(glm::vec3(7.0f, 0.5f, 7.0f),
 								  glm::vec3(0.0f, 0.0f, 0.0f), _camera));
 	_entities.push_back(new Entity(
@@ -106,48 +75,12 @@ void BombermanGame::_initScenes(void) {
 	_scenesMap[_scenesNames.back()] = &BombermanGame::_forest;
 }
 
-void BombermanGame::getSave(void) {
-	std::ifstream rFile(BombermanGame::SAVE_FILE);
-	if (rFile.is_open()) {
-		std::string line;
-		std::string allLines = "";
-
-		while (getline(rFile, line)) {
-			allLines += line;
-		}
-		rFile.close();
-
-		nlohmann::json parsedJson = nlohmann::json::parse(allLines.c_str());
-
-		try {
-			BombermanGame::save = parsedJson;
-		} catch (std::exception e) {
-			BombermanGame::initNewSave();
-		}
-	} else
-		BombermanGame::initNewSave();
+size_t BombermanGame::getWindowWidth() {
+	return std::get<1>(Save::RESOLUTIONS[save.resolutionsIdx]);
 }
-
-void BombermanGame::initNewSave(void) {
-	save.resetAll();
-	doSave();
+size_t BombermanGame::getWindowHeight() {
+	return std::get<2>(Save::RESOLUTIONS[save.resolutionsIdx]);
 }
-
-void BombermanGame::doSave(void) {
-	std::ofstream myfile(SAVE_FILE);
-	if (myfile.is_open()) {
-		nlohmann::json myJson = save;
-		myfile << std::setw(4) << myJson << std::endl;
-		myfile.close();
-	}
+bool BombermanGame::isFullScreen() {
+	return std::get<1>(Save::FULL_SCREEN[save.isFullScreen]);
 }
-
-const std::string getSaveFilePath() {
-	std::string path = __FILE__;
-	path.erase(path.begin() + path.rfind("/BombermanGame.cpp") + 1, path.end());
-	path += "save.txt";
-	return path;
-}
-const std::string BombermanGame::SAVE_FILE = getSaveFilePath();
-
-Save BombermanGame::save = Save();
