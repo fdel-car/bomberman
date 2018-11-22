@@ -1,6 +1,6 @@
 #pragma once
 
-#include "GUI/GUI.hpp"
+#include "engine/GUI/GUI.hpp"
 #include "engine/Entity.hpp"
 
 class Camera : public Entity {

@@ -1,13 +1,17 @@
 #include "game/entities/Player.hpp"
 #include "engine/GameEngine.hpp"
+#include "game/Bomberman.hpp"
 
-Player::Player(glm::vec3 position, glm::vec3 eulerAngles, Entity *gameManager)
+Player::Player(glm::vec3 position, glm::vec3 eulerAngles, Save &save,
+			   Entity *gameManager)
 	: Entity(position, eulerAngles,
-			 new Collider(Collider::Circle, 0.48f, 0.48f), "Player",
-			 gameManager) {
+			 new Collider(Collider::Circle, 0.45f, 0.45f), "Player",
+			 gameManager),
+	  _save(save) {
 	_name = "Player";
 	_tag = "Player";
-	_speed = 8.0f;
+	_speed = 6.0f;
+	scale(glm::vec3(0.9, 0.9, 0.9));
 }
 
 Player::~Player(void) {}
@@ -23,10 +27,10 @@ void Player::update(void) {
 	float zDirection = 0.0f;
 
 	// Update position based on keyboard
-	if (_gameEngine->isKeyPressed(KEY_A)) xSign -= 1;
-	if (_gameEngine->isKeyPressed(KEY_D)) xSign += 1;
-	if (_gameEngine->isKeyPressed(KEY_W)) zSign -= 1;
-	if (_gameEngine->isKeyPressed(KEY_S)) zSign += 1;
+	if (_gameEngine->isKeyPressed(_save.leftKey)) xSign -= 1;
+	if (_gameEngine->isKeyPressed(_save.rightKey)) xSign += 1;
+	if (_gameEngine->isKeyPressed(_save.upKey)) zSign -= 1;
+	if (_gameEngine->isKeyPressed(_save.downKey)) zSign += 1;
 	if (xSign == 0 && zSign == 0) {
 		// TODO: check for joystick input
 	} else {

@@ -1,14 +1,7 @@
 #pragma once
 
 #include "engine/AGame.hpp"
-
-struct Save {
-   public:
-	std::string upKey = "W";
-	std::string downKey = "S";
-};
-
-// class json;
+#include "game/Save.hpp"
 
 class Bomberman : public AGame {
 	typedef void (Bomberman::*Scene)(void);
@@ -17,9 +10,14 @@ class Bomberman : public AGame {
 	Bomberman(void);
 	virtual ~Bomberman(void);
 	virtual bool loadSceneByIndex(int sceneIdx);
+	virtual size_t getWindowWidth();
+	virtual size_t getWindowHeight();
+	virtual bool isFullScreen();
 
    private:
+	Save save;
 	std::map<std::string, Scene> _scenesMap;
+
 	void _initScenes(void);
 
 	void _mainMenu(void);

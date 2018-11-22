@@ -6,7 +6,7 @@
 #define NK_INCLUDE_DEFAULT_FONT
 #define NK_IMPLEMENTATION
 
-#include "GUI/GUI.hpp"
+#include "engine/GUI/GUI.hpp"
 
 struct nk GUI::glfw = nk();
 

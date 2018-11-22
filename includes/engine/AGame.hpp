@@ -9,6 +9,9 @@ class AGame {
 	virtual ~AGame(void);
 
 	virtual bool loadSceneByIndex(int sceneIdx) = 0;
+	virtual size_t getWindowWidth() = 0;
+	virtual size_t getWindowHeight() = 0;
+	virtual bool isFullScreen() = 0;
 	virtual int getSceneIndexByName(std::string sceneName) const;
 
 	std::vector<std::tuple<float, std::string, std::string>> &getNeededFont();
