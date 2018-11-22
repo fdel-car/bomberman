@@ -35,9 +35,14 @@ GameRenderer::GameRenderer(GameEngine *gameEngine, AGame *game) {
 	glfwSetKeyCallback(_window, keyCallback);
 
 	_initGUI(game);
-	_initDepthMap();
-	_initShader();
 	_initModels();
+	//shadows
+	if (_initDepthMap())
+	{
+		
+		// _lightColor = glm::vec3(1.0f, 1.0f, 1.0f);
+		_initShader();
+	}
 }
 
 GameRenderer::~GameRenderer(void) {
@@ -103,7 +108,7 @@ void GameRenderer::_initShader(void) {
 	// Set permanent values
 	_shaderProgram->setVec3("lightDir", glm::normalize(glm::vec3(0.4f, -0.6f, -0.5f)));
 	_shaderProgram->setVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
-	// _shaderProgram->setInt("textureID", 0);
+	_shaderProgram->setInt("textureID", 0);
 	_shaderProgram->setVec3("lightPos", _lightPos);
 }
 
@@ -161,8 +166,10 @@ void GameRenderer::refreshWindow(std::vector<Entity *> &entities,
 	_shaderProgram->setMat4("lightSpaceMatrix", _lightSpaceMatrix);
 	// _shaderProgram->setInt("shadowMap", 0);
 
-	glActiveTexture(GL_TEXTURE1);
+	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, _depthMap);
+	// _shaderProgram->setInt("shadowMap", 1);
+
 
 	for (auto entity : entities) {
 		_shaderProgram->setMat4("M", entity->getModelMatrix());
@@ -175,7 +182,6 @@ void GameRenderer::refreshWindow(std::vector<Entity *> &entities,
 	glBindVertexArray(0);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	glDisable(GL_DEPTH_TEST);
-
 	glDisable( GL_CULL_FACE );
 
 	graphicUI->nkNewFrame();
