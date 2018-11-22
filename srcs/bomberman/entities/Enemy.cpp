@@ -8,7 +8,7 @@ Enemy::Enemy(glm::vec3 position, glm::vec3 eulerAngles, Entity *gameManager)
 			 gameManager) {
 	_name = "Enemy";
 	_tag = "Enemy";
-	_speed = 1.0f;
+	_speed = 4.0f;
 }
 
 Enemy::~Enemy(void) {}
@@ -16,39 +16,58 @@ Enemy::~Enemy(void) {}
 void Enemy::update(void) {
 	// if (_cooldown <= 0.0f) {
 	// 	_cooldown = 0.5f;
-	// 	ForestCam *cam = reinterpret_cast<ForestCam *>(_sceneManager);
-	// 	if (cam != nullptr) {
-	// 		cam->printMapInfo();
-	// 	}
-	//
+	Tools *cam = reinterpret_cast<Tools *>(_sceneManager);
+
+	if (cam == nullptr) {
+		std::cerr << "Update as fail" << std::endl;
+		return ;
+	}
+	size_t mapWidth = cam->getMapWidth();
+	size_t mapHeight = cam->getMapHeight();
+	size_t posIdx = cam->getEntitiesInfos().at(_id)[0];
+	float x = cam->getEntitiesInSquares()[posIdx].at(_id)->getPosition().x + (static_cast<float>(mapWidth) / 2) + 0.5;
+	float z = cam->getEntitiesInSquares()[posIdx].at(_id)->getPosition().z + (static_cast<float>(mapHeight) / 2) + 0.5;
+	if (_cooldown <= 0.0f) {
+		_cooldown = 0.5f;
+		cam->printMapInfo();
+		std::cout << "X : " << x << " Z : " << z << std::endl;
+		std::cout << "X : " << static_cast<int>(x) << " Z : " << static_cast<int>(z) << std::endl;
+	}
 	// 	float deltaTime = _gameEngine->getDeltaTime();
-	// 	int xSign = 0;
-	// 	int zSign = 1;
+	// std::cout << _name << _id << cam-> << std::endl;
+	if (x <= 9.01)
+		_targetMovement *= 0;
+	else {
+		int xSign = -1;
+		int zSign = 0;
 	//
 	// 	// Normalize direction
-	// 	float xDirection = static_cast<float>(xSign);
-	// 	float zDirection = static_cast<float>(zSign);
+		float xDirection = static_cast<float>(xSign);
+		float zDirection = static_cast<float>(zSign);
 	// 	xSign = abs(xSign);
 	// 	zSign = abs(zSign);
-	// 	float totalMagnitude = xSign + zSign;
-	// 	xDirection *= sqrt(xSign / totalMagnitude);
-	// 	zDirection *= sqrt(zSign / totalMagnitude);
+		float totalMagnitude = xSign + zSign;
+		xDirection *= sqrt(xSign / totalMagnitude);
+		zDirection *= sqrt(zSign / totalMagnitude);
 	//
 	// 	_targetMovement.x = xDirection * _speed * deltaTime;
 	// 	_targetMovement.z = zDirection * _speed * deltaTime;
 	// 	changeDir = true;
 	// } else {
-	// 	_cooldown -= _gameEngine->getDeltaTime();
-	//
-	// 	if (_cooldown <= 0.25f && changeDir) {
-	// 		changeDir = false;
-	// 		float tmpVal = _targetMovement.z;
-	// 		_targetMovement.z = _targetMovement.x;
-	// 		_targetMovement.x = tmpVal;
-	// 	}
-	// }
-	// float deltaTime = _gameEngine->getDeltaTime();
+		_cooldown -= _gameEngine->getDeltaTime();
+		//
+		// 	if (_cooldown <= 0.25f && changeDir) {
+		// 		changeDir = false;
+		// 		float tmpVal = _targetMovement.z;
+		// 		_targetMovement.z = _targetMovement.x;
+		// 		_targetMovement.x = tmpVal;
+		// 	}
+		// }
 
-	// _targetMovement.x = xDirection * _speed * deltaTime;
-	// _targetMovement.z = zDirection * _speed * deltaTime;
+		float deltaTime = _gameEngine->getDeltaTime();
+		//
+		_targetMovement.x = xDirection * _speed * deltaTime;
+		_targetMovement.z = zDirection * _speed * deltaTime;
+	}
+	_cooldown -= _gameEngine->getDeltaTime();
 }

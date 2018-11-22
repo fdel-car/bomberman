@@ -78,6 +78,7 @@ void GameEngine::run(void) {
 
 		// Update game entities states
 		for (auto entity : _allEntities) {
+
 			entity->update();
 		}
 		moveEntities();
@@ -105,11 +106,12 @@ bool GameEngine::initScene(size_t newSceneIdx) {
 	_sceneIdx = newSceneIdx;
 	if (!_game->loadSceneByIndex(_sceneIdx)) return false;
 
-	_clearTmpEntities();
 	_camera = _game->getCamera();
 	_camera->initEntity(this);
 	_camera->configGUI(_gameRenderer->getGUI());
 
+	// _clearTmpEntities();
+	_allEntities.clear();
 	for (auto entity : _game->getEntities()) {
 		_allEntities.push_back(entity);
 		_allEntities.back()->initEntity(this);

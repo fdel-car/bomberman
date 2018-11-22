@@ -1,9 +1,9 @@
 #pragma once
 
-#include "engine/Camera.hpp"
-#include "bomberman/GUITools.hpp"
+// #include "engine/Camera.hpp"
+#include "bomberman/cams/Tools.hpp"
 
-class MainMenuCam : public Camera, public GUITools {
+class MainMenuCam : public Tools {
    public:
 	MainMenuCam(glm::vec3 const &pos, glm::vec3 const &eulerAngles,
 				std::vector<std::string> levelsName);
@@ -17,11 +17,6 @@ class MainMenuCam : public Camera, public GUITools {
 	MainMenuCam(MainMenuCam const &src);
 	MainMenuCam &operator=(MainMenuCam const &rhs);
 
-	bool _btnHover(GUI *graphicUI, int rectWidth, int rectHeight, int xRectPos,
-				   int yRectPos, int fontSize, std::string fontName,
-				   int *extraSizePlay, int maxSize, bool *isPlayButtonHover,
-				   std::string btnName, std::string btnImageHover = "",
-				   std::string btnImage = "");
 	void _settings(GUI *graphicUI);
 	void _movingTitle(GUI *graphicUI);
 

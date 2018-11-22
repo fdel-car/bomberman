@@ -5,7 +5,7 @@ extern std::string _assetsDir;
 
 MainMenuCam::MainMenuCam(glm::vec3 const &pos, glm::vec3 const &eulerAngles,
 						 std::vector<std::string> levelsName)
-	: Camera(pos, eulerAngles), GUITools(), _levelsName(levelsName) {
+	: Tools(0, 0, pos, eulerAngles), _levelsName(levelsName) {
 	_neededImages.push_back(std::tuple<std::string, std::string>(
 		(_assetsDir + "GUI/icons/rightAngleBracket.png"), "rightAngleBracket"));
 	_neededImages.push_back(std::tuple<std::string, std::string>(
@@ -161,43 +161,6 @@ void MainMenuCam::_settings(GUI *graphicUI) {
 	graphicUI->uiEndBlock();
 	activeStyle = defaultStyle;
 	graphicUI->setStyle(activeStyle);
-}
-
-bool MainMenuCam::_btnHover(GUI *graphicUI, int rectWidth, int rectHeight,
-							int xRectPos, int yRectPos, int fontSize,
-							std::string fontName, int *extraSize, int maxSize,
-							bool *isButtonHover, std::string btnName,
-							std::string btnImageHover, std::string btnImage) {
-	bool ret = false;
-	if (*extraSize < maxSize && *isButtonHover)
-		*extraSize += 1;
-	else if (*extraSize > 0 && !*isButtonHover)
-		*extraSize -= 1;
-	rectWidth += *extraSize;
-	rectHeight += *extraSize;
-	xRectPos -= *extraSize / 2;
-	yRectPos -= *extraSize / 2;
-	fontName = std::to_string(fontSize + *extraSize) + fontName;
-	if (graphicUI->uiStartBlock(
-			btnName.c_str(), "",
-			nk_rect(xRectPos, yRectPos, rectWidth, rectHeight),
-			NK_WINDOW_NO_SCROLLBAR)) {
-		if (graphicUI->uiHover()) {
-			*isButtonHover = true;
-			if (graphicUI->uiButton(rectWidth, rectHeight, 0, btnName.c_str(),
-									btnImageHover.c_str(), fontName)) {
-				ret = true;
-			}
-		} else {
-			*isButtonHover = false;
-			if (graphicUI->uiButton(rectWidth, rectHeight, 0, btnName.c_str(),
-									btnImage.c_str(), fontName)) {
-				ret = true;
-			}
-		}
-	}
-	graphicUI->uiEndBlock();
-	return ret;
 }
 
 void MainMenuCam::_movingTitle(GUI *graphicUI) {
