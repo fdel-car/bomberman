@@ -22,7 +22,7 @@ Model::Model(std::string const &objDirName) {
 	if (!err.empty())
 		std::cerr << "\033[0;31m:ERROR:\033[0m " << err << std::endl;
 
-	std::vector<std::vector<t_vertex>> meshesVertices(materials.size());
+	std::vector<std::vector<Vertex>> meshesVertices(materials.size());
 	for (size_t s = 0; s < shapes.size(); s++) {
 		size_t index_offset = 0;
 		for (size_t f = 0; f < shapes[s].mesh.num_face_vertices.size(); f++) {
@@ -31,7 +31,7 @@ Model::Model(std::string const &objDirName) {
 													  // we triangulate the .obj
 			// Per-face material ID
 			int materialID = shapes[s].mesh.material_ids[f];
-			t_vertex vertex;
+			Vertex vertex;
 
 			for (size_t v = 0; v < fv; v++) {
 				tinyobj::index_t idx = shapes[s].mesh.indices[index_offset + v];
@@ -44,6 +44,13 @@ Model::Model(std::string const &objDirName) {
 				vertex.normal.y = attrib.normals[3 * idx.normal_index + 1];
 				vertex.normal.z = attrib.normals[3 * idx.normal_index + 2];
 
+				if (!attrib.texcoords.empty()) {
+					vertex.texCoords.x =
+						attrib.texcoords[2 * idx.texcoord_index + 0];
+					vertex.texCoords.y =
+						attrib.texcoords[2 * idx.texcoord_index + 1];
+				}
+
 				meshesVertices[materialID].push_back(vertex);
 			}
 			index_offset += fv;
@@ -52,7 +59,8 @@ Model::Model(std::string const &objDirName) {
 
 	int idx = 0;
 	for (auto vertices : meshesVertices) {
-		t_material material;
+		// if (idx > 0) break;
+		Material material;
 
 		material.ambientColor =
 			glm::vec3(materials[idx].ambient[0], materials[idx].ambient[1],
@@ -64,8 +72,38 @@ Model::Model(std::string const &objDirName) {
 			glm::vec3(materials[idx].specular[0], materials[idx].specular[1],
 					  materials[idx].specular[2]);
 		material.shininess = materials[idx].shininess;
+		material.isTextured = false;
 
-		_meshes.push_back(new Mesh(vertices, material));
+		unsigned int textureID = -1;
+		if (!materials[idx].diffuse_texname.empty()) {
+			glGenTextures(1, &textureID);
+			glBindTexture(GL_TEXTURE_2D, textureID);
+
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+			int x, y, n;
+			std::string textureName = _assetsDir + "objs/" + objDirName + '/' +
+									  materials[idx].diffuse_texname;
+			stbi_set_flip_vertically_on_load(true);
+			unsigned char *data =
+				stbi_load((textureName).c_str(), &x, &y, &n, 0);
+			if (data) {
+				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, x, y, 0, GL_RGBA,
+							 GL_UNSIGNED_BYTE, data);
+				glGenerateMipmap(GL_TEXTURE_2D);
+				material.isTextured = true;
+			} else {
+				std::cerr << "Failed to load texture: " + textureName
+						  << std::endl;
+				textureID = -1;
+			}
+			stbi_set_flip_vertically_on_load(false);
+			stbi_image_free(data);
+		}
+		_meshes.push_back(new Mesh(vertices, material, textureID));
 		idx++;
 	}
 }

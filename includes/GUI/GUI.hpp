@@ -14,9 +14,8 @@
 #define NK_GLFW_DOUBLE_CLICK_HI 0.2
 
 // #include <GLFW/glfw3.h>
-#include "engine/header.hpp"
+#include "engine/Engine.hpp"
 #include "nuklear/nuklear.h"
-#include "stb_image/stb_image.h"
 
 enum theme { THEME_BLACK, THEME_WHITE, THEME_RED, THEME_BLUE, THEME_DARK };
 

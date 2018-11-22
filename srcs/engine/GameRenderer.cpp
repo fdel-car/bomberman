@@ -62,8 +62,9 @@ void GameRenderer::_initShader(void) {
 
 	// Set permanent values
 	_shaderProgram->setVec3("lightDir",
-							glm::normalize(glm::vec3(0.0f, -0.6f, -0.5f)));
+							glm::normalize(glm::vec3(0.4f, -0.6f, -0.5f)));
 	_shaderProgram->setVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
+	_shaderProgram->setInt("textureID", 0);
 }
 
 void GameRenderer::_initModels(void) {
@@ -71,8 +72,6 @@ void GameRenderer::_initModels(void) {
 	_models["Player"] = new Model("player");
 	_models["Bomb"] = new Model("bomb");
 	_models["Enemy"] = new Model("enemy");
-	_models["Tree"] = new Model("tree");
-	_models["Floor"] = new Model("floor");
 	_models["Island"] = new Model("island");
 }
 

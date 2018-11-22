@@ -1,6 +1,6 @@
 #pragma once
 
-#include "engine/header.hpp"
+#include "engine/Engine.hpp"
 
 class ShaderProgram {
    public:

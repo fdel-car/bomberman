@@ -1,7 +1,7 @@
 #ifndef COLLIDER_HPP
 #define COLLIDER_HPP
 
-#include "engine/header.hpp"
+#include "engine/Engine.hpp"
 
 struct Collider {
    public:

@@ -1,25 +1,30 @@
 #include "engine/Mesh.hpp"
 
-Mesh::Mesh(std::vector<t_vertex> const &vertices, t_material const &material)
-	: _size(vertices.size()), _material(material) {
+Mesh::Mesh(std::vector<Vertex> const &vertices, Material const &material,
+		   GLuint textureID)
+	: _size(vertices.size()), _material(material), _textureID(textureID) {
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
 
 	glBindVertexArray(VAO);
 
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(t_vertex) * vertices.size(),
+	glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * vertices.size(),
 				 &vertices.front(), GL_STATIC_DRAW);
 
 	// Positions
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(t_vertex),
-						  (void *)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)0);
 	glEnableVertexAttribArray(0);
 
 	// Normals
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(t_vertex),
-						  (void *)offsetof(t_vertex, normal));
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+						  (void *)offsetof(Vertex, normal));
 	glEnableVertexAttribArray(1);
+
+	// Texture Coords
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+						  (void *)offsetof(Vertex, texCoords));
+	glEnableVertexAttribArray(2);
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
@@ -31,10 +36,16 @@ Mesh::~Mesh(void) {
 }
 
 void Mesh::draw(ShaderProgram const &shaderProgram) const {
-	shaderProgram.setVec3("material.ambientColor", _material.diffuseColor);
+	shaderProgram.setVec3("material.ambientColor", _material.ambientColor);
 	shaderProgram.setVec3("material.diffuseColor", _material.diffuseColor);
-	shaderProgram.setVec3("material.specularColor", _material.diffuseColor);
+	shaderProgram.setVec3("material.specularColor", _material.specularColor);
 	shaderProgram.setFloat("material.shininess", _material.shininess);
+	shaderProgram.setBool("material.isTextured", _material.isTextured);
+
+	if (_material.isTextured) {
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, _textureID);
+	}
 
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);

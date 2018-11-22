@@ -1,6 +1,9 @@
-#include "bomberman/BombermanGame.hpp"
-#include "engine/AGame.hpp"
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image/stb_image.h"
+#undef STB_IMAGE_IMPLEMENTATION
+
 #include "engine/GameEngine.hpp"
+#include "game/Bomberman.hpp"
 
 std::string _assetsDir;
 std::string _srcsDir;
@@ -14,7 +17,7 @@ int main(void) {
 	try {
 		/* Initialize random seed: */
 		srand(time(NULL));
-		AGame *myGame = new BombermanGame();
+		AGame *myGame = new Bomberman();
 		GameEngine gameEngine(myGame);
 		gameEngine.run();
 		delete myGame;

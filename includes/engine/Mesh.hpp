@@ -1,18 +1,20 @@
 #pragma once
 
+#include "engine/Engine.hpp"
 #include "engine/ShaderProgram.hpp"
-#include "engine/header.hpp"
 
-typedef struct s_material {
+struct Material {
 	glm::vec3 ambientColor;
 	glm::vec3 diffuseColor;
 	glm::vec3 specularColor;
+	bool isTextured;
 	float shininess;
-} t_material;
+};
 
 class Mesh {
    public:
-	Mesh(std::vector<t_vertex> const &vertices, t_material const &material);
+	Mesh(std::vector<Vertex> const &vertices, Material const &material,
+		 GLuint textureID);
 	virtual ~Mesh(void);
 
 	size_t getSize(void) const;
@@ -23,7 +25,8 @@ class Mesh {
 
    private:
 	size_t _size;
-	t_material _material;
+	Material const _material;
+	GLuint const _textureID;
 
 	Mesh(void);
 	Mesh(Mesh const &src);

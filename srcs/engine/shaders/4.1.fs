@@ -3,19 +3,23 @@ out vec4 fragColor;
 
 in vec3 _normal;
 in vec3 _fragPos;
+in vec2 _texCoords;
 
 uniform vec3 lightDir;
 uniform vec3 cameraPos;
 uniform vec3 lightColor;
 
-struct s_material {
+uniform sampler2D textureID;
+
+struct Material {
     vec3 ambientColor;
     vec3 diffuseColor;
     vec3 specularColor;
+    bool isTextured;
     float shininess;
 };
 
-uniform s_material material;
+uniform Material material;
 
 void main() {
     // Ambient
@@ -23,8 +27,12 @@ void main() {
     vec3 ambient = ambientStrength * material.ambientColor * lightColor;
 
     // Difuse
+    vec3 diffuse;
     float diffCoeff = max(dot(_normal, -lightDir), 0.0f);
-    vec3 diffuse = diffCoeff * material.diffuseColor * lightColor;
+    if (material.isTextured)
+        diffuse = diffCoeff * texture(textureID, _texCoords).xyz * lightColor;
+    else
+        diffuse = diffCoeff * material.diffuseColor * lightColor;
 
     // Specular
     vec3 viewDir = normalize(cameraPos - _fragPos);
