@@ -11,15 +11,32 @@
 extern std::string _assetsDir;
 
 void to_json(nlohmann::json& j, const Save& p) {
-	j = nlohmann::json{
-		{"upKey", p.upKey}  // ,{"toto" = 42}
-	};
+	j = nlohmann::json{{"upKey", p.upKey},
+					   {"leftKey", p.leftKey},
+					   {"downKey", p.downKey},
+					   {"rightKey", p.rightKey}};
 }
 
 void from_json(const nlohmann::json& j, Save& p) {
 	j.at("upKey").get_to(p.upKey);
-	// j.at("downKey").get_to(p.downKey);
-	// j.at("age").get_to(p.age);
+	j.at("leftKey").get_to(p.leftKey);
+	j.at("downKey").get_to(p.downKey);
+	j.at("rightKey").get_to(p.rightKey);
+}
+
+void Save::resetSettings(void) {
+	upKey = "W";
+	leftKey = "A";
+	downKey = "S";
+	rightKey = "D";
+	bombKey = "SPACE";
+}
+
+void Save::resetLevel(void) { level = 0; }
+
+void Save::resetAll(void) {
+	resetSettings();
+	resetLevel();
 }
 
 BombermanGame::BombermanGame(void) : AGame() {
@@ -27,63 +44,7 @@ BombermanGame::BombermanGame(void) : AGame() {
 		_neededFonts.push_back(std::tuple<float, std::string, std::string>(
 			size, (_assetsDir + "GUI/fonts/BOMBERMAN.ttf"), "BOMBERMAN"));
 	_initScenes();
-
-	// create a JSON object
-	// nlohmann::json j = {{"pi", 3.141},
-	// 					{"happy", true},
-	// 					{"name", "Niels"},
-	// 					{"nothing", nullptr},
-	// 					{"answer", {{"everything", 42}}},
-	// 					{"list", {1, 0, 2}},
-	// 					{"object", {{"currency", "USD"}, {"value", 42.99}}}};
-
-	// // add new values
-	// j["new"]["key"]["value"] = {"another", "list"};
-
-	// // count elements
-	// auto s = j.size();
-	// j["size"] = s;
-
-	// // pretty print with indent of 4 spaces
-	// std::cout << std::setw(4) << j << '\n';
-
-	// Save save;
-
-	// nlohmann::json jTest = save;
-	// std::cout << "Should look like:\n\t" << jTest << std::endl;
-
-	// std::cout << "Saving to file.." << std::endl;
-	// std::ofstream myfile("example.txt");
-	// if (myfile.is_open()) {
-	// 	myfile << std::setw(4) << jTest << std::endl;
-	// 	myfile.close();
-	// }
-
-	// nlohmann::json j_complete = nlohmann::json::parse(char *txt);
-
-	// std::cout << "Reading from file.." << std::endl;
-	std::ifstream rFile("example.txt");
-	if (rFile.is_open()) {
-		std::string line;
-		std::string allLines = "";
-
-		while (getline(rFile, line)) {
-			std::cout << line << '\n';
-			allLines += line;
-		}
-		rFile.close();
-
-		nlohmann::json parsedJson = nlohmann::json::parse(allLines.c_str());
-
-		try {
-			Save saveT = parsedJson;
-			std::cout << "Save val: " << saveT.upKey << std::endl;
-		} catch (std::exception e) {
-			std::cout
-				<< "--------------------- Could not convert json to struct"
-				<< std::endl;
-		}
-	}
+	getSave();
 }
 
 BombermanGame::~BombermanGame(void) {}
@@ -144,3 +105,49 @@ void BombermanGame::_initScenes(void) {
 	_scenesNames.push_back("Forest");
 	_scenesMap[_scenesNames.back()] = &BombermanGame::_forest;
 }
+
+void BombermanGame::getSave(void) {
+	std::ifstream rFile(BombermanGame::SAVE_FILE);
+	if (rFile.is_open()) {
+		std::string line;
+		std::string allLines = "";
+
+		while (getline(rFile, line)) {
+			allLines += line;
+		}
+		rFile.close();
+
+		nlohmann::json parsedJson = nlohmann::json::parse(allLines.c_str());
+
+		try {
+			BombermanGame::save = parsedJson;
+		} catch (std::exception e) {
+			BombermanGame::initNewSave();
+		}
+	} else
+		BombermanGame::initNewSave();
+}
+
+void BombermanGame::initNewSave(void) {
+	save.resetAll();
+	doSave();
+}
+
+void BombermanGame::doSave(void) {
+	std::ofstream myfile(SAVE_FILE);
+	if (myfile.is_open()) {
+		nlohmann::json myJson = save;
+		myfile << std::setw(4) << myJson << std::endl;
+		myfile.close();
+	}
+}
+
+const std::string getSaveFilePath() {
+	std::string path = __FILE__;
+	path.erase(path.begin() + path.rfind("/BombermanGame.cpp") + 1, path.end());
+	path += "save.txt";
+	return path;
+}
+const std::string BombermanGame::SAVE_FILE = getSaveFilePath();
+
+Save BombermanGame::save = Save();
