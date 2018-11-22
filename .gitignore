@@ -45,3 +45,4 @@ includes/tiny_obj_loader/*
 SFML-2.5.1/*
 sfml-build/*
 .vscode/
+save.txt

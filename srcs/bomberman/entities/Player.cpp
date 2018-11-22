@@ -1,4 +1,5 @@
 #include "bomberman/entities/Player.hpp"
+#include "bomberman/BombermanGame.hpp"
 #include "engine/GameEngine.hpp"
 
 Player::Player(glm::vec3 position, glm::vec3 eulerAngles, Entity *gameManager)
@@ -22,11 +23,12 @@ void Player::update(void) {
 	// float yDirection = 0.0f;  // Not used since we cannot jump yet
 	float zDirection = 0.0f;
 
+	std::cout << "'" << BombermanGame::save.downKey << "'" << std::endl;
 	// Update position based on keyboard
-	if (_gameEngine->isKeyPressed(KEY_A)) xSign -= 1;
-	if (_gameEngine->isKeyPressed(KEY_D)) xSign += 1;
-	if (_gameEngine->isKeyPressed(KEY_W)) zSign -= 1;
-	if (_gameEngine->isKeyPressed(KEY_S)) zSign += 1;
+	if (_gameEngine->isKeyPressed(BombermanGame::save.leftKey)) xSign -= 1;
+	if (_gameEngine->isKeyPressed(BombermanGame::save.rightKey)) xSign += 1;
+	if (_gameEngine->isKeyPressed(BombermanGame::save.upKey)) zSign -= 1;
+	if (_gameEngine->isKeyPressed(BombermanGame::save.downKey)) zSign += 1;
 	if (xSign == 0 && zSign == 0) {
 		// TODO: check for joystick input
 	} else {
