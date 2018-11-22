@@ -55,6 +55,12 @@ if [ ! -d "includes/nuklear" ]; then
     curl https://raw.githubusercontent.com/vurtun/nuklear/master/nuklear.h -o includes/nuklear/nuklear.h
 fi
 
+# Json parser install
+if [ ! -d "includes/json" ]; then
+    mkdir includes/json
+    curl https://raw.githubusercontent.com/nlohmann/json/develop/single_include/nlohmann/json.hpp -o includes/json/json.hpp
+fi
+
 which cmake >> /dev/null || (echo "Without cmake installed on your computer you can't fully finish the installation. The command 'brew install cmake' can be pretty useful!" || exit 0)
 
 # SFML 2.5.1 audio install

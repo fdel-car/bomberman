@@ -880,8 +880,9 @@ bool GUI::uiHorizontalSelection(int widgetWidth, std::string leftText,
 	if (leftText.size() != 0) nk_layout_row_push(&glfw.ctx, widgetWidth / 2);
 	nk_label(&glfw.ctx, leftText.c_str(), NK_TEXT_LEFT);
 	nk_layout_row_push(&glfw.ctx, 30);
-	if (_media->myImages.find("chevronGauche") != _media->myImages.end()) {
-		if (nk_button_image(&glfw.ctx, _media->myImages.at("chevronGauche"))) {
+	if (_media->myImages.find("leftAngleBracket") != _media->myImages.end()) {
+		if (nk_button_image(&glfw.ctx,
+							_media->myImages.at("leftAngleBracket"))) {
 			if (*choice > 0) *choice -= 1;
 			tmp = true;
 		}
@@ -892,8 +893,9 @@ bool GUI::uiHorizontalSelection(int widgetWidth, std::string leftText,
 		nk_layout_row_push(&glfw.ctx, widgetWidth);
 	nk_label(&glfw.ctx, rightText.c_str(), NK_TEXT_CENTERED);
 	nk_layout_row_push(&glfw.ctx, 30);
-	if (_media->myImages.find("chevronDroit") != _media->myImages.end()) {
-		if (nk_button_image(&glfw.ctx, _media->myImages.at("chevronDroit"))) {
+	if (_media->myImages.find("rightAngleBracket") != _media->myImages.end()) {
+		if (nk_button_image(&glfw.ctx,
+							_media->myImages.at("rightAngleBracket"))) {
 			if (*choice < maxSize) *choice += 1;
 			tmp = true;
 		}
@@ -928,11 +930,9 @@ void GUI::uiRowMultipleElem(bool isSart, int height, int nbrOfElem,
 							nk_layout_format flags) {
 	if (isSart) {
 		nk_layout_row_begin(&glfw.ctx, flags, height, nbrOfElem);
-		return ;
+		return;
 	}
 	nk_layout_row_end(&glfw.ctx);
 }
 
-void GUI::uiAddElemInRow(int width) {
-	nk_layout_row_push(&glfw.ctx, width);
-}
+void GUI::uiAddElemInRow(int width) { nk_layout_row_push(&glfw.ctx, width); }

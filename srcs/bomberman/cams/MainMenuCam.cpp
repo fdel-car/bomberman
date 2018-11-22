@@ -7,9 +7,9 @@ MainMenuCam::MainMenuCam(glm::vec3 const &pos, glm::vec3 const &eulerAngles,
 						 std::vector<std::string> levelsName)
 	: Camera(pos, eulerAngles), GUITools(), _levelsName(levelsName) {
 	_neededImages.push_back(std::tuple<std::string, std::string>(
-		(_assetsDir + "GUI/icons/chevronDroit.png"), "chevronDroit"));
+		(_assetsDir + "GUI/icons/rightAngleBracket.png"), "rightAngleBracket"));
 	_neededImages.push_back(std::tuple<std::string, std::string>(
-		(_assetsDir + "GUI/icons/chevronGauche.png"), "chevronGauche"));
+		(_assetsDir + "GUI/icons/leftAngleBracket.png"), "leftAngleBracket"));
 	_neededImages.push_back(std::tuple<std::string, std::string>(
 		(_assetsDir + "GUI/icons/settings.png"), "settings"));
 }

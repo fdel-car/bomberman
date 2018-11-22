@@ -4,7 +4,7 @@
 #include "engine/GameEngine.hpp"
 #include "engine/Model.hpp"
 
-extern std::string _assetsDir;
+extern std::string _srcsDir;
 
 GameRenderer::GameRenderer(GameEngine *gameEngine, AGame *game) {
 	_gameEngine = gameEngine;
@@ -56,8 +56,8 @@ void GameRenderer::_initGUI(AGame *game) {
 }
 
 void GameRenderer::_initShader(void) {
-	_shaderProgram = new ShaderProgram(_assetsDir + "../srcs/shaders/4.1.vs",
-									   _assetsDir + "../srcs/shaders/4.1.fs");
+	_shaderProgram = new ShaderProgram(_srcsDir + "engine/shaders/4.1.vs",
+									   _srcsDir + "engine/shaders/4.1.fs");
 	glUseProgram(_shaderProgram->getID());
 
 	// Set permanent values

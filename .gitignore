@@ -39,6 +39,7 @@ includes/glad/*
 includes/glm/*
 srcs/glad/*
 includes/nuklear/*
+includes/json/*
 includes/stb_image/*
 includes/tiny_obj_loader/*
 SFML-2.5.1/*

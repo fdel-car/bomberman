@@ -13,9 +13,8 @@ Model::Model(std::string const &objDirName) {
 
 	tinyobj::LoadObj(
 		&attrib, &shapes, &materials, &warn, &err,
-		(_assetsDir + "/objs/" + objDirName + '/' + objDirName + ".obj")
-			.c_str(),
-		(_assetsDir + "/objs/" + objDirName + '/').c_str());
+		(_assetsDir + "objs/" + objDirName + '/' + objDirName + ".obj").c_str(),
+		(_assetsDir + "objs/" + objDirName + '/').c_str());
 
 	// Error output
 	if (!warn.empty())
