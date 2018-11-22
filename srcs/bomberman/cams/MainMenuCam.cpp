@@ -169,10 +169,10 @@ void MainMenuCam::_settings(GUI *graphicUI) {
 		}
 		graphicUI->uiAddElemInRow(btnWidth);
 		if (graphicUI->uiButton(btnWidth, 50, 0, "Save", "", "", false)) {
-			BombermanGame::save.upKey = upChoice[0];
-			BombermanGame::save.leftKey = leftChoice[0];
-			BombermanGame::save.downKey = downChoice[0];
-			BombermanGame::save.rightKey = rightChoice[0];
+			BombermanGame::save.upKey = toupper(upChoice[0]);
+			BombermanGame::save.leftKey = toupper(leftChoice[0]);
+			BombermanGame::save.downKey = toupper(downChoice[0]);
+			BombermanGame::save.rightKey = toupper(rightChoice[0]);
 			BombermanGame::doSave();
 			_changeSettings = false;
 		}
