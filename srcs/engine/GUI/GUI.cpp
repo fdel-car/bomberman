@@ -7,7 +7,7 @@
 #define NK_IMPLEMENTATION
 #define STB_IMAGE_IMPLEMENTATION
 
-#include "GUI/GUI.hpp"
+#include "engine/GUI/GUI.hpp"
 
 struct nk GUI::glfw = nk();
 
