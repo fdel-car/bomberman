@@ -1,21 +1,22 @@
 #include "bomberman/cams/Tools.hpp"
 
 Tools::Tools(size_t mapWidth, size_t mapHeight, glm::vec3 const &pos,
-				glm::vec3 const &eulerAngles)
-			: Camera(pos, eulerAngles),
-			_slowGUIAnimation(true),
-			_mapWidth(mapWidth), _mapHeight(mapHeight),
-			_entitiesInSquares(std::vector<std::map<size_t, Entity *>>(mapWidth * mapHeight))
-			{}
+			 glm::vec3 const &eulerAngles)
+	: Camera(pos, eulerAngles),
+	  _slowGUIAnimation(true),
+	  _mapWidth(mapWidth),
+	  _mapHeight(mapHeight),
+	  _entitiesInSquares(
+		  std::vector<std::map<size_t, Entity *>>(mapWidth * mapHeight)) {}
 
 Tools::~Tools(void) {}
 
 void Tools::_displayDialogue(GUI *graphicUI, int *searchWord, int *lastWord,
-								int *startStrIdx, std::string name,
-								std::string imgName, std::string str,
-								bool isImgLeft, size_t maxCharPerLine,
-								int nbrOfLine, nk_flags textPosition,
-								std::string fontText, std::string fontTitle) {
+							 int *startStrIdx, std::string name,
+							 std::string imgName, std::string str,
+							 bool isImgLeft, size_t maxCharPerLine,
+							 int nbrOfLine, nk_flags textPosition,
+							 std::string fontText, std::string fontTitle) {
 	size_t maxCPL =
 		((WINDOW_W / 4) * 3 - (((WINDOW_H / 4) - 45) - (WINDOW_W / 4)) - 40) /
 		8.5;
@@ -39,8 +40,8 @@ void Tools::_displayDialogue(GUI *graphicUI, int *searchWord, int *lastWord,
 						   fontText, fontTitle);
 }
 
-bool Tools::_displayPauseMenu(GUI *graphicUI, int *_newSceneIdx,
-								 int restartIdx, int leaveIdx) {
+bool Tools::_displayPauseMenu(GUI *graphicUI, int *_newSceneIdx, int restartIdx,
+							  int leaveIdx) {
 	bool res = true;
 	if (graphicUI->uiStartBlock(
 			"PauseMenu", "Pause",
@@ -69,10 +70,10 @@ bool Tools::_displayPauseMenu(GUI *graphicUI, int *_newSceneIdx,
 }
 
 bool Tools::_btnHover(GUI *graphicUI, int rectWidth, int rectHeight,
-							int xRectPos, int yRectPos, int fontSize,
-							std::string fontName, int *extraSize, int maxSize,
-							bool *isButtonHover, std::string btnName,
-							std::string btnImageHover, std::string btnImage) {
+					  int xRectPos, int yRectPos, int fontSize,
+					  std::string fontName, int *extraSize, int maxSize,
+					  bool *isButtonHover, std::string btnName,
+					  std::string btnImageHover, std::string btnImage) {
 	bool ret = false;
 	if (*extraSize < maxSize && *isButtonHover)
 		*extraSize += 1;
@@ -170,7 +171,6 @@ void Tools::_savePositions(Entity *entity) {
 	_entitiesInfos[entity->getId()] = allNewSquareWeAreIn;
 }
 
-
 void Tools::printMapInfo(void) {
 	std::cout << "-------------------------------------------" << std::endl;
 	size_t i = 0;
@@ -189,14 +189,11 @@ std::map<size_t, std::vector<size_t>> const &Tools::getEntitiesInfos() const {
 	return _entitiesInfos;
 }
 
-std::vector<std::map<size_t, Entity *>> const &Tools::getEntitiesInSquares() const {
+std::vector<std::map<size_t, Entity *>> const &Tools::getEntitiesInSquares()
+	const {
 	return _entitiesInSquares;
 }
 
-size_t const &Tools::getMapWidth() const {
-	return _mapWidth;
-}
+size_t const &Tools::getMapWidth() const { return _mapWidth; }
 
-size_t const &Tools::getMapHeight() const {
-	return _mapHeight;
-}
+size_t const &Tools::getMapHeight() const { return _mapHeight; }

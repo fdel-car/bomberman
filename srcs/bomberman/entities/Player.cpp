@@ -5,12 +5,13 @@
 Player::Player(glm::vec3 position, glm::vec3 eulerAngles, Save &save,
 			   Entity *gameManager)
 	: Entity(position, eulerAngles,
-			 new Collider(Collider::Circle, 0.48f, 0.48f), "Player",
+			 new Collider(Collider::Circle, 0.45f, 0.45f), "Player",
 			 gameManager),
 	  _save(save) {
 	_name = "Player";
 	_tag = "Player";
-	_speed = 8.0f;
+	_speed = 6.0f;
+	scale(glm::vec3(0.9, 0.9, 0.9));
 }
 
 Player::~Player(void) {}
