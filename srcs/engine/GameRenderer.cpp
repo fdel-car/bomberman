@@ -103,7 +103,7 @@ void GameRenderer::_initShader(void) {
 	// Set permanent values
 	_shaderProgram->setVec3("lightDir", glm::normalize(glm::vec3(0.4f, -0.6f, -0.5f)));
 	_shaderProgram->setVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
-	_shaderProgram->setInt("textureID", 0);
+	// _shaderProgram->setInt("textureID", 0);
 	_shaderProgram->setVec3("lightPos", _lightPos);
 }
 
@@ -147,7 +147,6 @@ void GameRenderer::refreshWindow(std::vector<Entity *> &entities,
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-
 	// normal
 	glEnable( GL_CULL_FACE );
 	glViewport(0, 0, WINDOW_W, WINDOW_H);
@@ -160,8 +159,9 @@ void GameRenderer::refreshWindow(std::vector<Entity *> &entities,
 	_shaderProgram->setMat4("P", camera->getProjectionMatrix());
 	_shaderProgram->setVec3("cameraPos", camera->getPosition());
 	_shaderProgram->setMat4("lightSpaceMatrix", _lightSpaceMatrix);
+	// _shaderProgram->setInt("shadowMap", 0);
 
-	glActiveTexture(GL_TEXTURE0);
+	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, _depthMap);
 
 	for (auto entity : entities) {
