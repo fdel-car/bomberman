@@ -1,6 +1,6 @@
-#include "AGame.hpp"
-#include "GameEngine.hpp"
-#include "scenes/BombermanGame.hpp"
+#include "bomberman/BombermanGame.hpp"
+#include "engine/AGame.hpp"
+#include "engine/GameEngine.hpp"
 
 std::string _assetsDir;
 

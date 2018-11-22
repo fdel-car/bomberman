@@ -10,24 +10,28 @@ add_subdirectory(glfw-3.2.1)
 include_directories(scrs)
 set(SRCS
   srcs/main.cpp
+
   srcs/glad/glad.cpp
-  srcs/Entity.cpp
-  srcs/AudioManager.cpp
-  srcs/Collider.cpp
-  srcs/AGame.cpp
-  srcs/GameEngine.cpp
-  srcs/GameRenderer.cpp
-  srcs/ShaderProgram.cpp
-  srcs/Camera.cpp
-  srcs/Model.cpp
-  srcs/Mesh.cpp
+
+  srcs/engine/Entity.cpp
+  srcs/engine/AudioManager.cpp
+  srcs/engine/Collider.cpp
+  srcs/engine/AGame.cpp
+  srcs/engine/GameEngine.cpp
+  srcs/engine/GameRenderer.cpp
+  srcs/engine/ShaderProgram.cpp
+  srcs/engine/Camera.cpp
+  srcs/engine/Model.cpp
+  srcs/engine/Mesh.cpp
+
   srcs/GUI/GUI.cpp
-  srcs/scenes/BombermanGame.cpp
-  srcs/scenes/cams/MainMenuCam.cpp
-  srcs/scenes/cams/ForestCam.cpp
-  srcs/scenes/entities/Player.cpp
-  srcs/scenes/entities/Enemy.cpp
-  srcs/scenes/GUITools.cpp
+
+  srcs/bomberman/BombermanGame.cpp
+  srcs/bomberman/cams/MainMenuCam.cpp
+  srcs/bomberman/cams/ForestCam.cpp
+  srcs/bomberman/entities/Player.cpp
+  srcs/bomberman/entities/Enemy.cpp
+  srcs/bomberman/GUITools.cpp
 )
 
 include_directories(includes)
@@ -40,24 +44,27 @@ set(HEADERS
   includes/glm/gtc/matrix_transform.hpp
   includes/glm/gtc/type_ptr.hpp
   includes/json/json.hpp
-  includes/header.hpp
-  includes/Entity.hpp
-  includes/AudioManager.hpp
-  includes/Collider.hpp
-  includes/AGame.hpp
-  includes/GameEngine.hpp
-  includes/GameRenderer.hpp
-  includes/ShaderProgram.hpp
-  includes/Camera.hpp
-  includes/Model.hpp
-  includes/Mesh.hpp
+
+  includes/engine/header.hpp
+  includes/engine/Entity.hpp
+  includes/engine/AudioManager.hpp
+  includes/engine/Collider.hpp
+  includes/engine/AGame.hpp
+  includes/engine/GameEngine.hpp
+  includes/engine/GameRenderer.hpp
+  includes/engine/ShaderProgram.hpp
+  includes/engine/Camera.hpp
+  includes/engine/Model.hpp
+  includes/engine/Mesh.hpp
+
   includes/GUI/GUI.hpp
-  includes/scenes/BombermanGame.hpp
-  includes/scenes/cams/MainMenuCam.hpp
-  includes/scenes/cams/ForestCam.hpp
-  includes/scenes/entities/Player.hpp
-  includes/scenes/entities/Enemy.hpp
-  includes/scenes/GUITools.hpp
+
+  includes/bomberman/BombermanGame.hpp
+  includes/bomberman/cams/MainMenuCam.hpp
+  includes/bomberman/cams/ForestCam.hpp
+  includes/bomberman/entities/Player.hpp
+  includes/bomberman/entities/Enemy.hpp
+  includes/bomberman/GUITools.hpp
 )
 
 add_executable(super_bomberman ${SRCS} ${HEADERS})
