@@ -59,7 +59,6 @@ Model::Model(std::string const &objDirName) {
 
 	int idx = 0;
 	for (auto vertices : meshesVertices) {
-		// if (idx > 0) break;
 		Material material;
 
 		material.ambientColor =
