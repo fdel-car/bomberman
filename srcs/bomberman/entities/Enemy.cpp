@@ -23,15 +23,13 @@ void Enemy::update(void) {
 		return;
 	}
 	size_t mapWidth = cam->getMapWidth();
-	size_t mapHeight = cam->getMapHeight();
-	size_t posIdx = cam->getEntitiesInfos().at(_id)[0];
+	// size_t mapHeight = cam->getMapHeight();
 
 	float x = this->getPosition().x + (static_cast<float>(mapWidth) / 2);
-	float z = cam->getEntitiesInSquares()[posIdx].at(_id)->getPosition().z +
-			  (static_cast<float>(mapHeight) / 2) + _collider->height;
+	// float z = this->getPosition().z + (static_cast<float>(mapHeight) / 2);
 	if (_cooldown <= 0.0f) {
 		_cooldown = 0.5f;
-		cam->printMapInfo();
+		// cam->printMapInfo();
 		// std::cout << "X : " << x << " Z : " << z << std::endl;
 		// std::cout << "X : " << static_cast<int>(x)
 		// 		  << " Z : " << static_cast<int>(z) << std::endl;
