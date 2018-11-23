@@ -4,7 +4,6 @@ AGame::AGame(size_t enumSize) : _camera(nullptr) {
 	_collisionTable = std::vector<std::vector<bool>>(enumSize);
 	for (auto &collisionTag : _collisionTable) {
 		collisionTag = std::vector<bool>(enumSize, true);
-		enumSize--;
 	}
 }
 
@@ -43,4 +42,9 @@ int AGame::getSceneIndexByName(std::string sceneName) const {
 		idx++;
 	}
 	return -1;
+}
+
+void AGame::setLayerCollision(int layer1, int layer2, bool doCollide) {
+	_collisionTable[layer1][layer2] = doCollide;
+	_collisionTable[layer2][layer1] = doCollide;
 }

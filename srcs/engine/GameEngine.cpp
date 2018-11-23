@@ -197,7 +197,7 @@ void GameEngine::moveEntities(void) {
 
 			if (collider) {
 				// Skip collision with object that cannot collide with
-				bool canCollide;
+				bool canCollide = false;
 				RectanglePoints rectanglePoints(entity,
 												entity->getTargetMovement());
 				for (size_t i = 0; i < _allEntities.size(); i++) {
@@ -206,22 +206,12 @@ void GameEngine::moveEntities(void) {
 					if (i == idx) continue;
 
 					// Compare Layers
-					if (_allEntities[i]->getCollider() != nullptr) {
-						if (_allEntities[i]->getCollider()->layerTag >=
-							collider->layerTag)
-							canCollide = _collisionTable
-								[collider->layerTag]
-								[_allEntities[i]->getCollider()->layerTag];
-						else
-							canCollide = _collisionTable
-								[_allEntities[i]->getCollider()->layerTag]
-								[collider->layerTag];
-					}
-
-					// Fast check to know if is remotely possible that a
-					// collision may occurr
-					if (canCollide) {
-						canCollide = false;
+					if (_allEntities[i]->getCollider() != nullptr &&
+						_collisionTable[collider->layerTag][_allEntities[i]
+																->getCollider()
+																->layerTag]) {
+						// Fast check to know if is remotely possible that a
+						// collision may occurr
 						RectanglePoints otherPoints(_allEntities[i]);
 						if (rectanglePoints.top <= otherPoints.bot &&
 							otherPoints.top <= rectanglePoints.bot) {

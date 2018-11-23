@@ -14,8 +14,8 @@ Bomberman::Bomberman(void) : AGame(5) {
 		_neededFonts.push_back(std::tuple<float, std::string, std::string>(
 			size, (_assetsDir + "GUI/fonts/BOMBERMAN.ttf"), "BOMBERMAN"));
 	// Set collision table
-	_collisionTable[PlayerLayer][BombLayer] = false;
-	_collisionTable[WallLayer][WallLayer] = false;
+	setLayerCollision(PlayerLayer, BombLayer, false);
+	setLayerCollision(WallLayer, WallLayer, false);
 	// Set map of scenes
 	_initScenes();
 }

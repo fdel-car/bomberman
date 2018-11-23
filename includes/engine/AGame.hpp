@@ -29,6 +29,8 @@ class AGame {
 	std::vector<std::tuple<float, std::string, std::string>> _neededFonts;
 	std::vector<std::vector<bool>> _collisionTable;
 
+	void setLayerCollision(int layer1, int layer2, bool doCollide);
+
    private:
 	AGame(void);
 	virtual void _initScenes(void) = 0;
