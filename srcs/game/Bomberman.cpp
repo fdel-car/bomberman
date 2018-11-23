@@ -15,7 +15,7 @@ Bomberman::Bomberman(void) : AGame(5) {
 			size, (_assetsDir + "GUI/fonts/BOMBERMAN.ttf"), "BOMBERMAN"));
 	// Set collision table
 	_collisionTable[PlayerLayer][BombLayer] = false;
-	// _collisionTable[WallLayer][PlayerLayer] = false;
+	_collisionTable[WallLayer][WallLayer] = false;
 	// Set map of scenes
 	_initScenes();
 }
