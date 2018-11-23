@@ -15,6 +15,9 @@
 // #define YELLOW_SHADER 5
 // #define GRAY_SHADER 6
 
+#define SHADOW_H 4096
+#define SHADOW_W 4096
+
 class GameEngine;
 
 class Entity;
@@ -49,8 +52,10 @@ class GameRenderer {
 	GameRenderer &operator=(GameRenderer const &rhs);
 
 	void _initGUI(AGame *game);
+	bool _initDepthMap(void);
 	void _initShader(void);
 	void _initModels(void);
+
 	static GameEngine *_gameEngine;
 
 	// General vars
@@ -64,5 +69,19 @@ class GameRenderer {
 
 	// Rendering vars
 	ShaderProgram *_shaderProgram;
+	ShaderProgram *_shadowShaderProgram;
 	std::map<std::string, Model *> _models;
+
+	// Shadow
+	GLuint _depthMapFBO;
+	GLuint _depthMap;
+	GLint _lightSpaceMatrixLoc;
+	Entity *_light;
+
+	// Light
+	glm::vec3 _lightDirection;
+	glm::mat4 _lightProjection;
+	glm::mat4 _lightView;
+	glm::mat4 _lightSpaceMatrix;
+	glm::vec3 _lightPos;
 };

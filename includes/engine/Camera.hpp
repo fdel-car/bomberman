@@ -23,6 +23,7 @@ class Camera : public Entity {
 	void mouseCallback(GLFWwindow *window, double xpos, double ypos);
 
    protected:
+	Entity *_light;  // Needs to be changed to Light
 	int _newSceneIdx;
 	std::string _newSceneName;
 	std::map<int, nk_color> defaultStyle;

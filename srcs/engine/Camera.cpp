@@ -4,6 +4,7 @@
 
 Camera::Camera(glm::vec3 const &pos, glm::vec3 const &eulerAngles)
 	: Entity(pos, eulerAngles, nullptr, "", "Camera", "Camera"),
+	  _light(nullptr),
 	  _newSceneIdx(-1),
 	  _newSceneName("") {
 	_view = glm::inverse(getModelMatrix());
@@ -12,7 +13,7 @@ Camera::Camera(glm::vec3 const &pos, glm::vec3 const &eulerAngles)
 	_right =
 		glm::normalize(glm::vec3(getModelMatrix()[0][0], getModelMatrix()[0][1],
 								 getModelMatrix()[0][2]));
-	_up = glm::normalize(glm::cross(_right, _front));
+	_up = glm::normalize(glm::cross(_right, _front));  // Unused for now
 }
 
 int Camera::getNewSceneIdx(void) const { return _newSceneIdx; }

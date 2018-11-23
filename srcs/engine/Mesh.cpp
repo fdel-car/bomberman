@@ -1,8 +1,10 @@
 #include "engine/Mesh.hpp"
 
 Mesh::Mesh(std::vector<Vertex> const &vertices, Material const &material,
-		   GLuint textureID)
-	: _size(vertices.size()), _material(material), _textureID(textureID) {
+		   GLuint diffuseTexture)
+	: _size(vertices.size()),
+	  _material(material),
+	  _diffuseTexture(diffuseTexture) {
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
 
@@ -43,8 +45,8 @@ void Mesh::draw(ShaderProgram const &shaderProgram) const {
 	shaderProgram.setBool("material.isTextured", _material.isTextured);
 
 	if (_material.isTextured) {
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, _textureID);
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, _diffuseTexture);
 	}
 
 	glBindVertexArray(VAO);
