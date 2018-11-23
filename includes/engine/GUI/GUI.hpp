@@ -1,10 +1,6 @@
-#ifdef __APPLE__
-#define NK_SHADER_VERSION "#version 150\n"
-#else
-#define NK_SHADER_VERSION "#version 300 es\n"
-#endif
-
 #pragma once
+
+#define NK_SHADER_VERSION "#version 410\n"
 
 #define MAX_VERTEX_BUFFER 512 * 1024
 #define MAX_ELEMENT_BUFFER 128 * 1024

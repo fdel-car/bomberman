@@ -27,6 +27,11 @@
 
 typedef std::chrono::high_resolution_clock Clock;
 
+struct KeyState {
+	bool currFrame;
+	bool prevFrame;
+};
+
 class GameRenderer;
 
 class GameEngine {
@@ -46,8 +51,9 @@ class GameEngine {
 
 	// Functions needed by entities
 	bool isKeyPressed(std::string keyName);
-	std::map<std::string, bool> &getKeyboardMap();
+	bool isKeyJustPressed(std::string keyName);
 	float getDeltaTime();
+	void addNewEntity(Entity *entity);
 
    private:
 	struct LineInfo {  // Equation of a line: z = mx + q
@@ -63,7 +69,7 @@ class GameEngine {
 		float endX;
 		float endZ;
 	};
-	static std::map<std::string, bool> keyboardMap;
+	static std::map<std::string, KeyState> keyboardMap;
 
 	GameEngine(void);
 	GameEngine(GameEngine const &src);
@@ -105,5 +111,6 @@ class GameEngine {
 	int _sceneIdx;
 	AGame *_game;
 	std::vector<Entity *> _allEntities;
+	std::vector<Entity *> _newEntities;
 	Camera *_camera;
 };

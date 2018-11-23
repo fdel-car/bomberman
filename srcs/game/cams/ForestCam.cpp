@@ -2,10 +2,8 @@
 #include "engine/GameEngine.hpp"
 
 ForestCam::ForestCam(glm::vec3 const &pos, glm::vec3 const &eulerAngles)
-	:
-	// Camera(pos, eulerAngles),
-	  Tools(17, 17, pos, eulerAngles)
-		{}
+	:  // Camera(pos, eulerAngles),
+	  Tools(17, 17, pos, eulerAngles) {}
 
 ForestCam::~ForestCam(void) {}
 
@@ -33,8 +31,15 @@ void ForestCam::drawGUI(GUI *graphicUI) {
 	// 				 NK_TEXT_LEFT, "12_BOMBERMAN", "18_BOMBERMAN");
 }
 
-void ForestCam::tellPosition(Entity *entity) {
+void ForestCam::tellPosition(Entity *entity) { _savePositions(entity); }
 
-	_savePositions(entity);
-
+void ForestCam::update(void) {
+	Camera::update();
+	static float _cooldown = 0.5f;
+	if (_cooldown <= 0.0f) {
+		_cooldown = 0.5f;
+		// std::cout << "Test" << std::endl;
+		// printMapInfo();
+	}
+	_cooldown -= _gameEngine->getDeltaTime();
 }

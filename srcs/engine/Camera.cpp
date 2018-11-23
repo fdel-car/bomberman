@@ -3,13 +3,15 @@
 #include "engine/GameRenderer.hpp"
 
 Camera::Camera(glm::vec3 const &pos, glm::vec3 const &eulerAngles)
-	: Entity(pos, eulerAngles, nullptr, ""),
+	: Entity(pos, eulerAngles, nullptr, "", "Camera", "Camera"),
 	  _newSceneIdx(-1),
 	  _newSceneName("") {
-	_name = "Camera";
 	_view = glm::inverse(getModelMatrix());
+	_speed = 8.0f;
 	_front = _rotation * glm::vec3(0.0, 0.0, -1.0);
-	_speed = 6.0f;
+	_right =
+		glm::normalize(glm::vec3(getModelMatrix()[0][0], getModelMatrix()[0][1],
+								 getModelMatrix()[0][2]));
 }
 
 int Camera::getNewSceneIdx(void) const { return _newSceneIdx; }
@@ -43,14 +45,22 @@ void Camera::configGUI(GUI *graphicUI) { (void)graphicUI; }
 
 void Camera::update(void) {
 	float deltaTime = _gameEngine->getDeltaTime();
-	if (_gameEngine->isKeyPressed(KEY_UP)) {
+
+	if (_gameEngine->isKeyJustPressed("`")) {
+		_debugMode = !_debugMode;
+		_gameEngine->getGameRenderer()->switchCursorMode(_debugMode);
+	}
+	if (!_debugMode) return;
+
+	if (_gameEngine->isKeyPressed(KEY_W))
 		translate(_front * deltaTime * _speed);
-		_updateData();
-	}
-	if (_gameEngine->isKeyPressed(KEY_DOWN)) {
+	if (_gameEngine->isKeyPressed(KEY_D))
+		translate(_right * deltaTime * _speed);
+	if (_gameEngine->isKeyPressed(KEY_S))
 		translate(-_front * deltaTime * _speed);
-		_updateData();
-	}
+	if (_gameEngine->isKeyPressed(KEY_A))
+		translate(-_right * deltaTime * _speed);
+	_updateData();
 }
 
 void Camera::_updateData(void) { _view = glm::inverse(getModelMatrix()); }

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "engine/GUI/GUI.hpp"
 #include "engine/Entity.hpp"
+#include "engine/GUI/GUI.hpp"
 
 class Camera : public Entity {
    public:
@@ -33,8 +33,10 @@ class Camera : public Entity {
 	float _aspectRatio;
 	glm::mat4 _view;
 	glm::mat4 _projection;
+	bool _debugMode = false;
 
 	glm::vec3 _front;
+	glm::vec3 _right;
 
 	Camera(void);
 	Camera(Camera const &src);

@@ -7,7 +7,7 @@ in vec2 _texCoords;
 in vec4 _fragPosLightSpace;
 
 uniform vec3 lightDir;
-uniform vec3 cameraPos;
+uniform vec3 viewPos;
 uniform vec3 lightColor;
 
 uniform sampler2D textureID;
@@ -56,10 +56,17 @@ void main() {
         diffuse = diffCoeff * material.diffuseColor * lightColor;
 
     // Specular
-    vec3 viewDir = normalize(cameraPos - _fragPos);
-    vec3 reflectDir = reflect(lightDir, _normal);
-    float specularCoeff = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
-    vec3 specular = specularCoeff * material.specularColor * lightColor;
+    vec3 specular = vec3(0.0f);
+    if (diffCoeff > 0.0f) {
+        vec3 viewDir = normalize(viewPos - _fragPos);
+        // Blinn-Phong model
+        vec3 halfDir = normalize(-lightDir + viewDir);
+        float specularCoeff = pow(max(dot(_normal, halfDir), 0.0), material.shininess);
+        // // Phong model
+        // vec3 reflectDir = reflect(lightDir, _normal);
+        // float specularCoeff = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
+        specular = specularCoeff * material.specularColor * lightColor;
+    }
 
     // Shadow
     float shadow = shadowCalculation(_fragPosLightSpace, lightDir);

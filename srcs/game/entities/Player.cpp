@@ -1,16 +1,19 @@
 #include "game/entities/Player.hpp"
 #include "engine/GameEngine.hpp"
 #include "game/Bomberman.hpp"
+#include "game/cams/Tools.hpp"
 
 Player::Player(glm::vec3 position, glm::vec3 eulerAngles, Save &save,
-			   Entity *gameManager)
-	: Entity(position, eulerAngles,
-			 new Collider(Collider::Circle, 0.45f, 0.45f), "Player",
-			 gameManager),
-	  _save(save) {
-	_name = "Player";
-	_tag = "Player";
-	_speed = 6.0f;
+			   Entity *sceneManager)
+	: Entity(glm::vec3(position.x, position.y + 0.45f, position.z), eulerAngles,
+			 new Collider(Collider::Circle, 0.45f, 0.45f), "Player", "Player",
+			 "Player", sceneManager),
+	  _save(save),
+	  _speed(6.0f),
+	  _maxBombs(3),
+	  _bombCooldown(3.0f),
+	  _bombRange(3),
+	  _bombTimers(std::vector<float>()) {
 	scale(glm::vec3(0.9, 0.9, 0.9));
 }
 
@@ -20,13 +23,33 @@ void Player::update(void) {
 	_targetMovement *= 0;
 	float deltaTime = _gameEngine->getDeltaTime();
 
+	// Refresh cooldown of bombs
+	size_t toRemove = 0;
+	for (auto &timer : _bombTimers) {
+		timer -= deltaTime;
+		if (timer <= 0.0f) toRemove++;
+	}
+	if (toRemove > 0) {
+		_bombTimers.erase(_bombTimers.begin(), _bombTimers.begin() + toRemove);
+	}
+
+	// Check if new bomb can be spawned
+	if (_gameEngine->isKeyJustPressed("SPACE") &&
+		_bombTimers.size() < _maxBombs) {
+		Tools *cam = dynamic_cast<Tools *>(_sceneManager);
+		if (cam != nullptr) {
+			if (cam->putBomb(getPosition().x, getPosition().z, _bombCooldown,
+							 _bombRange)) {
+				_bombTimers.push_back(_bombCooldown);
+			}
+		}
+	}
+
+	// Update position based on keyboard
 	int xSign = 0;
 	int zSign = 0;
 	float xDirection = 0.0f;
-	// float yDirection = 0.0f;  // Not used since we cannot jump yet
 	float zDirection = 0.0f;
-
-	// Update position based on keyboard
 	if (_gameEngine->isKeyPressed(_save.leftKey)) xSign -= 1;
 	if (_gameEngine->isKeyPressed(_save.rightKey)) xSign += 1;
 	if (_gameEngine->isKeyPressed(_save.upKey)) zSign -= 1;
