@@ -34,7 +34,16 @@ void ForestCam::drawGUI(GUI *graphicUI) {
 }
 
 void ForestCam::tellPosition(Entity *entity) {
-
 	_savePositions(entity);
+}
 
+void ForestCam::update(void) {
+	Camera::update();
+	static float _cooldown = 0.5f;
+	if (_cooldown <= 0.0f) {
+		_cooldown = 0.5f;
+		std::cout << "test" << std::endl;
+		printMapInfo();
+	}
+	_cooldown -= _gameEngine->getDeltaTime();
 }
