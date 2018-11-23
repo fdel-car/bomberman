@@ -27,6 +27,7 @@ class GameRenderer {
 	~GameRenderer(void);
 
 	void getUserInput(void);
+	void switchCursorMode(bool debug) const;
 	void refreshWindow(std::vector<Entity *> &entities, Camera *camera);
 	Model *getModel(std::string modelName) const;
 	int getWidth(void) const;

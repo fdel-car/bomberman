@@ -61,11 +61,13 @@ void GameEngine::run(void) {
 		_lastFrameTs = _frameTs;
 
 		// Update inputs
+		for (auto &key : keyboardMap)
+			key.second.prevFrame = key.second.currFrame;
 		_gameRenderer->getUserInput();
 
 		// TODO: Update game engine statuses (ex. when to quit)
 		if (_running) {
-			_running = !keyboardMap["ESCAPE"];
+			_running = !isKeyPressed("ESCAPE");
 			if (!_running) break;
 		}
 
@@ -78,7 +80,6 @@ void GameEngine::run(void) {
 
 		// Update game entities states
 		for (auto entity : _allEntities) {
-
 			entity->update();
 		}
 		moveEntities();
@@ -716,137 +717,146 @@ void GameEngine::buttonStateChanged(std::string buttonName, bool isPressed) {
 	if (keyboardMap.find(buttonName) == keyboardMap.end()) {
 		std::runtime_error("Unkown Mapping for '" + buttonName + "'!");
 	}
-	keyboardMap[buttonName] = isPressed;
+	keyboardMap[buttonName].currFrame = isPressed;
 }
 
 bool GameEngine::isKeyPressed(std::string keyName) {
-	return keyboardMap[keyName];
+	return keyboardMap[keyName].currFrame;
 }
 
-static std::map<std::string, bool>
+bool GameEngine::isKeyJustPressed(std::string keyName) {
+	return keyboardMap[keyName].currFrame && !keyboardMap[keyName].prevFrame;
+}
+
+static std::map<std::string, KeyState>
 generateKeyboardMap() {  // static here is "internal linkage"
-	std::map<std::string, bool> map = std::map<std::string, bool>();
-	map["UNKNOWN"] = false;
-	map["SPACE"] = false;
-	map["APOSTROPHE"] = false;
-	map["COMMA"] = false;
-	map["MINUS"] = false;
-	map["PERIOD"] = false;
-	map["SLASH"] = false;
-	map["0"] = false;
-	map["1"] = false;
-	map["2"] = false;
-	map["3"] = false;
-	map["4"] = false;
-	map["5"] = false;
-	map["6"] = false;
-	map["7"] = false;
-	map["8"] = false;
-	map["9"] = false;
-	map[";"] = false;
-	map["EQUAL"] = false;
-	map["A"] = false;
-	map["B"] = false;
-	map["C"] = false;
-	map["D"] = false;
-	map["E"] = false;
-	map["F"] = false;
-	map["G"] = false;
-	map["H"] = false;
-	map["I"] = false;
-	map["L"] = false;
-	map["K"] = false;
-	map["L"] = false;
-	map["M"] = false;
-	map["N"] = false;
-	map["O"] = false;
-	map["P"] = false;
-	map["Q"] = false;
-	map["R"] = false;
-	map["S"] = false;
-	map["T"] = false;
-	map["U"] = false;
-	map["V"] = false;
-	map["W"] = false;
-	map["X"] = false;
-	map["Y"] = false;
-	map["Z"] = false;
-	map["["] = false;
-	map["\\"] = false;
-	map["]"] = false;
-	map["`"] = false;
-	map["WORLD_1"] = false;
-	map["WORLD_2"] = false;
-	map["ESCAPE"] = false;
-	map["ENTER"] = false;
-	map["TAB"] = false;
-	map["BACKSPACE"] = false;
-	map["INSERT"] = false;
-	map["DELETE"] = false;
-	map["RIGHT"] = false;
-	map["LEFT"] = false;
-	map["DOWN"] = false;
-	map["UP"] = false;
-	map["PAGE_UP"] = false;
-	map["PAGE_DOWN"] = false;
-	map["HOME"] = false;
-	map["END"] = false;
-	map["CAPS_LOCK"] = false;
-	map["SCROLL_LOCK"] = false;
-	map["NUM_LOCK"] = false;
-	map["PRINT_SCREEN"] = false;
-	map["PAUSE"] = false;
-	map["F1"] = false;
-	map["F2"] = false;
-	map["F3"] = false;
-	map["F4"] = false;
-	map["F5"] = false;
-	map["F6"] = false;
-	map["F7"] = false;
-	map["F8"] = false;
-	map["F9"] = false;
-	map["F10"] = false;
-	map["F11"] = false;
-	map["F12"] = false;
-	map["F13"] = false;
-	map["F14"] = false;
-	map["F15"] = false;
-	map["F16"] = false;
-	map["F17"] = false;
-	map["F18"] = false;
-	map["F19"] = false;
-	map["F20"] = false;
-	map["F21"] = false;
-	map["F22"] = false;
-	map["F23"] = false;
-	map["F24"] = false;
-	map["F25"] = false;
-	map["KP_0"] = false;
-	map["KP_1"] = false;
-	map["KP_2"] = false;
-	map["KP_3"] = false;
-	map["KP_4"] = false;
-	map["KP_5"] = false;
-	map["KP_6"] = false;
-	map["KP_7"] = false;
-	map["KP_8"] = false;
-	map["KP_9"] = false;
-	map["KP_DECIMAL"] = false;
-	map["KP_DIVIDE"] = false;
-	map["KP_MULTIPLY"] = false;
-	map["KP_SUBTRACT"] = false;
-	map["KP_ADD"] = false;
-	map["KP_ENTER"] = false;
-	map["KP_EQUAL"] = false;
-	map["LEFT_SHIFT"] = false;
-	map["LEFT_CONTROL"] = false;
-	map["LEFT_ALT"] = false;
-	map["LEFT_SUPER"] = false;
-	map["RIGHT_SHIFT"] = false;
-	map["RIGHT_CONTROL"] = false;
-	map["RIGHT_ALT"] = false;
-	map["RIGHT_SUPER"] = false;
-	map["MENU"] = false;
+	KeyState keyState;
+	std::map<std::string, KeyState> map = std::map<std::string, KeyState>();
+
+	keyState.currFrame = false;
+	keyState.prevFrame = false;
+
+	map["UNKNOWN"] = keyState;
+	map["SPACE"] = keyState;
+	map["APOSTROPHE"] = keyState;
+	map["COMMA"] = keyState;
+	map["MINUS"] = keyState;
+	map["PERIOD"] = keyState;
+	map["SLASH"] = keyState;
+	map["0"] = keyState;
+	map["1"] = keyState;
+	map["2"] = keyState;
+	map["3"] = keyState;
+	map["4"] = keyState;
+	map["5"] = keyState;
+	map["6"] = keyState;
+	map["7"] = keyState;
+	map["8"] = keyState;
+	map["9"] = keyState;
+	map[";"] = keyState;
+	map["EQUAL"] = keyState;
+	map["A"] = keyState;
+	map["B"] = keyState;
+	map["C"] = keyState;
+	map["D"] = keyState;
+	map["E"] = keyState;
+	map["F"] = keyState;
+	map["G"] = keyState;
+	map["H"] = keyState;
+	map["I"] = keyState;
+	map["L"] = keyState;
+	map["K"] = keyState;
+	map["L"] = keyState;
+	map["M"] = keyState;
+	map["N"] = keyState;
+	map["O"] = keyState;
+	map["P"] = keyState;
+	map["Q"] = keyState;
+	map["R"] = keyState;
+	map["S"] = keyState;
+	map["T"] = keyState;
+	map["U"] = keyState;
+	map["V"] = keyState;
+	map["W"] = keyState;
+	map["X"] = keyState;
+	map["Y"] = keyState;
+	map["Z"] = keyState;
+	map["["] = keyState;
+	map["\\"] = keyState;
+	map["]"] = keyState;
+	map["`"] = keyState;
+	map["WORLD_1"] = keyState;
+	map["WORLD_2"] = keyState;
+	map["ESCAPE"] = keyState;
+	map["ENTER"] = keyState;
+	map["TAB"] = keyState;
+	map["BACKSPACE"] = keyState;
+	map["INSERT"] = keyState;
+	map["DELETE"] = keyState;
+	map["RIGHT"] = keyState;
+	map["LEFT"] = keyState;
+	map["DOWN"] = keyState;
+	map["UP"] = keyState;
+	map["PAGE_UP"] = keyState;
+	map["PAGE_DOWN"] = keyState;
+	map["HOME"] = keyState;
+	map["END"] = keyState;
+	map["CAPS_LOCK"] = keyState;
+	map["SCROLL_LOCK"] = keyState;
+	map["NUM_LOCK"] = keyState;
+	map["PRINT_SCREEN"] = keyState;
+	map["PAUSE"] = keyState;
+	map["F1"] = keyState;
+	map["F2"] = keyState;
+	map["F3"] = keyState;
+	map["F4"] = keyState;
+	map["F5"] = keyState;
+	map["F6"] = keyState;
+	map["F7"] = keyState;
+	map["F8"] = keyState;
+	map["F9"] = keyState;
+	map["F10"] = keyState;
+	map["F11"] = keyState;
+	map["F12"] = keyState;
+	map["F13"] = keyState;
+	map["F14"] = keyState;
+	map["F15"] = keyState;
+	map["F16"] = keyState;
+	map["F17"] = keyState;
+	map["F18"] = keyState;
+	map["F19"] = keyState;
+	map["F20"] = keyState;
+	map["F21"] = keyState;
+	map["F22"] = keyState;
+	map["F23"] = keyState;
+	map["F24"] = keyState;
+	map["F25"] = keyState;
+	map["KP_0"] = keyState;
+	map["KP_1"] = keyState;
+	map["KP_2"] = keyState;
+	map["KP_3"] = keyState;
+	map["KP_4"] = keyState;
+	map["KP_5"] = keyState;
+	map["KP_6"] = keyState;
+	map["KP_7"] = keyState;
+	map["KP_8"] = keyState;
+	map["KP_9"] = keyState;
+	map["KP_DECIMAL"] = keyState;
+	map["KP_DIVIDE"] = keyState;
+	map["KP_MULTIPLY"] = keyState;
+	map["KP_SUBTRACT"] = keyState;
+	map["KP_ADD"] = keyState;
+	map["KP_ENTER"] = keyState;
+	map["KP_EQUAL"] = keyState;
+	map["LEFT_SHIFT"] = keyState;
+	map["LEFT_CONTROL"] = keyState;
+	map["LEFT_ALT"] = keyState;
+	map["LEFT_SUPER"] = keyState;
+	map["RIGHT_SHIFT"] = keyState;
+	map["RIGHT_CONTROL"] = keyState;
+	map["RIGHT_ALT"] = keyState;
+	map["RIGHT_SUPER"] = keyState;
+	map["MENU"] = keyState;
 	return map;
 }
-std::map<std::string, bool> GameEngine::keyboardMap = generateKeyboardMap();
+std::map<std::string, KeyState> GameEngine::keyboardMap = generateKeyboardMap();

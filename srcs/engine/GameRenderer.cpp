@@ -128,6 +128,11 @@ void GameRenderer::errorCallback(int error, const char *description) {
 	std::cerr << "Error n." << error << ": " << description << std::endl;
 }
 
+void GameRenderer::switchCursorMode(bool debug) const {
+	glfwSetInputMode(_window, GLFW_CURSOR,
+					 debug ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
+}
+
 void GameRenderer::keyCallback(GLFWwindow *window, int key, int scancode,
 							   int action, int mods) {
 	if (action == GLFW_PRESS || action == GLFW_RELEASE) {
