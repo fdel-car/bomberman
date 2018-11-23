@@ -5,7 +5,7 @@
 
 class AGame {
    public:
-	AGame(void);
+	AGame(size_t enumSize);
 	virtual ~AGame(void);
 
 	virtual bool loadSceneByIndex(int sceneIdx) = 0;
@@ -17,6 +17,7 @@ class AGame {
 	std::vector<std::tuple<float, std::string, std::string>> &getNeededFont();
 	std::vector<Entity *> const getEntities() const;
 	Camera *getCamera() const;
+	std::vector<std::vector<bool>> const &getCollisionTable(void);
 
 	void unload(void);
 
@@ -26,7 +27,11 @@ class AGame {
 	std::vector<Entity *> _entities;
 	Camera *_camera;
 	std::vector<std::tuple<float, std::string, std::string>> _neededFonts;
+	std::vector<std::vector<bool>> _collisionTable;
+
+	void setLayerCollision(int layer1, int layer2, bool doCollide);
 
    private:
+	AGame(void);
 	virtual void _initScenes(void) = 0;
 };

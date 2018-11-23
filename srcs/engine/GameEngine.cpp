@@ -20,10 +20,28 @@ GameEngine::LineInfo::LineInfo(float startX, float startZ, float endX,
 	}
 }
 
+GameEngine::RectanglePoints::RectanglePoints(Entity *entity,
+											 glm::vec3 movement) {
+	top = entity->getPosition().z - entity->getCollider()->height - EPSILON;
+	bot = entity->getPosition().z + entity->getCollider()->height + EPSILON;
+	left = entity->getPosition().x - entity->getCollider()->width - EPSILON;
+	right = entity->getPosition().x + entity->getCollider()->width + EPSILON;
+
+	if (movement.x > 0.0f)
+		right += movement.x;
+	else if (movement.x < 0.0f)
+		left += movement.x;
+	if (movement.z > 0.0f)
+		bot += movement.z;
+	else if (movement.z < 0.0f)
+		top += movement.z;
+}
+
 GameEngine::GameEngine(AGame *game)
 	: _game(game),
 	  _allEntities(std::vector<Entity *>()),
-	  _newEntities(std::vector<Entity *>()) {
+	  _newEntities(std::vector<Entity *>()),
+	  _collisionTable(game->getCollisionTable()) {
 	_running = false;
 
 	// Create interface class
@@ -96,12 +114,14 @@ void GameEngine::run(void) {
 		for (auto entity : _allEntities) {
 			entity->update();
 		}
+
 		// Merge new game entities
-		for (auto entity : _newEntities) {
-			_allEntities.push_back(entity);
-			entity->update();  // TODO: do this or wait for next frame?
+		if (!_newEntities.empty()) {
+			_allEntities.insert(_allEntities.end(), _newEntities.begin(),
+								_newEntities.end());
+			_newEntities.clear();
 		}
-		_newEntities.clear();
+
 		// Delete game entities if needed
 		for (size_t idx = _allEntities.size() - 1; idx < _allEntities.size();
 			 idx--) {
@@ -140,7 +160,6 @@ bool GameEngine::initScene(size_t newSceneIdx) {
 		delete _allEntities[idx];
 		_allEntities.erase(_allEntities.begin() + idx);
 	}
-	_allEntities.clear();
 	if (_camera != nullptr) {
 		delete _camera;
 		_camera = nullptr;
@@ -159,17 +178,6 @@ bool GameEngine::initScene(size_t newSceneIdx) {
 	return true;
 }
 
-// /!\ Function not tested yet
-void GameEngine::_clearTmpEntities(void) {
-	size_t idx = 0;
-	for (auto entity : _allEntities) {
-		if (entity->getTmpState())
-			_allEntities.erase(_allEntities.begin() + idx);
-		else
-			idx++;
-	}
-}
-
 void GameEngine::moveEntities(void) {
 	const Collider *collider;
 	bool collisionDetected = false;
@@ -186,16 +194,39 @@ void GameEngine::moveEntities(void) {
 		if (entity->getTargetMovement().x != 0.0f ||
 			entity->getTargetMovement().z != 0.0f) {
 			collider = entity->getCollider();
+			collidedEntities.clear();
 			collisionDetected = false;
 
 			if (collider) {
+				// Skip collision with object that cannot collide with
+				bool canCollide = false;
+				RectanglePoints rectanglePoints(entity,
+												entity->getTargetMovement());
+				for (size_t i = 0; i < _allEntities.size(); i++) {
+					canCollide = false;
+					// Skip self
+					if (i == idx) continue;
+
+					// Compare Layers
+					if (_allEntities[i]->getCollider() != nullptr &&
+						_collisionTable[collider->layerTag][_allEntities[i]
+																->getCollider()
+																->layerTag]) {
+						// Fast check to know if is remotely possible that a
+						// collision may occurr
+						RectanglePoints otherPoints(_allEntities[i]);
+						if (rectanglePoints.top <= otherPoints.bot &&
+							otherPoints.top <= rectanglePoints.bot) {
+							if (rectanglePoints.left <= otherPoints.right &&
+								otherPoints.left <= rectanglePoints.right)
+								canCollide = true;
+						}
+					}
+
+					if (canCollide) collidedEntities.push_back(_allEntities[i]);
+				}
+
 				// Init vars before first loop
-				collidedEntities = _allEntities;
-				collidedEntities.erase(collidedEntities.begin() +
-									   idx);  // Erase self entity from list
-											  // that needs to be checked
-				// To make Obj slide over obstacles we have to adapt
-				// targetMovement to suitable pos
 				futureMovement.x = entity->getTargetMovement().x;
 				futureMovement.z = entity->getTargetMovement().z;
 				bool firstLoop = true;
@@ -437,7 +468,8 @@ size_t GameEngine::checkCollision(Entity *entity, glm::vec3 &futureMovement,
 	getMovementLines(entity, futureMovement, &lineA, &lineB);
 	// If lines are vertical, create Rectangle Collider only
 	// once
-	Collider moveCollider(Collider::Rectangle, 0.0f, 0.0f);
+	int layer1 = entity->getCollider()->layerTag;
+	Collider moveCollider(Collider::Rectangle, layer1, 0.0f, 0.0f);
 	glm::vec3 centerPos = glm::vec3();
 	if (lineA.isVertical) {
 		moveCollider.width = abs(lineA.startX - lineB.startX) / 2.0f;
@@ -452,18 +484,15 @@ size_t GameEngine::checkCollision(Entity *entity, glm::vec3 &futureMovement,
 
 	size_t idxToTest = 0;
 	for (auto entityToTest : collidedEntities) {
-		// TODO: skip collision with object that cannot collide with
-		if (entityToTest->getCollider() != nullptr) {
-			// 2) Check if final position collides with smth
-			// 3) Check if any other obj collides with lineA/lineB
-			if (doCollide(entity->getCollider(), futurePos, entityToTest) ||
-				(lineA.isVertical &&
-				 doCollide(&moveCollider, centerPos, entityToTest)) ||
-				(!lineA.isVertical &&
-				 hasCollisionCourse(lineA, lineB, entityToTest))) {
-				// TODO: handle if is physical collision or trigger
-				break;
-			}
+		// 2) Check if final position collides with smth
+		// 3) Check if any other obj collides with lineA/lineB
+		if (doCollide(entity->getCollider(), futurePos, entityToTest) ||
+			(lineA.isVertical &&
+			 doCollide(&moveCollider, centerPos, entityToTest)) ||
+			(!lineA.isVertical &&
+			 hasCollisionCourse(lineA, lineB, layer1, entityToTest))) {
+			// TODO: handle if is physical collision or trigger
+			break;
 		}
 		idxToTest++;
 	}
@@ -552,12 +581,12 @@ void GameEngine::getMovementLines(Entity *entity, glm::vec3 &targetMovement,
 }
 
 bool GameEngine::hasCollisionCourse(LineInfo &lineA, LineInfo &lineB,
-									Entity *entityB) {
+									int layerTag, Entity *entityB) {
 	// Check to avoid errors
 	if (lineA.isVertical || lineB.isVertical) {
 		// Easy case, we can use doCollide() since we have a "standard"
 		// rectangle
-		Collider testCollider(Collider::Rectangle,
+		Collider testCollider(Collider::Rectangle, layerTag,
 							  abs(lineA.startX - lineB.startX) / 2,
 							  abs(lineA.startZ - lineA.endZ) / 2);
 		glm::vec3 centerPos = glm::vec3();

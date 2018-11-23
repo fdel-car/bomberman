@@ -12,6 +12,7 @@ Camera::Camera(glm::vec3 const &pos, glm::vec3 const &eulerAngles)
 	_right =
 		glm::normalize(glm::vec3(getModelMatrix()[0][0], getModelMatrix()[0][1],
 								 getModelMatrix()[0][2]));
+	_up = glm::normalize(glm::cross(_right, _front));
 }
 
 int Camera::getNewSceneIdx(void) const { return _newSceneIdx; }
@@ -48,6 +49,8 @@ void Camera::update(void) {
 
 	if (_gameEngine->isKeyJustPressed("`")) {
 		_debugMode = !_debugMode;
+		_lastMousePos.x = WINDOW_W / 2;
+		_lastMousePos.y = WINDOW_H / 2;
 		_gameEngine->getGameRenderer()->switchCursorMode(_debugMode);
 	}
 	if (!_debugMode) return;
@@ -60,6 +63,28 @@ void Camera::update(void) {
 		translate(-_front * deltaTime * _speed);
 	if (_gameEngine->isKeyPressed(KEY_A))
 		translate(-_right * deltaTime * _speed);
+
+	glm::vec2 mousePos = _gameEngine->getGameRenderer()->getMousePos();
+	float xOffset = mousePos.x - _lastMousePos.x;
+	float yOffset =
+		_lastMousePos.y -
+		mousePos.y;  // Reversed since y-coordinates range from bottom to top
+	_lastMousePos.x = mousePos.x;
+	_lastMousePos.y = mousePos.y;
+	float sensitivity = 0.05f;
+	xOffset *= sensitivity;
+	yOffset *= sensitivity;
+
+	if (glm::epsilonNotEqual(0.0f, yOffset, EPSILON)) {
+		rotateX(yOffset);
+		_right = glm::normalize(glm::vec3(getModelMatrix()[0][0],
+										  getModelMatrix()[0][1],
+										  getModelMatrix()[0][2]));
+	}
+	if (glm::epsilonNotEqual(0.0f, xOffset, EPSILON)) {
+		rotateY(-xOffset);
+		_front = _rotation * glm::vec3(0.0, 0.0, -1.0);
+	}
 	_updateData();
 }
 
