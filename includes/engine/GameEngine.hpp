@@ -5,14 +5,6 @@
 #include "engine/Camera.hpp"
 #include "engine/Collider.hpp"
 
-#define MAP_SIZE 40
-
-#define WINDOW_MIN_X_OFFSET 50
-#define WINDOW_MIN_Y_OFFSET 100
-#define MIN_SQUARE_SIZE 10
-#define MAX_SQUARE_SIZE 25
-#define OUTLINE_TICKNESS 2
-
 #define KEY_W "W"
 #define KEY_A "A"
 #define KEY_S "S"
@@ -69,6 +61,15 @@ class GameEngine {
 		float endX;
 		float endZ;
 	};
+
+	struct RectanglePoints {
+	   public:
+		float top;
+		float bot;
+		float left;
+		float right;
+		RectanglePoints(Entity *entity, glm::vec3 movement = glm::vec3(0.0f));
+	};
 	static std::map<std::string, KeyState> keyboardMap;
 
 	GameEngine(void);
@@ -77,14 +78,14 @@ class GameEngine {
 	GameEngine &operator=(GameEngine const &rhs);
 
 	bool initScene(size_t newSceneIdx);
-	void _clearTmpEntities(void);
 	void moveEntities(void);
 	size_t checkCollision(Entity *entity, glm::vec3 &futureMovement,
 						  std::vector<Entity *> &collidedEntities,
 						  std::vector<Entity *> &collidedTriggers);
 	void getMovementLines(Entity *entity, glm::vec3 &targetMovement,
 						  LineInfo *lineA, LineInfo *lineB);
-	bool hasCollisionCourse(LineInfo &lineA, LineInfo &lineB, Entity *entityB);
+	bool hasCollisionCourse(LineInfo &lineA, LineInfo &lineB, int layerTag,
+							Entity *entityB);
 	bool isLineLineCollision(LineInfo &lineA, LineInfo &lineB);
 	bool isLineCircleCollision(LineInfo &lineA, float &xSquareCoeff,
 							   float &xCoeff, float &zSquareCoeff,
@@ -113,4 +114,5 @@ class GameEngine {
 	std::vector<Entity *> _allEntities;
 	std::vector<Entity *> _newEntities;
 	Camera *_camera;
+	std::vector<std::vector<bool>> const &_collisionTable;
 };

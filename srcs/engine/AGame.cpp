@@ -1,12 +1,22 @@
 #include "engine/AGame.hpp"
 
-AGame::AGame(void) : _camera(nullptr) {}
+AGame::AGame(size_t enumSize) : _camera(nullptr) {
+	_collisionTable = std::vector<std::vector<bool>>(enumSize);
+	for (auto &collisionTag : _collisionTable) {
+		collisionTag = std::vector<bool>(enumSize, true);
+		enumSize--;
+	}
+}
 
 AGame::~AGame(void) {}
 
 std::vector<Entity *> const AGame::getEntities(void) const { return _entities; }
 
 Camera *AGame::getCamera(void) const { return _camera; }
+
+std::vector<std::vector<bool>> const &AGame::getCollisionTable(void) {
+	return _collisionTable;
+}
 
 std::vector<std::tuple<float, std::string, std::string>>
 	&AGame::getNeededFont() {

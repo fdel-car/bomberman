@@ -5,9 +5,10 @@
 
 Player::Player(glm::vec3 position, glm::vec3 eulerAngles, Save &save,
 			   Entity *sceneManager)
-	: Entity(glm::vec3(position.x, position.y + 0.45f, position.z), eulerAngles,
-			 new Collider(Collider::Circle, 0.45f, 0.45f), "Player", "Player",
-			 "Player", sceneManager),
+	: Entity(
+		  glm::vec3(position.x, position.y + 0.45f, position.z), eulerAngles,
+		  new Collider(Collider::Circle, LayerTag::PlayerLayer, 0.45f, 0.45f),
+		  "Player", "Player", "Player", sceneManager),
 	  _save(save),
 	  _speed(6.0f),
 	  _maxBombs(3),
