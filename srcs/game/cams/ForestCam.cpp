@@ -30,3 +30,16 @@ void ForestCam::drawGUI(GUI *graphicUI) {
 	// 				 "Bomberman", "", str, false, 1000, 1000,
 	// 				 NK_TEXT_LEFT, "12_BOMBERMAN", "18_BOMBERMAN");
 }
+
+void ForestCam::tellPosition(Entity *entity) { _savePositions(entity); }
+
+void ForestCam::update(void) {
+	Camera::update();
+	static float _cooldown = 0.5f;
+	if (_cooldown <= 0.0f) {
+		_cooldown = 0.5f;
+		// std::cout << "Test" << std::endl;
+		// printMapInfo();
+	}
+	_cooldown -= _gameEngine->getDeltaTime();
+}

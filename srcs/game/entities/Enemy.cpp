@@ -13,59 +13,59 @@ Enemy::Enemy(glm::vec3 position, glm::vec3 eulerAngles, Entity *gameManager)
 Enemy::~Enemy(void) {}
 
 void Enemy::update(void) {
-	// if (_cooldown <= 0.0f) {
-	// 	_cooldown = 0.5f;
 	Tools *cam = dynamic_cast<Tools *>(_sceneManager);
-
+	static std::vector<float> tmp;
 	if (cam == nullptr) {
 		std::cerr << "Update as fail" << std::endl;
 		return;
 	}
 	size_t mapWidth = cam->getMapWidth();
-	// size_t mapHeight = cam->getMapHeight();
+	size_t mapHeight = cam->getMapHeight();
+	if (tmp.size() == 0) {
 
-	float x = this->getPosition().x + (static_cast<float>(mapWidth) / 2);
-	// float z = this->getPosition().z + (static_cast<float>(mapHeight) / 2);
-	if (_cooldown <= 0.0f) {
-		_cooldown = 0.5f;
-		// cam->printMapInfo();
-		// std::cout << "X : " << x << " Z : " << z << std::endl;
-		// std::cout << "X : " << static_cast<int>(x)
-		// 		  << " Z : " << static_cast<int>(z) << std::endl;
-		// std::cout << "Check: " << x << std::endl;
+		// tmp.push_back((mapHeight) * 7.0f + 15.0f);
+		// tmp.push_back((mapHeight) * 7.0f + 1.0f);
+		tmp.push_back((mapHeight) * 15.0f + 7.0f);
+		tmp.push_back((mapHeight) * 1.0f + 7.0f);
+		tmp.push_back((mapHeight) * 1.0f + 1.0f);
 	}
-	// 	float deltaTime = _gameEngine->getDeltaTime();
-	if (x - 8.5f <= 0.05)
+
+	float targetX = (static_cast<int>(tmp[0]) % (mapWidth)) + 0.5f;
+	float targetZ = static_cast<int>(tmp[0] / (mapHeight)) + 0.5f;
+	float x = this->getPosition().x + (static_cast<float>(mapWidth) / 2);
+	float z = this->getPosition().z + (static_cast<float>(mapHeight) / 2);
+
+	int xSign = 0;
+	int zSign = 0;
+	if (targetX - x < -0.1f)
+		xSign = -1;
+	else if (targetX - x > 0.1f)
+		xSign = 1;
+	if (targetZ - z < -0.1f)
+		zSign = -1;
+	else if (targetZ - z > 0.1f)
+		zSign = 1;
+	// if (_cooldown <= 0.0f) {
+	// 	_cooldown = 0.5f;
+	// 	cam->printMapInfo();
+	// 	std::cout << x << " " << z << std::endl;
+	// 	std::cout << targetX << " " << targetZ << std::endl;
+	// 	std::cout << xSign << " " << zSign << std::endl;
+	// }
+	if (x - (targetX) <= 0.05 && z - (targetZ) <= 0.05) {
 		_targetMovement *= 0;
-	else {
-		int xSign = -1;
-		int zSign = 0;
-		//
-		// 	// Normalize direction
+		tmp.erase(tmp.begin());
+	}
+	else if (xSign != 0 || zSign != 0) {
 		float xDirection = static_cast<float>(xSign);
 		float zDirection = static_cast<float>(zSign);
-		// 	xSign = abs(xSign);
-		// 	zSign = abs(zSign);
+		xSign = abs(xSign);
+		zSign = abs(zSign);
 		float totalMagnitude = xSign + zSign;
 		xDirection *= sqrt(xSign / totalMagnitude);
 		zDirection *= sqrt(zSign / totalMagnitude);
-		//
-		// 	_targetMovement.x = xDirection * _speed * deltaTime;
-		// 	_targetMovement.z = zDirection * _speed * deltaTime;
-		// 	changeDir = true;
-		// } else {
 		_cooldown -= _gameEngine->getDeltaTime();
-		//
-		// 	if (_cooldown <= 0.25f && changeDir) {
-		// 		changeDir = false;
-		// 		float tmpVal = _targetMovement.z;
-		// 		_targetMovement.z = _targetMovement.x;
-		// 		_targetMovement.x = tmpVal;
-		// 	}
-		// }
-
 		float deltaTime = _gameEngine->getDeltaTime();
-		//
 		_targetMovement.x = xDirection * _speed * deltaTime;
 		_targetMovement.z = zDirection * _speed * deltaTime;
 	}

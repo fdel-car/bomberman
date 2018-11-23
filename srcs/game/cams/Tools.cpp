@@ -248,3 +248,10 @@ std::vector<std::map<size_t, Entity *>> const &Tools::getEntitiesInSquares()
 size_t const &Tools::getMapWidth() const { return _mapWidth; }
 
 size_t const &Tools::getMapHeight() const { return _mapHeight; }
+
+
+void Tools::_pathFinding(void) {
+	// for (size_t i = 0; i < _entitiesInSquares.size(); i++) {
+	//
+	// }
+}
