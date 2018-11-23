@@ -21,8 +21,10 @@ Entity::Entity(glm::vec3 position, glm::vec3 eulerAngles, Collider *collider,
 	  _collider(collider),
 	  _isTmp(true),
 	  _targetMovement(glm::vec3()) {
+	_eulerAngles = eulerAngles;
 	_rotation = glm::quat(glm::radians(eulerAngles));
-	glm::mat4 translationMatrix = glm::translate(glm::mat4(1.0f), position);
+	_scale = glm::vec3(1.0f);
+	glm::mat4 translationMatrix = glm::translate(glm::mat4(1.0f), _position);
 	_modelMatrix = translationMatrix * glm::mat4_cast(_rotation);
 	_name = _modelName;
 	_gameEngine = nullptr;
@@ -63,46 +65,45 @@ std::string const &Entity::getName(void) const { return _name; }
 
 std::string const &Entity::getTag(void) const { return _tag; }
 
-glm::vec3 &Entity::getTargetMovement(void) { return _targetMovement; }
+glm::vec3 const &Entity::getTargetMovement(void) const {
+	return _targetMovement;
+}
 
 bool Entity::getNeedToBeDestroyed(void) const { return _needToBeDestroyed; }
 
 void Entity::translate(glm::vec3 translation) {
-	_modelMatrix[3][0] += translation.x;
-	_modelMatrix[3][1] += translation.y;
-	_modelMatrix[3][2] += translation.z;
 	_position += translation;
+	_updateData();
 
-	// Signal, if _sceneManager is set, where is entity new pos
+	// Signal, if _sceneManager is set, what is the entity new position
 	if (_sceneManager != nullptr) _sceneManager->tellPosition(this);
 }
 
-glm::vec3 Entity::getEulerAngles() const {
-	return glm::degrees(glm::eulerAngles(_rotation));
-}
+glm::vec3 const &Entity::getEulerAngles() const { return _eulerAngles; }
 
 void Entity::scale(glm::vec3 scale) {
-	_modelMatrix = glm::scale(_modelMatrix, scale);
+	_scale *= scale;
+	_updateData();
 }
 
-void Entity::rotate(glm::vec3 axis, float angle) {
-	float length = glm::length(axis);
-	if (1.0f > length + FLT_EPSILON ||
-		1.0f < length - FLT_EPSILON)  // Normalize if needed
-		axis = glm::normalize(axis);
-
-	float angleInRad = glm::radians(angle);
-	glm::quat rotation = glm::angleAxis(angleInRad, axis);
-	_rotation = rotation * _rotation;
-	_modelMatrix = glm::rotate(_modelMatrix, angleInRad, axis);
+void Entity::rotateX(float angle) {
+	_eulerAngles.x += angle;
+	_updateData();
 }
 
 void Entity::rotateY(float angle) {
-	float angleInRad = glm::radians(angle);
-	glm::quat rotation = glm::angleAxis(angleInRad, glm::vec3(0.0, 1.0, 0.0));
-	_rotation = rotation * _rotation;
-	_modelMatrix =
-		glm::rotate(_modelMatrix, angleInRad, glm::vec3(0.0, 1.0, 0.0));
+	_eulerAngles.y += angle;
+	_updateData();
+}
+
+void Entity::_updateData(void) {
+	glm::mat4 translationMatrix = glm::mat4(1.0f);
+	translationMatrix[3][0] += _position.x;
+	translationMatrix[3][1] += _position.y;
+	translationMatrix[3][2] += _position.z;
+	_rotation = glm::quat(glm::radians(_eulerAngles));
+	glm::mat4 scaleMatrix = glm::scale(glm::mat4(1.0f), _scale);
+	_modelMatrix = translationMatrix * glm::mat4_cast(_rotation) * scaleMatrix;
 }
 
 void Entity::initEntity(GameEngine *gameEngine) {

@@ -114,12 +114,14 @@ void GameEngine::run(void) {
 		for (auto entity : _allEntities) {
 			entity->update();
 		}
+
 		// Merge new game entities
-		for (auto entity : _newEntities) {
-			_allEntities.push_back(entity);
-			entity->update();  // TODO: do this or wait for next frame?
+		if (!_newEntities.empty()) {
+			_allEntities.insert(_allEntities.end(), _newEntities.begin(),
+								_newEntities.end());
+			_newEntities.clear();
 		}
-		_newEntities.clear();
+
 		// Delete game entities if needed
 		for (size_t idx = _allEntities.size() - 1; idx < _allEntities.size();
 			 idx--) {

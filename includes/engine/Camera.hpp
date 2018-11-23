@@ -10,16 +10,17 @@ class Camera : public Entity {
 
 	glm::mat4 const &getViewMatrix(void) const;
 	glm::mat4 const &getProjectionMatrix(void) const;
-	std::vector<std::tuple<std::string, std::string>> const &getNeededImages()
-		const;
 	int getNewSceneIdx(void) const;
 	std::string getNewSceneName(void) const;
+	std::vector<std::tuple<std::string, std::string>> const &getNeededImages()
+		const;
 
 	virtual void drawGUI(GUI *graphicUI);
 	virtual void update(void);
 	virtual void configGUI(GUI *graphicUI);
 
 	void initEntity(GameEngine *gameEngine);
+	void mouseCallback(GLFWwindow *window, double xpos, double ypos);
 
    protected:
 	int _newSceneIdx;
@@ -35,8 +36,10 @@ class Camera : public Entity {
 	glm::mat4 _projection;
 	bool _debugMode = false;
 
+	glm::vec2 _lastMousePos;
 	glm::vec3 _front;
 	glm::vec3 _right;
+	glm::vec3 _up;
 
 	Camera(void);
 	Camera(Camera const &src);
