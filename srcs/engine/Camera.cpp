@@ -3,10 +3,9 @@
 #include "engine/GameRenderer.hpp"
 
 Camera::Camera(glm::vec3 const &pos, glm::vec3 const &eulerAngles)
-	: Entity(pos, eulerAngles, nullptr, ""),
+	: Entity(pos, eulerAngles, nullptr, "", "Camera", "Camera"),
 	  _newSceneIdx(-1),
 	  _newSceneName("") {
-	_name = "Camera";
 	_view = glm::inverse(getModelMatrix());
 	_front = _rotation * glm::vec3(0.0, 0.0, -1.0);
 	_speed = 6.0f;

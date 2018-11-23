@@ -2,10 +2,8 @@
 #include "engine/GameEngine.hpp"
 
 ForestCam::ForestCam(glm::vec3 const &pos, glm::vec3 const &eulerAngles)
-	:
-	// Camera(pos, eulerAngles),
-	  Tools(17, 17, pos, eulerAngles)
-		{}
+	:  // Camera(pos, eulerAngles),
+	  Tools(17, 17, pos, eulerAngles) {}
 
 ForestCam::~ForestCam(void) {}
 
@@ -31,10 +29,4 @@ void ForestCam::drawGUI(GUI *graphicUI) {
 	// _displayDialogue(graphicUI, &searchWord, &lastWord, &startStrIdx,
 	// 				 "Bomberman", "", str, false, 1000, 1000,
 	// 				 NK_TEXT_LEFT, "12_BOMBERMAN", "18_BOMBERMAN");
-}
-
-void ForestCam::tellPosition(Entity *entity) {
-
-	_savePositions(entity);
-
 }

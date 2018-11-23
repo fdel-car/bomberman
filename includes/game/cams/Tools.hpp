@@ -11,7 +11,13 @@ class Tools : public Camera {
 		  glm::vec3 const &eulerAngles);
 	virtual ~Tools(void);
 
+	virtual void tellPosition(Entity *entity);
+	virtual void tellDestruction(Entity *entity);
+
 	void printMapInfo(void);
+	bool putBomb(float xCenter, float zCenter, float explosionTimer,
+				 size_t range);
+	void putExplosion(float xCenter, float zCenter, size_t range);
 
 	std::map<size_t, std::vector<size_t>> const &getEntitiesInfos() const;
 	std::vector<std::map<size_t, Entity *>> const &getEntitiesInSquares() const;
@@ -45,4 +51,7 @@ class Tools : public Camera {
 
    private:
 	Tools(void);
+
+	float _xOffset = static_cast<float>(_mapWidth) / 2;
+	float _zOffset = static_cast<float>(_mapHeight) / 2;
 };
