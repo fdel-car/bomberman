@@ -34,9 +34,10 @@ void Enemy::update(void) {
 			currentPos = *cam->getGraphe().at(pos);
 		size_t bestDist = 100;
 		while(1) {
-			if (currentPos.prevNodesByDist.size() == 0 || bestDist == 1)
+			if (bestDist == 1)
 				break ;
 			for (auto n : currentPos.prevNodesByDist) {
+				// if (bestDist > n.first && cam->getEntitiesInfos().at(n.first).size() == 0)
 				if (bestDist > n.first)
 					bestDist = n.first;
 			}
@@ -44,6 +45,10 @@ void Enemy::update(void) {
 			_way.push_back(currentPos.z * mapHeight + currentPos.x);
 
 		}
+		for (const auto &aa : _way) {
+			std::cout << "x "<< (int)((int)aa % 17)<< " y " << (int)(aa / 17) << " total "<< aa<< std::endl;
+		}
+		// while(1){}
 	}
 	else if (_way.size() != 0) {
 		float targetX = (static_cast<int>(_way[0]) % mapWidth) + 0.5f;

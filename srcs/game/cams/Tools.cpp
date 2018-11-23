@@ -283,26 +283,30 @@ void Tools::_startBuildingGrapheForPathFinding(void) {
 	nodesByDepth.push_back(originNode);
 
 	while (nodesByDepth.size() > 0) {
-		// _describeNode(nodesByDepth.front());
+		_describeNode(nodesByDepth.front());
 		x = nodesByDepth.front()->x;
 		z = nodesByDepth.front()->z;
 		if (dist == nodesByDepth.front()->dist)
 			dist++;
 		if (x > 1) {
 			pos = z * _mapHeight + (x - 1);
-			_buildNewNode(dist, x - 1, z, pos, nodesByDepth.front(), &nodesByDepth);
+			// if (_entitiesInfos[pos].size() == 0)
+				_buildNewNode(dist, x - 1, z, pos, nodesByDepth.front(), &nodesByDepth);
 		}
 		if (x < _mapWidth - 1) {
 			pos = z * _mapHeight + (x + 1);
-			_buildNewNode(dist, x + 1, z, pos, nodesByDepth.front(), &nodesByDepth);
+			// if (_entitiesInfos[pos].size() == 0)
+				_buildNewNode(dist, x + 1, z, pos, nodesByDepth.front(), &nodesByDepth);
 		}
 		if (z > 1) {
 			pos = (z - 1) * _mapHeight + x;
-			_buildNewNode(dist, x, z - 1, pos, nodesByDepth.front(), &nodesByDepth);
+			// if (_entitiesInfos[pos].size() == 0)
+				_buildNewNode(dist, x, z - 1, pos, nodesByDepth.front(), &nodesByDepth);
 		}
 		if (z < _mapHeight - 1) {
 			pos = (z + 1) * _mapHeight + x;
-			_buildNewNode(dist, x, z + 1, pos, nodesByDepth.front(), &nodesByDepth);
+			// if (_entitiesInfos[pos].size() == 0)
+				_buildNewNode(dist, x, z + 1, pos, nodesByDepth.front(), &nodesByDepth);
 		}
 		nodesByDepth.pop_front();
 	}
