@@ -114,6 +114,7 @@ void GameRenderer::refreshWindow(std::vector<Entity *> &entities,
 								 Camera *camera) {
 	// Custom OpenGL state
 	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_CULL_FACE);
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -145,8 +146,7 @@ void GameRenderer::refreshWindow(std::vector<Entity *> &entities,
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	// normal
-	// glEnable( GL_CULL_FACE );
-	glCullFace(GL_FRONT);
+	
 	glViewport(0, 0, WINDOW_W, WINDOW_H);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -161,7 +161,6 @@ void GameRenderer::refreshWindow(std::vector<Entity *> &entities,
 	glBindTexture(GL_TEXTURE_2D, _depthMap);
 	_shaderProgram->setInt("shadowMap", 0);
 
-	
 	for (auto entity : entities) {
 		_shaderProgram->setMat4("M", entity->getModelMatrix());
 		entity->getModel()->draw(*_shaderProgram);
@@ -173,8 +172,8 @@ void GameRenderer::refreshWindow(std::vector<Entity *> &entities,
 	glBindVertexArray(0);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	glDisable(GL_DEPTH_TEST);
-	// glDisable( GL_CULL_FACE );
-	glCullFace(GL_BACK);
+	glDisable(GL_CULL_FACE);
+	
 
 	graphicUI->nkNewFrame();
 	camera->drawGUI(graphicUI);

@@ -7,7 +7,6 @@ in vec2 _texCoords;
 in vec4 _fragPosLightSpace;
 
 uniform vec3 lightDir;
-// uniform vec3 lightPos;
 uniform vec3 cameraPos;
 uniform vec3 lightColor;
 
@@ -62,22 +61,9 @@ void main() {
     float specularCoeff = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
     vec3 specular = specularCoeff * material.specularColor * lightColor;
 
-    // fragColor = vec4(ambient + diffuse + specular, 1.0f);
-
     // Shadow
-
-    // vec3 diffuse;
-    // // vec3 lightDire = normalize(lightPos - _fragPos);
-    // float diffCoeff = max(dot(_normal, -lightDir), 0.0f);
-    // if (material.isTextured)
-    //     diffuse = diffCoeff * texture(textureID, _texCoords).xyz;// * lightColor;
-    // else
-    //     diffuse = diffCoeff * material.diffuseColor;// * lightColor;
-
-
     float shadow = shadowCalculation(_fragPosLightSpace, lightDir);
     vec3 result = (ambient + (1.0 - shadow) * (diffuse + specular));
 
     fragColor = vec4(result , 1.0f);
-   
 }
