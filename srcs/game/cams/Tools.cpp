@@ -13,7 +13,9 @@ Tools::Tools(size_t mapWidth, size_t mapHeight, glm::vec3 const &pos,
 	  _xOffset(static_cast<float>(_mapWidth) / 2.0f),
 	  _zOffset(static_cast<float>(_mapHeight) / 2.0f) {}
 
-Tools::~Tools(void) {}
+Tools::~Tools(void) {
+	_clearGraphe();
+}
 
 void Tools::_displayDialogue(GUI *graphicUI, int *searchWord, int *lastWord,
 							 int *startStrIdx, std::string name,
@@ -132,6 +134,10 @@ void Tools::_savePositions(Entity *entity) {
 	size_t zCoord;
 	size_t vectorIdx;
 
+	// Save Player position
+	if (entity->getTag().compare("Player") == 0)
+		_playerPos = (entity->getPosition().z + _mapHeight / 2) * _mapHeight + (entity->getPosition().x + _mapWidth / 2);
+
 	// If entity has no collider, then just use his center
 	if (entityCol == nullptr) {
 		xCoord = static_cast<size_t>(entityPos.x + _xOffset);
@@ -245,13 +251,120 @@ std::vector<std::map<size_t, Entity *>> const &Tools::getEntitiesInSquares()
 	return _entitiesInSquares;
 }
 
+std::map<size_t, Node *> const &Tools::getGraphe() const {
+	return _graphe;
+}
+
+bool const &Tools::getRefreshAI() const {
+	return _refreshAI;
+}
+
 size_t const &Tools::getMapWidth() const { return _mapWidth; }
 
 size_t const &Tools::getMapHeight() const { return _mapHeight; }
 
 
-void Tools::_pathFinding(void) {
-	// for (size_t i = 0; i < _entitiesInSquares.size(); i++) {
-	//
-	// }
+void Tools::_startBuildingGrapheForPathFinding(void) {
+	// Clear the old graphe
+	_clearGraphe();
+	// std::cout << "Pos player "<< _playerPos << std::endl;
+	// Get coord of the player
+	size_t x = _playerPos % _mapWidth;
+	size_t z = _playerPos / _mapHeight;
+	size_t pos;
+	size_t dist = 0;
+
+	// Create the first node who will be the target for the enemies with the player position
+	Node *originNode = new Node(nullptr, dist, x, z, _playerPos);
+	_graphe.insert(std::pair<size_t, Node *>(_playerPos, originNode));
+
+	// Build the graphe depth by depth
+	std::list<Node *> nodesByDepth;
+	nodesByDepth.push_back(originNode);
+
+	while (nodesByDepth.size() > 0) {
+		// _describeNode(nodesByDepth.front());
+		x = nodesByDepth.front()->x;
+		z = nodesByDepth.front()->z;
+		if (dist == nodesByDepth.front()->dist)
+			dist++;
+		if (x > 1) {
+			pos = z * _mapHeight + (x - 1);
+			_buildNewNode(dist, x - 1, z, pos, nodesByDepth.front(), &nodesByDepth);
+		}
+		if (x < _mapWidth - 1) {
+			pos = z * _mapHeight + (x + 1);
+			_buildNewNode(dist, x + 1, z, pos, nodesByDepth.front(), &nodesByDepth);
+		}
+		if (z > 1) {
+			pos = (z - 1) * _mapHeight + x;
+			_buildNewNode(dist, x, z - 1, pos, nodesByDepth.front(), &nodesByDepth);
+		}
+		if (z < _mapHeight - 1) {
+			pos = (z + 1) * _mapHeight + x;
+			_buildNewNode(dist, x, z + 1, pos, nodesByDepth.front(), &nodesByDepth);
+		}
+		nodesByDepth.pop_front();
+	}
+}
+
+void Tools::_buildNewNode(size_t dist, size_t x, size_t z, size_t pos, Node *node,
+					std::list<Node *> *nodesByDepth) {
+	if (_graphe.find(pos) == _graphe.end()) {
+		//Save if it's a new node
+		Node *tmpNode = new Node(node, dist, x, z, pos);
+		_graphe.insert(std::pair<size_t, Node *>(pos, tmpNode));
+		nodesByDepth->push_back(tmpNode);
+	}
+	else
+		//Save the change if the node exist
+		_graphe.at(pos)->updateNode(node, dist);
+}
+
+void Tools::_clearGraphe(void) {
+	for (auto node : _graphe) {
+		delete node.second;
+	}
+	_graphe.clear();
+}
+
+void Tools::_describeNode(Node *n) {
+	std::cout << "x    : " << n->x << std::endl;
+	std::cout << "z    : " << n->z << std::endl;
+	std::cout << "id   : " << n->id << std::endl;
+	std::cout << "dist : " << n->dist << std::endl;
+	for (const auto &tmp : n->prevNodesByDist) {
+		std::cout << tmp.first << " = " << tmp.second.size() << std::endl;
+		for (auto tmp2 : tmp.second) {
+			std::cout << tmp2->x << std::endl;
+			std::cout << tmp2->z << std::endl;
+			std::cout << tmp2->id << std::endl;
+			std::cout << tmp2->dist << std::endl;
+		}
+	}
+}
+
+// Soon in a new file
+
+Node::Node() { }
+
+Node::Node(Node *newPrev, size_t newDist, size_t xPos, size_t zPos, size_t newId)
+					: dist(newDist), x(xPos), z(zPos), id(newId){
+	if (newPrev != nullptr) {
+		std::vector<Node *> tmpVector;
+		tmpVector.push_back(newPrev);
+		prevNodesByDist.insert(std::pair<size_t, std::vector<Node *>>(newDist, tmpVector));
+	}
+}
+
+Node::~Node(void) {}
+
+void Node::updateNode(Node *old, size_t dist) {
+	if (prevNodesByDist.find(dist) == prevNodesByDist.end()) {
+		std::vector<Node *> tmpVector;
+		tmpVector.push_back(old);
+		prevNodesByDist.insert(std::pair<size_t, std::vector<Node *>>(dist, tmpVector));
+	}
+	else
+		prevNodesByDist[dist].push_back(old);
 }

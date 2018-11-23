@@ -13,6 +13,7 @@ void ForestCam::configGUI(GUI *graphicUI) {
 	graphicUI->getDefaultStyle(THEME_RED, &defaultStyle);
 	graphicUI->setStyle(defaultStyle);
 	activeStyle = defaultStyle;
+	_refreshAI = false;
 	_pauseMenu = false;
 }
 
@@ -35,9 +36,12 @@ void ForestCam::tellPosition(Entity *entity) { _savePositions(entity); }
 
 void ForestCam::update(void) {
 	Camera::update();
+	_refreshAI = false;
 	static float _cooldown = 0.5f;
 	if (_cooldown <= 0.0f) {
 		_cooldown = 0.5f;
+		_startBuildingGrapheForPathFinding();
+		_refreshAI = true;
 		// std::cout << "Test" << std::endl;
 		// printMapInfo();
 	}

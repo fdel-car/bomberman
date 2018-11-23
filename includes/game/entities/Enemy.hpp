@@ -14,6 +14,7 @@ class Enemy : public Entity {
 	float _speed;
 	float _cooldown = 0.0f;
 	bool changeDir;
+	std::vector<float> _way;
 
 	Enemy(void);
 	Enemy(Enemy const &src);
