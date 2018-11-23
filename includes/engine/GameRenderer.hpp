@@ -53,7 +53,6 @@ class GameRenderer {
 	bool _initDepthMap(void);
 	void _initShader(void);
 	void _initModels(void);
-	glm::mat4 _createLightView(glm::vec3 lightDirection, glm::vec3 camaraPos);
 
 	static GameEngine *_gameEngine;
 

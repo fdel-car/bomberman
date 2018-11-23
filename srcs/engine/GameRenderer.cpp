@@ -116,14 +116,6 @@ void GameRenderer::_initModels(void) {
 
 void GameRenderer::getUserInput(void) { glfwPollEvents(); }
 
-
-glm::mat4 GameRenderer::_createLightView(glm::vec3 lightDir, glm::vec3 cameraPos) {
-	(void) lightDir;
-	(void) cameraPos;
-	return glm::mat4();
-
-}
-
 void GameRenderer::refreshWindow(std::vector<Entity *> &entities,
 								 Camera *camera) {
 	// Custom OpenGL state
@@ -136,12 +128,11 @@ void GameRenderer::refreshWindow(std::vector<Entity *> &entities,
 	// Shadow
 	float aspectRatio = _width / _height;
 	float length = glm::length(glm::vec3() - camera->getPosition());
-	float near_plane = 0.1f;
+	float near_plane = -50.0f;
 	float far_plane = 100.0f;
 
 	_lightProjection = glm::ortho(-aspectRatio * length, aspectRatio * length, -length, length, near_plane, far_plane);
-	_lightView = glm::lookAt(glm::vec3(-2.0, 34.0, 20.0), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
-	// _lightView = _createLightView(_lightDirection, camera->getPosition());
+	_lightView = glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f) + _lightDirection, glm::vec3(0, 1, 0));
 
 	/*
 		The projection and view matrix together form a
