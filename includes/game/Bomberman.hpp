@@ -3,6 +3,14 @@
 #include "engine/AGame.hpp"
 #include "game/Save.hpp"
 
+enum LayerTag {
+	WallLayer = 0,
+	PlayerLayer,
+	PlayerSpecialLayer,
+	EnemyLayer,
+	BombLayer
+};
+
 class Bomberman : public AGame {
 	typedef void (Bomberman::*Scene)(void);
 
@@ -15,7 +23,7 @@ class Bomberman : public AGame {
 	virtual bool isFullScreen();
 
    private:
-	Save save;
+	Save _save;
 	std::map<std::string, Scene> _scenesMap;
 
 	void _initScenes(void);

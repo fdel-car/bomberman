@@ -7,11 +7,12 @@ struct Collider {
    public:
 	enum Shape { Rectangle = 0, Circle };
 	Collider(void);
-	Collider(Shape shape, float width, float height);
+	Collider(Shape shape, int layerTag, float width, float height);
 	Collider(Collider const &src);
 	~Collider(void);
 
 	Shape shape;
+	int layerTag;
 	float width;
 	float height;
 

@@ -2,8 +2,8 @@
 
 Collider::Collider(void) : shape(Collider::Rectangle), width(1), height(1) {}
 
-Collider::Collider(Shape shape, float width, float height)
-	: shape(shape), width(width), height(height) {}
+Collider::Collider(Shape shape, int layerTag, float width, float height)
+	: shape(shape), layerTag(layerTag), width(width), height(height) {}
 
 Collider::Collider(Collider const &src) { *this = src; }
 

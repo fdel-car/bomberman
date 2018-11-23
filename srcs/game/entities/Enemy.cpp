@@ -1,11 +1,12 @@
 #include "game/entities/Enemy.hpp"
 #include "engine/GameEngine.hpp"
+#include "game/Bomberman.hpp"
 #include "game/cams/Tools.hpp"
 
 Enemy::Enemy(glm::vec3 position, glm::vec3 eulerAngles, Entity *gameManager)
 	: Entity(glm::vec3(position.x, position.y + 0.4f, position.z), eulerAngles,
-			 new Collider(Collider::Circle, 0.4f, 0.4f), "Enemy", "Enemy",
-			 "Enemy", gameManager) {
+			 new Collider(Collider::Circle, LayerTag::EnemyLayer, 0.4f, 0.4f),
+			 "Enemy", "Enemy", "Enemy", gameManager) {
 	_speed = 4.0f;
 	scale(glm::vec3(0.8, 0.8, 0.8));
 }
