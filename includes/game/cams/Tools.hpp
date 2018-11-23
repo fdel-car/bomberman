@@ -49,7 +49,6 @@ class Tools : public Camera {
 	void _savePositions(Entity *entity);
 	void _pathFinding(void);
 
-
 	bool _slowGUIAnimation;
 	size_t _mapWidth;
 	size_t _mapHeight;

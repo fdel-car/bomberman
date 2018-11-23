@@ -35,6 +35,7 @@ class GameRenderer {
 	Model *getModel(std::string modelName) const;
 	int getWidth(void) const;
 	int getHeight(void) const;
+	glm::vec2 getMousePos(void) const;
 	GUI *getGUI();
 
 	bool active;
@@ -43,6 +44,7 @@ class GameRenderer {
 	GameRenderer(void);
 	static void keyCallback(GLFWwindow *window, int key, int scancode,
 							int action, int mods);
+	static void mouseCallback(GLFWwindow *window, double xpos, double ypos);
 	static void errorCallback(int error, const char *description);
 
 	GameRenderer(GameRenderer const &src);
@@ -60,6 +62,7 @@ class GameRenderer {
 	GLFWwindow *_window;
 	int _width = 0;
 	int _height = 0;
+	static glm::vec2 _mousePos;
 
 	// Nuklear vars
 	GUI *graphicUI;
@@ -73,6 +76,7 @@ class GameRenderer {
 	GLuint _depthMapFBO;
 	GLuint _depthMap;
 	GLint _lightSpaceMatrixLoc;
+	Entity *_light;
 
 	// Light
 	glm::vec3 _lightDirection;

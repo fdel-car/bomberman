@@ -10,7 +10,7 @@ uniform vec3 lightDir;
 uniform vec3 viewPos;
 uniform vec3 lightColor;
 
-uniform sampler2D textureID;
+uniform sampler2D diffuseTexture;
 uniform sampler2D shadowMap;
 
 struct Material {
@@ -61,7 +61,7 @@ void main() {
     vec3 diffuse;
     float diffCoeff = max(dot(_normal, -lightDir), 0.0f);
     if (material.isTextured)
-        diffuse = diffCoeff * texture(textureID, _texCoords).xyz * lightColor;
+        diffuse = diffCoeff * texture(diffuseTexture, _texCoords).xyz * lightColor;
     else
         diffuse = diffCoeff * material.diffuseColor * lightColor;
 

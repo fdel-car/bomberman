@@ -1,11 +1,12 @@
 #include "game/entities/Enemy.hpp"
 #include "engine/GameEngine.hpp"
+#include "game/Bomberman.hpp"
 #include "game/cams/Tools.hpp"
 
 Enemy::Enemy(glm::vec3 position, glm::vec3 eulerAngles, Entity *gameManager)
 	: Entity(glm::vec3(position.x, position.y + 0.4f, position.z), eulerAngles,
-			 new Collider(Collider::Circle, 0.4f, 0.4f), "Enemy", "Enemy",
-			 "Enemy", gameManager) {
+			 new Collider(Collider::Circle, LayerTag::EnemyLayer, 0.4f, 0.4f),
+			 "Enemy", "Enemy", "Enemy", gameManager) {
 	_speed = 4.0f;
 	scale(glm::vec3(0.8, 0.8, 0.8));
 }
@@ -22,12 +23,11 @@ void Enemy::update(void) {
 	size_t mapWidth = cam->getMapWidth();
 	size_t mapHeight = cam->getMapHeight();
 	if (tmp.size() == 0) {
-
 		// tmp.push_back((mapHeight) * 7.0f + 15.0f);
 		// tmp.push_back((mapHeight) * 7.0f + 1.0f);
-		tmp.push_back((mapHeight) * 15.0f + 7.0f);
-		tmp.push_back((mapHeight) * 1.0f + 7.0f);
-		tmp.push_back((mapHeight) * 1.0f + 1.0f);
+		tmp.push_back((mapHeight)*15.0f + 7.0f);
+		tmp.push_back((mapHeight)*1.0f + 7.0f);
+		tmp.push_back((mapHeight)*1.0f + 1.0f);
 	}
 
 	float targetX = (static_cast<int>(tmp[0]) % (mapWidth)) + 0.5f;
@@ -37,13 +37,13 @@ void Enemy::update(void) {
 
 	int xSign = 0;
 	int zSign = 0;
-	if (targetX - x < -0.1f)
+	if (targetX - x < -0.05f)
 		xSign = -1;
-	else if (targetX - x > 0.1f)
+	else if (targetX - x > 0.05f)
 		xSign = 1;
-	if (targetZ - z < -0.1f)
+	if (targetZ - z < -0.05f)
 		zSign = -1;
-	else if (targetZ - z > 0.1f)
+	else if (targetZ - z > 0.05f)
 		zSign = 1;
 	// if (_cooldown <= 0.0f) {
 	// 	_cooldown = 0.5f;
@@ -55,8 +55,7 @@ void Enemy::update(void) {
 	if (x - (targetX) <= 0.05 && z - (targetZ) <= 0.05) {
 		_targetMovement *= 0;
 		tmp.erase(tmp.begin());
-	}
-	else if (xSign != 0 || zSign != 0) {
+	} else if (xSign != 0 || zSign != 0) {
 		float xDirection = static_cast<float>(xSign);
 		float zDirection = static_cast<float>(zSign);
 		xSign = abs(xSign);

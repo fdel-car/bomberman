@@ -20,11 +20,11 @@ class Entity {
 	const Collider *getCollider(void) const;
 	const Model *getModel(void) const;
 	bool getTmpState(void) const;
-	glm::vec3 getEulerAngles(void) const;
+	glm::vec3 const &getEulerAngles(void) const;
 	size_t const &getId(void) const;
 	std::string const &getName(void) const;
 	std::string const &getTag(void) const;
-	glm::vec3 &getTargetMovement(void);
+	glm::vec3 const &getTargetMovement(void) const;
 	bool getNeedToBeDestroyed(void) const;
 
 	virtual void update(void);
@@ -34,19 +34,23 @@ class Entity {
 
 	void scale(glm::vec3 scale);
 	void rotate(glm::vec3 axis, float angle);
+	void rotateX(float angle);
 	void rotateY(float angle);
 	void moveFromPosition(glm::vec3 &newPos);
 	void translate(glm::vec3 translation);
 
-	// Texture *texture;
 	// Animation *anim;
 	// bool isTrigger;
 
    private:
 	glm::vec3 _position;
+	glm::vec3 _eulerAngles;
+	glm::vec3 _scale;
 	glm::mat4 _modelMatrix;
 
 	Entity &operator=(Entity const &rhs);
+
+	void _updateData(void);
 
    protected:
 	static size_t _spawnedEntities;

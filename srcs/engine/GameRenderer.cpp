@@ -29,11 +29,11 @@ GameRenderer::GameRenderer(GameEngine *gameEngine, AGame *game) {
 					 (mode->height / 2) - (WINDOW_H / 2));
 	glfwMakeContextCurrent(_window);
 	glfwGetWindowSize(_window, &_width, &_height);
-	// glfwSetWindowUserPointer(_window, this);
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 		throw new std::runtime_error("Failed to initialize GLAD");
 	glViewport(0, 0, WINDOW_W, WINDOW_H);
 	glfwSetKeyCallback(_window, keyCallback);
+	glfwSetCursorPosCallback(_window, mouseCallback);
 
 	_initGUI(game);
 	_initModels();
@@ -73,7 +73,7 @@ bool GameRenderer::_initDepthMap(void) {
 	float borderColor[] = {1.0f, 1.0f, 1.0f, 1.0f};
 	glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
 
-	// attach depth texture as the framebuffer's depth buffer
+	// Attach depth texture as the framebuffer's depth buffer
 	glBindFramebuffer(GL_FRAMEBUFFER, _depthMapFBO);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D,
 						   _depthMap, 0);
@@ -83,7 +83,7 @@ bool GameRenderer::_initDepthMap(void) {
 
 	// Always check that our framebuffer is ok
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-		std::cout << "Failed to initialize Depth Map" << std::endl;
+		std::cout << "Failed to initialize Depth Map." << std::endl;
 		return false;
 	}
 	return true;
@@ -97,13 +97,14 @@ void GameRenderer::_initShader(void) {
 						  _srcsDir + "engine/shaders/depthMap.fs");
 
 	glUseProgram(_shaderProgram->getID());
-
+	_shaderProgram->setInt("diffuseTexture", 1);
+	_shaderProgram->setVec3(
+		"lightColor",
+		glm::vec3(1.0f, 1.0f,
+				  1.0f));  // Needs to be moved inside a new Light class
 	// Set permanent values
 	_lightDirection = glm::vec3(0.4f, -0.6f, -0.5f);
-	_shaderProgram->setVec3("lightDir",
-							glm::normalize(_lightDirection));
-	_shaderProgram->setVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
-	_shaderProgram->setInt("textureID", 1);
+	_shaderProgram->setVec3("lightDir", glm::normalize(_lightDirection));
 }
 
 void GameRenderer::_initModels(void) {
@@ -127,12 +128,15 @@ void GameRenderer::refreshWindow(std::vector<Entity *> &entities,
 
 	// Shadow
 	float aspectRatio = _width / _height;
-	float length = glm::length(glm::vec3() - camera->getPosition());
-	float near_plane = -50.0f;
+	float length = glm::length(glm::vec3(0.0f) - camera->getPosition());
+	float near_plane =
+		-100.0f;  // 0.1f;  // Try to keep it that way, it bugs now with this
 	float far_plane = 100.0f;
 
-	_lightProjection = glm::ortho(-aspectRatio * length, aspectRatio * length, -length, length, near_plane, far_plane);
-	_lightView = glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f) + _lightDirection, glm::vec3(0, 1, 0));
+	_lightProjection = glm::ortho(-aspectRatio * length, aspectRatio * length,
+								  -length, length, near_plane, far_plane);
+	_lightView =
+		glm::lookAt(glm::vec3(0.0f), _lightDirection, glm::vec3(0.0, 1.0, 0.0));
 
 	/*
 		The projection and view matrix together form a
@@ -158,8 +162,7 @@ void GameRenderer::refreshWindow(std::vector<Entity *> &entities,
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-	// normal
-
+	// Normal OpenGL state
 	glViewport(0, 0, WINDOW_W, WINDOW_H);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -215,6 +218,16 @@ void GameRenderer::switchCursorMode(bool debug) const {
 	glfwSetInputMode(_window, GLFW_CURSOR,
 					 debug ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
 }
+
+void GameRenderer::mouseCallback(GLFWwindow *window, double xPos, double yPos) {
+	_mousePos.x = xPos;
+	_mousePos.y = yPos;
+	(void)window;
+}
+
+glm::vec2 GameRenderer::_mousePos = glm::vec2(WINDOW_W / 2, WINDOW_H / 2);
+
+glm::vec2 GameRenderer::getMousePos(void) const { return _mousePos; }
 
 void GameRenderer::keyCallback(GLFWwindow *window, int key, int scancode,
 							   int action, int mods) {

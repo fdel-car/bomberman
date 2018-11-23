@@ -14,7 +14,7 @@ struct Material {
 class Mesh {
    public:
 	Mesh(std::vector<Vertex> const &vertices, Material const &material,
-		 GLuint textureID);
+		 GLuint diffuseTexture);
 	virtual ~Mesh(void);
 
 	size_t getSize(void) const;
@@ -26,7 +26,7 @@ class Mesh {
    private:
 	size_t _size;
 	Material const _material;
-	GLuint const _textureID;
+	GLuint const _diffuseTexture;
 
 	Mesh(void);
 	Mesh(Mesh const &src);
