@@ -49,9 +49,10 @@ void Bomberman::_forest(void) {
 			if ((x % 2 == 0 && z % 2 == 0) || abs(x) == 8 || abs(z) == 8) {
 				_entities.push_back(
 					new Entity(glm::vec3(x, 0.5, z), glm::vec3(0.0f),
-							   new Collider(Collider::Rectangle, 0.5, 0.5),
-							   "Box", "Box", "Box", _camera));
-				_entities.back()->scale(glm::vec3(1.0, 0.75, 1.0));
+						new Collider(Collider::Rectangle, 0.5, 0.5),
+						"Box", "Box", "Box", _camera));
+				_entities.back()->scale(glm::vec3(1.0f, 1.0f, 1.0f));
+
 			}
 		}
 	}

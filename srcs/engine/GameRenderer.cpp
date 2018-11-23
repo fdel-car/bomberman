@@ -99,8 +99,9 @@ void GameRenderer::_initShader(void) {
 	glUseProgram(_shaderProgram->getID());
 
 	// Set permanent values
+	_lightDirection = glm::vec3(0.4f, -0.6f, -0.5f);
 	_shaderProgram->setVec3("lightDir",
-							glm::normalize(glm::vec3(0.4f, -0.6f, -0.5f)));
+							glm::normalize(_lightDirection));
 	_shaderProgram->setVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
 	_shaderProgram->setInt("textureID", 1);
 }
@@ -115,6 +116,14 @@ void GameRenderer::_initModels(void) {
 
 void GameRenderer::getUserInput(void) { glfwPollEvents(); }
 
+
+glm::mat4 GameRenderer::_createLightView(glm::vec3 lightDir, glm::vec3 cameraPos) {
+	(void) lightDir;
+	(void) cameraPos;
+	return glm::mat4();
+
+}
+
 void GameRenderer::refreshWindow(std::vector<Entity *> &entities,
 								 Camera *camera) {
 	// Custom OpenGL state
@@ -125,11 +134,14 @@ void GameRenderer::refreshWindow(std::vector<Entity *> &entities,
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	// Shadow
-	float near_plane = 0.1f, far_plane = 100.0f;
-	_lightProjection =
-		glm::ortho(-20.0f, 20.0f, -20.0f, 20.0f, near_plane, far_plane);
-	_lightView = glm::lookAt(camera->getPosition(), glm::vec3(0, 0, 0),
-							 glm::vec3(0, 1, 0));
+	float aspectRatio = _width / _height;
+	float length = glm::length(glm::vec3() - camera->getPosition());
+	float near_plane = 0.1f;
+	float far_plane = 100.0f;
+
+	_lightProjection = glm::ortho(-aspectRatio * length, aspectRatio * length, -length, length, near_plane, far_plane);
+	_lightView = glm::lookAt(glm::vec3(-2.0, 34.0, 20.0), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
+	// _lightView = _createLightView(_lightDirection, camera->getPosition());
 
 	/*
 		The projection and view matrix together form a
@@ -146,10 +158,12 @@ void GameRenderer::refreshWindow(std::vector<Entity *> &entities,
 
 	_shadowShaderProgram->setMat4("lightSpaceMatrix", _lightSpaceMatrix);
 
+	glCullFace(GL_FRONT);
 	for (auto entity : entities) {
 		_shadowShaderProgram->setMat4("M", entity->getModelMatrix());
 		entity->getModel()->draw(*_shadowShaderProgram);
 	}
+	glCullFace(GL_BACK);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 

@@ -15,8 +15,8 @@
 // #define YELLOW_SHADER 5
 // #define GRAY_SHADER 6
 
-#define SHADOW_H 2048
-#define SHADOW_W 2048
+#define SHADOW_H 4096
+#define SHADOW_W 4096
 
 class GameEngine;
 
@@ -53,6 +53,8 @@ class GameRenderer {
 	bool _initDepthMap(void);
 	void _initShader(void);
 	void _initModels(void);
+	glm::mat4 _createLightView(glm::vec3 lightDirection, glm::vec3 camaraPos);
+
 	static GameEngine *_gameEngine;
 
 	// General vars
