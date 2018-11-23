@@ -8,11 +8,15 @@ size_t Entity::_spawnedEntities = 0;
 void Entity::resetSpawnedEntities(void) { _spawnedEntities = 0; }
 
 Entity::Entity(glm::vec3 position, glm::vec3 eulerAngles, Collider *collider,
-			   std::string modelName, Entity *sceneManager)
+			   std::string modelName, std::string name, std::string tag,
+			   Entity *sceneManager)
 	: _position(position),
 	  _modelMatrix(glm::mat4(1.0f)),
 	  _id(Entity::_spawnedEntities++),
+	  _needToBeDestroyed(false),
 	  _modelName(modelName),
+	  _name(name),
+	  _tag(tag),
 	  _sceneManager(sceneManager),
 	  _collider(collider),
 	  _isTmp(true),
@@ -23,17 +27,23 @@ Entity::Entity(glm::vec3 position, glm::vec3 eulerAngles, Collider *collider,
 	_name = _modelName;
 	_gameEngine = nullptr;
 
-	// Signal, if camera is set, where is entity starting pos
+	// Signal, if _sceneManager is set, where is entity starting pos
 	if (_sceneManager != nullptr) _sceneManager->tellPosition(this);
 }
 
 Entity::~Entity(void) {
+	// Signal, if _sceneManager is set, that entity will be destroyed
+	if (_sceneManager != nullptr) {
+		_sceneManager->tellDestruction(this);
+	}
 	if (_collider) delete _collider;
 }
 
 void Entity::update(void) {}
 
 void Entity::tellPosition(Entity *entity) { (void)entity; }
+
+void Entity::tellDestruction(Entity *entity) { (void)entity; }
 
 GameEngine *Entity::getGameEngine(void) const { return _gameEngine; }
 
@@ -51,7 +61,11 @@ size_t const &Entity::getId(void) const { return _id; }
 
 std::string const &Entity::getName(void) const { return _name; }
 
+std::string const &Entity::getTag(void) const { return _tag; }
+
 glm::vec3 &Entity::getTargetMovement(void) { return _targetMovement; }
+
+bool Entity::getNeedToBeDestroyed(void) const { return _needToBeDestroyed; }
 
 void Entity::translate(glm::vec3 translation) {
 	_modelMatrix[3][0] += translation.x;
@@ -59,7 +73,7 @@ void Entity::translate(glm::vec3 translation) {
 	_modelMatrix[3][2] += translation.z;
 	_position += translation;
 
-	// Signal, if camera is set, where is entity new pos
+	// Signal, if _sceneManager is set, where is entity new pos
 	if (_sceneManager != nullptr) _sceneManager->tellPosition(this);
 }
 

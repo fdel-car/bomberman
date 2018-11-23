@@ -1,4 +1,6 @@
 #include "game/cams/Tools.hpp"
+#include "engine/GameEngine.hpp"
+#include "game/entities/Bomb.hpp"
 
 Tools::Tools(size_t mapWidth, size_t mapHeight, glm::vec3 const &pos,
 			 glm::vec3 const &eulerAngles)
@@ -7,7 +9,9 @@ Tools::Tools(size_t mapWidth, size_t mapHeight, glm::vec3 const &pos,
 	  _mapWidth(mapWidth),
 	  _mapHeight(mapHeight),
 	  _entitiesInSquares(
-		  std::vector<std::map<size_t, Entity *>>(mapWidth * mapHeight)) {}
+		  std::vector<std::map<size_t, Entity *>>(mapWidth * mapHeight)),
+	  _xOffset(static_cast<float>(_mapWidth) / 2.0f),
+	  _zOffset(static_cast<float>(_mapHeight) / 2.0f) {}
 
 Tools::~Tools(void) {}
 
@@ -106,48 +110,69 @@ bool Tools::_btnHover(GUI *graphicUI, int rectWidth, int rectHeight,
 	return ret;
 }
 
+void Tools::tellPosition(Entity *entity) { _savePositions(entity); }
+
+void Tools::tellDestruction(Entity *entity) {
+	// Clear entity data
+	if (_entitiesInfos.find(entity->getId()) != _entitiesInfos.end()) {
+		for (auto savedIdx : _entitiesInfos[entity->getId()]) {
+			_entitiesInSquares[savedIdx].erase(entity->getId());
+		}
+		_entitiesInfos.erase(entity->getId());
+	}
+}
+
 void Tools::_savePositions(Entity *entity) {
-	float xOffset = static_cast<float>(_mapWidth) / 2;
-	float zOffset = static_cast<float>(_mapHeight) / 2;
 	std::vector<size_t> allNewSquareWeAreIn;
 
 	// Get these to be faster later
 	const glm::vec3 &entityPos = entity->getPosition();
 	const Collider *entityCol = entity->getCollider();
+	size_t xCoord;
+	size_t zCoord;
+	size_t vectorIdx;
 
-	// TopLeft
-	size_t xCoord =
-		static_cast<size_t>(entityPos.x - entityCol->width + 0.0001f + xOffset);
-	size_t zCoord = static_cast<size_t>(entityPos.z - entityCol->height +
-										0.0001f + zOffset);
-	size_t vectorIdx = zCoord * _mapWidth + xCoord;
-	allNewSquareWeAreIn.push_back(vectorIdx);
-	// TopRight
-	xCoord =
-		static_cast<size_t>(entityPos.x + entityCol->width - 0.0001f + xOffset);
-	zCoord = static_cast<size_t>(entityPos.z - entityCol->height + 0.0001f +
-								 zOffset);
-	vectorIdx = zCoord * _mapWidth + xCoord;
-	if (allNewSquareWeAreIn.front() != vectorIdx)
+	// If entity has no collider, then just use his center
+	if (entityCol == nullptr) {
+		xCoord = static_cast<size_t>(entityPos.x + _xOffset);
+		zCoord = static_cast<size_t>(entityPos.z + _zOffset);
+		vectorIdx = zCoord * _mapWidth + xCoord;
 		allNewSquareWeAreIn.push_back(vectorIdx);
-	// Bottom-Left
-	xCoord =
-		static_cast<size_t>(entityPos.x - entityCol->width + 0.0001f + xOffset);
-	zCoord = static_cast<size_t>(entityPos.z + entityCol->height - 0.0001f +
-								 zOffset);
-	vectorIdx = zCoord * _mapWidth + xCoord;
-	if (allNewSquareWeAreIn.front() != vectorIdx &&
-		allNewSquareWeAreIn.back() != vectorIdx)
+	} else {
+		// TopLeft
+		xCoord = static_cast<size_t>(entityPos.x - entityCol->width + 0.0001f +
+									 _xOffset);
+		zCoord = static_cast<size_t>(entityPos.z - entityCol->height + 0.0001f +
+									 _zOffset);
+		vectorIdx = zCoord * _mapWidth + xCoord;
 		allNewSquareWeAreIn.push_back(vectorIdx);
-	// Bottom-Right
-	xCoord =
-		static_cast<size_t>(entityPos.x + entityCol->width - 0.0001f + xOffset);
-	zCoord = static_cast<size_t>(entityPos.z + entityCol->height - 0.0001f +
-								 zOffset);
-	vectorIdx = zCoord * _mapWidth + xCoord;
-	if (std::find(allNewSquareWeAreIn.begin(), allNewSquareWeAreIn.end(),
-				  vectorIdx) == allNewSquareWeAreIn.end())
-		allNewSquareWeAreIn.push_back(vectorIdx);
+		// TopRight
+		xCoord = static_cast<size_t>(entityPos.x + entityCol->width - 0.0001f +
+									 _xOffset);
+		zCoord = static_cast<size_t>(entityPos.z - entityCol->height + 0.0001f +
+									 _zOffset);
+		vectorIdx = zCoord * _mapWidth + xCoord;
+		if (allNewSquareWeAreIn.front() != vectorIdx)
+			allNewSquareWeAreIn.push_back(vectorIdx);
+		// Bottom-Left
+		xCoord = static_cast<size_t>(entityPos.x - entityCol->width + 0.0001f +
+									 _xOffset);
+		zCoord = static_cast<size_t>(entityPos.z + entityCol->height - 0.0001f +
+									 _zOffset);
+		vectorIdx = zCoord * _mapWidth + xCoord;
+		if (allNewSquareWeAreIn.front() != vectorIdx &&
+			allNewSquareWeAreIn.back() != vectorIdx)
+			allNewSquareWeAreIn.push_back(vectorIdx);
+		// Bottom-Right
+		xCoord = static_cast<size_t>(entityPos.x + entityCol->width - 0.0001f +
+									 _xOffset);
+		zCoord = static_cast<size_t>(entityPos.z + entityCol->height - 0.0001f +
+									 _zOffset);
+		vectorIdx = zCoord * _mapWidth + xCoord;
+		if (std::find(allNewSquareWeAreIn.begin(), allNewSquareWeAreIn.end(),
+					  vectorIdx) == allNewSquareWeAreIn.end())
+			allNewSquareWeAreIn.push_back(vectorIdx);
+	}
 
 	// Clear entity old Idx saved in _entitiesInSquares
 	for (auto savedIdx : _entitiesInfos[entity->getId()]) {
@@ -183,6 +208,32 @@ void Tools::printMapInfo(void) {
 		i++;
 		if (i % _mapHeight == 0) std::cout << std::endl;
 	}
+}
+
+bool Tools::putBomb(float xCenter, float zCenter, float explosionTimer,
+					size_t range) {
+	size_t xCoord = static_cast<size_t>(xCenter + _xOffset);
+	size_t zCoord = static_cast<size_t>(zCenter + _zOffset);
+	bool canPutBomb = true;
+	for (auto entity : _entitiesInSquares[zCoord * _mapWidth + xCoord]) {
+		if (entity.second->getTag().compare("Bomb") == 0) {
+			canPutBomb = false;
+			break;
+		}
+	}
+	// Add bomb to entities
+	if (canPutBomb) {
+		_gameEngine->addNewEntity(new Bomb(
+			glm::vec3(xCoord - _xOffset + 0.5f, 0.0f, zCoord - _zOffset + 0.5f),
+			explosionTimer, range, this));
+	}
+	return canPutBomb;
+}
+
+void Tools::putExplosion(float xCenter, float zCenter, size_t range) {
+	(void)xCenter;
+	(void)zCenter;
+	(void)range;
 }
 
 std::map<size_t, std::vector<size_t>> const &Tools::getEntitiesInfos() const {

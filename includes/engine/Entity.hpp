@@ -10,7 +10,8 @@ class Entity {
 	static void resetSpawnedEntities(void);
 
 	Entity(glm::vec3 position, glm::vec3 eulerAngles, Collider *collider,
-		   std::string modelName, Entity *sceneManager = nullptr);
+		   std::string modelName, std::string name, std::string tag,
+		   Entity *sceneManager = nullptr);
 	virtual ~Entity(void);
 
 	GameEngine *getGameEngine(void) const;
@@ -22,11 +23,14 @@ class Entity {
 	glm::vec3 getEulerAngles(void) const;
 	size_t const &getId(void) const;
 	std::string const &getName(void) const;
+	std::string const &getTag(void) const;
 	glm::vec3 &getTargetMovement(void);
+	bool getNeedToBeDestroyed(void) const;
 
 	virtual void update(void);
 	virtual void initEntity(GameEngine *gameEngine);
 	virtual void tellPosition(Entity *entity);
+	virtual void tellDestruction(Entity *entity);
 
 	void scale(glm::vec3 scale);
 	void rotate(glm::vec3 axis, float angle);
@@ -48,10 +52,11 @@ class Entity {
 	static size_t _spawnedEntities;
 
 	size_t _id;
+	bool _needToBeDestroyed;
 	std::string _modelName;
-	Entity *_sceneManager;
 	std::string _name;
 	std::string _tag;
+	Entity *_sceneManager;
 
 	Model *_model;
 	Collider *_collider;

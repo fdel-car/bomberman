@@ -2,10 +2,8 @@
 #include "engine/GameEngine.hpp"
 
 ForestCam::ForestCam(glm::vec3 const &pos, glm::vec3 const &eulerAngles)
-	:
-	// Camera(pos, eulerAngles),
-	  Tools(17, 17, pos, eulerAngles)
-		{}
+	:  // Camera(pos, eulerAngles),
+	  Tools(17, 17, pos, eulerAngles) {}
 
 ForestCam::~ForestCam(void) {}
 

@@ -2,7 +2,7 @@
 
 AGame::AGame(void) : _camera(nullptr) {}
 
-AGame::~AGame(void) { unload(); }
+AGame::~AGame(void) {}
 
 std::vector<Entity *> const AGame::getEntities(void) const { return _entities; }
 
@@ -14,12 +14,13 @@ std::vector<std::tuple<float, std::string, std::string>>
 }
 
 void AGame::unload(void) {
-	if (_camera != nullptr) {
-		delete _camera;
-		_camera = nullptr;
-	}
-	for (auto entity : _entities) delete entity;
+	// for (auto entity : _entities) delete entity;
 	_entities.clear();
+
+	// if (_camera != nullptr) {
+	// 	delete _camera;
+	// 	_camera = nullptr;
+	// }
 
 	// Reset counter for next scene
 	Entity::resetSpawnedEntities();
