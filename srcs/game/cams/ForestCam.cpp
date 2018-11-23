@@ -3,7 +3,11 @@
 
 ForestCam::ForestCam(glm::vec3 const &pos, glm::vec3 const &eulerAngles)
 	:  // Camera(pos, eulerAngles),
-	  Tools(17, 17, pos, eulerAngles) {}
+	  Tools(17, 17, pos, eulerAngles) {
+	_light = new Entity(glm::vec3(-10.0f, 10.0f, 10.0f),
+						glm::vec3(45.0f, 45.0f, 45.0f), nullptr, "Box", "Light",
+						"Light");
+}
 
 ForestCam::~ForestCam(void) {}
 

@@ -73,10 +73,10 @@ Model::Model(std::string const &objDirName) {
 		material.shininess = materials[idx].shininess;
 		material.isTextured = false;
 
-		unsigned int textureID = -1;
+		unsigned int diffuseTexture = -1;
 		if (!materials[idx].diffuse_texname.empty()) {
-			glGenTextures(1, &textureID);
-			glBindTexture(GL_TEXTURE_2D, textureID);
+			glGenTextures(1, &diffuseTexture);
+			glBindTexture(GL_TEXTURE_2D, diffuseTexture);
 
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -97,12 +97,12 @@ Model::Model(std::string const &objDirName) {
 			} else {
 				std::cerr << "Failed to load texture: " + textureName
 						  << std::endl;
-				textureID = -1;
+				diffuseTexture = -1;
 			}
 			stbi_set_flip_vertically_on_load(false);
 			stbi_image_free(data);
 		}
-		_meshes.push_back(new Mesh(vertices, material, textureID));
+		_meshes.push_back(new Mesh(vertices, material, diffuseTexture));
 		idx++;
 	}
 }

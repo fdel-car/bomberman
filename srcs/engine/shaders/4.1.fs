@@ -4,12 +4,14 @@ out vec4 fragColor;
 in vec3 _normal;
 in vec3 _fragPos;
 in vec2 _texCoords;
+in vec4 _fragPosLightSpace;
 
 uniform vec3 lightDir;
 uniform vec3 viewPos;
 uniform vec3 lightColor;
 
-uniform sampler2D textureID;
+uniform sampler2D diffuseTexture;
+uniform sampler2D shadowMap;
 
 struct Material {
     vec3 ambientColor;
@@ -21,6 +23,35 @@ struct Material {
 
 uniform Material material;
 
+float shadowCalculation(vec4 fragPosLightSpace) {
+    vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
+    projCoords = projCoords * 0.5 + 0.5;
+
+    // float closestDepth = texture(shadowMap, projCoords.xy).r; 
+
+    float currentDepth = projCoords.z;
+    float shadow = 0.0;
+    vec2 texelSize = 1.0 / textureSize(shadowMap, 0);
+    // float bias = max(0.05 * (1.0 - dot(_normal, -lightDir)), 0.005);
+    // float bias = 0.005f;
+    
+    for(int x = -1; x <= 1; ++x) {
+        for(int y = -1; y <= 1; ++y) {
+            float pcfDepth = texture(shadowMap, projCoords.xy + vec2(x, y) * texelSize).r; 
+            shadow += currentDepth > pcfDepth ? 1.0 : 0.0;        
+        }    
+    }
+    shadow /= 10.0;
+
+    // float shadow = currentDepth - bias > closestDepth  ? 1.0 : 0.0;  
+
+    if(projCoords.z > 1.0)
+        shadow = 0.0;
+
+        
+    return shadow;
+}
+
 void main() {
     // Ambient
     float ambientStrength = 0.2f;
@@ -30,7 +61,7 @@ void main() {
     vec3 diffuse;
     float diffCoeff = max(dot(_normal, -lightDir), 0.0f);
     if (material.isTextured)
-        diffuse = diffCoeff * texture(textureID, _texCoords).xyz * lightColor;
+        diffuse = diffCoeff * texture(diffuseTexture, _texCoords).xyz * lightColor;
     else
         diffuse = diffCoeff * material.diffuseColor * lightColor;
 
@@ -47,5 +78,9 @@ void main() {
         specular = specularCoeff * material.specularColor * lightColor;
     }
 
-    fragColor = vec4(ambient + diffuse + specular, 1.0f);
+    // Shadow
+    float shadow = shadowCalculation(_fragPosLightSpace);
+    vec3 result = (ambient + (1.0 - shadow) * (diffuse + specular));
+
+    fragColor = vec4(result , 1.0f);
 }

@@ -36,8 +36,9 @@ GameRenderer::GameRenderer(GameEngine *gameEngine, AGame *game) {
 	glfwSetCursorPosCallback(_window, mouseCallback);
 
 	_initGUI(game);
-	_initShader();
 	_initModels();
+	_initDepthMap();  // TODO Check if the Framebuffer was create correctly
+	_initShader();
 }
 
 GameRenderer::~GameRenderer(void) {
@@ -56,16 +57,54 @@ void GameRenderer::_initGUI(AGame *game) {
 	graphicUI = new GUI(_window, vFontPath);
 }
 
+bool GameRenderer::_initDepthMap(void) {
+	// Create framebuffer object for rendering the depth map
+	glGenFramebuffers(1, &_depthMapFBO);
+
+	// Create a 2D texture that we'll use as the framebuffer's depth buffer
+	glGenTextures(1, &_depthMap);
+	glBindTexture(GL_TEXTURE_2D, _depthMap);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, SHADOW_W, SHADOW_H, 0,
+				 GL_DEPTH_COMPONENT, GL_FLOAT, 0);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	float borderColor[] = {1.0f, 1.0f, 1.0f, 1.0f};
+	glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
+
+	// Attach depth texture as the framebuffer's depth buffer
+	glBindFramebuffer(GL_FRAMEBUFFER, _depthMapFBO);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D,
+						   _depthMap, 0);
+	glDrawBuffer(GL_NONE);
+	glReadBuffer(GL_NONE);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	// Always check that our framebuffer is ok
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+		std::cout << "Failed to initialize Depth Map." << std::endl;
+		return false;
+	}
+	return true;
+}
+
 void GameRenderer::_initShader(void) {
 	_shaderProgram = new ShaderProgram(_srcsDir + "engine/shaders/4.1.vs",
 									   _srcsDir + "engine/shaders/4.1.fs");
-	glUseProgram(_shaderProgram->getID());
+	_shadowShaderProgram =
+		new ShaderProgram(_srcsDir + "engine/shaders/depthMap.vs",
+						  _srcsDir + "engine/shaders/depthMap.fs");
 
+	glUseProgram(_shaderProgram->getID());
+	_shaderProgram->setInt("diffuseTexture", 1);
+	_shaderProgram->setVec3(
+		"lightColor",
+		glm::vec3(1.0f, 1.0f,
+				  1.0f));  // Needs to be moved inside a new Light class
 	// Set permanent values
-	_shaderProgram->setVec3("lightDir",
-							glm::normalize(glm::vec3(0.4f, -0.6f, -0.5f)));
-	_shaderProgram->setVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
-	_shaderProgram->setInt("textureID", 0);
+	_lightDirection = glm::vec3(0.4f, -0.6f, -0.5f);
+	_shaderProgram->setVec3("lightDir", glm::normalize(_lightDirection));
 }
 
 void GameRenderer::_initModels(void) {
@@ -82,14 +121,60 @@ void GameRenderer::refreshWindow(std::vector<Entity *> &entities,
 								 Camera *camera) {
 	// Custom OpenGL state
 	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_CULL_FACE);
 	glEnable(GL_MULTISAMPLE);
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	// Shadow
+	float aspectRatio = _width / _height;
+	float length = glm::length(glm::vec3(0.0f) - camera->getPosition());
+	float near_plane =
+		-100.0f;  // 0.1f;  // Try to keep it that way, it bugs now with this
+	float far_plane = 100.0f;
+
+	_lightProjection = glm::ortho(-aspectRatio * length, aspectRatio * length,
+								  -length, length, near_plane, far_plane);
+	_lightView =
+		glm::lookAt(glm::vec3(0.0f), _lightDirection, glm::vec3(0.0, 1.0, 0.0));
+
+	/*
+		The projection and view matrix together form a
+		transformation T that transform any 3D position
+		to the light visible coordinate space
+	*/
+	_lightSpaceMatrix = _lightProjection * _lightView;
+
+	glUseProgram(_shadowShaderProgram->getID());
+
+	glViewport(0, 0, SHADOW_W, SHADOW_H);
+	glBindFramebuffer(GL_FRAMEBUFFER, _depthMapFBO);
+	glClear(GL_DEPTH_BUFFER_BIT);
+
+	_shadowShaderProgram->setMat4("lightSpaceMatrix", _lightSpaceMatrix);
+
+	glCullFace(GL_FRONT);
+	for (auto entity : entities) {
+		_shadowShaderProgram->setMat4("M", entity->getModelMatrix());
+		entity->getModel()->draw(*_shadowShaderProgram);
+	}
+	glCullFace(GL_BACK);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	// Normal OpenGL state
+	glViewport(0, 0, WINDOW_W, WINDOW_H);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 	glUseProgram(_shaderProgram->getID());
-	// glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 	_shaderProgram->setMat4("V", camera->getViewMatrix());
 	_shaderProgram->setMat4("P", camera->getProjectionMatrix());
+	_shaderProgram->setMat4("lightSpaceMatrix", _lightSpaceMatrix);
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, _depthMap);
+	_shaderProgram->setInt("shadowMap", 0);
 	_shaderProgram->setVec3("viewPos", camera->getPosition());
 
 	for (auto entity : entities) {
@@ -104,6 +189,7 @@ void GameRenderer::refreshWindow(std::vector<Entity *> &entities,
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	glDisable(GL_MULTISAMPLE);
 	glDisable(GL_DEPTH_TEST);
+	glDisable(GL_CULL_FACE);
 
 	graphicUI->nkNewFrame();
 	camera->drawGUI(graphicUI);
