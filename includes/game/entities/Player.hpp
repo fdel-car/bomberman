@@ -14,6 +14,10 @@ class Player : public Entity {
    private:
 	Save &_save;
 	float _speed;
+	size_t _maxBombs;
+	float _bombCooldown;
+	size_t _bombRange;
+	std::vector<float> _bombTimers;
 
 	Player(void);
 	Player(Player const &src);

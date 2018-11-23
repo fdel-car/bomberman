@@ -9,7 +9,6 @@ class ForestCam : public Tools {
 
 	virtual void drawGUI(GUI *graphicUI);
 	virtual void configGUI(GUI *graphicUI);
-	virtual void tellPosition(Entity *entity);
 
 	// void printMapInfo(void);
 

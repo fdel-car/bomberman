@@ -31,6 +31,7 @@ set(SRCS
   srcs/game/cams/MainMenuCam.cpp
   srcs/game/cams/ForestCam.cpp
   srcs/game/entities/Player.cpp
+  srcs/game/entities/Bomb.cpp
   srcs/game/entities/Enemy.cpp
   srcs/game/cams/Tools.cpp
 )
@@ -65,6 +66,7 @@ set(HEADERS
   includes/game/cams/MainMenuCam.hpp
   includes/game/cams/ForestCam.hpp
   includes/game/entities/Player.hpp
+  includes/game/entities/Bomb.hpp
   includes/game/entities/Enemy.hpp
   includes/game/cams/Tools.hpp
 )

@@ -31,26 +31,26 @@ void Bomberman::_mainMenu(void) {
 		std::vector<std::string>(_scenesNames.begin() + 1, _scenesNames.end()),
 		save);
 	_entities.push_back(new Entity(glm::vec3(2.0, 0.5, -2.0), glm::vec3(0.0f),
-								   nullptr, "Bomb"));
+								   nullptr, "Bomb", "Bomb", "Bomb"));
 	_entities.back()->scale(glm::vec3(5.0));
 }
 
 void Bomberman::_forest(void) {
 	_camera =
 		new ForestCam(glm::vec3(0.0, 34.0, 20.0), glm::vec3(-60.0, 0.0, 0.0));
+	_entities.push_back(new Entity(glm::vec3(0.0f), glm::vec3(0.0f), nullptr,
+								   "Island", "Island", "Island"));
 	_entities.push_back(
-		new Entity(glm::vec3(0.0f), glm::vec3(0.0f), nullptr, "Island"));
+		new Player(glm::vec3(-7.0, 0.0, -7.0), glm::vec3(0.0f), save, _camera));
 	_entities.push_back(
-		new Player(glm::vec3(-7.0, 0.5, -7.0), glm::vec3(0.0f), save, _camera));
-	_entities.push_back(
-		new Enemy(glm::vec3(7.0, 0.5, 7.0), glm::vec3(0.0f), _camera));
+		new Enemy(glm::vec3(7.0, 0.0, 7.0), glm::vec3(0.0f), _camera));
 	for (int x = -8; x <= 8; x++) {
 		for (int z = -8; z <= 8; z++) {
 			if ((x % 2 == 0 && z % 2 == 0) || abs(x) == 8 || abs(z) == 8) {
 				_entities.push_back(
 					new Entity(glm::vec3(x, 0.5, z), glm::vec3(0.0f),
 							   new Collider(Collider::Rectangle, 0.5, 0.5),
-							   "Box", _camera));
+							   "Box", "Box", "Box", _camera));
 				_entities.back()->scale(glm::vec3(1.0, 0.75, 1.0));
 			}
 		}

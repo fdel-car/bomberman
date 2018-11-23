@@ -20,7 +20,10 @@ GameEngine::LineInfo::LineInfo(float startX, float startZ, float endX,
 	}
 }
 
-GameEngine::GameEngine(AGame *game) : _game(game) {
+GameEngine::GameEngine(AGame *game)
+	: _game(game),
+	  _allEntities(std::vector<Entity *>()),
+	  _newEntities(std::vector<Entity *>()) {
 	_running = false;
 
 	// Create interface class
@@ -33,6 +36,12 @@ GameEngine::GameEngine(AGame *game) : _game(game) {
 }
 
 GameEngine::~GameEngine(void) {
+	for (size_t idx = _allEntities.size() - 1; idx < _allEntities.size();
+		 idx--) {
+		delete _allEntities[idx];
+	}
+	if (_camera != nullptr) delete _camera;
+	_allEntities.clear();
 	delete _audioManager;
 	delete _gameRenderer;
 }
@@ -41,6 +50,11 @@ float GameEngine::getDeltaTime(void) { return _deltaTime; }
 
 GameRenderer const *GameEngine::getGameRenderer(void) const {
 	return _gameRenderer;
+}
+
+void GameEngine::addNewEntity(Entity *entity) {
+	_newEntities.push_back(entity);
+	_newEntities.back()->initEntity(this);
 }
 
 void GameEngine::run(void) {
@@ -82,6 +96,20 @@ void GameEngine::run(void) {
 		for (auto entity : _allEntities) {
 			entity->update();
 		}
+		// Merge new game entities
+		for (auto entity : _newEntities) {
+			_allEntities.push_back(entity);
+			entity->update();  // TODO: do this or wait for next frame?
+		}
+		_newEntities.clear();
+		// Delete game entities if needed
+		for (size_t idx = _allEntities.size() - 1; idx < _allEntities.size();
+			 idx--) {
+			if (_allEntities[idx]->getNeedToBeDestroyed()) {
+				delete _allEntities[idx];
+				_allEntities.erase(_allEntities.begin() + idx);
+			}
+		}
 		moveEntities();
 		_gameRenderer->refreshWindow(_allEntities, _camera);
 	}
@@ -104,15 +132,26 @@ void GameEngine::run(void) {
 
 bool GameEngine::initScene(size_t newSceneIdx) {
 	if (!_game) return false;
+
+	// Clear prev entities
+	for (size_t idx = _allEntities.size() - 1; idx < _allEntities.size();
+		 idx--) {
+		// TODO: add logic for entities that survive between scenes
+		delete _allEntities[idx];
+		_allEntities.erase(_allEntities.begin() + idx);
+	}
+	_allEntities.clear();
+	if (_camera != nullptr) {
+		delete _camera;
+		_camera = nullptr;
+	}
+
+	// Add new entities
 	_sceneIdx = newSceneIdx;
 	if (!_game->loadSceneByIndex(_sceneIdx)) return false;
-
 	_camera = _game->getCamera();
 	_camera->initEntity(this);
 	_camera->configGUI(_gameRenderer->getGUI());
-
-	// _clearTmpEntities();
-	_allEntities.clear();
 	for (auto entity : _game->getEntities()) {
 		_allEntities.push_back(entity);
 		_allEntities.back()->initEntity(this);
@@ -413,7 +452,7 @@ size_t GameEngine::checkCollision(Entity *entity, glm::vec3 &futureMovement,
 
 	size_t idxToTest = 0;
 	for (auto entityToTest : collidedEntities) {
-		// TODO: skip collision with object that cannot collide with ?
+		// TODO: skip collision with object that cannot collide with
 		if (entityToTest->getCollider() != nullptr) {
 			// 2) Check if final position collides with smth
 			// 3) Check if any other obj collides with lineA/lineB

@@ -1,12 +1,11 @@
 #include "game/entities/Enemy.hpp"
 #include "engine/GameEngine.hpp"
-#include "game/cams/ForestCam.hpp"
+#include "game/cams/Tools.hpp"
 
 Enemy::Enemy(glm::vec3 position, glm::vec3 eulerAngles, Entity *gameManager)
-	: Entity(position, eulerAngles, new Collider(Collider::Circle, 0.4f, 0.4f),
+	: Entity(glm::vec3(position.x, position.y + 0.4f, position.z), eulerAngles,
+			 new Collider(Collider::Circle, 0.4f, 0.4f), "Enemy", "Enemy",
 			 "Enemy", gameManager) {
-	_name = "Enemy";
-	_tag = "Enemy";
 	_speed = 4.0f;
 	scale(glm::vec3(0.8, 0.8, 0.8));
 }
@@ -16,7 +15,7 @@ Enemy::~Enemy(void) {}
 void Enemy::update(void) {
 	// if (_cooldown <= 0.0f) {
 	// 	_cooldown = 0.5f;
-	Tools *cam = reinterpret_cast<Tools *>(_sceneManager);
+	Tools *cam = dynamic_cast<Tools *>(_sceneManager);
 
 	if (cam == nullptr) {
 		std::cerr << "Update as fail" << std::endl;

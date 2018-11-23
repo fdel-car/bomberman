@@ -53,6 +53,7 @@ class GameEngine {
 	bool isKeyPressed(std::string keyName);
 	bool isKeyJustPressed(std::string keyName);
 	float getDeltaTime();
+	void addNewEntity(Entity *entity);
 
    private:
 	struct LineInfo {  // Equation of a line: z = mx + q
@@ -110,5 +111,6 @@ class GameEngine {
 	int _sceneIdx;
 	AGame *_game;
 	std::vector<Entity *> _allEntities;
+	std::vector<Entity *> _newEntities;
 	Camera *_camera;
 };
