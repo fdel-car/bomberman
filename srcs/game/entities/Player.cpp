@@ -10,7 +10,7 @@ Player::Player(glm::vec3 position, glm::vec3 eulerAngles, Save &save,
 			 "Player", sceneManager),
 	  _save(save),
 	  _speed(6.0f),
-	  _maxBombs(1),
+	  _maxBombs(3),
 	  _bombCooldown(3.0f),
 	  _bombRange(3),
 	  _bombTimers(std::vector<float>()) {

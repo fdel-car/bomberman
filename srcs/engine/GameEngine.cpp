@@ -38,9 +38,9 @@ GameEngine::GameEngine(AGame *game)
 GameEngine::~GameEngine(void) {
 	for (size_t idx = _allEntities.size() - 1; idx < _allEntities.size();
 		 idx--) {
-		// delete _allEntities[idx];
+		delete _allEntities[idx];
 	}
-	// if (_camera != nullptr) delete _camera;
+	if (_camera != nullptr) delete _camera;
 	_allEntities.clear();
 	delete _audioManager;
 	delete _gameRenderer;
@@ -135,7 +135,7 @@ bool GameEngine::initScene(size_t newSceneIdx) {
 	for (size_t idx = _allEntities.size() - 1; idx < _allEntities.size();
 		 idx--) {
 		// TODO: add logic for entities that survive between scenes
-		// delete _allEntities[idx];
+		delete _allEntities[idx];
 		_allEntities.erase(_allEntities.begin() + idx);
 	}
 	_allEntities.clear();
