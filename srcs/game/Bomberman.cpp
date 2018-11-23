@@ -46,12 +46,18 @@ void Bomberman::_forest(void) {
 		new Enemy(glm::vec3(7.0, 0.0, 7.0), glm::vec3(0.0f), _camera));
 	for (int x = -8; x <= 8; x++) {
 		for (int z = -8; z <= 8; z++) {
-			if ((x % 2 == 0 && z % 2 == 0) || abs(x) == 8 || abs(z) == 8) {
+			if (abs(x) == 8 || abs(z) == 8) {
 				_entities.push_back(
 					new Entity(glm::vec3(x, 0.5, z), glm::vec3(0.0f),
 							   new Collider(Collider::Rectangle, 0.5, 0.5),
 							   "Box", "Box", "Box", _camera));
-				_entities.back()->scale(glm::vec3(1.0, 0.75, 1.0));
+				_entities.back()->scale(glm::vec3(0.9, 1.0, 0.9));
+			} else if (x % 2 == 0 && z % 2 == 0) {
+				_entities.push_back(
+					new Entity(glm::vec3(x, 0.4, z), glm::vec3(0.0f),
+							   new Collider(Collider::Rectangle, 0.5, 0.5),
+							   "Box", "Box", "Box", _camera));
+				_entities.back()->scale(glm::vec3(1.0, 0.8, 1.0));
 			}
 		}
 	}

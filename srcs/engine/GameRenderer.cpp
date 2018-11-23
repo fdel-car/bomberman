@@ -29,11 +29,11 @@ GameRenderer::GameRenderer(GameEngine *gameEngine, AGame *game) {
 					 (mode->height / 2) - (WINDOW_H / 2));
 	glfwMakeContextCurrent(_window);
 	glfwGetWindowSize(_window, &_width, &_height);
-	// glfwSetWindowUserPointer(_window, this);
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 		throw new std::runtime_error("Failed to initialize GLAD");
 	glViewport(0, 0, WINDOW_W, WINDOW_H);
 	glfwSetKeyCallback(_window, keyCallback);
+	glfwSetCursorPosCallback(_window, mouseCallback);
 
 	_initGUI(game);
 	_initShader();
@@ -132,6 +132,16 @@ void GameRenderer::switchCursorMode(bool debug) const {
 	glfwSetInputMode(_window, GLFW_CURSOR,
 					 debug ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
 }
+
+void GameRenderer::mouseCallback(GLFWwindow *window, double xPos, double yPos) {
+	_mousePos.x = xPos;
+	_mousePos.y = yPos;
+	(void)window;
+}
+
+glm::vec2 GameRenderer::_mousePos = glm::vec2(WINDOW_W / 2, WINDOW_H / 2);
+
+glm::vec2 GameRenderer::getMousePos(void) const { return _mousePos; }
 
 void GameRenderer::keyCallback(GLFWwindow *window, int key, int scancode,
 							   int action, int mods) {
