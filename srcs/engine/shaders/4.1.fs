@@ -7,7 +7,7 @@ in vec2 _texCoords;
 in vec4 _fragPosLightSpace;
 
 uniform vec3 lightDir;
-uniform vec3 lightPos;
+// uniform vec3 lightPos;
 uniform vec3 cameraPos;
 uniform vec3 lightColor;
 
@@ -45,34 +45,34 @@ float shadowCalculation(vec4 fragPosLightSpace, vec3 lightDir) {
 
 void main() {
     // Ambient
-    float ambientStrength = 0.3f;
-    vec3 ambient = ambientStrength * material.ambientColor;// * lightColor;
+    float ambientStrength = 0.2f;
+    vec3 ambient = ambientStrength * material.ambientColor * lightColor;
 
     // Difuse
-    // vec3 diffuse;
-    // float diffCoeff = max(dot(_normal, -lightDir), 0.0f);
-    // if (material.isTextured)
-    //     diffuse = diffCoeff * texture(textureID, _texCoords).xyz * lightColor;
-    // else
-    //     diffuse = diffCoeff * material.diffuseColor * lightColor;
+    vec3 diffuse;
+    float diffCoeff = max(dot(_normal, -lightDir), 0.0f);
+    if (material.isTextured)
+        diffuse = diffCoeff * texture(textureID, _texCoords).xyz * lightColor;
+    else
+        diffuse = diffCoeff * material.diffuseColor * lightColor;
 
     // Specular
     vec3 viewDir = normalize(cameraPos - _fragPos);
     vec3 reflectDir = reflect(lightDir, _normal);
     float specularCoeff = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
-    vec3 specular = specularCoeff * material.specularColor ;//* lightColor;
+    vec3 specular = specularCoeff * material.specularColor * lightColor;
 
     // fragColor = vec4(ambient + diffuse + specular, 1.0f);
 
     // Shadow
 
-    vec3 diffuse;
-    // vec3 lightDire = normalize(lightPos - _fragPos);
-    float diffCoeff = max(dot(_normal, -lightDir), 0.0f);
-    if (material.isTextured)
-        diffuse = diffCoeff * texture(textureID, _texCoords).xyz;// * lightColor;
-    else
-        diffuse = diffCoeff * material.diffuseColor;// * lightColor;
+    // vec3 diffuse;
+    // // vec3 lightDire = normalize(lightPos - _fragPos);
+    // float diffCoeff = max(dot(_normal, -lightDir), 0.0f);
+    // if (material.isTextured)
+    //     diffuse = diffCoeff * texture(textureID, _texCoords).xyz;// * lightColor;
+    // else
+    //     diffuse = diffCoeff * material.diffuseColor;// * lightColor;
 
 
     float shadow = shadowCalculation(_fragPosLightSpace, lightDir);

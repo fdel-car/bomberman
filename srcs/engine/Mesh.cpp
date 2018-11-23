@@ -43,7 +43,7 @@ void Mesh::draw(ShaderProgram const &shaderProgram) const {
 	shaderProgram.setBool("material.isTextured", _material.isTextured);
 
 	if (_material.isTextured) {
-		glActiveTexture(GL_TEXTURE0);
+		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, _textureID);
 	}
 

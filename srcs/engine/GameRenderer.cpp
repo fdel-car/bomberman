@@ -36,13 +36,8 @@ GameRenderer::GameRenderer(GameEngine *gameEngine, AGame *game) {
 
 	_initGUI(game);
 	_initModels();
-	//shadows
-	if (_initDepthMap())
-	{
-		
-		// _lightColor = glm::vec3(1.0f, 1.0f, 1.0f);
-		_initShader();
-	}
+	_initDepthMap(); // TODO Check if the Framebuffer was create correctly
+	_initShader();
 }
 
 GameRenderer::~GameRenderer(void) {
@@ -97,19 +92,12 @@ void GameRenderer::_initShader(void) {
 	_shadowShaderProgram = new ShaderProgram(_srcsDir + "engine/shaders/depthMap.vs",
 									   _srcsDir + "engine/shaders/depthMap.fs");
 	
-	// shadow
-	float near_plane = -6.0f, far_plane = 20.0f;
-	_lightPos = glm::vec3(0.0f, 15.0f, 0.0f);
-	_lightProjection = glm::ortho(-20.0f, 20.0f, -20.0f, 20.0f, near_plane, far_plane);
-	_lightView = glm::lookAt(_lightPos, glm::vec3(0,0,0), glm::vec3(0,1,0));
-	
 	glUseProgram(_shaderProgram->getID());
 
 	// Set permanent values
 	_shaderProgram->setVec3("lightDir", glm::normalize(glm::vec3(0.4f, -0.6f, -0.5f)));
 	_shaderProgram->setVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
-	_shaderProgram->setInt("textureID", 0);
-	_shaderProgram->setVec3("lightPos", _lightPos);
+	_shaderProgram->setInt("textureID", 1);
 }
 
 void GameRenderer::_initModels(void) {
@@ -130,13 +118,17 @@ void GameRenderer::refreshWindow(std::vector<Entity *> &entities,
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	// Shadow
+	float near_plane = 0.1f, far_plane = 100.0f;
+	_lightProjection = glm::ortho(-20.0f, 20.0f, -20.0f, 20.0f, near_plane, far_plane);
+	_lightView = glm::lookAt(camera->getPosition(), glm::vec3(0,0,0), glm::vec3(0,1,0));
+
 	/*
 		The projection and view matrix together form a
 		transformation T that transform any 3D position
 		to the light visible coordinate space
 	*/
 	_lightSpaceMatrix = _lightProjection * _lightView;
-
+ 
 	glUseProgram(_shadowShaderProgram->getID());
 	
 	glViewport(0, 0, SHADOW_W, SHADOW_H);
@@ -153,24 +145,23 @@ void GameRenderer::refreshWindow(std::vector<Entity *> &entities,
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	// normal
-	glEnable( GL_CULL_FACE );
+	// glEnable( GL_CULL_FACE );
+	glCullFace(GL_FRONT);
 	glViewport(0, 0, WINDOW_W, WINDOW_H);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glUseProgram(_shaderProgram->getID());
-	// glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 	_shaderProgram->setMat4("V", camera->getViewMatrix());
 	_shaderProgram->setMat4("P", camera->getProjectionMatrix());
 	_shaderProgram->setVec3("cameraPos", camera->getPosition());
 	_shaderProgram->setMat4("lightSpaceMatrix", _lightSpaceMatrix);
-	// _shaderProgram->setInt("shadowMap", 0);
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, _depthMap);
-	// _shaderProgram->setInt("shadowMap", 1);
+	_shaderProgram->setInt("shadowMap", 0);
 
-
+	
 	for (auto entity : entities) {
 		_shaderProgram->setMat4("M", entity->getModelMatrix());
 		entity->getModel()->draw(*_shaderProgram);
@@ -182,7 +173,8 @@ void GameRenderer::refreshWindow(std::vector<Entity *> &entities,
 	glBindVertexArray(0);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	glDisable(GL_DEPTH_TEST);
-	glDisable( GL_CULL_FACE );
+	// glDisable( GL_CULL_FACE );
+	glCullFace(GL_BACK);
 
 	graphicUI->nkNewFrame();
 	camera->drawGUI(graphicUI);
