@@ -17,6 +17,7 @@ GameRenderer::GameRenderer(GameEngine *gameEngine, AGame *game) {
 #ifdef __APPLE__
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
+	glfwWindowHint(GLFW_SAMPLES, 4);
 	_window = glfwCreateWindow(WINDOW_W, WINDOW_H, "Bomberman", NULL,
 							   NULL);  // Size of screen will change
 	if (!_window) {
@@ -81,6 +82,7 @@ void GameRenderer::refreshWindow(std::vector<Entity *> &entities,
 								 Camera *camera) {
 	// Custom OpenGL state
 	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_MULTISAMPLE);
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glUseProgram(_shaderProgram->getID());
@@ -88,7 +90,8 @@ void GameRenderer::refreshWindow(std::vector<Entity *> &entities,
 
 	_shaderProgram->setMat4("V", camera->getViewMatrix());
 	_shaderProgram->setMat4("P", camera->getProjectionMatrix());
-	_shaderProgram->setVec3("cameraPos", camera->getPosition());
+	_shaderProgram->setVec3("viewPos", camera->getPosition());
+
 	for (auto entity : entities) {
 		_shaderProgram->setMat4("M", entity->getModelMatrix());
 		entity->getModel()->draw(*_shaderProgram);
@@ -99,6 +102,7 @@ void GameRenderer::refreshWindow(std::vector<Entity *> &entities,
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	glDisable(GL_MULTISAMPLE);
 	glDisable(GL_DEPTH_TEST);
 
 	graphicUI->nkNewFrame();
