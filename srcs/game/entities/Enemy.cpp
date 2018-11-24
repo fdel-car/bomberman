@@ -25,30 +25,27 @@ void Enemy::update(void) {
 	float x = this->getPosition().x + (static_cast<float>(mapWidth) / 2);
 	float z = this->getPosition().z + (static_cast<float>(mapHeight) / 2);
 
+	size_t xPlayer = cam->getPlayerPos() % mapWidth;
+	size_t zPlayer = cam->getPlayerPos() / mapHeight;
+
 	if (cam->getRefreshAI()) {
 		_way.clear();
 		size_t pos = static_cast<int>(z) * mapHeight + static_cast<int>(x);
-		Node currentPos = Node();
-		// std::cout << "x = " << static_cast<int>(x) << " z = " << z << std::endl;
-		if (cam->getGraphe().find(pos) != cam->getGraphe().end())
-			currentPos = *cam->getGraphe().at(pos);
-		size_t bestDist = 100;
-		while(1) {
-			if (bestDist == 1)
-				break ;
-			for (auto n : currentPos.prevNodesByDist) {
-				// if (bestDist > n.first && cam->getEntitiesInfos().at(n.first).size() == 0)
-				if (bestDist > n.first)
-					bestDist = n.first;
-			}
-			currentPos = *currentPos.prevNodesByDist[bestDist][0];
-			_way.push_back(currentPos.z * mapHeight + currentPos.x);
+		size_t bestDist = std::numeric_limits<std::size_t>::max();
+		if (cam->getGraphe().find(pos) != cam->getGraphe().end()) {
+			Node currentPos = *cam->getGraphe().at(pos);
+			while(1) {
+				if (xPlayer == currentPos.x && zPlayer == currentPos.z)
+					break ;
+				for (auto n : currentPos.prevNodesByDist) {
+					if (bestDist > n.first)
+						bestDist = n.first;
+				}
+				currentPos = *currentPos.prevNodesByDist[bestDist][0];
+				_way.push_back(currentPos.z * mapHeight + currentPos.x);
 
+			}
 		}
-		for (const auto &aa : _way) {
-			std::cout << "x "<< (int)((int)aa % 17)<< " y " << (int)(aa / 17) << " total "<< aa<< std::endl;
-		}
-		// while(1){}
 	}
 	else if (_way.size() != 0) {
 		float targetX = (static_cast<int>(_way[0]) % mapWidth) + 0.5f;
@@ -63,7 +60,7 @@ void Enemy::update(void) {
 			zSign = -1;
 		else if (targetZ - z > 0.05f)
 			zSign = 1;
-		if (x - (targetX) <= 0.05 && z - (targetZ) <= 0.05) {
+		if (x - targetX <= 0.05 && z - targetZ <= 0.05 && x - targetX >= -0.05 && z - targetZ >= -0.05) {
 			_targetMovement *= 0;
 			_way.erase(_way.begin());
 		}

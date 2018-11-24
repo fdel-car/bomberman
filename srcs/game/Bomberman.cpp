@@ -49,6 +49,10 @@ void Bomberman::_forest(void) {
 								   _save, _camera));
 	_entities.push_back(
 		new Enemy(glm::vec3(7.0, 0.0, 7.0), glm::vec3(0.0f), _camera));
+	_entities.push_back(
+		new Enemy(glm::vec3(7.0, 0.0, -7.0), glm::vec3(0.0f), _camera));
+	_entities.push_back(
+		new Enemy(glm::vec3(-7.0, 0.0, 7.0), glm::vec3(0.0f), _camera));
 	for (int x = -8; x <= 8; x++) {
 		for (int z = -8; z <= 8; z++) {
 			if (abs(x) == 8 || abs(z) == 8) {

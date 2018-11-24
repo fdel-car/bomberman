@@ -134,10 +134,6 @@ void Tools::_savePositions(Entity *entity) {
 	size_t zCoord;
 	size_t vectorIdx;
 
-	// Save Player position
-	if (entity->getTag().compare("Player") == 0)
-		_playerPos = (entity->getPosition().z + _mapHeight / 2) * _mapHeight + (entity->getPosition().x + _mapWidth / 2);
-
 	// If entity has no collider, then just use his center
 	if (entityCol == nullptr) {
 		xCoord = static_cast<size_t>(entityPos.x + _xOffset);
@@ -179,6 +175,10 @@ void Tools::_savePositions(Entity *entity) {
 					  vectorIdx) == allNewSquareWeAreIn.end())
 			allNewSquareWeAreIn.push_back(vectorIdx);
 	}
+
+	// Save Player position
+	if (entity->getTag().compare("Player") == 0)
+		_playerPos = vectorIdx;
 
 	// Clear entity old Idx saved in _entitiesInSquares
 	for (auto savedIdx : _entitiesInfos[entity->getId()]) {
@@ -263,6 +263,7 @@ size_t const &Tools::getMapWidth() const { return _mapWidth; }
 
 size_t const &Tools::getMapHeight() const { return _mapHeight; }
 
+size_t const &Tools::getPlayerPos() const { return _playerPos; }
 
 void Tools::_startBuildingGrapheForPathFinding(void) {
 	// Clear the old graphe
@@ -283,30 +284,26 @@ void Tools::_startBuildingGrapheForPathFinding(void) {
 	nodesByDepth.push_back(originNode);
 
 	while (nodesByDepth.size() > 0) {
-		_describeNode(nodesByDepth.front());
+		// _describeNode(nodesByDepth.front());
 		x = nodesByDepth.front()->x;
 		z = nodesByDepth.front()->z;
 		if (dist == nodesByDepth.front()->dist)
 			dist++;
 		if (x > 1) {
 			pos = z * _mapHeight + (x - 1);
-			// if (_entitiesInfos[pos].size() == 0)
-				_buildNewNode(dist, x - 1, z, pos, nodesByDepth.front(), &nodesByDepth);
+			_buildNewNode(dist, x - 1, z, pos, nodesByDepth.front(), &nodesByDepth);
 		}
 		if (x < _mapWidth - 1) {
 			pos = z * _mapHeight + (x + 1);
-			// if (_entitiesInfos[pos].size() == 0)
-				_buildNewNode(dist, x + 1, z, pos, nodesByDepth.front(), &nodesByDepth);
+			_buildNewNode(dist, x + 1, z, pos, nodesByDepth.front(), &nodesByDepth);
 		}
 		if (z > 1) {
 			pos = (z - 1) * _mapHeight + x;
-			// if (_entitiesInfos[pos].size() == 0)
-				_buildNewNode(dist, x, z - 1, pos, nodesByDepth.front(), &nodesByDepth);
+			_buildNewNode(dist, x, z - 1, pos, nodesByDepth.front(), &nodesByDepth);
 		}
 		if (z < _mapHeight - 1) {
 			pos = (z + 1) * _mapHeight + x;
-			// if (_entitiesInfos[pos].size() == 0)
-				_buildNewNode(dist, x, z + 1, pos, nodesByDepth.front(), &nodesByDepth);
+			_buildNewNode(dist, x, z + 1, pos, nodesByDepth.front(), &nodesByDepth);
 		}
 		nodesByDepth.pop_front();
 	}
@@ -314,14 +311,18 @@ void Tools::_startBuildingGrapheForPathFinding(void) {
 
 void Tools::_buildNewNode(size_t dist, size_t x, size_t z, size_t pos, Node *node,
 					std::list<Node *> *nodesByDepth) {
+	for (const auto &entity : _entitiesInSquares[pos]) {
+		if (entity.second->getTag().compare("Bomb") == 0 ||
+			entity.second->getTag().compare("Box") == 0)
+			return ;
+	}
 	if (_graphe.find(pos) == _graphe.end()) {
 		//Save if it's a new node
 		Node *tmpNode = new Node(node, dist, x, z, pos);
 		_graphe.insert(std::pair<size_t, Node *>(pos, tmpNode));
 		nodesByDepth->push_back(tmpNode);
 	}
-	else
-		//Save the change if the node exist
+	else //Save the change if the node exist
 		_graphe.at(pos)->updateNode(node, dist);
 }
 

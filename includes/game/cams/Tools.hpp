@@ -36,6 +36,7 @@ class Tools : public Camera {
 				 size_t range);
 	void putExplosion(float xCenter, float zCenter, size_t range);
 
+	size_t const &getPlayerPos() const;
 	std::map<size_t, std::vector<size_t>> const &getEntitiesInfos() const;
 	std::vector<std::map<size_t, Entity *>> const &getEntitiesInSquares() const;
 	size_t const &getMapWidth() const;

@@ -46,8 +46,6 @@ void ForestCam::update(void) {
 		_cooldown = 0.5f;
 		_startBuildingGrapheForPathFinding();
 		_refreshAI = true;
-		// std::cout << "Test" << std::endl;
-		// printMapInfo();
 	}
 	_cooldown -= _gameEngine->getDeltaTime();
 }
