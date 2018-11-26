@@ -1,5 +1,6 @@
 #include "game/Bomberman.hpp"
-#include "game/entities/Enemy.hpp"
+#include "game/entities/Box.hpp"
+#include "game/entities/EnemyOFDT.hpp"
 #include "game/entities/Player.hpp"
 #include "game/scenes/Forest.hpp"
 #include "game/scenes/MainMenu.hpp"
@@ -8,7 +9,7 @@
 
 extern std::string _assetsDir;
 
-Bomberman::Bomberman(void) : AGame(6) {
+Bomberman::Bomberman(void) : AGame(8) {
 	// Set needed fonts
 	for (float size = 12.0f; size <= 48.0f; size += 1.0f)
 		_neededFonts.push_back(std::tuple<float, std::string, std::string>(
@@ -16,6 +17,7 @@ Bomberman::Bomberman(void) : AGame(6) {
 	// Set collision table
 	// setLayerCollision(PlayerLayer, BombLayer, false);
 	setLayerCollision(WallLayer, WallLayer, false);
+	setLayerCollision(WallLayer, BoxLayer, false);
 	// Set map of scenes
 	_initScenes();
 }
@@ -50,12 +52,14 @@ void Bomberman::_forest(void) {
 								   "Island", "Island", "Island"));
 	_entities.push_back(new Player(glm::vec3(-7.0, 0.0, -7.0), glm::vec3(0.0f),
 								   _save, _camera));
+
+	// Enemies
 	_entities.push_back(
-		new Enemy(glm::vec3(7.0, 0.0, 7.0), glm::vec3(0.0f), _camera));
+		new EnemyOFDT(glm::vec3(7.0, 0.0, 7.0), glm::vec3(0.0f), _camera));
 	_entities.push_back(
-		new Enemy(glm::vec3(7.0, 0.0, -7.0), glm::vec3(0.0f), _camera));
+		new EnemyOFDT(glm::vec3(7.0, 0.0, -7.0), glm::vec3(0.0f), _camera));
 	_entities.push_back(
-		new Enemy(glm::vec3(-7.0, 0.0, 7.0), glm::vec3(0.0f), _camera));
+		new EnemyOFDT(glm::vec3(-7.0, 0.0, 7.0), glm::vec3(0.0f), _camera));
 	for (int x = -8; x <= 8; x++) {
 		for (int z = -8; z <= 8; z++) {
 			if (abs(x) == 8 || abs(z) == 8) {

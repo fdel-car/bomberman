@@ -85,10 +85,10 @@ class GameEngine {
 	void moveEntities(void);
 	void getPossibleCollisions(Entity *entity,
 							   std::vector<Entity *> &possibleCollisions,
+							   std::vector<Entity *> &possibleTriggers,
 							   std::vector<Entity *> &entitiesToTest);
 	size_t checkCollision(Entity *entity, glm::vec3 &futureMovement,
-						  std::vector<Entity *> &collidedEntities,
-						  std::vector<Entity *> &collidedTriggers);
+						  std::vector<Entity *> &collidedEntities);
 	void getMovementLines(Entity *entity, glm::vec3 &targetMovement,
 						  LineInfo *lineA, LineInfo *lineB);
 	bool hasCollisionCourse(LineInfo &lineA, LineInfo &lineB, int layerTag,
