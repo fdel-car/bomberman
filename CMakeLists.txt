@@ -33,6 +33,7 @@ set(SRCS
   srcs/game/scenes/Forest.cpp
   srcs/game/entities/Player.cpp
   srcs/game/entities/Bomb.cpp
+  srcs/game/entities/Explosion.cpp
   srcs/game/entities/Enemy.cpp
   srcs/game/scenes/SceneTools.cpp
 )
@@ -69,6 +70,7 @@ set(HEADERS
   includes/game/scenes/Forest.hpp
   includes/game/entities/Player.hpp
   includes/game/entities/Bomb.hpp
+  includes/game/entities/Explosion.hpp
   includes/game/entities/Enemy.hpp
   includes/game/scenes/SceneTools.hpp
 )

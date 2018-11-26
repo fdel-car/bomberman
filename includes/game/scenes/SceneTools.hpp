@@ -78,6 +78,9 @@ class SceneTools : public Camera {
    private:
 	SceneTools(void);
 
+	void _putExplosionsInDirection(size_t xCoord, size_t zCoord, int xChange,
+								   int zChange, size_t range);
+
 	float _xOffset = static_cast<float>(_mapWidth) / 2;
 	float _zOffset = static_cast<float>(_mapHeight) / 2;
 };

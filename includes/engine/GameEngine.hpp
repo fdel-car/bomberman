@@ -38,6 +38,7 @@ class GameEngine {
 
 	// Functions needed by Renderer
 	GameRenderer const *getGameRenderer(void) const;
+	Entity *getEntityById(size_t id);
 	// Entity *getFirstEntityWithName(std::string entityName);
 	// std::vector<Entity *> getEntitiesWithName(std::string entityName);
 	// Entity *getFirstEntityWithLabel(std::string entityLabel);
@@ -82,6 +83,9 @@ class GameEngine {
 
 	bool initScene(size_t newSceneIdx);
 	void moveEntities(void);
+	void getPossibleCollisions(Entity *entity,
+							   std::vector<Entity *> &possibleCollisions,
+							   std::vector<Entity *> &entitiesToTest);
 	size_t checkCollision(Entity *entity, glm::vec3 &futureMovement,
 						  std::vector<Entity *> &collidedEntities,
 						  std::vector<Entity *> &collidedTriggers);
