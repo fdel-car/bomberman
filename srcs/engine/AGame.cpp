@@ -13,6 +13,8 @@ std::vector<Entity *> const AGame::getEntities(void) const { return _entities; }
 
 Camera *AGame::getCamera(void) const { return _camera; }
 
+Light *AGame::getLight(void) const { return _light; }
+
 std::vector<std::vector<bool>> const &AGame::getCollisionTable(void) {
 	return _collisionTable;
 }

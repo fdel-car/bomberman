@@ -21,9 +21,10 @@ set(SRCS
   srcs/engine/GameRenderer.cpp
   srcs/engine/ShaderProgram.cpp
   srcs/engine/Camera.cpp
+  srcs/engine/Light.cpp
   srcs/engine/Model.cpp
   srcs/engine/Mesh.cpp
-
+  
   srcs/engine/GUI/GUI.cpp
 
   srcs/game/Bomberman.cpp
