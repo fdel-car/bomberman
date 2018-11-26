@@ -1,8 +1,8 @@
 #include "game/Bomberman.hpp"
-#include "game/cams/ForestCam.hpp"
-#include "game/cams/MainMenuCam.hpp"
 #include "game/entities/Enemy.hpp"
 #include "game/entities/Player.hpp"
+#include "game/scenes/Forest.hpp"
+#include "game/scenes/MainMenu.hpp"
 
 #include "json/json.hpp"  // https://github.com/nlohmann/json/blob/develop/single_include/nlohmann/json.hpp
 
@@ -31,10 +31,11 @@ bool Bomberman::loadSceneByIndex(int sceneIdx) {
 }
 
 void Bomberman::_mainMenu(void) {
-	_camera = new MainMenuCam(
+	_camera = new MainMenu(
 		glm::vec3(0.0, 0.0, 10.0), glm::vec3(0.0f),
 		std::vector<std::string>(_scenesNames.begin() + 1, _scenesNames.end()),
 		_save);
+	_light = new Light(glm::vec3(-10.0, 10.0, 10.0), glm::vec3(45.0f));
 	_entities.push_back(new Entity(glm::vec3(2.0, 0.5, -2.0), glm::vec3(0.0f),
 								   nullptr, "Bomb", "Bomb", "Bomb"));
 	_entities.back()->scale(glm::vec3(5.0));
@@ -42,7 +43,8 @@ void Bomberman::_mainMenu(void) {
 
 void Bomberman::_forest(void) {
 	_camera =
-		new ForestCam(glm::vec3(0.0, 34.0, 20.0), glm::vec3(-60.0, 0.0, 0.0));
+		new Forest(glm::vec3(0.0, 34.0, 20.0), glm::vec3(-60.0, 0.0, 0.0));
+	_light = new Light(glm::vec3(-10.0, 10.0, 10.0), glm::vec3(45.0f));
 	_entities.push_back(new Entity(glm::vec3(0.0f), glm::vec3(0.0f), nullptr,
 								   "Island", "Island", "Island"));
 	_entities.push_back(new Player(glm::vec3(-7.0, 0.0, -7.0), glm::vec3(0.0f),

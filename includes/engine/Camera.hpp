@@ -5,7 +5,7 @@
 
 class Camera : public Entity {
    public:
-	Camera(glm::vec3 const &cameraPos, glm::vec3 const &cameraTarget);
+	Camera(glm::vec3 const &pos, glm::vec3 const &eulerAngles);
 	virtual ~Camera(void);
 
 	glm::mat4 const &getViewMatrix(void) const;

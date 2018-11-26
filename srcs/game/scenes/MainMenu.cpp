@@ -1,11 +1,11 @@
-#include "game/cams/MainMenuCam.hpp"
 #include "engine/GameEngine.hpp"
+#include "game/scenes/MainMenu.hpp"
 
 extern std::string _assetsDir;
 
-MainMenuCam::MainMenuCam(glm::vec3 const &pos, glm::vec3 const &eulerAngles,
-						 std::vector<std::string> levelsName, Save &save)
-	: Tools(0, 0, pos, eulerAngles), _levelsName(levelsName), _save(save) {
+MainMenu::MainMenu(glm::vec3 const &pos, glm::vec3 const &eulerAngles,
+				   std::vector<std::string> levelsName, Save &save)
+	: SceneTools(0, 0, pos, eulerAngles), _levelsName(levelsName), _save(save) {
 	_neededImages.push_back(std::tuple<std::string, std::string>(
 		(_assetsDir + "GUI/icons/rightAngleBracket.png"), "rightAngleBracket"));
 	_neededImages.push_back(std::tuple<std::string, std::string>(
@@ -16,9 +16,9 @@ MainMenuCam::MainMenuCam(glm::vec3 const &pos, glm::vec3 const &eulerAngles,
 	_updateVarsFromSave();
 }
 
-MainMenuCam::~MainMenuCam(void) {}
+MainMenu::~MainMenu(void) {}
 
-void MainMenuCam::configGUI(GUI *graphicUI) {
+void MainMenu::configGUI(GUI *graphicUI) {
 	graphicUI->setAssetImage(_neededImages);
 	graphicUI->uiSetDefaultFont("18_BOMBERMAN");
 	graphicUI->getDefaultStyle(THEME_RED, &defaultStyle);
@@ -31,7 +31,7 @@ void MainMenuCam::configGUI(GUI *graphicUI) {
 	_slowTitle = false;
 }
 
-void MainMenuCam::drawGUI(GUI *graphicUI) {
+void MainMenu::drawGUI(GUI *graphicUI) {
 	if (!_changeSettings) {
 		_movingTitle(graphicUI);
 
@@ -89,7 +89,7 @@ void MainMenuCam::drawGUI(GUI *graphicUI) {
 		_settings(graphicUI);
 }
 
-void MainMenuCam::_settings(GUI *graphicUI) {
+void MainMenu::_settings(GUI *graphicUI) {
 	activeStyle[NK_COLOR_WINDOW] = nk_rgba(30, 33, 40, 215);
 	graphicUI->setStyle(activeStyle);
 	if (graphicUI->uiStartBlock("SettingMenu", "Settings",
@@ -158,7 +158,7 @@ void MainMenuCam::_settings(GUI *graphicUI) {
 	graphicUI->setStyle(activeStyle);
 }
 
-void MainMenuCam::_movingTitle(GUI *graphicUI) {
+void MainMenu::_movingTitle(GUI *graphicUI) {
 	static int extraSizeTitle = 40;
 	static bool titleIsGrowing = true;
 	if (_slowTitle) {
@@ -180,7 +180,7 @@ void MainMenuCam::_movingTitle(GUI *graphicUI) {
 	graphicUI->uiEndBlock();
 }
 
-void MainMenuCam::_updateVarsFromSave(void) {
+void MainMenu::_updateVarsFromSave(void) {
 	len1 = 1;
 	len2 = 1;
 	len3 = 1;
@@ -195,7 +195,7 @@ void MainMenuCam::_updateVarsFromSave(void) {
 	_soundsVolume = _save.soundsVolume;
 }
 
-void MainMenuCam::_updateSaveFromVars(void) {
+void MainMenu::_updateSaveFromVars(void) {
 	_save.upKey = toupper(_upChoice[0]);
 	_save.leftKey = toupper(_leftChoice[0]);
 	_save.downKey = toupper(_downChoice[0]);

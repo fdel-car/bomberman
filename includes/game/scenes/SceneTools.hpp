@@ -7,26 +7,25 @@
 
 // Soon in a new file
 struct Node {
-	public:
-		Node();
-		Node(Node *prev, size_t dist, size_t x, size_t z, size_t id);
-		~Node();
+   public:
+	Node();
+	Node(Node *prev, size_t dist, size_t x, size_t z, size_t id);
+	~Node();
 
-		void updateNode(Node *old, size_t dist);
-		// previous nodes by distance from the target
-		std::map<size_t, std::vector<Node *>> prevNodesByDist;
-		size_t dist;
-		size_t x;
-		size_t z;
-		size_t id;
-
+	void updateNode(Node *old, size_t dist);
+	// previous nodes by distance from the target
+	std::map<size_t, std::vector<Node *>> prevNodesByDist;
+	size_t dist;
+	size_t x;
+	size_t z;
+	size_t id;
 };
 
-class Tools : public Camera {
+class SceneTools : public Camera {
    public:
-	Tools(size_t mapWidth, size_t mapHeight, glm::vec3 const &pos,
-		  glm::vec3 const &eulerAngles);
-	virtual ~Tools(void);
+	SceneTools(size_t mapWidth, size_t mapHeight, glm::vec3 const &pos,
+			   glm::vec3 const &eulerAngles);
+	virtual ~SceneTools(void);
 
 	virtual void tellPosition(Entity *entity);
 	virtual void tellDestruction(Entity *entity);
@@ -63,7 +62,7 @@ class Tools : public Camera {
 	// Build graphe
 	void _startBuildingGrapheForPathFinding(void);
 	void _buildNewNode(size_t dist, size_t x, size_t z, size_t pos, Node *node,
-						std::list<Node *> *nodesByDepth);
+					   std::list<Node *> *nodesByDepth);
 	void _clearGraphe(void);
 	void _describeNode(Node *n);
 
@@ -77,9 +76,8 @@ class Tools : public Camera {
 	bool _refreshAI;
 
    private:
-	Tools(void);
+	SceneTools(void);
 
 	float _xOffset = static_cast<float>(_mapWidth) / 2;
 	float _zOffset = static_cast<float>(_mapHeight) / 2;
-
 };

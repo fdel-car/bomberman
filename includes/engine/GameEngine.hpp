@@ -9,6 +9,8 @@
 #define KEY_A "A"
 #define KEY_S "S"
 #define KEY_D "D"
+#define KEY_C "C"
+#define KEY_SPACE "SPACE"
 #define KEY_LEFT "LEFT"
 #define KEY_UP "UP"
 #define KEY_RIGHT "RIGHT"

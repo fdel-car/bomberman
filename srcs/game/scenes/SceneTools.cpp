@@ -1,9 +1,9 @@
-#include "game/cams/Tools.hpp"
+#include "game/scenes/SceneTools.hpp"
 #include "engine/GameEngine.hpp"
 #include "game/entities/Bomb.hpp"
 
-Tools::Tools(size_t mapWidth, size_t mapHeight, glm::vec3 const &pos,
-			 glm::vec3 const &eulerAngles)
+SceneTools::SceneTools(size_t mapWidth, size_t mapHeight, glm::vec3 const &pos,
+					   glm::vec3 const &eulerAngles)
 	: Camera(pos, eulerAngles),
 	  _slowGUIAnimation(true),
 	  _mapWidth(mapWidth),
@@ -13,16 +13,15 @@ Tools::Tools(size_t mapWidth, size_t mapHeight, glm::vec3 const &pos,
 	  _xOffset(static_cast<float>(_mapWidth) / 2.0f),
 	  _zOffset(static_cast<float>(_mapHeight) / 2.0f) {}
 
-Tools::~Tools(void) {
-	_clearGraphe();
-}
+SceneTools::~SceneTools(void) { _clearGraphe(); }
 
-void Tools::_displayDialogue(GUI *graphicUI, int *searchWord, int *lastWord,
-							 int *startStrIdx, std::string name,
-							 std::string imgName, std::string str,
-							 bool isImgLeft, size_t maxCharPerLine,
-							 int nbrOfLine, nk_flags textPosition,
-							 std::string fontText, std::string fontTitle) {
+void SceneTools::_displayDialogue(GUI *graphicUI, int *searchWord,
+								  int *lastWord, int *startStrIdx,
+								  std::string name, std::string imgName,
+								  std::string str, bool isImgLeft,
+								  size_t maxCharPerLine, int nbrOfLine,
+								  nk_flags textPosition, std::string fontText,
+								  std::string fontTitle) {
 	size_t maxCPL =
 		((WINDOW_W / 4) * 3 - (((WINDOW_H / 4) - 45) - (WINDOW_W / 4)) - 40) /
 		8.5;
@@ -46,8 +45,8 @@ void Tools::_displayDialogue(GUI *graphicUI, int *searchWord, int *lastWord,
 						   fontText, fontTitle);
 }
 
-bool Tools::_displayPauseMenu(GUI *graphicUI, int *_newSceneIdx, int restartIdx,
-							  int leaveIdx) {
+bool SceneTools::_displayPauseMenu(GUI *graphicUI, int *_newSceneIdx,
+								   int restartIdx, int leaveIdx) {
 	bool res = true;
 	if (graphicUI->uiStartBlock(
 			"PauseMenu", "Pause",
@@ -75,11 +74,11 @@ bool Tools::_displayPauseMenu(GUI *graphicUI, int *_newSceneIdx, int restartIdx,
 	return res;
 }
 
-bool Tools::_btnHover(GUI *graphicUI, int rectWidth, int rectHeight,
-					  int xRectPos, int yRectPos, int fontSize,
-					  std::string fontName, int *extraSize, int maxSize,
-					  bool *isButtonHover, std::string btnName,
-					  std::string btnImageHover, std::string btnImage) {
+bool SceneTools::_btnHover(GUI *graphicUI, int rectWidth, int rectHeight,
+						   int xRectPos, int yRectPos, int fontSize,
+						   std::string fontName, int *extraSize, int maxSize,
+						   bool *isButtonHover, std::string btnName,
+						   std::string btnImageHover, std::string btnImage) {
 	bool ret = false;
 	if (*extraSize < maxSize && *isButtonHover)
 		*extraSize += 1;
@@ -112,9 +111,9 @@ bool Tools::_btnHover(GUI *graphicUI, int rectWidth, int rectHeight,
 	return ret;
 }
 
-void Tools::tellPosition(Entity *entity) { _savePositions(entity); }
+void SceneTools::tellPosition(Entity *entity) { _savePositions(entity); }
 
-void Tools::tellDestruction(Entity *entity) {
+void SceneTools::tellDestruction(Entity *entity) {
 	// Clear entity data
 	if (_entitiesInfos.find(entity->getId()) != _entitiesInfos.end()) {
 		for (auto savedIdx : _entitiesInfos[entity->getId()]) {
@@ -124,7 +123,7 @@ void Tools::tellDestruction(Entity *entity) {
 	}
 }
 
-void Tools::_savePositions(Entity *entity) {
+void SceneTools::_savePositions(Entity *entity) {
 	std::vector<size_t> allNewSquareWeAreIn;
 
 	// Get these to be faster later
@@ -177,8 +176,7 @@ void Tools::_savePositions(Entity *entity) {
 	}
 
 	// Save Player position
-	if (entity->getTag().compare("Player") == 0)
-		_playerPos = vectorIdx;
+	if (entity->getTag().compare("Player") == 0) _playerPos = vectorIdx;
 
 	// Clear entity old Idx saved in _entitiesInSquares
 	for (auto savedIdx : _entitiesInfos[entity->getId()]) {
@@ -202,7 +200,7 @@ void Tools::_savePositions(Entity *entity) {
 	_entitiesInfos[entity->getId()] = allNewSquareWeAreIn;
 }
 
-void Tools::printMapInfo(void) {
+void SceneTools::printMapInfo(void) {
 	std::cout << "-------------------------------------------" << std::endl;
 	size_t i = 0;
 	for (const auto &info : _entitiesInSquares) {
@@ -216,8 +214,8 @@ void Tools::printMapInfo(void) {
 	}
 }
 
-bool Tools::putBomb(float xCenter, float zCenter, float explosionTimer,
-					size_t range) {
+bool SceneTools::putBomb(float xCenter, float zCenter, float explosionTimer,
+						 size_t range) {
 	size_t xCoord = static_cast<size_t>(xCenter + _xOffset);
 	size_t zCoord = static_cast<size_t>(zCenter + _zOffset);
 	bool canPutBomb = true;
@@ -236,36 +234,35 @@ bool Tools::putBomb(float xCenter, float zCenter, float explosionTimer,
 	return canPutBomb;
 }
 
-void Tools::putExplosion(float xCenter, float zCenter, size_t range) {
+void SceneTools::putExplosion(float xCenter, float zCenter, size_t range) {
 	(void)xCenter;
 	(void)zCenter;
 	(void)range;
 }
 
-std::map<size_t, std::vector<size_t>> const &Tools::getEntitiesInfos() const {
+std::map<size_t, std::vector<size_t>> const &SceneTools::getEntitiesInfos()
+	const {
 	return _entitiesInfos;
 }
 
-std::vector<std::map<size_t, Entity *>> const &Tools::getEntitiesInSquares()
-	const {
+std::vector<std::map<size_t, Entity *>> const &
+SceneTools::getEntitiesInSquares() const {
 	return _entitiesInSquares;
 }
 
-std::map<size_t, Node *> const &Tools::getGraphe() const {
+std::map<size_t, Node *> const &SceneTools::getGraphe() const {
 	return _graphe;
 }
 
-bool const &Tools::getRefreshAI() const {
-	return _refreshAI;
-}
+bool const &SceneTools::getRefreshAI() const { return _refreshAI; }
 
-size_t const &Tools::getMapWidth() const { return _mapWidth; }
+size_t const &SceneTools::getMapWidth() const { return _mapWidth; }
 
-size_t const &Tools::getMapHeight() const { return _mapHeight; }
+size_t const &SceneTools::getMapHeight() const { return _mapHeight; }
 
-size_t const &Tools::getPlayerPos() const { return _playerPos; }
+size_t const &SceneTools::getPlayerPos() const { return _playerPos; }
 
-void Tools::_startBuildingGrapheForPathFinding(void) {
+void SceneTools::_startBuildingGrapheForPathFinding(void) {
 	// Clear the old graphe
 	_clearGraphe();
 	// std::cout << "Pos player "<< _playerPos << std::endl;
@@ -275,7 +272,8 @@ void Tools::_startBuildingGrapheForPathFinding(void) {
 	size_t pos;
 	size_t dist = 0;
 
-	// Create the first node who will be the target for the enemies with the player position
+	// Create the first node who will be the target for the enemies with the
+	// player position
 	Node *originNode = new Node(nullptr, dist, x, z, _playerPos);
 	_graphe.insert(std::pair<size_t, Node *>(_playerPos, originNode));
 
@@ -287,53 +285,55 @@ void Tools::_startBuildingGrapheForPathFinding(void) {
 		// _describeNode(nodesByDepth.front());
 		x = nodesByDepth.front()->x;
 		z = nodesByDepth.front()->z;
-		if (dist == nodesByDepth.front()->dist)
-			dist++;
+		if (dist == nodesByDepth.front()->dist) dist++;
 		if (x > 1) {
 			pos = z * _mapHeight + (x - 1);
-			_buildNewNode(dist, x - 1, z, pos, nodesByDepth.front(), &nodesByDepth);
+			_buildNewNode(dist, x - 1, z, pos, nodesByDepth.front(),
+						  &nodesByDepth);
 		}
 		if (x < _mapWidth - 1) {
 			pos = z * _mapHeight + (x + 1);
-			_buildNewNode(dist, x + 1, z, pos, nodesByDepth.front(), &nodesByDepth);
+			_buildNewNode(dist, x + 1, z, pos, nodesByDepth.front(),
+						  &nodesByDepth);
 		}
 		if (z > 1) {
 			pos = (z - 1) * _mapHeight + x;
-			_buildNewNode(dist, x, z - 1, pos, nodesByDepth.front(), &nodesByDepth);
+			_buildNewNode(dist, x, z - 1, pos, nodesByDepth.front(),
+						  &nodesByDepth);
 		}
 		if (z < _mapHeight - 1) {
 			pos = (z + 1) * _mapHeight + x;
-			_buildNewNode(dist, x, z + 1, pos, nodesByDepth.front(), &nodesByDepth);
+			_buildNewNode(dist, x, z + 1, pos, nodesByDepth.front(),
+						  &nodesByDepth);
 		}
 		nodesByDepth.pop_front();
 	}
 }
 
-void Tools::_buildNewNode(size_t dist, size_t x, size_t z, size_t pos, Node *node,
-					std::list<Node *> *nodesByDepth) {
+void SceneTools::_buildNewNode(size_t dist, size_t x, size_t z, size_t pos,
+							   Node *node, std::list<Node *> *nodesByDepth) {
 	for (const auto &entity : _entitiesInSquares[pos]) {
 		if (entity.second->getTag().compare("Bomb") == 0 ||
 			entity.second->getTag().compare("Box") == 0)
-			return ;
+			return;
 	}
 	if (_graphe.find(pos) == _graphe.end()) {
-		//Save if it's a new node
+		// Save if it's a new node
 		Node *tmpNode = new Node(node, dist, x, z, pos);
 		_graphe.insert(std::pair<size_t, Node *>(pos, tmpNode));
 		nodesByDepth->push_back(tmpNode);
-	}
-	else //Save the change if the node exist
+	} else  // Save the change if the node exist
 		_graphe.at(pos)->updateNode(node, dist);
 }
 
-void Tools::_clearGraphe(void) {
+void SceneTools::_clearGraphe(void) {
 	for (auto node : _graphe) {
 		delete node.second;
 	}
 	_graphe.clear();
 }
 
-void Tools::_describeNode(Node *n) {
+void SceneTools::_describeNode(Node *n) {
 	std::cout << "x    : " << n->x << std::endl;
 	std::cout << "z    : " << n->z << std::endl;
 	std::cout << "id   : " << n->id << std::endl;
@@ -351,14 +351,16 @@ void Tools::_describeNode(Node *n) {
 
 // Soon in a new file
 
-Node::Node() { }
+Node::Node() {}
 
-Node::Node(Node *newPrev, size_t newDist, size_t xPos, size_t zPos, size_t newId)
-					: dist(newDist), x(xPos), z(zPos), id(newId){
+Node::Node(Node *newPrev, size_t newDist, size_t xPos, size_t zPos,
+		   size_t newId)
+	: dist(newDist), x(xPos), z(zPos), id(newId) {
 	if (newPrev != nullptr) {
 		std::vector<Node *> tmpVector;
 		tmpVector.push_back(newPrev);
-		prevNodesByDist.insert(std::pair<size_t, std::vector<Node *>>(newDist, tmpVector));
+		prevNodesByDist.insert(
+			std::pair<size_t, std::vector<Node *>>(newDist, tmpVector));
 	}
 }
 
@@ -368,8 +370,8 @@ void Node::updateNode(Node *old, size_t dist) {
 	if (prevNodesByDist.find(dist) == prevNodesByDist.end()) {
 		std::vector<Node *> tmpVector;
 		tmpVector.push_back(old);
-		prevNodesByDist.insert(std::pair<size_t, std::vector<Node *>>(dist, tmpVector));
-	}
-	else
+		prevNodesByDist.insert(
+			std::pair<size_t, std::vector<Node *>>(dist, tmpVector));
+	} else
 		prevNodesByDist[dist].push_back(old);
 }

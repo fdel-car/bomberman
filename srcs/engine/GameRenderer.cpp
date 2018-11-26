@@ -159,7 +159,6 @@ void GameRenderer::refreshWindow(std::vector<Entity *> &entities,
 		entity->getModel()->draw(*_shadowShaderProgram);
 	}
 	glCullFace(GL_BACK);
-
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	// Normal OpenGL state
