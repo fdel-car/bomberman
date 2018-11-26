@@ -78,7 +78,7 @@ void Bomberman::_forest(void) {
 		new Entity(glm::vec3(1.0, 0.5,  1.0), glm::vec3(0.0f),
 							   new Collider(Collider::Rectangle,
 											LayerTag::WallLayer, 0.5, 0.5),
-							   "BoxR", "BoxR", "BoxR", _camera));
+							   "Explosion", "Explosion", "Explosion", _camera));
 }
 
 void Bomberman::_initScenes(void) {
