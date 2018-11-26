@@ -9,7 +9,9 @@ Camera::Camera(glm::vec3 const &pos, glm::vec3 const &eulerAngles)
 	  _newSceneName("") {
 	_view = glm::inverse(getModelMatrix());
 	_speed = 8.0f;
-	_front = _rotation * glm::vec3(0.0, 0.0, -1.0);
+	_front = -glm::normalize(glm::vec3(getModelMatrix()[2][0],
+									   getModelMatrix()[2][1],
+									   getModelMatrix()[2][2]));
 	_right =
 		glm::normalize(glm::vec3(getModelMatrix()[0][0], getModelMatrix()[0][1],
 								 getModelMatrix()[0][2]));
@@ -34,8 +36,6 @@ Camera::~Camera(void) {}
 glm::mat4 const &Camera::getViewMatrix(void) const { return _view; };
 
 glm::mat4 const &Camera::getProjectionMatrix(void) const { return _projection; }
-
-// void Camera::updateProjectionMatrix()
 
 void Camera::initEntity(GameEngine *gameEngine) {
 	Entity::initEntity(gameEngine);
@@ -91,7 +91,9 @@ void Camera::_updateData(void) {
 	_right =
 		glm::normalize(glm::vec3(getModelMatrix()[0][0], getModelMatrix()[0][1],
 								 getModelMatrix()[0][2]));
-	_front = _rotation * glm::vec3(0.0, 0.0, -1.0);
+	_front = -glm::normalize(glm::vec3(getModelMatrix()[2][0],
+									   getModelMatrix()[2][1],
+									   getModelMatrix()[2][2]));
 	_up = glm::normalize(glm::cross(_right, _front));
 	_view = glm::inverse(getModelMatrix());
 }

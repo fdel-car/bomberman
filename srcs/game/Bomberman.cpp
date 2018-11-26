@@ -37,7 +37,8 @@ void Bomberman::_mainMenu(void) {
 		glm::vec3(0.0, 0.0, 10.0), glm::vec3(0.0f),
 		std::vector<std::string>(_scenesNames.begin() + 1, _scenesNames.end()),
 		_save);
-	_light = new Light(glm::vec3(-10.0, 10.0, 10.0), glm::vec3(45.0f));
+	_light = new Light(glm::vec3(-10.0, 10.0, 10.0),
+					   glm::normalize(glm::vec3(1.0f, -1.0f, -1.0f)));
 	_entities.push_back(new Entity(glm::vec3(2.0, 0.5, -2.0), glm::vec3(0.0f),
 								   nullptr, "Bomb", "Bomb", "Bomb"));
 	_entities.back()->scale(glm::vec3(5.0));
@@ -46,7 +47,7 @@ void Bomberman::_mainMenu(void) {
 void Bomberman::_forest(void) {
 	_camera =
 		new Forest(glm::vec3(0.0, 34.0, 20.0), glm::vec3(-60.0, 0.0, 0.0));
-	_light = new Light(glm::vec3(-10.0, 10.0, 10.0), glm::vec3(45.0f));
+	_light = new Light(glm::vec3(-20.0, 10.0, 8.0), glm::vec3(0.0f));
 	_entities.push_back(new Entity(glm::vec3(0.0f), glm::vec3(0.0f), nullptr,
 								   "Island", "Island", "Island"));
 	_entities.push_back(new Player(glm::vec3(-7.0, 0.0, -7.0), glm::vec3(0.0f),

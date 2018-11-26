@@ -2,6 +2,7 @@
 
 #include "engine/Camera.hpp"
 #include "engine/Collider.hpp"
+#include "engine/Light.hpp"
 #include "engine/Model.hpp"
 #include "engine/ShaderProgram.hpp"
 
@@ -31,7 +32,8 @@ class GameRenderer {
 
 	void getUserInput(void);
 	void switchCursorMode(bool debug) const;
-	void refreshWindow(std::vector<Entity *> &entities, Camera *camera);
+	void refreshWindow(std::vector<Entity *> &entities, Camera *camera,
+					   Light *light);
 	Model *getModel(std::string modelName) const;
 	int getWidth(void) const;
 	int getHeight(void) const;
@@ -75,13 +77,8 @@ class GameRenderer {
 	// Shadow
 	GLuint _depthMapFBO;
 	GLuint _depthMap;
-	GLint _lightSpaceMatrixLoc;
 	Entity *_light;
 
 	// Light
-	glm::vec3 _lightDirection;
-	glm::mat4 _lightProjection;
-	glm::mat4 _lightView;
 	glm::mat4 _lightSpaceMatrix;
-	glm::vec3 _lightPos;
 };
