@@ -375,9 +375,21 @@ void SceneTools::_buildNewNode(size_t dist, size_t x, size_t z, size_t pos,
 	}
 	if (_graphe.find(pos) == _graphe.end()) {
 		// Save if it's a new node
+		bool isAnEntity = false;
+		for (const auto &map : _entitiesInSquares[pos]) {
+			if (static_cast<size_t>(map.second->getPosition().x + _xOffset) == x
+				&& static_cast<size_t>(map.second->getPosition().z + _zOffset) == z) {
+				for (const auto &decor : _tmpDecor) {
+					if (map.second->getTag().compare(decor) == 0)
+						isAnEntity = true;
+				}
+			}
+		}
 		Node *tmpNode = new Node(node, dist, x, z, pos);
 		_graphe.insert(std::pair<size_t, Node *>(pos, tmpNode));
-		nodesByDepth->push_back(tmpNode);
+		if (!isAnEntity)
+			nodesByDepth->push_back(tmpNode);
+
 	} else  // Save the change if the node exist
 		_graphe.at(pos)->updateNode(node, dist);
 }
@@ -411,7 +423,7 @@ Node::Node() {}
 
 Node::Node(Node *newPrev, size_t newDist, size_t xPos, size_t zPos,
 		   size_t newId)
-	: dist(newDist), x(xPos), z(zPos), id(newId) {
+	: dist(newDist), x(xPos), z(zPos), id(newId), isFatal(false) {
 	if (newPrev != nullptr) {
 		std::vector<Node *> tmpVector;
 		tmpVector.push_back(newPrev);

@@ -28,17 +28,16 @@ void AEnemy::findBestWay(SceneTools *cam, bool runAway) {
 				while (1) {
 					if (xPlayer == currentPos.x && zPlayer == currentPos.z) break;
 					for (auto n : currentPos.prevNodesByDist) {
+						// std::cout << n.first << std::endl;
 						if (bestDist > n.first) {
-							for (const auto &check : n.second) {
-								if (check->walkOnMe.find(walk) == check->walkOnMe.end())
-									bestDist = n.first;
-							}
+							bestDist = n.first;
 						}
 					}
+					currentPos.walkOnMe[walk] = true;
 					if (bestDist != std::numeric_limits<std::size_t>::max())
 						currentPos = *currentPos.prevNodesByDist[bestDist][0];
+
 					_way.push_back(currentPos.z * mapHeight + currentPos.x);
-					currentPos.walkOnMe[walk] = true;
 					walk++;
 				}
 			}
