@@ -15,6 +15,8 @@ struct Node {
 	void updateNode(Node *old, size_t dist);
 	// previous nodes by distance from the target
 	std::map<size_t, std::vector<Node *>> prevNodesByDist;
+	// save when someone will walk on this node
+	std::map<size_t, bool> walkOnMe;
 	size_t dist;
 	size_t x;
 	size_t z;
@@ -80,6 +82,9 @@ class SceneTools : public Camera {
 
    private:
 	SceneTools(void);
+
+	void _putExplosionsInDirection(size_t xCoord, size_t zCoord, int xChange,
+								   int zChange, size_t range);
 
 	float _xOffset = static_cast<float>(_mapWidth) / 2;
 	float _zOffset = static_cast<float>(_mapHeight) / 2;

@@ -1,6 +1,7 @@
 #include "game/scenes/SceneTools.hpp"
 #include "engine/GameEngine.hpp"
 #include "game/entities/Bomb.hpp"
+#include "game/entities/Explosion.hpp"
 
 SceneTools::SceneTools(size_t mapWidth, size_t mapHeight, glm::vec3 const &pos,
 					   glm::vec3 const &eulerAngles)
@@ -140,6 +141,10 @@ void SceneTools::_savePositions(Entity *entity) {
 		xCoord = static_cast<size_t>(entityPos.x + _xOffset);
 		zCoord = static_cast<size_t>(entityPos.z + _zOffset);
 		vectorIdx = zCoord * _mapWidth + xCoord;
+		if (vectorIdx >= allNewSquareWeAreIn.size())
+			throw std::runtime_error(
+				"An entity located outside of the map boundaries tried to be "
+				"pushed inside it.");
 		allNewSquareWeAreIn.push_back(vectorIdx);
 	} else {
 		// TopLeft
@@ -222,7 +227,9 @@ bool SceneTools::putBomb(float xCenter, float zCenter, float explosionTimer,
 	size_t zCoord = static_cast<size_t>(zCenter + _zOffset);
 	bool canPutBomb = true;
 	for (auto entity : _entitiesInSquares[zCoord * _mapWidth + xCoord]) {
-		if (entity.second->getTag().compare("Bomb") == 0) {
+		if (entity.second->getTag().compare("Bomb") == 0 ||
+			entity.second->getTag().compare("Wall") == 0 ||
+			entity.second->getTag().compare("Box") == 0) {
 			canPutBomb = false;
 			break;
 		}
@@ -237,9 +244,55 @@ bool SceneTools::putBomb(float xCenter, float zCenter, float explosionTimer,
 }
 
 void SceneTools::putExplosion(float xCenter, float zCenter, size_t range) {
-	(void)xCenter;
-	(void)zCenter;
-	(void)range;
+	size_t xCoord = static_cast<size_t>(xCenter + _xOffset);
+	size_t zCoord = static_cast<size_t>(zCenter + _zOffset);
+
+	// Center explosion
+	_gameEngine->addNewEntity(new Explosion(
+		glm::vec3(xCoord - _xOffset + 0.5f, 0.0f, zCoord - _zOffset + 0.5f),
+		this));
+	// Left explosion
+	_putExplosionsInDirection(xCoord, zCoord, -1, 0, range);
+	// Right explosion
+	_putExplosionsInDirection(xCoord, zCoord, 1, 0, range);
+	// Top explosion
+	_putExplosionsInDirection(xCoord, zCoord, 0, -1, range);
+	// Down explosion
+	_putExplosionsInDirection(xCoord, zCoord, 0, 1, range);
+}
+
+void SceneTools::_putExplosionsInDirection(size_t xCoord, size_t zCoord,
+										   int xChange, int zChange,
+										   size_t range) {
+	size_t rangeIdx = 0;
+	bool canPutExplosion;
+	while (rangeIdx < range) {
+		xCoord += xChange;
+		zCoord += zChange;
+		if (xCoord < 1 || xCoord >= _mapWidth || zCoord < 1 ||
+			zCoord >= _mapHeight)
+			break;
+		canPutExplosion = true;
+		for (auto entity : _entitiesInSquares[zCoord * _mapWidth + xCoord]) {
+			if (entity.second->getTag().compare("Wall") == 0) {
+				canPutExplosion = false;
+				break;
+			} else if (entity.second->getTag().compare("Box") == 0) {
+				// Force stop when destroying first Box
+				rangeIdx = range;
+			} else if (entity.second->getTag().compare("Bomb") == 0) {
+				// TODO: one explosion trigger other bombs to explode ?
+			}
+		}
+		if (canPutExplosion) {
+			_gameEngine->addNewEntity(
+				new Explosion(glm::vec3(xCoord - _xOffset + 0.5f, 0.0f,
+										zCoord - _zOffset + 0.5f),
+							  this));
+		} else
+			break;
+		rangeIdx++;
+	}
 }
 
 std::map<size_t, std::vector<size_t>> const &SceneTools::getEntitiesInfos()

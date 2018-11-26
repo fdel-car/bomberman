@@ -7,7 +7,8 @@ struct Collider {
    public:
 	enum Shape { Rectangle = 0, Circle };
 	Collider(void);
-	Collider(Shape shape, int layerTag, float width, float height);
+	Collider(Shape shape, int layerTag, float width, float height,
+			 bool isTrigger = false);
 	Collider(Collider const &src);
 	~Collider(void);
 
@@ -15,6 +16,7 @@ struct Collider {
 	int layerTag;
 	float width;
 	float height;
+	bool isTrigger;
 
    private:
 	Collider &operator=(Collider const &rhs);

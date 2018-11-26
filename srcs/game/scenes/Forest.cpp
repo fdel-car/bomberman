@@ -14,9 +14,9 @@ Forest::~Forest(void) {}
 
 void Forest::configAI(void) {
 	_staticDecor.push_back("Wall");
-	// _staticDecor.push_back("Explosion");
-
-	// _tmpDecor.push_back("Bomb");
+	
+	_staticDecor.push_back("Explosion");
+	_staticDecor.push_back("Bomb");
 }
 
 void Forest::configGUI(GUI *graphicUI) {

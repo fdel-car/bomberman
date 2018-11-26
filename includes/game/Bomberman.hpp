@@ -5,10 +5,11 @@
 
 enum LayerTag {
 	WallLayer = 0,
-	PlayerLayer = 1,
-	PlayerSpecialLayer = 2,
-	EnemyLayer = 3,
-	BombLayer = 4
+	PlayerLayer,
+	PlayerSpecialLayer,
+	EnemyLayer,
+	BombLayer,
+	ExplosionLayer
 };
 
 class Bomberman : public AGame {

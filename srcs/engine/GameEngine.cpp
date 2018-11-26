@@ -59,6 +59,7 @@ GameEngine::~GameEngine(void) {
 		 idx--) {
 		delete _allEntities[idx];
 	}
+	if (_light != nullptr) delete _light;
 	if (_camera != nullptr) delete _camera;
 	_allEntities.clear();
 	delete _audioManager;
@@ -151,6 +152,19 @@ void GameEngine::run(void) {
 			for (size_t idx = _allEntities.size() - 1;
 				 idx < _allEntities.size(); idx--) {
 				if (_allEntities[idx]->getNeedToBeDestroyed()) {
+					// Erase possible ingame ref
+					if (_initialCollisionMap.find(_allEntities[idx]->getId()) !=
+						_initialCollisionMap.end())
+						_initialCollisionMap.erase(_allEntities[idx]->getId());
+					for (auto &initialCollisions : _initialCollisionMap) {
+						for (size_t idIdx = 0;
+							 idIdx < initialCollisions.second.size(); idIdx++) {
+							if (initialCollisions.second[idIdx] ==
+								_allEntities[idx]->getId())
+								initialCollisions.second.erase(
+									initialCollisions.second.begin() + idIdx);
+						}
+					}
 					delete _allEntities[idx];
 					_allEntities.erase(_allEntities.begin() + idx);
 				}
@@ -164,8 +178,8 @@ void GameEngine::run(void) {
 				// Entity *entityB;
 				for (auto &initialCollisions : _initialCollisionMap) {
 					entityA = getEntityById(initialCollisions.first);
+					// Just to be sure
 					if (entityA == nullptr) {
-						// Just to be sure
 						idxToDelete.push_back(initialCollisions.first);
 						continue;
 					}
@@ -185,7 +199,7 @@ void GameEngine::run(void) {
 				}
 			}
 		}
-		_gameRenderer->refreshWindow(_allEntities, _camera);
+		_gameRenderer->refreshWindow(_allEntities, _camera, _light);
 	}
 	if (newSceneIdx != -1) {
 		_sceneIdx = newSceneIdx;
@@ -224,6 +238,10 @@ bool GameEngine::initScene(size_t newSceneIdx) {
 		delete _allEntities[idx];
 		_allEntities.erase(_allEntities.begin() + idx);
 	}
+	if (_light != nullptr) {
+		delete _light;
+		_light = nullptr;
+	}
 	if (_camera != nullptr) {
 		delete _camera;
 		_camera = nullptr;
@@ -236,6 +254,8 @@ bool GameEngine::initScene(size_t newSceneIdx) {
 	_camera = _game->getCamera();
 	_camera->initEntity(this);
 	_camera->configGUI(_gameRenderer->getGUI());
+	_light = _game->getLight();
+	_light->initEntity(this);
 	for (auto entity : _game->getEntities()) {
 		_allEntities.push_back(entity);
 		_allEntities.back()->initEntity(this);
@@ -574,7 +594,11 @@ size_t GameEngine::checkCollision(Entity *entity, glm::vec3 &futureMovement,
 			(!lineA.isVertical &&
 			 hasCollisionCourse(lineA, lineB, layer1, entityToTest))) {
 			// TODO: handle if is physical collision or trigger
-			break;
+			if (entityToTest->getCollider()->isTrigger) {
+				// std::cout << "Trigger !" << std::endl;
+				collidedTriggers.push_back(entityToTest);
+			} else
+				break;
 		}
 		idxToTest++;
 	}
