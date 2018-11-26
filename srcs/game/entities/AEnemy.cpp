@@ -2,11 +2,12 @@
 #include "engine/GameEngine.hpp"
 #include "game/Bomberman.hpp"
 
-AEnemy::AEnemy(glm::vec3 position, glm::vec3 eulerAngles, Entity *gameManager)
-	: Entity(glm::vec3(position.x, position.y + 0.4f, position.z), eulerAngles,
-			 new Collider(Collider::Circle, LayerTag::EnemyLayer, 0.4f, 0.4f),
-			 "Enemy", "Enemy", "Enemy", gameManager) {
-}
+AEnemy::AEnemy(glm::vec3 position, glm::vec3 eulerAngles, Entity *sceneManager)
+	: Damageable(
+		  glm::vec3(position.x, position.y + 0.4f, position.z), eulerAngles,
+		  new Collider(Collider::Circle, LayerTag::EnemyLayer, 0.45f, 0.45f),
+		  "Enemy", "Enemy", "Enemy", 1, EnemyLayer, EnemySpecialLayer, 2.0f,
+		  sceneManager) {}
 
 AEnemy::~AEnemy(void) {}
 
@@ -26,11 +27,13 @@ void AEnemy::findBestWay(SceneTools *cam, bool runAway) {
 				Node currentPos = *cam->getGraphe().at(pos);
 				size_t walk = 0;
 				while (1) {
-					if (xPlayer == currentPos.x && zPlayer == currentPos.z) break;
+					if (xPlayer == currentPos.x && zPlayer == currentPos.z)
+						break;
 					for (auto n : currentPos.prevNodesByDist) {
 						if (bestDist > n.first) {
 							for (const auto &check : n.second) {
-								if (check->walkOnMe.find(walk) == check->walkOnMe.end())
+								if (check->walkOnMe.find(walk) ==
+									check->walkOnMe.end())
 									bestDist = n.first;
 							}
 						}
@@ -42,8 +45,8 @@ void AEnemy::findBestWay(SceneTools *cam, bool runAway) {
 					walk++;
 				}
 			}
+		} else {
 		}
-		else {}
 	}
 }
 

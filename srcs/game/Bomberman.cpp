@@ -23,7 +23,6 @@ Bomberman::Bomberman(void) : AGame(8) {
 	setLayerCollision(PlayerSpecialLayer, ExplosionLayer, false);
 	setLayerCollision(PlayerSpecialLayer, EnemySpecialLayer, false);
 	setLayerCollision(EnemySpecialLayer, ExplosionLayer, false);
-	setLayerCollision(EnemyLayer, ExplosionLayer, false);
 
 	// Set map of scenes
 	_initScenes();
@@ -67,6 +66,8 @@ void Bomberman::_forest(void) {
 		new EnemyOFDT(glm::vec3(7.0, 0.0, -7.0), glm::vec3(0.0f), _camera));
 	_entities.push_back(
 		new EnemyOFDT(glm::vec3(-7.0, 0.0, 7.0), glm::vec3(0.0f), _camera));
+
+	// Walls/Boxes
 	for (int x = -8; x <= 8; x++) {
 		for (int z = -8; z <= 8; z++) {
 			if (abs(x) == 8 || abs(z) == 8) {
