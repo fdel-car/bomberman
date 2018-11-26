@@ -58,6 +58,9 @@ class GameRenderer {
 	void _initShader(void);
 	void _initModels(void);
 
+	void _initCubeMap(void);
+	void _initSkyboxFaces(void);
+
 	static GameEngine *_gameEngine;
 
 	// General vars
@@ -72,6 +75,7 @@ class GameRenderer {
 	// Rendering vars
 	ShaderProgram *_shaderProgram;
 	ShaderProgram *_shadowShaderProgram;
+	ShaderProgram *_skyboxShaderProgram;
 	std::map<std::string, Model *> _models;
 
 	// Shadow
@@ -81,4 +85,10 @@ class GameRenderer {
 
 	// Light
 	glm::mat4 _lightSpaceMatrix;
+
+	// Skybox
+	std::vector<std::string> _faces;
+	GLuint	_skyboxTextureID;
+	GLuint _skyboxVAO;
+	GLuint _skyboxVBO;
 };
