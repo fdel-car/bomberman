@@ -1,6 +1,6 @@
 #include "game/Bomberman.hpp"
 #include "game/entities/Box.hpp"
-#include "game/entities/Enemy.hpp"
+#include "game/entities/EnemyOFDT.hpp"
 #include "game/entities/Player.hpp"
 #include "game/scenes/Forest.hpp"
 #include "game/scenes/MainMenu.hpp"
@@ -62,13 +62,11 @@ void Bomberman::_forest(void) {
 
 	// Enemies
 	_entities.push_back(
-		new Enemy(glm::vec3(7.0, 0.0, 7.0), glm::vec3(0.0f), _camera));
+		new EnemyOFDT(glm::vec3(7.0, 0.0, 7.0), glm::vec3(0.0f), _camera));
 	_entities.push_back(
-		new Enemy(glm::vec3(7.0, 0.0, -7.0), glm::vec3(0.0f), _camera));
+		new EnemyOFDT(glm::vec3(7.0, 0.0, -7.0), glm::vec3(0.0f), _camera));
 	_entities.push_back(
-		new Enemy(glm::vec3(-7.0, 0.0, 7.0), glm::vec3(0.0f), _camera));
-
-	// Walls generation
+		new EnemyOFDT(glm::vec3(-7.0, 0.0, 7.0), glm::vec3(0.0f), _camera));
 	for (int x = -8; x <= 8; x++) {
 		for (int z = -8; z <= 8; z++) {
 			if (abs(x) == 8 || abs(z) == 8) {
