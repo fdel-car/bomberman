@@ -52,8 +52,9 @@ void Camera::update(void) {
 
 	if (_gameEngine->isKeyJustPressed("`")) {
 		_debugMode = !_debugMode;
-		_lastMousePos.x = WINDOW_W / 2;
-		_lastMousePos.y = WINDOW_H / 2;
+		// Avoid camera jump on first frame
+		_lastMousePos.x = _gameEngine->getGameRenderer()->getMousePos().x;
+		_lastMousePos.y = _gameEngine->getGameRenderer()->getMousePos().y;
 		_gameEngine->getGameRenderer()->switchCursorMode(_debugMode);
 	}
 	if (!_debugMode) return;
