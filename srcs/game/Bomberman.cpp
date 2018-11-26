@@ -75,14 +75,6 @@ void Bomberman::_forest(void) {
 			}
 		}
 	}
-<<<<<<< HEAD
-=======
-	_entities.push_back(
-		new Entity(glm::vec3(1.0, 0.5,  1.0), glm::vec3(0.0f),
-							   new Collider(Collider::Rectangle,
-											LayerTag::WallLayer, 0.5, 0.5),
-							   "Explosion", "Explosion", "Explosion", _camera));
->>>>>>> 483ded333d57cb830c325fcce3da790587cf4fb8
 }
 
 void Bomberman::_initScenes(void) {
