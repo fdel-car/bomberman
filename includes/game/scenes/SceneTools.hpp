@@ -17,10 +17,14 @@ struct Node {
 	std::map<size_t, std::vector<Node *>> prevNodesByDist;
 	// save when someone will walk on this node
 	std::map<size_t, bool> walkOnMe;
+	// Entities with hitbox on this node
+	std::vector<Entity *> entitiesOnMe;
+
 	size_t dist;
 	size_t x;
 	size_t z;
 	size_t id;
+	bool isFatal;
 };
 
 class SceneTools : public Camera {
