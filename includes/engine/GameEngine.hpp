@@ -113,8 +113,9 @@ class GameEngine {
 	// Scene management vars
 	int _sceneIdx;
 	AGame *_game;
+	Camera *_camera;
 	std::vector<Entity *> _allEntities;
 	std::vector<Entity *> _newEntities;
-	Camera *_camera;
+	std::map<size_t, std::vector<size_t>> _initialCollisionMap;
 	std::vector<std::vector<bool>> const &_collisionTable;
 };

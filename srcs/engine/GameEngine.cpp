@@ -41,6 +41,7 @@ GameEngine::GameEngine(AGame *game)
 	: _game(game),
 	  _allEntities(std::vector<Entity *>()),
 	  _newEntities(std::vector<Entity *>()),
+	  _initialCollisionMap(std::map<size_t, std::vector<size_t>>()),
 	  _collisionTable(game->getCollisionTable()) {
 	_running = false;
 
@@ -111,26 +112,28 @@ void GameEngine::run(void) {
 		if (newSceneIdx != -1) break;
 
 		// Update game entities states
-		for (auto entity : _allEntities) {
-			entity->update();
-		}
-
-		// Merge new game entities
-		if (!_newEntities.empty()) {
-			_allEntities.insert(_allEntities.end(), _newEntities.begin(),
-								_newEntities.end());
-			_newEntities.clear();
-		}
-
-		// Delete game entities if needed
-		for (size_t idx = _allEntities.size() - 1; idx < _allEntities.size();
-			 idx--) {
-			if (_allEntities[idx]->getNeedToBeDestroyed()) {
-				delete _allEntities[idx];
-				_allEntities.erase(_allEntities.begin() + idx);
+		if (!_camera->isDebug()) {
+			for (auto entity : _allEntities) {
+				entity->update();
 			}
+
+			// Merge new game entities
+			if (!_newEntities.empty()) {
+				_allEntities.insert(_allEntities.end(), _newEntities.begin(),
+									_newEntities.end());
+				_newEntities.clear();
+			}
+
+			// Delete game entities if needed
+			for (size_t idx = _allEntities.size() - 1;
+				 idx < _allEntities.size(); idx--) {
+				if (_allEntities[idx]->getNeedToBeDestroyed()) {
+					delete _allEntities[idx];
+					_allEntities.erase(_allEntities.begin() + idx);
+				}
+			}
+			moveEntities();
 		}
-		moveEntities();
 		_gameRenderer->refreshWindow(_allEntities, _camera);
 	}
 	if (newSceneIdx != -1) {
