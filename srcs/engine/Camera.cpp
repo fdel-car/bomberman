@@ -13,7 +13,7 @@ Camera::Camera(glm::vec3 const &pos, glm::vec3 const &eulerAngles)
 	_right =
 		glm::normalize(glm::vec3(getModelMatrix()[0][0], getModelMatrix()[0][1],
 								 getModelMatrix()[0][2]));
-	_up = glm::normalize(glm::cross(_right, _front));  // Unused for now
+	_up = glm::normalize(glm::cross(_right, _front));
 }
 
 int Camera::getNewSceneIdx(void) const { return _newSceneIdx; }
@@ -64,6 +64,9 @@ void Camera::update(void) {
 		translate(-_front * deltaTime * _speed);
 	if (_gameEngine->isKeyPressed(KEY_A))
 		translate(-_right * deltaTime * _speed);
+	if (_gameEngine->isKeyPressed(KEY_SPACE))
+		translate(_up * deltaTime * _speed);
+	if (_gameEngine->isKeyPressed(KEY_C)) translate(-_up * deltaTime * _speed);
 
 	glm::vec2 mousePos = _gameEngine->getGameRenderer()->getMousePos();
 	float xOffset = mousePos.x - _lastMousePos.x;
@@ -76,17 +79,16 @@ void Camera::update(void) {
 	xOffset *= sensitivity;
 	yOffset *= sensitivity;
 
-	if (glm::epsilonNotEqual(0.0f, yOffset, EPSILON)) {
-		rotateX(yOffset);
-		_right = glm::normalize(glm::vec3(getModelMatrix()[0][0],
-										  getModelMatrix()[0][1],
-										  getModelMatrix()[0][2]));
-	}
-	if (glm::epsilonNotEqual(0.0f, xOffset, EPSILON)) {
-		rotateY(-xOffset);
-		_front = _rotation * glm::vec3(0.0, 0.0, -1.0);
-	}
+	if (glm::epsilonNotEqual(0.0f, yOffset, EPSILON)) rotateX(yOffset);
+	if (glm::epsilonNotEqual(0.0f, xOffset, EPSILON)) rotateY(-xOffset);
 	_updateData();
 }
 
-void Camera::_updateData(void) { _view = glm::inverse(getModelMatrix()); }
+void Camera::_updateData(void) {
+	_right =
+		glm::normalize(glm::vec3(getModelMatrix()[0][0], getModelMatrix()[0][1],
+								 getModelMatrix()[0][2]));
+	_front = _rotation * glm::vec3(0.0, 0.0, -1.0);
+	_up = glm::normalize(glm::cross(_right, _front));
+	_view = glm::inverse(getModelMatrix());
+}

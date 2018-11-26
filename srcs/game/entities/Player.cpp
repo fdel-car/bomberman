@@ -35,7 +35,7 @@ void Player::update(void) {
 	}
 
 	// Check if new bomb can be spawned
-	if (_gameEngine->isKeyJustPressed("SPACE") &&
+	if (_gameEngine->isKeyJustPressed(KEY_SPACE) &&
 		_bombTimers.size() < _maxBombs) {
 		Tools *cam = dynamic_cast<Tools *>(_sceneManager);
 		if (cam != nullptr) {

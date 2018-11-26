@@ -56,6 +56,7 @@ set(HEADERS
   includes/engine/GameRenderer.hpp
   includes/engine/ShaderProgram.hpp
   includes/engine/Camera.hpp
+  includes/engine/Light.hpp
   includes/engine/Model.hpp
   includes/engine/Mesh.hpp
 
