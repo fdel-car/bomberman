@@ -5,9 +5,9 @@
 
 Explosion::Explosion(glm::vec3 position, Entity *sceneManager)
 	: Entity(glm::vec3(position.x, position.y + 0.3f, position.z), glm::vec3(0),
-			 new Collider(Collider::Rectangle, LayerTag::ExplosionLayer, 0.4f,
-						  0.4f, true),
-			 "Box", "Explosion", "Explosion", sceneManager),
+			 new Collider(Collider::Rectangle, LayerTag::ExplosionLayer, 0.45f,
+						  0.45f, true),
+			 "Explosion", "Explosion", "Explosion", sceneManager),
 	  _timer(1.0f) {
 	scale(glm::vec3(0.8, 0.8, 0.8));
 }

@@ -1,4 +1,5 @@
 #include "game/Bomberman.hpp"
+#include "game/entities/Box.hpp"
 #include "game/entities/EnemyOFDT.hpp"
 #include "game/entities/Player.hpp"
 #include "game/scenes/Forest.hpp"
@@ -8,7 +9,7 @@
 
 extern std::string _assetsDir;
 
-Bomberman::Bomberman(void) : AGame(6) {
+Bomberman::Bomberman(void) : AGame(8) {
 	// Set needed fonts
 	for (float size = 12.0f; size <= 48.0f; size += 1.0f)
 		_neededFonts.push_back(std::tuple<float, std::string, std::string>(
@@ -16,6 +17,7 @@ Bomberman::Bomberman(void) : AGame(6) {
 	// Set collision table
 	// setLayerCollision(PlayerLayer, BombLayer, false);
 	setLayerCollision(WallLayer, WallLayer, false);
+	setLayerCollision(WallLayer, BoxLayer, false);
 	// Set map of scenes
 	_initScenes();
 }
@@ -50,6 +52,8 @@ void Bomberman::_forest(void) {
 								   "Island", "Island", "Island"));
 	_entities.push_back(new Player(glm::vec3(-7.0, 0.0, -7.0), glm::vec3(0.0f),
 								   _save, _camera));
+
+	// Enemies
 	_entities.push_back(
 		new EnemyOFDT(glm::vec3(7.0, 0.0, 7.0), glm::vec3(0.0f), _camera));
 	_entities.push_back(
@@ -75,11 +79,9 @@ void Bomberman::_forest(void) {
 			}
 		}
 	}
-	_entities.push_back(
-		new Entity(glm::vec3(1.0, 0.5,  1.0), glm::vec3(0.0f),
-							   new Collider(Collider::Rectangle,
-											LayerTag::WallLayer, 0.5, 0.5),
-							   "Explosion", "Explosion", "Explosion", _camera));
+
+	// Boxes generation
+	_entities.push_back(new Box(glm::vec3(1.0, 0, 1.0), _camera));
 }
 
 void Bomberman::_initScenes(void) {

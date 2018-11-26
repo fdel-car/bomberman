@@ -5,9 +5,11 @@
 
 enum LayerTag {
 	WallLayer = 0,
+	BoxLayer,
 	PlayerLayer,
 	PlayerSpecialLayer,
 	EnemyLayer,
+	EnemySpecialLayer,
 	BombLayer,
 	ExplosionLayer
 };
