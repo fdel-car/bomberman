@@ -36,6 +36,7 @@ set(SRCS
   srcs/game/entities/Explosion.cpp
   srcs/game/entities/Box.cpp
   srcs/game/entities/Enemy.cpp
+  srcs/game/entities/Damageable.cpp
   srcs/game/scenes/SceneTools.cpp
 )
 
@@ -74,6 +75,7 @@ set(HEADERS
   includes/game/entities/Explosion.hpp
   includes/game/entities/Box.hpp
   includes/game/entities/Enemy.hpp
+  includes/game/entities/Damageable.hpp
   includes/game/scenes/SceneTools.hpp
 )
 

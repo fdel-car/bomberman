@@ -1,6 +1,7 @@
 #include "game/entities/Explosion.hpp"
 #include "engine/GameEngine.hpp"
 #include "game/Bomberman.hpp"
+#include "game/entities/Damageable.hpp"
 #include "game/scenes/SceneTools.hpp"
 
 Explosion::Explosion(glm::vec3 position, Entity *sceneManager)
@@ -20,5 +21,13 @@ void Explosion::update(void) {
 
 	if (_timer <= 0.0f) {
 		_needToBeDestroyed = true;
+	}
+}
+
+void Explosion::onTriggerEnter(Entity *entity) {
+	Damageable *damageable = dynamic_cast<Damageable *>(entity);
+
+	if (damageable != nullptr) {
+		damageable->takeDamage();
 	}
 }
