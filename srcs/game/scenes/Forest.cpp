@@ -7,9 +7,14 @@ Forest::Forest(glm::vec3 const &pos, glm::vec3 const &eulerAngles)
 	_light = new Entity(glm::vec3(-10.0f, 10.0f, 10.0f),
 						glm::vec3(45.0f, 45.0f, 45.0f), nullptr, "Box", "Light",
 						"Light");
+	configAI();
 }
 
 Forest::~Forest(void) {}
+
+void Forest::configAI(void) {
+	std::cout << "Test" << std::endl;
+}
 
 void Forest::configGUI(GUI *graphicUI) {
 	graphicUI->setAssetImage(_neededImages);

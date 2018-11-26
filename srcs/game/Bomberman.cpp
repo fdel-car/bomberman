@@ -62,18 +62,24 @@ void Bomberman::_forest(void) {
 					new Entity(glm::vec3(x, 0.5, z), glm::vec3(0.0f),
 							   new Collider(Collider::Rectangle,
 											LayerTag::WallLayer, 0.5, 0.5),
-							   "Box", "Box", "Box", _camera));
+							   "Wall", "Wall", "Wall", _camera));
 				_entities.back()->scale(glm::vec3(0.9, 1.0, 0.9));
 			} else if (x % 2 == 0 && z % 2 == 0) {
 				_entities.push_back(
 					new Entity(glm::vec3(x, 0.4, z), glm::vec3(0.0f),
 							   new Collider(Collider::Rectangle,
 											LayerTag::WallLayer, 0.5, 0.5),
-							   "Box", "Box", "Box", _camera));
+							   "Wall", "Wall", "Wall", _camera));
 				_entities.back()->scale(glm::vec3(1.0, 0.8, 1.0));
 			}
 		}
 	}
+	_entities.push_back(
+		new Entity(glm::vec3(1.0, 0.5,  1.0), glm::vec3(0.0f),
+							   new Collider(Collider::Rectangle,
+											LayerTag::WallLayer, 0.5, 0.5),
+							   "Box", "Box", "Box", _camera));
+	
 }
 
 void Bomberman::_initScenes(void) {

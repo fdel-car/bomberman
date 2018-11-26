@@ -12,11 +12,6 @@ class EnemyOFDT : public Enemy {
 	virtual void update(void);
 
    private:
-	float _speed;
-	float _cooldown = 0.0f;
-	bool changeDir;
-	std::vector<float> _way;
-
 	EnemyOFDT(void);
 	EnemyOFDT(EnemyOFDT const &src);
 

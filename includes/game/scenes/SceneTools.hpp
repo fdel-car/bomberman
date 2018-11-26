@@ -29,6 +29,7 @@ class SceneTools : public Camera {
 
 	virtual void tellPosition(Entity *entity);
 	virtual void tellDestruction(Entity *entity);
+	virtual void configAI(void);
 
 	void printMapInfo(void);
 	bool putBomb(float xCenter, float zCenter, float explosionTimer,
@@ -73,6 +74,7 @@ class SceneTools : public Camera {
 	std::map<size_t, std::vector<size_t>> _entitiesInfos;
 	std::vector<std::map<size_t, Entity *>> _entitiesInSquares;
 	std::map<size_t, Node *> _graphe;
+	std::vector<std::string> _decor;
 	bool _refreshAI;
 
    private:

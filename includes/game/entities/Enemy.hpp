@@ -10,12 +10,12 @@ class Enemy : public Entity {
 
 	virtual void update(void);
 
-   private:
+   protected:
 	float _speed;
 	float _cooldown = 0.0f;
 	bool changeDir;
 	std::vector<float> _way;
-
+   private:
 	Enemy(void);
 	Enemy(Enemy const &src);
 

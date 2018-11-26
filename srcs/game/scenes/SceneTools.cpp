@@ -123,6 +123,8 @@ void SceneTools::tellDestruction(Entity *entity) {
 	}
 }
 
+void SceneTools::configAI(void) { return ; }
+
 void SceneTools::_savePositions(Entity *entity) {
 	std::vector<size_t> allNewSquareWeAreIn;
 
@@ -314,7 +316,7 @@ void SceneTools::_buildNewNode(size_t dist, size_t x, size_t z, size_t pos,
 							   Node *node, std::list<Node *> *nodesByDepth) {
 	for (const auto &entity : _entitiesInSquares[pos]) {
 		if (entity.second->getTag().compare("Bomb") == 0 ||
-			entity.second->getTag().compare("Box") == 0)
+			entity.second->getTag().compare("Wall") == 0)
 			return;
 	}
 	if (_graphe.find(pos) == _graphe.end()) {
