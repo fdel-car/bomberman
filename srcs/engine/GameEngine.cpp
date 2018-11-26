@@ -119,6 +119,29 @@ void GameEngine::run(void) {
 
 			// Merge new game entities
 			if (!_newEntities.empty()) {
+				std::vector<Entity *> collidedEntities =
+					std::vector<Entity *>();
+				std::vector<Entity *> entitiesToTest = _allEntities;
+				entitiesToTest.insert(entitiesToTest.end(),
+									  _newEntities.begin(), _newEntities.end());
+				std::vector<size_t> initialCollisions = std::vector<size_t>();
+				for (auto newEntity : _newEntities) {
+					collidedEntities.clear();
+					initialCollisions.clear();
+					getPossibleCollisions(newEntity, collidedEntities,
+										  entitiesToTest);
+					// Possible collision that have been detected are sure to
+					// collide since newEntities do not have any targetMovement
+					// yet
+					if (!collidedEntities.empty()) {
+						for (auto collidedEntity : collidedEntities) {
+							initialCollisions.push_back(
+								collidedEntity->getId());
+						}
+						_initialCollisionMap[newEntity->getId()] =
+							initialCollisions;
+					}
+				}
 				_allEntities.insert(_allEntities.end(), _newEntities.begin(),
 									_newEntities.end());
 				_newEntities.clear();
@@ -133,6 +156,34 @@ void GameEngine::run(void) {
 				}
 			}
 			moveEntities();
+
+			// Check if there are changes for _initialCollisionMap
+			if (!_initialCollisionMap.empty()) {
+				std::vector<size_t> idxToDelete;
+				Entity *entityA;
+				// Entity *entityB;
+				for (auto &initialCollisions : _initialCollisionMap) {
+					entityA = getEntityById(initialCollisions.first);
+					if (entityA == nullptr) {
+						// Just to be sure
+						idxToDelete.push_back(initialCollisions.first);
+						continue;
+					}
+					for (size_t idIdx = initialCollisions.second.size() - 1;
+						 idIdx < initialCollisions.second.size(); idIdx--) {
+						if (!doCollide(
+								entityA->getCollider(), entityA->getPosition(),
+								getEntityById(initialCollisions.second[idIdx])))
+							initialCollisions.second.erase(
+								initialCollisions.second.begin() + idIdx);
+					}
+					if (initialCollisions.second.empty())
+						idxToDelete.push_back(initialCollisions.first);
+				}
+				for (auto idx : idxToDelete) {
+					_initialCollisionMap.erase(idx);
+				}
+			}
 		}
 		_gameRenderer->refreshWindow(_allEntities, _camera);
 	}
@@ -140,6 +191,16 @@ void GameEngine::run(void) {
 		_sceneIdx = newSceneIdx;
 		run();
 	}
+}
+Entity *GameEngine::getEntityById(size_t id) {
+	Entity *foundElem = nullptr;
+	for (auto entity : _allEntities) {
+		if (entity->getId() == id) {
+			foundElem = entity;
+			break;
+		}
+	}
+	return foundElem;
 }
 
 // Entity *GameEngine::getFirstEntityWithName(std::string entityName) {
@@ -167,6 +228,7 @@ bool GameEngine::initScene(size_t newSceneIdx) {
 		delete _camera;
 		_camera = nullptr;
 	}
+	_initialCollisionMap.clear();
 
 	// Add new entities
 	_sceneIdx = newSceneIdx;
@@ -201,33 +263,7 @@ void GameEngine::moveEntities(void) {
 			collisionDetected = false;
 
 			if (collider) {
-				// Skip collision with object that cannot collide with
-				bool canCollide = false;
-				RectanglePoints rectanglePoints(entity,
-												entity->getTargetMovement());
-				for (size_t i = 0; i < _allEntities.size(); i++) {
-					canCollide = false;
-					// Skip self
-					if (i == idx) continue;
-
-					// Compare Layers
-					if (_allEntities[i]->getCollider() != nullptr &&
-						_collisionTable[collider->layerTag][_allEntities[i]
-																->getCollider()
-																->layerTag]) {
-						// Fast check to know if is remotely possible that a
-						// collision may occurr
-						RectanglePoints otherPoints(_allEntities[i]);
-						if (rectanglePoints.top <= otherPoints.bot &&
-							otherPoints.top <= rectanglePoints.bot) {
-							if (rectanglePoints.left <= otherPoints.right &&
-								otherPoints.left <= rectanglePoints.right)
-								canCollide = true;
-						}
-					}
-
-					if (canCollide) collidedEntities.push_back(_allEntities[i]);
-				}
+				getPossibleCollisions(entity, collidedEntities, _allEntities);
 
 				// Init vars before first loop
 				futureMovement.x = entity->getTargetMovement().x;
@@ -454,6 +490,49 @@ void GameEngine::moveEntities(void) {
 			}
 		}
 		idx++;
+	}
+}
+void GameEngine::getPossibleCollisions(
+	Entity *entity, std::vector<Entity *> &possibleCollisions,
+	std::vector<Entity *> &entitiesToTest) {
+	const Collider *collider = entity->getCollider();
+
+	if (collider) {
+		// Skip collision with object that cannot collide with
+		bool canCollide = false;
+		RectanglePoints rectanglePoints(entity, entity->getTargetMovement());
+		for (size_t i = 0; i < entitiesToTest.size(); i++) {
+			canCollide = false;
+			// Skip self
+			if (entity->getId() == entitiesToTest[i]->getId()) continue;
+
+			// Skip if it's an initialCollision
+			if (_initialCollisionMap.find(entitiesToTest[i]->getId()) !=
+					_initialCollisionMap.end() &&
+				std::find(
+					_initialCollisionMap[entitiesToTest[i]->getId()].begin(),
+					_initialCollisionMap[entitiesToTest[i]->getId()].end(),
+					entity->getId()) !=
+					_initialCollisionMap[entitiesToTest[i]->getId()].end())
+				continue;
+
+			// Compare Layers
+			if (entitiesToTest[i]->getCollider() != nullptr &&
+				_collisionTable[collider->layerTag]
+							   [entitiesToTest[i]->getCollider()->layerTag]) {
+				// Fast check to know if is remotely possible that a
+				// collision may occurr
+				RectanglePoints otherPoints(entitiesToTest[i]);
+				if (rectanglePoints.top <= otherPoints.bot &&
+					otherPoints.top <= rectanglePoints.bot) {
+					if (rectanglePoints.left <= otherPoints.right &&
+						otherPoints.left <= rectanglePoints.right)
+						canCollide = true;
+				}
+			}
+
+			if (canCollide) possibleCollisions.push_back(entitiesToTest[i]);
+		}
 	}
 }
 

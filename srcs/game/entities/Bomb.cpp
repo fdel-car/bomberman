@@ -4,10 +4,9 @@
 #include "game/cams/Tools.hpp"
 
 Bomb::Bomb(glm::vec3 position, float timer, size_t range, Entity *sceneManager)
-	: Entity(
-		  glm::vec3(position.x, position.y + 0.3f, position.z), glm::vec3(0),
-		  new Collider(Collider::Rectangle, LayerTag::BombLayer, 0.49f, 0.49f),
-		  "Bomb", "Bomb", "Bomb", sceneManager),
+	: Entity(glm::vec3(position.x, position.y + 0.3f, position.z), glm::vec3(0),
+			 new Collider(Collider::Rectangle, LayerTag::BombLayer, 0.4f, 0.4f),
+			 "Bomb", "Bomb", "Bomb", sceneManager),
 	  _timer(timer),
 	  _range(range) {}
 
