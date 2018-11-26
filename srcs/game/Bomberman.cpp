@@ -8,13 +8,13 @@
 
 extern std::string _assetsDir;
 
-Bomberman::Bomberman(void) : AGame(5) {
+Bomberman::Bomberman(void) : AGame(6) {
 	// Set needed fonts
 	for (float size = 12.0f; size <= 48.0f; size += 1.0f)
 		_neededFonts.push_back(std::tuple<float, std::string, std::string>(
 			size, (_assetsDir + "GUI/fonts/BOMBERMAN.ttf"), "BOMBERMAN"));
 	// Set collision table
-	setLayerCollision(PlayerLayer, BombLayer, false);
+	// setLayerCollision(PlayerLayer, BombLayer, false);
 	setLayerCollision(WallLayer, WallLayer, false);
 	// Set map of scenes
 	_initScenes();
@@ -35,7 +35,8 @@ void Bomberman::_mainMenu(void) {
 		glm::vec3(0.0, 0.0, 10.0), glm::vec3(0.0f),
 		std::vector<std::string>(_scenesNames.begin() + 1, _scenesNames.end()),
 		_save);
-	_light = new Light(glm::vec3(-10.0, 10.0, 10.0), glm::vec3(45.0f));
+	_light = new Light(glm::vec3(-10.0, 10.0, 10.0),
+					   glm::normalize(glm::vec3(1.0f, -1.0f, -1.0f)));
 	_entities.push_back(new Entity(glm::vec3(2.0, 0.5, -2.0), glm::vec3(0.0f),
 								   nullptr, "Bomb", "Bomb", "Bomb"));
 	_entities.back()->scale(glm::vec3(5.0));
@@ -44,7 +45,7 @@ void Bomberman::_mainMenu(void) {
 void Bomberman::_forest(void) {
 	_camera =
 		new Forest(glm::vec3(0.0, 34.0, 20.0), glm::vec3(-60.0, 0.0, 0.0));
-	_light = new Light(glm::vec3(-10.0, 10.0, 10.0), glm::vec3(45.0f));
+	_light = new Light(glm::vec3(-20.0, 10.0, 8.0), glm::vec3(0.0f));
 	_entities.push_back(new Entity(glm::vec3(0.0f), glm::vec3(0.0f), nullptr,
 								   "Island", "Island", "Island"));
 	_entities.push_back(new Player(glm::vec3(-7.0, 0.0, -7.0), glm::vec3(0.0f),
@@ -74,6 +75,14 @@ void Bomberman::_forest(void) {
 			}
 		}
 	}
+<<<<<<< HEAD
+=======
+	_entities.push_back(
+		new Entity(glm::vec3(1.0, 0.5,  1.0), glm::vec3(0.0f),
+							   new Collider(Collider::Rectangle,
+											LayerTag::WallLayer, 0.5, 0.5),
+							   "Explosion", "Explosion", "Explosion", _camera));
+>>>>>>> 483ded333d57cb830c325fcce3da790587cf4fb8
 }
 
 void Bomberman::_initScenes(void) {

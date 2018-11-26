@@ -48,6 +48,9 @@ class Entity {
 	glm::vec3 _scale;
 	glm::mat4 _modelMatrix;
 
+	// We can probably avoid that quaternion
+	glm::quat _rotation;
+
 	Entity &operator=(Entity const &rhs);
 
 	void _updateData(void);
@@ -67,7 +70,6 @@ class Entity {
 	GameEngine *_gameEngine;
 	bool _isTmp;
 
-	glm::quat _rotation;
 	glm::vec3 _targetMovement;
 
 	Entity(void);
