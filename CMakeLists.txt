@@ -24,7 +24,7 @@ set(SRCS
   srcs/engine/Light.cpp
   srcs/engine/Model.cpp
   srcs/engine/Mesh.cpp
-  
+
   srcs/engine/GUI/GUI.cpp
 
   srcs/game/Bomberman.cpp
@@ -34,6 +34,7 @@ set(SRCS
   srcs/game/entities/Player.cpp
   srcs/game/entities/Bomb.cpp
   srcs/game/entities/Enemy.cpp
+  srcs/game/entities/EnemyOFDT.cpp
   srcs/game/scenes/SceneTools.cpp
 )
 
@@ -70,6 +71,7 @@ set(HEADERS
   includes/game/entities/Player.hpp
   includes/game/entities/Bomb.hpp
   includes/game/entities/Enemy.hpp
+  includes/game/entities/EnemyOFDT.hpp
   includes/game/scenes/SceneTools.hpp
 )
 

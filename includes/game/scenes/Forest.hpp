@@ -18,6 +18,7 @@ class Forest : public SceneTools {
 	Forest(void);
 	Forest(Forest const &src);
 	Forest &operator=(Forest const &rhs);
+	float _cooldown;
 
 	bool _pauseMenu;
 };
