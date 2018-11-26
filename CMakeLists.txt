@@ -28,12 +28,12 @@ set(SRCS
 
   srcs/game/Bomberman.cpp
   srcs/game/Save.cpp
-  srcs/game/cams/MainMenuCam.cpp
-  srcs/game/cams/ForestCam.cpp
+  srcs/game/scenes/MainMenu.cpp
+  srcs/game/scenes/Forest.cpp
   srcs/game/entities/Player.cpp
   srcs/game/entities/Bomb.cpp
   srcs/game/entities/Enemy.cpp
-  srcs/game/cams/Tools.cpp
+  srcs/game/scenes/SceneTools.cpp
 )
 
 include_directories(includes)
@@ -64,12 +64,12 @@ set(HEADERS
 
   includes/game/Bomberman.hpp
   includes/game/Save.hpp
-  includes/game/cams/MainMenuCam.hpp
-  includes/game/cams/ForestCam.hpp
+  includes/game/scenes/MainMenu.hpp
+  includes/game/scenes/Forest.hpp
   includes/game/entities/Player.hpp
   includes/game/entities/Bomb.hpp
   includes/game/entities/Enemy.hpp
-  includes/game/cams/Tools.hpp
+  includes/game/scenes/SceneTools.hpp
 )
 
 add_executable(super_bomberman ${SRCS} ${HEADERS})

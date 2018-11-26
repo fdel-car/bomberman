@@ -1,7 +1,7 @@
 #include "game/entities/Enemy.hpp"
 #include "engine/GameEngine.hpp"
 #include "game/Bomberman.hpp"
-#include "game/cams/Tools.hpp"
+#include "game/scenes/SceneTools.hpp"
 
 Enemy::Enemy(glm::vec3 position, glm::vec3 eulerAngles, Entity *gameManager)
 	: Entity(glm::vec3(position.x, position.y + 0.4f, position.z), eulerAngles,
@@ -14,7 +14,7 @@ Enemy::Enemy(glm::vec3 position, glm::vec3 eulerAngles, Entity *gameManager)
 Enemy::~Enemy(void) {}
 
 void Enemy::update(void) {
-	Tools *cam = dynamic_cast<Tools *>(_sceneManager);
+	SceneTools *cam = dynamic_cast<SceneTools *>(_sceneManager);
 	if (cam == nullptr) {
 		std::cerr << "Update as fail" << std::endl;
 		return;
@@ -34,20 +34,16 @@ void Enemy::update(void) {
 		size_t bestDist = std::numeric_limits<std::size_t>::max();
 		if (cam->getGraphe().find(pos) != cam->getGraphe().end()) {
 			Node currentPos = *cam->getGraphe().at(pos);
-			while(1) {
-				if (xPlayer == currentPos.x && zPlayer == currentPos.z)
-					break ;
+			while (1) {
+				if (xPlayer == currentPos.x && zPlayer == currentPos.z) break;
 				for (auto n : currentPos.prevNodesByDist) {
-					if (bestDist > n.first)
-						bestDist = n.first;
+					if (bestDist > n.first) bestDist = n.first;
 				}
 				currentPos = *currentPos.prevNodesByDist[bestDist][0];
 				_way.push_back(currentPos.z * mapHeight + currentPos.x);
-
 			}
 		}
-	}
-	else if (_way.size() != 0) {
+	} else if (_way.size() != 0) {
 		float targetX = (static_cast<int>(_way[0]) % mapWidth) + 0.5f;
 		float targetZ = static_cast<int>(_way[0] / mapHeight) + 0.5f;
 		int xSign = 0;
@@ -60,11 +56,11 @@ void Enemy::update(void) {
 			zSign = -1;
 		else if (targetZ - z > 0.05f)
 			zSign = 1;
-		if (x - targetX <= 0.05 && z - targetZ <= 0.05 && x - targetX >= -0.05 && z - targetZ >= -0.05) {
+		if (x - targetX <= 0.05 && z - targetZ <= 0.05 &&
+			x - targetX >= -0.05 && z - targetZ >= -0.05) {
 			_targetMovement *= 0;
 			_way.erase(_way.begin());
-		}
-		else if (xSign != 0 || zSign != 0) {
+		} else if (xSign != 0 || zSign != 0) {
 			float xDirection = static_cast<float>(xSign);
 			float zDirection = static_cast<float>(zSign);
 			xSign = abs(xSign);

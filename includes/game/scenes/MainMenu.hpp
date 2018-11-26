@@ -1,21 +1,21 @@
 #pragma once
 
 #include "game/Save.hpp"
-#include "game/cams/Tools.hpp"
+#include "game/scenes/SceneTools.hpp"
 
-class MainMenuCam : public Tools {
+class MainMenu : public SceneTools {
    public:
-	MainMenuCam(glm::vec3 const &pos, glm::vec3 const &eulerAngles,
-				std::vector<std::string> levelsName, Save &save);
-	virtual ~MainMenuCam(void);
+	MainMenu(glm::vec3 const &pos, glm::vec3 const &eulerAngles,
+			 std::vector<std::string> levelsName, Save &save);
+	virtual ~MainMenu(void);
 
 	virtual void drawGUI(GUI *graphicUI);
 	virtual void configGUI(GUI *graphicUI);
 
    private:
-	MainMenuCam(void);
-	MainMenuCam(MainMenuCam const &src);
-	MainMenuCam &operator=(MainMenuCam const &rhs);
+	MainMenu(void);
+	MainMenu(MainMenu const &src);
+	MainMenu &operator=(MainMenu const &rhs);
 
 	void _settings(GUI *graphicUI);
 	void _movingTitle(GUI *graphicUI);

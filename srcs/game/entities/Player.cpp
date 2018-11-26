@@ -1,7 +1,7 @@
 #include "game/entities/Player.hpp"
 #include "engine/GameEngine.hpp"
 #include "game/Bomberman.hpp"
-#include "game/cams/Tools.hpp"
+#include "game/scenes/SceneTools.hpp"
 
 Player::Player(glm::vec3 position, glm::vec3 eulerAngles, Save &save,
 			   Entity *sceneManager)
@@ -37,7 +37,7 @@ void Player::update(void) {
 	// Check if new bomb can be spawned
 	if (_gameEngine->isKeyJustPressed(KEY_SPACE) &&
 		_bombTimers.size() < _maxBombs) {
-		Tools *cam = dynamic_cast<Tools *>(_sceneManager);
+		SceneTools *cam = dynamic_cast<SceneTools *>(_sceneManager);
 		if (cam != nullptr) {
 			if (cam->putBomb(getPosition().x, getPosition().z, _bombCooldown,
 							 _bombRange)) {

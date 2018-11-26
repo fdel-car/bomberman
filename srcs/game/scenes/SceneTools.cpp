@@ -1,6 +1,6 @@
+#include "game/scenes/SceneTools.hpp"
 #include "engine/GameEngine.hpp"
 #include "game/entities/Bomb.hpp"
-#include "game/scenes/SceneTools.hpp"
 
 SceneTools::SceneTools(size_t mapWidth, size_t mapHeight, glm::vec3 const &pos,
 					   glm::vec3 const &eulerAngles)
