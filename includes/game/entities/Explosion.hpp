@@ -8,6 +8,7 @@ class Explosion : public Entity {
 	virtual ~Explosion(void);
 
 	virtual void update(void);
+	virtual void onTriggerEnter(Entity *entity);
 
    private:
 	float _timer;

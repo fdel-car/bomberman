@@ -14,10 +14,16 @@ Bomberman::Bomberman(void) : AGame(8) {
 	for (float size = 12.0f; size <= 48.0f; size += 1.0f)
 		_neededFonts.push_back(std::tuple<float, std::string, std::string>(
 			size, (_assetsDir + "GUI/fonts/BOMBERMAN.ttf"), "BOMBERMAN"));
+
 	// Set collision table
-	// setLayerCollision(PlayerLayer, BombLayer, false);
 	setLayerCollision(WallLayer, WallLayer, false);
 	setLayerCollision(WallLayer, BoxLayer, false);
+	setLayerCollision(WallLayer, ExplosionLayer, false);
+	setLayerCollision(PlayerLayer, EnemySpecialLayer, false);
+	setLayerCollision(PlayerSpecialLayer, ExplosionLayer, false);
+	setLayerCollision(PlayerSpecialLayer, EnemySpecialLayer, false);
+	setLayerCollision(EnemySpecialLayer, ExplosionLayer, false);
+
 	// Set map of scenes
 	_initScenes();
 }
@@ -60,6 +66,8 @@ void Bomberman::_forest(void) {
 		new EnemyOFDT(glm::vec3(7.0, 0.0, -7.0), glm::vec3(0.0f), _camera));
 	_entities.push_back(
 		new EnemyOFDT(glm::vec3(-7.0, 0.0, 7.0), glm::vec3(0.0f), _camera));
+
+	// Walls/Boxes
 	for (int x = -8; x <= 8; x++) {
 		for (int z = -8; z <= 8; z++) {
 			if (abs(x) == 8 || abs(z) == 8) {
@@ -76,9 +84,14 @@ void Bomberman::_forest(void) {
 											LayerTag::WallLayer, 0.5, 0.5),
 							   "Wall", "Wall", "Wall", _camera));
 				_entities.back()->scale(glm::vec3(1.0, 0.8, 1.0));
+			} else if (x != -7 && z != -7 && x != 7 && z != 7) {
+				_entities.push_back(new Box(glm::vec3(x, 0, z), _camera));
 			}
 		}
 	}
+
+	// Boxes generation
+	// _entities.push_back(new Box(glm::vec3(1.0, 0, 1.0), _camera));
 }
 
 void Bomberman::_initScenes(void) {

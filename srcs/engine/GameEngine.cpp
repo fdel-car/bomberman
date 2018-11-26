@@ -131,6 +131,9 @@ void GameEngine::run(void) {
 									  _newEntities.begin(), _newEntities.end());
 				std::vector<size_t> initialCollisions = std::vector<size_t>();
 				for (auto newEntity : _newEntities) {
+					if (newEntity->getCollider() == nullptr ||
+						newEntity->getCollider()->isTrigger)
+						continue;
 					collidedEntities.clear();
 					initialCollisions.clear();
 					getPossibleCollisions(newEntity, collidedEntities,
@@ -514,7 +517,6 @@ void GameEngine::moveEntities(void) {
 							futureMovement.z /= 2.0f;
 
 							if (absX <= EPSILON && absZ <= EPSILON) {
-								collidedTriggers.clear();
 								break;
 							}
 						}
@@ -529,10 +531,19 @@ void GameEngine::moveEntities(void) {
 			}
 
 			// TODO: trigger all triggers
-			for (auto triggerEntity : collidedTriggers) {
-				triggerEntity->onTriggerEnter(entity);
+			while (!collidedTriggers.empty() &&
+				   !entity->getNeedToBeDestroyed()) {
+				size_t triggerIdx =
+					checkCollision(entity, futureMovement, collidedTriggers);
+				if (triggerIdx != collidedTriggers.size()) {
+					collidedTriggers[triggerIdx]->onTriggerEnter(entity);
+					collidedTriggers.erase(
+						collidedTriggers.begin(),
+						collidedTriggers.begin() + triggerIdx + 1);
+				} else
+					collidedTriggers.clear();
 			}
-			if (collidedEntities.empty()) {
+			if (collidedEntities.empty() && !entity->getNeedToBeDestroyed()) {
 				entity->translate(futureMovement);
 			}
 		}

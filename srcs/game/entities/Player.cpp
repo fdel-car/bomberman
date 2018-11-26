@@ -5,14 +5,15 @@
 
 Player::Player(glm::vec3 position, glm::vec3 eulerAngles, Save &save,
 			   Entity *sceneManager)
-	: Entity(
+	: Damageable(
 		  glm::vec3(position.x, position.y + 0.45f, position.z), eulerAngles,
 		  new Collider(Collider::Circle, LayerTag::PlayerLayer, 0.45f, 0.45f),
-		  "Player", "Player", "Player", sceneManager),
+		  "Player", "Player", "Player", 3, PlayerLayer, PlayerSpecialLayer,
+		  2.0f, sceneManager),
 	  _save(save),
 	  _speed(6.0f),
 	  _maxBombs(3),
-	  _bombCooldown(10.0f),
+	  _bombCooldown(3.0f),
 	  _bombRange(2),
 	  _bombTimers(std::vector<float>()) {
 	scale(glm::vec3(0.9, 0.9, 0.9));
@@ -21,7 +22,7 @@ Player::Player(glm::vec3 position, glm::vec3 eulerAngles, Save &save,
 Player::~Player(void) {}
 
 void Player::update(void) {
-	_targetMovement *= 0;
+	Damageable::update();
 	float deltaTime = _gameEngine->getDeltaTime();
 
 	// Refresh cooldown of bombs
@@ -36,7 +37,7 @@ void Player::update(void) {
 
 	// Check if new bomb can be spawned
 	if (_gameEngine->isKeyJustPressed(KEY_SPACE) &&
-		_bombTimers.size() < _maxBombs) {
+		_bombTimers.size() < _maxBombs && _timeDamaged <= 0.0f) {
 		SceneTools *cam = dynamic_cast<SceneTools *>(_sceneManager);
 		if (cam != nullptr) {
 			if (cam->putBomb(getPosition().x, getPosition().z, _bombCooldown,
