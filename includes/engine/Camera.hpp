@@ -14,6 +14,7 @@ class Camera : public Entity {
 	std::string getNewSceneName(void) const;
 	std::vector<std::tuple<std::string, std::string>> const &getNeededImages()
 		const;
+	bool isDebug(void) const;
 
 	virtual void drawGUI(GUI *graphicUI);
 	virtual void update(void);

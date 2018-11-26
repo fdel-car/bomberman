@@ -20,6 +20,8 @@ int Camera::getNewSceneIdx(void) const { return _newSceneIdx; }
 
 std::string Camera::getNewSceneName(void) const { return _newSceneName; }
 
+bool Camera::isDebug(void) const { return _debugMode; }
+
 std::vector<std::tuple<std::string, std::string>> const &
 Camera::getNeededImages() const {
 	return _neededImages;
