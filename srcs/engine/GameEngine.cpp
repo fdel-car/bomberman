@@ -151,6 +151,19 @@ void GameEngine::run(void) {
 			for (size_t idx = _allEntities.size() - 1;
 				 idx < _allEntities.size(); idx--) {
 				if (_allEntities[idx]->getNeedToBeDestroyed()) {
+					// Erase possible ingame ref
+					if (_initialCollisionMap.find(_allEntities[idx]->getId()) !=
+						_initialCollisionMap.end())
+						_initialCollisionMap.erase(_allEntities[idx]->getId());
+					for (auto &initialCollisions : _initialCollisionMap) {
+						for (size_t idIdx = 0;
+							 idIdx < initialCollisions.second.size(); idIdx++) {
+							if (initialCollisions.second[idIdx] ==
+								_allEntities[idx]->getId())
+								initialCollisions.second.erase(
+									initialCollisions.second.begin() + idIdx);
+						}
+					}
 					delete _allEntities[idx];
 					_allEntities.erase(_allEntities.begin() + idx);
 				}
@@ -164,8 +177,8 @@ void GameEngine::run(void) {
 				// Entity *entityB;
 				for (auto &initialCollisions : _initialCollisionMap) {
 					entityA = getEntityById(initialCollisions.first);
+					// Just to be sure
 					if (entityA == nullptr) {
-						// Just to be sure
 						idxToDelete.push_back(initialCollisions.first);
 						continue;
 					}
@@ -574,7 +587,11 @@ size_t GameEngine::checkCollision(Entity *entity, glm::vec3 &futureMovement,
 			(!lineA.isVertical &&
 			 hasCollisionCourse(lineA, lineB, layer1, entityToTest))) {
 			// TODO: handle if is physical collision or trigger
-			break;
+			if (entityToTest->getCollider()->isTrigger) {
+				// std::cout << "Trigger !" << std::endl;
+				collidedTriggers.push_back(entityToTest);
+			} else
+				break;
 		}
 		idxToTest++;
 	}

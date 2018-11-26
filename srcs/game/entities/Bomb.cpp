@@ -19,11 +19,11 @@ void Bomb::update(void) {
 	(void)_range;
 
 	if (_timer <= 0.0f) {
-		// SceneTools *cam = dynamic_cast<SceneTools *>(_sceneManager);
+		SceneTools *cam = dynamic_cast<SceneTools *>(_sceneManager);
 
-		// if (cam == nullptr) {
-		// 	cam->putExplosion(getPosition().x, getPosition().z, _range);
-		// }
+		if (cam != nullptr) {
+			cam->putExplosion(getPosition().x, getPosition().z, _range);
+		}
 		_needToBeDestroyed = true;
 	}
 }

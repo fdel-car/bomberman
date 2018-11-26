@@ -8,7 +8,7 @@
 
 extern std::string _assetsDir;
 
-Bomberman::Bomberman(void) : AGame(5) {
+Bomberman::Bomberman(void) : AGame(6) {
 	// Set needed fonts
 	for (float size = 12.0f; size <= 48.0f; size += 1.0f)
 		_neededFonts.push_back(std::tuple<float, std::string, std::string>(
