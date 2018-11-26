@@ -109,6 +109,7 @@ void GameRenderer::_initShader(void) {
 
 void GameRenderer::_initModels(void) {
 	_models["Box"] = new Model("box");
+	_models["Wall"] = new Model("wall");
 	_models["Player"] = new Model("player");
 	_models["Bomb"] = new Model("bomb");
 	_models["Enemy"] = new Model("enemy");
