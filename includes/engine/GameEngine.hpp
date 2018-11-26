@@ -4,6 +4,7 @@
 #include "engine/AudioManager.hpp"
 #include "engine/Camera.hpp"
 #include "engine/Collider.hpp"
+#include "engine/Light.hpp"
 
 #define KEY_W "W"
 #define KEY_A "A"
@@ -114,6 +115,7 @@ class GameEngine {
 	int _sceneIdx;
 	AGame *_game;
 	Camera *_camera;
+	Light *_light;
 	std::vector<Entity *> _allEntities;
 	std::vector<Entity *> _newEntities;
 	std::map<size_t, std::vector<size_t>> _initialCollisionMap;

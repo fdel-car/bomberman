@@ -59,6 +59,7 @@ GameEngine::~GameEngine(void) {
 		 idx--) {
 		delete _allEntities[idx];
 	}
+	if (_light != nullptr) delete _light;
 	if (_camera != nullptr) delete _camera;
 	_allEntities.clear();
 	delete _audioManager;
@@ -134,7 +135,7 @@ void GameEngine::run(void) {
 			}
 			moveEntities();
 		}
-		_gameRenderer->refreshWindow(_allEntities, _camera);
+		_gameRenderer->refreshWindow(_allEntities, _camera, _light);
 	}
 	if (newSceneIdx != -1) {
 		_sceneIdx = newSceneIdx;
@@ -163,6 +164,10 @@ bool GameEngine::initScene(size_t newSceneIdx) {
 		delete _allEntities[idx];
 		_allEntities.erase(_allEntities.begin() + idx);
 	}
+	if (_light != nullptr) {
+		delete _light;
+		_light = nullptr;
+	}
 	if (_camera != nullptr) {
 		delete _camera;
 		_camera = nullptr;
@@ -174,6 +179,8 @@ bool GameEngine::initScene(size_t newSceneIdx) {
 	_camera = _game->getCamera();
 	_camera->initEntity(this);
 	_camera->configGUI(_gameRenderer->getGUI());
+	_light = _game->getLight();
+	_light->initEntity(this);
 	for (auto entity : _game->getEntities()) {
 		_allEntities.push_back(entity);
 		_allEntities.back()->initEntity(this);

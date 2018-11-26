@@ -138,6 +138,10 @@ void SceneTools::_savePositions(Entity *entity) {
 		xCoord = static_cast<size_t>(entityPos.x + _xOffset);
 		zCoord = static_cast<size_t>(entityPos.z + _zOffset);
 		vectorIdx = zCoord * _mapWidth + xCoord;
+		if (vectorIdx >= allNewSquareWeAreIn.size())
+			throw std::runtime_error(
+				"An entity located outside of the map boundaries tried to be "
+				"pushed inside it.");
 		allNewSquareWeAreIn.push_back(vectorIdx);
 	} else {
 		// TopLeft
