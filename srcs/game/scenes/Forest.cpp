@@ -13,7 +13,10 @@ Forest::Forest(glm::vec3 const &pos, glm::vec3 const &eulerAngles)
 Forest::~Forest(void) {}
 
 void Forest::configAI(void) {
-	std::cout << "Test" << std::endl;
+	_staticDecor.push_back("Wall");
+	// _staticDecor.push_back("Explosion");
+
+	// _tmpDecor.push_back("Bomb");
 }
 
 void Forest::configGUI(GUI *graphicUI) {

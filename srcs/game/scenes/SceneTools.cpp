@@ -315,9 +315,10 @@ void SceneTools::_startBuildingGrapheForPathFinding(void) {
 void SceneTools::_buildNewNode(size_t dist, size_t x, size_t z, size_t pos,
 							   Node *node, std::list<Node *> *nodesByDepth) {
 	for (const auto &entity : _entitiesInSquares[pos]) {
-		if (entity.second->getTag().compare("Bomb") == 0 ||
-			entity.second->getTag().compare("Wall") == 0)
-			return;
+		for (const auto &decor : _staticDecor) {
+			if (entity.second->getTag().compare(decor) == 0)
+				return ;
+		}
 	}
 	if (_graphe.find(pos) == _graphe.end()) {
 		// Save if it's a new node

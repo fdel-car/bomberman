@@ -74,7 +74,8 @@ class SceneTools : public Camera {
 	std::map<size_t, std::vector<size_t>> _entitiesInfos;
 	std::vector<std::map<size_t, Entity *>> _entitiesInSquares;
 	std::map<size_t, Node *> _graphe;
-	std::vector<std::string> _decor;
+	std::vector<std::string> _staticDecor; // Decor who can't be destroy (like arena walls)
+	std::vector<std::string> _tmpDecor; // Decor who can be destroy (like bombes or brick walls)
 	bool _refreshAI;
 
    private:

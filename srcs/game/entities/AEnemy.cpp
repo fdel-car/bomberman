@@ -1,49 +1,49 @@
-#include "game/entities/Enemy.hpp"
+#include "game/entities/AEnemy.hpp"
 #include "engine/GameEngine.hpp"
 #include "game/Bomberman.hpp"
-#include "game/scenes/SceneTools.hpp"
 
-Enemy::Enemy(glm::vec3 position, glm::vec3 eulerAngles, Entity *gameManager)
+AEnemy::AEnemy(glm::vec3 position, glm::vec3 eulerAngles, Entity *gameManager)
 	: Entity(glm::vec3(position.x, position.y + 0.4f, position.z), eulerAngles,
 			 new Collider(Collider::Circle, LayerTag::EnemyLayer, 0.4f, 0.4f),
 			 "Enemy", "Enemy", "Enemy", gameManager) {
-	_speed = 2.0f;
-	scale(glm::vec3(0.8, 0.8, 0.8));
 }
 
-Enemy::~Enemy(void) {}
+AEnemy::~AEnemy(void) {}
 
-void Enemy::update(void) {
-	SceneTools *cam = dynamic_cast<SceneTools *>(_sceneManager);
-	if (cam == nullptr) {
-		std::cerr << "Update as fail" << std::endl;
-		return;
-	}
-	size_t mapWidth = cam->getMapWidth();
-	size_t mapHeight = cam->getMapHeight();
-
-	float x = this->getPosition().x + (static_cast<float>(mapWidth) / 2);
-	float z = this->getPosition().z + (static_cast<float>(mapHeight) / 2);
-
-	size_t xPlayer = cam->getPlayerPos() % mapWidth;
-	size_t zPlayer = cam->getPlayerPos() / mapHeight;
-
+void AEnemy::findBestWay(SceneTools *cam, bool runAway) {
 	if (cam->getRefreshAI()) {
-		_way.clear();
+		size_t mapWidth = cam->getMapWidth();
+		size_t mapHeight = cam->getMapHeight();
+		float x = this->getPosition().x + (static_cast<float>(mapWidth) / 2);
+		float z = this->getPosition().z + (static_cast<float>(mapHeight) / 2);
+		size_t xPlayer = cam->getPlayerPos() % mapWidth;
+		size_t zPlayer = cam->getPlayerPos() / mapHeight;
 		size_t pos = static_cast<int>(z) * mapHeight + static_cast<int>(x);
-		size_t bestDist = std::numeric_limits<std::size_t>::max();
-		if (cam->getGraphe().find(pos) != cam->getGraphe().end()) {
-			Node currentPos = *cam->getGraphe().at(pos);
-			while (1) {
-				if (xPlayer == currentPos.x && zPlayer == currentPos.z) break;
-				for (auto n : currentPos.prevNodesByDist) {
-					if (bestDist > n.first) bestDist = n.first;
+		if (!runAway) {
+			_way.clear();
+			size_t bestDist = std::numeric_limits<std::size_t>::max();
+			if (cam->getGraphe().find(pos) != cam->getGraphe().end()) {
+				Node currentPos = *cam->getGraphe().at(pos);
+				while (1) {
+					if (xPlayer == currentPos.x && zPlayer == currentPos.z) break;
+					for (auto n : currentPos.prevNodesByDist) {
+						if (bestDist > n.first) bestDist = n.first;
+					}
+					currentPos = *currentPos.prevNodesByDist[bestDist][0];
+					_way.push_back(currentPos.z * mapHeight + currentPos.x);
 				}
-				currentPos = *currentPos.prevNodesByDist[bestDist][0];
-				_way.push_back(currentPos.z * mapHeight + currentPos.x);
 			}
 		}
-	} else if (_way.size() != 0) {
+		else {}
+	}
+}
+
+void AEnemy::walk(SceneTools *cam) {
+	if (_way.size() != 0) {
+		size_t mapWidth = cam->getMapWidth();
+		size_t mapHeight = cam->getMapHeight();
+		float x = this->getPosition().x + (static_cast<float>(mapWidth) / 2);
+		float z = this->getPosition().z + (static_cast<float>(mapHeight) / 2);
 		float targetX = (static_cast<int>(_way[0]) % mapWidth) + 0.5f;
 		float targetZ = static_cast<int>(_way[0] / mapHeight) + 0.5f;
 		int xSign = 0;
@@ -68,11 +68,9 @@ void Enemy::update(void) {
 			float totalMagnitude = xSign + zSign;
 			xDirection *= sqrt(xSign / totalMagnitude);
 			zDirection *= sqrt(zSign / totalMagnitude);
-			_cooldown -= _gameEngine->getDeltaTime();
 			float deltaTime = _gameEngine->getDeltaTime();
 			_targetMovement.x = xDirection * _speed * deltaTime;
 			_targetMovement.z = zDirection * _speed * deltaTime;
 		}
-		_cooldown -= _gameEngine->getDeltaTime();
 	}
 }
