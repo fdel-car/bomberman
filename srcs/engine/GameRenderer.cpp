@@ -5,6 +5,7 @@
 #include "engine/Model.hpp"
 
 extern std::string _srcsDir;
+extern std::string _assetsDir;
 
 GameRenderer::GameRenderer(GameEngine *gameEngine, AGame *game) {
 	_gameEngine = gameEngine;
@@ -90,17 +91,25 @@ bool GameRenderer::_initDepthMap(void) {
 }
 
 void GameRenderer::_initShader(void) {
-	_shaderProgram = new ShaderProgram(_srcsDir + "engine/shaders/4.1.vs",
-									   _srcsDir + "engine/shaders/4.1.fs");
+	_shaderProgram =
+		new ShaderProgram(_srcsDir + "engine/shaders/4.1.vs",
+							_srcsDir + "engine/shaders/4.1.fs");
 	_shadowShaderProgram =
 		new ShaderProgram(_srcsDir + "engine/shaders/depthMap.vs",
 						  _srcsDir + "engine/shaders/depthMap.fs");
 
-	glUseProgram(_shadowShaderProgram->getID());
+	_skyboxShaderProgram =
+		new ShaderProgram(_srcsDir + "engine/shaders/skybox.vs",
+						  _srcsDir + "engine/shaders/skybox.fs");
+
+	glUseProgram(_shaderProgram->getID());
 	_shaderProgram->setInt("shadowMap", 0);
 
 	glUseProgram(_shaderProgram->getID());
 	_shaderProgram->setInt("diffuseTexture", 1);
+
+	glUseProgram(_skyboxShaderProgram->getID());
+	_skyboxShaderProgram->setInt("skybox", 2);
 }
 
 void GameRenderer::_initModels(void) {
@@ -117,7 +126,7 @@ void GameRenderer::_initModels(void) {
 void GameRenderer::getUserInput(void) { glfwPollEvents(); }
 
 void GameRenderer::refreshWindow(std::vector<Entity *> &entities,
-								 Camera *camera, Light *light) {
+								 Camera *camera, Light *light, Skybox *skybox) {
 	glfwSetWindowTitle(_window,
 					   toString(1.0f / _gameEngine->getDeltaTime()).c_str());
 	_lightSpaceMatrix = light->getProjectionMatrix() * light->getViewMatrix();
@@ -126,7 +135,7 @@ void GameRenderer::refreshWindow(std::vector<Entity *> &entities,
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_MULTISAMPLE);
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	// Shadow map
@@ -159,6 +168,21 @@ void GameRenderer::refreshWindow(std::vector<Entity *> &entities,
 		_shaderProgram->setMat4("M", entity->getModelMatrix());
 		entity->getModel()->draw(*_shaderProgram);
 	}
+
+	// Skybox
+	glDepthFunc(GL_LEQUAL);
+	glUseProgram(_skyboxShaderProgram->getID());
+	
+	_skyboxShaderProgram->setMat4("view", glm::mat4(glm::mat3(camera->getViewMatrix())));
+	_skyboxShaderProgram->setMat4("projection", camera->getProjectionMatrix());
+	
+	glBindVertexArray(skybox->getVAO());
+	glActiveTexture(GL_TEXTURE2);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, skybox->getTexture());
+	_skyboxShaderProgram->setInt("skybox", 2);
+	glDrawArrays(GL_TRIANGLES, 0, 36);
+	glBindVertexArray(0);
+	glDepthFunc(GL_LESS); // set depth function back to default
 
 	// Default OpenGL state
 	glUseProgram(0);

@@ -5,6 +5,7 @@
 #include "engine/Camera.hpp"
 #include "engine/Collider.hpp"
 #include "engine/Light.hpp"
+#include "engine/Skybox.hpp"
 
 #define KEY_W "W"
 #define KEY_A "A"
@@ -120,6 +121,7 @@ class GameEngine {
 	AGame *_game;
 	Camera *_camera;
 	Light *_light;
+	Skybox *_skybox;
 	std::vector<Entity *> _allEntities;
 	std::vector<Entity *> _newEntities;
 	std::map<size_t, std::vector<size_t>> _initialCollisionMap;

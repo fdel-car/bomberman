@@ -47,9 +47,16 @@ void Bomberman::_mainMenu(void) {
 	_entities.push_back(new Entity(glm::vec3(2.0, 0.5, -2.0), glm::vec3(0.0f),
 								   nullptr, "Bomb", "Bomb", "Bomb"));
 	_entities.back()->scale(glm::vec3(5.0));
+
+	_skybox = new Skybox("default");
+
 }
 
 void Bomberman::_forest(void) {
+
+	_skybox = new Skybox("default");
+
+
 	_camera =
 		new Forest(glm::vec3(0.0, 34.0, 20.0), glm::vec3(-60.0, 0.0, 0.0));
 	_light = new Light(glm::vec2(-20.0, 8.0), glm::vec3(0.0f));
