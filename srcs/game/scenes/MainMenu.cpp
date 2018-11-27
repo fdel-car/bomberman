@@ -1,5 +1,5 @@
-#include "engine/GameEngine.hpp"
 #include "game/scenes/MainMenu.hpp"
+#include "engine/GameEngine.hpp"
 
 extern std::string _assetsDir;
 
@@ -84,7 +84,7 @@ void MainMenu::drawGUI(GUI *graphicUI) {
 					  (WINDOW_W / 5) * 4 - ((WINDOW_W / 5) / 2),
 					  (WINDOW_H / 5) * 4, 14, "_BOMBERMAN", &extraSizeExit, 10,
 					  &isExitButtonHover, "Exit"))
-			std::cout << "Exits" << std::endl;
+			_isRunning = false;
 	} else
 		_settings(graphicUI);
 }

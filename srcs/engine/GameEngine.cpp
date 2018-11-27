@@ -79,13 +79,12 @@ void GameEngine::addNewEntity(Entity *entity) {
 
 void GameEngine::run(void) {
 	// Init vars
-	_running = true;
 	_lastFrameTs = Clock::now();
 
 	if (!initScene(_sceneIdx)) throw std::runtime_error("Cannot load scene!");
 	int newSceneIdx = -1;
 	// Start game loop
-	while (_running) {
+	while (true) {
 		// Get delta time in order to synch entities positions
 		_frameTs = Clock::now();
 		_deltaTime = (std::chrono::duration_cast<std::chrono::milliseconds>(
@@ -99,21 +98,16 @@ void GameEngine::run(void) {
 			key.second.prevFrame = key.second.currFrame;
 		_gameRenderer->getUserInput();
 
-		// TODO: Update game engine statuses (ex. when to quit)
-		if (_running) {
-			_running = !isKeyPressed("ESCAPE");
-			if (!_running) break;
-		}
-
 		// Update game camera
 		_camera->update();
 		newSceneIdx = _camera->getNewSceneIdx();
 		if (newSceneIdx != -1) break;
 		newSceneIdx = _game->getSceneIndexByName(_camera->getNewSceneName());
 		if (newSceneIdx != -1) break;
+		if (!_camera->isGameRunning()) break;
 
 		// Freeze everything else if camera is in debug
-		if (!_camera->isDebug()) {
+		if (!_camera->isPause()) {
 			_light->update();
 			// Update game entities states
 			for (auto entity : _allEntities) {

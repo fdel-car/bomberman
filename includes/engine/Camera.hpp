@@ -14,7 +14,8 @@ class Camera : public Entity {
 	std::string getNewSceneName(void) const;
 	std::vector<std::tuple<std::string, std::string>> const &getNeededImages()
 		const;
-	bool isDebug(void) const;
+	bool isGameRunning(void) const;
+	bool isPause(void) const;
 
 	virtual void drawGUI(GUI *graphicUI);
 	virtual void update(void);
@@ -25,6 +26,8 @@ class Camera : public Entity {
 
    protected:
 	int _newSceneIdx;
+	bool _isRunning = false;
+	bool _isPause = false;
 	std::string _newSceneName;
 	std::map<int, nk_color> defaultStyle;
 	std::map<int, nk_color> activeStyle;

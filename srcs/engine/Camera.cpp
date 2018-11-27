@@ -21,7 +21,9 @@ int Camera::getNewSceneIdx(void) const { return _newSceneIdx; }
 
 std::string Camera::getNewSceneName(void) const { return _newSceneName; }
 
-bool Camera::isDebug(void) const { return _debugMode; }
+bool Camera::isGameRunning(void) const { return _isRunning; }
+
+bool Camera::isPause(void) const { return _debugMode || _isPause; }
 
 std::vector<std::tuple<std::string, std::string>> const &
 Camera::getNeededImages() const {
@@ -42,6 +44,7 @@ void Camera::initEntity(GameEngine *gameEngine) {
 				   (float)gameEngine->getGameRenderer()->getHeight();
 	_projection =
 		glm::perspective(glm::radians(30.0f), _aspectRatio, 0.1f, 100.0f);
+	_isRunning = true;
 }
 
 void Camera::configGUI(GUI *graphicUI) { (void)graphicUI; }
