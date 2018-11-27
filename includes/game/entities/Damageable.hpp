@@ -16,6 +16,7 @@ class Damageable : public Entity {
 	virtual void onDeath(void);
 
    protected:
+	bool _alive;
 	size_t _hp;
 	int _baseLayer;
 	int _damagedLayer;

@@ -778,6 +778,12 @@ void GUI::uiHeader(const char *title, nk_flags flags, int rowSize,
 	uiApplyDefaultFont();
 }
 
+void GUI::uiText(std::string text, nk_flags textFlags, std::string fontName) {
+	uiApplyFont(fontName);
+	nk_label(&glfw.ctx, text.c_str(), textFlags);
+	uiApplyDefaultFont();
+}
+
 void GUI::uiWidget(float height, std::string fontName) {
 	static const float ratio[] = {0.15f, 0.85f};
 	uiApplyFont(fontName);
@@ -935,3 +941,8 @@ void GUI::uiRowMultipleElem(bool isSart, int height, int nbrOfElem,
 }
 
 void GUI::uiAddElemInRow(int width) { nk_layout_row_push(&glfw.ctx, width); }
+
+void GUI::uiAddElemOffset(int offset) {
+	glfw.ctx.current->layout->row.item_offset +=
+		offset;  // Do not have any other way to change offset
+}
