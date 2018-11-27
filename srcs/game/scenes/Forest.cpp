@@ -5,9 +5,6 @@ Forest::Forest(glm::vec3 const &pos, glm::vec3 const &eulerAngles)
 	:  // Camera(pos, eulerAngles),
 	  SceneTools(17, 17, pos, eulerAngles),
 	  _cooldown(0.5f) {
-	_light = new Entity(glm::vec3(-10.0f, 10.0f, 10.0f),
-						glm::vec3(45.0f, 45.0f, 45.0f), nullptr, "Box", "Light",
-						"Light");
 	configAI();
 }
 

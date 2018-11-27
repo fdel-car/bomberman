@@ -4,7 +4,6 @@
 
 Camera::Camera(glm::vec3 const &pos, glm::vec3 const &eulerAngles)
 	: Entity(pos, eulerAngles, nullptr, "", "Camera", "Camera"),
-	  _light(nullptr),
 	  _newSceneIdx(-1),
 	  _newSceneName("") {
 	_view = glm::inverse(getModelMatrix());

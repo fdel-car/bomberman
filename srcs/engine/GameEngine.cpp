@@ -114,6 +114,7 @@ void GameEngine::run(void) {
 
 		// Freeze everything else if camera is in debug
 		if (!_camera->isDebug()) {
+			_light->update();
 			// Update game entities states
 			for (auto entity : _allEntities) {
 				entity->update();
