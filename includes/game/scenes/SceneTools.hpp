@@ -41,6 +41,7 @@ class SceneTools : public Camera {
 	bool putBomb(float xCenter, float zCenter, float explosionTimer,
 				 size_t range);
 	void putExplosion(float xCenter, float zCenter, size_t range);
+	void tellPlayerHp(size_t hp);
 
 	size_t const &getPlayerPos() const;
 	std::map<size_t, std::vector<size_t>> const &getEntitiesInfos() const;
@@ -59,6 +60,9 @@ class SceneTools : public Camera {
 						  std::string fontTitle);
 	bool _displayPauseMenu(GUI *graphicUI, int *_newSceneIdx, int restartIdx,
 						   int leaveIdx);
+	void _displayPlayerHP(GUI *graphicUI, size_t hp);
+	void _displayDeathScreen(GUI *graphicUI, int *_newSceneIdx, int restartIdx,
+							 int leaveIdx);
 	bool _btnHover(GUI *graphicUI, int rectWidth, int rectHeight, int xRectPos,
 				   int yRectPos, int fontSize, std::string fontName,
 				   int *extraSizePlay, int maxSize, bool *isPlayButtonHover,
@@ -75,13 +79,19 @@ class SceneTools : public Camera {
 
 	bool _slowGUIAnimation;
 	size_t _playerPos;
+	size_t _playerMaxHp;
+	size_t _playerHp;
+	bool _showPlayerHp;
+	bool _showDeathScreen;
 	size_t _mapWidth;
 	size_t _mapHeight;
 	std::map<size_t, std::vector<size_t>> _entitiesInfos;
 	std::vector<std::map<size_t, Entity *>> _entitiesInSquares;
 	std::map<size_t, Node *> _graphe;
-	std::vector<std::string> _staticDecor; // Decor who can't be destroy (like arena walls)
-	std::vector<std::string> _tmpDecor; // Decor who can be destroy (like bombes or brick walls)
+	std::vector<std::string>
+		_staticDecor;  // Decor who can't be destroy (like arena walls)
+	std::vector<std::string>
+		_tmpDecor;  // Decor who can be destroy (like bombes or brick walls)
 	bool _refreshAI;
 
    private:
