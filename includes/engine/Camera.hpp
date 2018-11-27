@@ -28,6 +28,7 @@ class Camera : public Entity {
 	int _newSceneIdx;
 	bool _isRunning = false;
 	bool _isPause = false;
+	bool _debugMode = false;
 	std::string _newSceneName;
 	std::map<int, nk_color> defaultStyle;
 	std::map<int, nk_color> activeStyle;
@@ -38,7 +39,6 @@ class Camera : public Entity {
 	float _aspectRatio;
 	glm::mat4 _view;
 	glm::mat4 _projection;
-	bool _debugMode = false;
 
 	glm::vec2 _lastMousePos;
 	glm::vec3 _front;
