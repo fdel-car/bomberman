@@ -88,7 +88,7 @@ class GameRenderer {
 
 	// Skybox
 	std::vector<std::string> _faces;
-	GLuint	_skyboxTextureID;
+	GLuint	_skyboxTexture;
 	GLuint _skyboxVAO;
 	GLuint _skyboxVBO;
 };
