@@ -87,7 +87,7 @@ bool SceneTools::_displayPauseMenu(GUI *graphicUI, int *_newSceneIdx,
 void SceneTools::_displayPlayerHP(GUI *graphicUI, size_t hp) {
 	int rowHeight = std::min(WINDOW_H / 12, 50);
 	int rowWidth = _playerMaxHp * rowHeight;
-	int windowWidth = rowWidth + 20;
+	int windowWidth = rowWidth + 26;
 	int windowHeight = rowHeight + 5;
 	(void)hp;
 	(void)rowHeight;
