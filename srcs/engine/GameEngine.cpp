@@ -114,6 +114,7 @@ void GameEngine::run(void) {
 
 		// Update game entities states
 		if (!_camera->isDebug()) {
+			_light->update();
 			for (auto entity : _allEntities) {
 				entity->update();
 			}

@@ -3,6 +3,9 @@
 #include "engine/GameEngine.hpp"
 #include "engine/GameRenderer.hpp"
 
+// #define GLM_ENABLE_EXPERIMENTAL
+// #include "glm/gtx/euler_angles.hpp"
+
 size_t Entity::_spawnedEntities = 0;
 
 void Entity::resetSpawnedEntities(void) { _spawnedEntities = 0; }
@@ -21,13 +24,16 @@ Entity::Entity(glm::vec3 position, glm::vec3 eulerAngles, Collider *collider,
 	  _collider(collider),
 	  _isTmp(true),
 	  _targetMovement(glm::vec3()) {
+	_translationMatrix = glm::mat4(1.0f);
+	_translationMatrix[3][0] = position.x;
+	_translationMatrix[3][1] = position.y;
+	_translationMatrix[3][2] = position.z;
+	_rotationMatrix = glm::mat4(glm::quat(glm::radians(eulerAngles)));
+	_scaleMatrix = glm::mat4(1.0f);
 	_eulerAngles = eulerAngles;
-	_rotation = glm::quat(glm::radians(eulerAngles));
-	_scale = glm::vec3(1.0f);
-	glm::mat4 translationMatrix = glm::translate(glm::mat4(1.0f), _position);
-	_modelMatrix = translationMatrix * glm::mat4_cast(_rotation);
 	_name = _modelName;
 	_gameEngine = nullptr;
+	_updateModelMatrix();
 
 	// Signal, if _sceneManager is set, where is entity starting pos
 	if (_sceneManager != nullptr) _sceneManager->tellPosition(this);
@@ -61,6 +67,10 @@ bool Entity::getTmpState(void) const { return _isTmp; }
 
 size_t const &Entity::getId(void) const { return _id; }
 
+glm::vec3 const &Entity::getEulerAngles() const {
+	return _eulerAngles;  // Could be false since rotate does not update them
+}
+
 std::string const &Entity::getName(void) const { return _name; }
 
 std::string const &Entity::getTag(void) const { return _tag; }
@@ -72,38 +82,47 @@ glm::vec3 const &Entity::getTargetMovement(void) const {
 bool Entity::getNeedToBeDestroyed(void) const { return _needToBeDestroyed; }
 
 void Entity::translate(glm::vec3 translation) {
-	_position += translation;
-	_updateData();
+	_translationMatrix = glm::translate(_translationMatrix, translation);
+	_updateModelMatrix();
 
 	// Signal, if _sceneManager is set, what is the entity new position
 	if (_sceneManager != nullptr) _sceneManager->tellPosition(this);
 }
 
-glm::vec3 const &Entity::getEulerAngles() const { return _eulerAngles; }
-
 void Entity::scale(glm::vec3 scale) {
-	_scale *= scale;
-	_updateData();
+	_scaleMatrix = glm::scale(_scaleMatrix, scale);
+	_updateModelMatrix();
+}
+
+void Entity::rotate(float angle, glm::vec3 axis) {
+	_rotationMatrix = glm::rotate(_rotationMatrix, glm::radians(angle), axis);
+	// TODO: Update euler angles correctly
+	_updateModelMatrix();
 }
 
 void Entity::rotateX(float angle) {
+	_rotationMatrix = glm::rotate(_rotationMatrix, glm::radians(angle),
+								  glm::vec3(1.0, 0.0, 0.0));
 	_eulerAngles.x += angle;
-	_updateData();
+	_updateModelMatrix();
 }
 
 void Entity::rotateY(float angle) {
+	glm::mat4 tmp = glm::rotate(glm::mat4(1.0f), glm::radians(angle),
+								glm::normalize(glm::vec3(0.0, 1.0, 0.0)));
+	_rotationMatrix = tmp * _rotationMatrix;
 	_eulerAngles.y += angle;
-	_updateData();
+	_updateModelMatrix();
 }
 
-void Entity::_updateData(void) {
-	glm::mat4 translationMatrix = glm::mat4(1.0f);
-	translationMatrix[3][0] += _position.x;
-	translationMatrix[3][1] += _position.y;
-	translationMatrix[3][2] += _position.z;
-	_rotation = glm::quat(glm::radians(_eulerAngles));
-	glm::mat4 scaleMatrix = glm::scale(glm::mat4(1.0f), _scale);
-	_modelMatrix = translationMatrix * glm::mat4_cast(_rotation) * scaleMatrix;
+void Entity::_updateModelMatrix(void) {
+	if (_localOrientation)
+		_modelMatrix = _translationMatrix * _rotationMatrix * _scaleMatrix;
+	else
+		_modelMatrix = _rotationMatrix * _translationMatrix * _scaleMatrix;
+	_position.x = _modelMatrix[3][0];
+	_position.y = _modelMatrix[3][1];
+	_position.z = _modelMatrix[3][2];
 }
 
 void Entity::initEntity(GameEngine *gameEngine) {

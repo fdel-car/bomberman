@@ -47,6 +47,7 @@ set(HEADERS
   includes/glm/glm.hpp
   includes/glm/gtc/matrix_transform.hpp
   includes/glm/gtc/type_ptr.hpp
+  # includes/glm/gtx/euler_angles.hpp
   includes/json/json.hpp
 
   includes/engine/Engine.hpp

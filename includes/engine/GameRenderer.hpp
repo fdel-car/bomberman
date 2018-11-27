@@ -77,7 +77,6 @@ class GameRenderer {
 	// Shadow
 	GLuint _depthMapFBO;
 	GLuint _depthMap;
-	Entity *_light;
 
 	// Light
 	glm::mat4 _lightSpaceMatrix;
