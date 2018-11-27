@@ -40,10 +40,6 @@ GameRenderer::GameRenderer(GameEngine *gameEngine, AGame *game) {
 	_initModels();
 	_initDepthMap();  // TODO Check if the Framebuffer was create correctly
 	_initShader();
-
-	//skybox
-	_initSkyboxFaces();
-	_initCubeMap();
 }
 
 GameRenderer::~GameRenderer(void) {
@@ -94,98 +90,6 @@ bool GameRenderer::_initDepthMap(void) {
 	return true;
 }
 
-void GameRenderer::_initSkyboxFaces(void) {
-	_faces.push_back(_assetsDir + "SkyBoxes/right.png");
-	_faces.push_back(_assetsDir + "SkyBoxes/left.png");
-	_faces.push_back(_assetsDir + "SkyBoxes/top.png");
-	_faces.push_back(_assetsDir + "SkyBoxes/bottom.png");
-	_faces.push_back(_assetsDir + "SkyBoxes/front.png");
-	_faces.push_back(_assetsDir + "SkyBoxes/back.png");
-
-	std::cout << _faces[0] << std::endl;
-
-	float _skyboxVertices[] = {
-		// positions          
-        -1.0f,  1.0f, -1.0f,
-        -1.0f, -1.0f, -1.0f,
-         1.0f, -1.0f, -1.0f,
-         1.0f, -1.0f, -1.0f,
-         1.0f,  1.0f, -1.0f,
-        -1.0f,  1.0f, -1.0f,
-
-        -1.0f, -1.0f,  1.0f,
-        -1.0f, -1.0f, -1.0f,
-        -1.0f,  1.0f, -1.0f,
-        -1.0f,  1.0f, -1.0f,
-        -1.0f,  1.0f,  1.0f,
-        -1.0f, -1.0f,  1.0f,
-
-         1.0f, -1.0f, -1.0f,
-         1.0f, -1.0f,  1.0f,
-         1.0f,  1.0f,  1.0f,
-         1.0f,  1.0f,  1.0f,
-         1.0f,  1.0f, -1.0f,
-         1.0f, -1.0f, -1.0f,
-
-        -1.0f, -1.0f,  1.0f,
-        -1.0f,  1.0f,  1.0f,
-         1.0f,  1.0f,  1.0f,
-         1.0f,  1.0f,  1.0f,
-         1.0f, -1.0f,  1.0f,
-        -1.0f, -1.0f,  1.0f,
-
-        -1.0f,  1.0f, -1.0f,
-         1.0f,  1.0f, -1.0f,
-         1.0f,  1.0f,  1.0f,
-         1.0f,  1.0f,  1.0f,
-        -1.0f,  1.0f,  1.0f,
-        -1.0f,  1.0f, -1.0f,
-
-        -1.0f, -1.0f, -1.0f,
-        -1.0f, -1.0f,  1.0f,
-         1.0f, -1.0f, -1.0f,
-         1.0f, -1.0f, -1.0f,
-        -1.0f, -1.0f,  1.0f,
-         1.0f, -1.0f,  1.0f
-	};
-	glGenVertexArrays(1, &_skyboxVAO);
-    glGenBuffers(1, &_skyboxVBO);
-    glBindVertexArray(_skyboxVAO);
-    glBindBuffer(GL_ARRAY_BUFFER, _skyboxVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(_skyboxVertices), &_skyboxVertices, GL_STATIC_DRAW);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-	glBindVertexArray(0);
-}
-
-void GameRenderer::_initCubeMap(void) {
-    glGenTextures(1, &_skyboxTexture);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, _skyboxTexture);
-
-    int width, height, nrChannels;
-    for (unsigned int i = 0; i < _faces.size(); i++)
-    {
-        unsigned char *data = stbi_load(_faces[i].c_str(), &width, &height, &nrChannels, 0);
-        if (data)
-        {
-            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 
-                         0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data
-            );
-            stbi_image_free(data);
-        }
-        else
-        {
-            std::cout << "Cubemap texture failed to load at path: " << _faces[i] << std::endl;
-            stbi_image_free(data);
-        }
-    }
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-}
-
 void GameRenderer::_initShader(void) {
 	_shaderProgram =
 		new ShaderProgram(_srcsDir + "engine/shaders/4.1.vs",
@@ -222,7 +126,7 @@ void GameRenderer::_initModels(void) {
 void GameRenderer::getUserInput(void) { glfwPollEvents(); }
 
 void GameRenderer::refreshWindow(std::vector<Entity *> &entities,
-								 Camera *camera, Light *light) {
+								 Camera *camera, Light *light, Skybox *skybox) {
 	glfwSetWindowTitle(_window,
 					   toString(1.0f / _gameEngine->getDeltaTime()).c_str());
 	_lightSpaceMatrix = light->getProjectionMatrix() * light->getViewMatrix();
@@ -265,7 +169,6 @@ void GameRenderer::refreshWindow(std::vector<Entity *> &entities,
 		entity->getModel()->draw(*_shaderProgram);
 	}
 
-
 	// Skybox
 	glDepthFunc(GL_LEQUAL);
 	glUseProgram(_skyboxShaderProgram->getID());
@@ -273,9 +176,9 @@ void GameRenderer::refreshWindow(std::vector<Entity *> &entities,
 	_skyboxShaderProgram->setMat4("view", glm::mat4(glm::mat3(camera->getViewMatrix())));
 	_skyboxShaderProgram->setMat4("projection", camera->getProjectionMatrix());
 	
-	glBindVertexArray(_skyboxVAO);
+	glBindVertexArray(skybox->getVAO());
 	glActiveTexture(GL_TEXTURE2);
-	glBindTexture(GL_TEXTURE_CUBE_MAP, _skyboxTexture);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, skybox->getTexture());
 	_skyboxShaderProgram->setInt("skybox", 2);
 	glDrawArrays(GL_TRIANGLES, 0, 36);
 	glBindVertexArray(0);
@@ -289,8 +192,6 @@ void GameRenderer::refreshWindow(std::vector<Entity *> &entities,
 	glDisable(GL_MULTISAMPLE);
 	glDisable(GL_DEPTH_TEST);
 	glDisable(GL_CULL_FACE);
-
-	// glDisable(GL_DEPTH_WRITEMASK);
 
 	graphicUI->nkNewFrame();
 	camera->drawGUI(graphicUI);

@@ -3,6 +3,7 @@
 #include "engine/Camera.hpp"
 #include "engine/Entity.hpp"
 #include "engine/Light.hpp"
+#include "engine/Skybox.hpp"
 
 class AGame {
    public:
@@ -19,6 +20,7 @@ class AGame {
 	std::vector<Entity *> const getEntities() const;
 	Camera *getCamera() const;
 	Light *getLight() const;
+	Skybox *getSkybox() const;
 	std::vector<std::vector<bool>> const &getCollisionTable(void);
 
 	void unload(void);
@@ -29,6 +31,7 @@ class AGame {
 	std::vector<Entity *> _entities;
 	Camera *_camera;
 	Light *_light;
+	Skybox *_skybox;
 	std::vector<std::tuple<float, std::string, std::string>> _neededFonts;
 	std::vector<std::vector<bool>> _collisionTable;
 

@@ -209,7 +209,7 @@ void GameEngine::run(void) {
 				}
 			}
 		}
-		_gameRenderer->refreshWindow(_allEntities, _camera, _light);
+		_gameRenderer->refreshWindow(_allEntities, _camera, _light, _skybox);
 	}
 	if (newSceneIdx != -1) {
 		_sceneIdx = newSceneIdx;
@@ -267,6 +267,8 @@ bool GameEngine::initScene(size_t newSceneIdx) {
 	_camera->configGUI(_gameRenderer->getGUI());
 	_light = _game->getLight();
 	_light->initEntity(this);
+	_skybox = _game->getSkybox();
+	_skybox->initEntity(this);
 	for (auto entity : _game->getEntities()) {
 		_allEntities.push_back(entity);
 		_allEntities.back()->initEntity(this);

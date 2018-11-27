@@ -15,6 +15,8 @@ Camera *AGame::getCamera(void) const { return _camera; }
 
 Light *AGame::getLight(void) const { return _light; }
 
+Skybox *AGame::getSkybox(void) const { return _skybox; }
+
 std::vector<std::vector<bool>> const &AGame::getCollisionTable(void) {
 	return _collisionTable;
 }

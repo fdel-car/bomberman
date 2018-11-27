@@ -3,6 +3,7 @@
 #include "engine/Camera.hpp"
 #include "engine/Collider.hpp"
 #include "engine/Light.hpp"
+#include "engine/Skybox.hpp"
 #include "engine/Model.hpp"
 #include "engine/ShaderProgram.hpp"
 
@@ -33,7 +34,7 @@ class GameRenderer {
 	void getUserInput(void);
 	void switchCursorMode(bool debug) const;
 	void refreshWindow(std::vector<Entity *> &entities, Camera *camera,
-					   Light *light);
+					   Light *light, Skybox *skybox);
 	Model *getModel(std::string modelName) const;
 	int getWidth(void) const;
 	int getHeight(void) const;
@@ -58,8 +59,8 @@ class GameRenderer {
 	void _initShader(void);
 	void _initModels(void);
 
-	void _initCubeMap(void);
-	void _initSkyboxFaces(void);
+	// void _initCubeMap(void);
+	// void _initSkyboxFaces(void);
 
 	static GameEngine *_gameEngine;
 
@@ -85,9 +86,9 @@ class GameRenderer {
 	// Light
 	glm::mat4 _lightSpaceMatrix;
 
-	// Skybox
-	std::vector<std::string> _faces;
-	GLuint	_skyboxTexture;
-	GLuint _skyboxVAO;
-	GLuint _skyboxVBO;
+	// // Skybox
+	// std::vector<std::string> _faces;
+	// GLuint	_skyboxTexture;
+	// GLuint _skyboxVAO;
+	// GLuint _skyboxVBO;
 };
