@@ -31,6 +31,7 @@ class Entity {
 	virtual void initEntity(GameEngine *gameEngine);
 	virtual void tellPosition(Entity *entity);
 	virtual void tellDestruction(Entity *entity);
+	virtual void onTriggerEnter(Entity *entity);
 
 	void scale(glm::vec3 scale);
 	void rotate(glm::vec3 axis, float angle);

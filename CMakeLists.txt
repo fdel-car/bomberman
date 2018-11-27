@@ -24,7 +24,7 @@ set(SRCS
   srcs/engine/Light.cpp
   srcs/engine/Model.cpp
   srcs/engine/Mesh.cpp
-  
+
   srcs/engine/GUI/GUI.cpp
 
   srcs/game/Bomberman.cpp
@@ -33,8 +33,11 @@ set(SRCS
   srcs/game/scenes/Forest.cpp
   srcs/game/entities/Player.cpp
   srcs/game/entities/Bomb.cpp
+  srcs/game/entities/AEnemy.cpp
+  srcs/game/entities/EnemyOFDT.cpp
   srcs/game/entities/Explosion.cpp
-  srcs/game/entities/Enemy.cpp
+  srcs/game/entities/Box.cpp
+  srcs/game/entities/Damageable.cpp
   srcs/game/scenes/SceneTools.cpp
 )
 
@@ -71,8 +74,11 @@ set(HEADERS
   includes/game/scenes/Forest.hpp
   includes/game/entities/Player.hpp
   includes/game/entities/Bomb.hpp
+  includes/game/entities/AEnemy.hpp
+  includes/game/entities/EnemyOFDT.hpp
   includes/game/entities/Explosion.hpp
-  includes/game/entities/Enemy.hpp
+  includes/game/entities/Box.hpp
+  includes/game/entities/Damageable.hpp
   includes/game/scenes/SceneTools.hpp
 )
 

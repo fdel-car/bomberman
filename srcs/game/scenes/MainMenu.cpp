@@ -136,8 +136,11 @@ void MainMenu::_settings(GUI *graphicUI) {
 										  NK_EDIT_FIELD, _rightChoice, &len4, 2,
 										  nk_filter_default);
 
-		int btnWidth = (WINDOW_W / 4) - 18;
+		int btnWidth = (WINDOW_W / 6) - 15;
 		graphicUI->uiRowMultipleElem(true, 60, 3);
+		graphicUI->uiAddElemInRow(btnWidth);
+		if (graphicUI->uiButton(btnWidth, 50, 0, "Back", "", "", false))
+			_changeSettings = false;
 		graphicUI->uiAddElemInRow(btnWidth);
 		if (graphicUI->uiButton(btnWidth, 50, 0, "Default", "", "", false)) {
 			_save.initNewSave();

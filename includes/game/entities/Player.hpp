@@ -1,9 +1,9 @@
 #pragma once
 
-#include "engine/Entity.hpp"
 #include "game/Save.hpp"
+#include "game/entities/Damageable.hpp"
 
-class Player : public Entity {
+class Player : public Damageable {
    public:
 	Player(glm::vec3 position, glm::vec3 eulerAngles, Save &save,
 		   Entity *gameManager = nullptr);

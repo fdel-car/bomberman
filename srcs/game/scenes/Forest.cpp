@@ -3,9 +3,20 @@
 
 Forest::Forest(glm::vec3 const &pos, glm::vec3 const &eulerAngles)
 	:  // Camera(pos, eulerAngles),
-	  SceneTools(17, 17, pos, eulerAngles) {}
+	  SceneTools(17, 17, pos, eulerAngles), _cooldown(0.5f) {
+	configAI();
+}
 
 Forest::~Forest(void) {}
+
+void Forest::configAI(void) {
+	_staticDecor.push_back("Wall");
+
+	// _tmpDecor.push_back("Explosion");
+	_tmpDecor.push_back("Enemy");
+	_tmpDecor.push_back("Bomb");
+	_tmpDecor.push_back("Box");
+}
 
 void Forest::configGUI(GUI *graphicUI) {
 	graphicUI->setAssetImage(_neededImages);
@@ -37,7 +48,6 @@ void Forest::tellPosition(Entity *entity) { _savePositions(entity); }
 void Forest::update(void) {
 	Camera::update();
 	_refreshAI = false;
-	static float _cooldown = 0.5f;
 	if (_cooldown <= 0.0f) {
 		_cooldown = 0.5f;
 		_startBuildingGrapheForPathFinding();

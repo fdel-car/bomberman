@@ -15,10 +15,16 @@ struct Node {
 	void updateNode(Node *old, size_t dist);
 	// previous nodes by distance from the target
 	std::map<size_t, std::vector<Node *>> prevNodesByDist;
+	// save when someone will walk on this node
+	std::map<size_t, bool> walkOnMe;
+	// Entities with hitbox on this node
+	std::vector<Entity *> entitiesOnMe;
+
 	size_t dist;
 	size_t x;
 	size_t z;
 	size_t id;
+	bool isFatal;
 };
 
 class SceneTools : public Camera {
@@ -29,6 +35,7 @@ class SceneTools : public Camera {
 
 	virtual void tellPosition(Entity *entity);
 	virtual void tellDestruction(Entity *entity);
+	virtual void configAI(void);
 
 	void printMapInfo(void);
 	bool putBomb(float xCenter, float zCenter, float explosionTimer,
@@ -73,6 +80,8 @@ class SceneTools : public Camera {
 	std::map<size_t, std::vector<size_t>> _entitiesInfos;
 	std::vector<std::map<size_t, Entity *>> _entitiesInSquares;
 	std::map<size_t, Node *> _graphe;
+	std::vector<std::string> _staticDecor; // Decor who can't be destroy (like arena walls)
+	std::vector<std::string> _tmpDecor; // Decor who can be destroy (like bombes or brick walls)
 	bool _refreshAI;
 
    private:

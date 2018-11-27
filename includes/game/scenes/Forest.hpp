@@ -9,6 +9,7 @@ class Forest : public SceneTools {
 
 	virtual void drawGUI(GUI *graphicUI);
 	virtual void configGUI(GUI *graphicUI);
+	virtual void configAI(void);
 	virtual void tellPosition(Entity *entity);
 	virtual void update(void);
 
@@ -19,5 +20,6 @@ class Forest : public SceneTools {
 	Forest(Forest const &src);
 	Forest &operator=(Forest const &rhs);
 
+	float _cooldown;
 	bool _pauseMenu;
 };
