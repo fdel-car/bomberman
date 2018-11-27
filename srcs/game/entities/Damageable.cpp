@@ -8,6 +8,7 @@ Damageable::Damageable(glm::vec3 position, glm::vec3 eulerAngles,
 					   Entity *sceneManager)
 	: Entity(position, eulerAngles, collider, modelName, name, tag,
 			 sceneManager),
+	  _alive(hp != 0),
 	  _hp(hp),
 	  _baseLayer(baseLayer),
 	  _damagedLayer(damagedLayer),
@@ -17,7 +18,7 @@ Damageable::Damageable(glm::vec3 position, glm::vec3 eulerAngles,
 Damageable::~Damageable(void) {}
 
 void Damageable::update(void) {
-	if (_timeDamaged > 0.0f) {
+	if (_alive && _timeDamaged > 0.0f) {
 		_timeDamaged -= _gameEngine->getDeltaTime();
 		if (_timeDamaged <= 0.0f) {
 			_collider->layerTag = _baseLayer;
@@ -26,16 +27,23 @@ void Damageable::update(void) {
 }
 
 void Damageable::takeDamage(void) {
-	if (_timeDamaged <= 0.0f) {
+	if (_alive && _timeDamaged <= 0.0f) {
 		onTakeDamage();
-		if (_hp == 0) onDeath();
+		if (_hp == 0) {
+			_alive = false;
+			onDeath();
+		}
 	}
 }
 
 void Damageable::onTakeDamage(void) {
-	_hp -= 1;
-	_timeDamaged = _damagedMaxTime;
-	_collider->layerTag = _damagedLayer;
+	if (_alive) {
+		_hp -= 1;
+		_timeDamaged = _damagedMaxTime;
+		_collider->layerTag = _damagedLayer;
+	}
 }
 
-void Damageable::onDeath(void) { _needToBeDestroyed = true; }
+void Damageable::onDeath(void) {
+	if (!_alive) _needToBeDestroyed = true;
+}

@@ -3,16 +3,27 @@
 #include "game/entities/Bomb.hpp"
 #include "game/entities/Explosion.hpp"
 
+extern std::string _assetsDir;
+
 SceneTools::SceneTools(size_t mapWidth, size_t mapHeight, glm::vec3 const &pos,
 					   glm::vec3 const &eulerAngles)
 	: Camera(pos, eulerAngles),
 	  _slowGUIAnimation(true),
+	  _playerMaxHp(0),
+	  _playerHp(0),
+	  _showPlayerHp(false),
+	  _showDeathScreen(false),
 	  _mapWidth(mapWidth),
 	  _mapHeight(mapHeight),
 	  _entitiesInSquares(
 		  std::vector<std::map<size_t, Entity *>>(mapWidth * mapHeight)),
 	  _xOffset(static_cast<float>(_mapWidth) / 2.0f),
-	  _zOffset(static_cast<float>(_mapHeight) / 2.0f) {}
+	  _zOffset(static_cast<float>(_mapHeight) / 2.0f) {
+	_neededImages.push_back(std::tuple<std::string, std::string>(
+		(_assetsDir + "GUI/icons/heart.png"), "heart"));
+	_neededImages.push_back(std::tuple<std::string, std::string>(
+		(_assetsDir + "GUI/icons/sad_chopper.png"), "sad_chopper"));
+}
 
 SceneTools::~SceneTools(void) { _clearGraphe(); }
 
@@ -58,21 +69,86 @@ bool SceneTools::_displayPauseMenu(GUI *graphicUI, int *_newSceneIdx,
 								"", "14_BOMBERMAN")) {
 			res = false;
 		}
-		if (graphicUI->uiButton(WINDOW_W / 4, (WINDOW_H / 9) - 8, 0,
-								"Restart level", "", "14_BOMBERMAN")) {
+		if (graphicUI->uiButton(WINDOW_W / 4, (WINDOW_H / 9) - 8, 0, "Restart",
+								"", "14_BOMBERMAN")) {
 			*_newSceneIdx = restartIdx;
 			res = false;
 		}
-		if (graphicUI->uiButton(WINDOW_W / 4, (WINDOW_H / 9) - 8, 0,
-								"Quit level", "", "14_BOMBERMAN")) {
+		if (graphicUI->uiButton(WINDOW_W / 4, (WINDOW_H / 9) - 8, 0, "Quit", "",
+								"14_BOMBERMAN")) {
 			*_newSceneIdx = leaveIdx;
 			res = false;
-		}
-		if (graphicUI->uiButton(0, 0, 0, "", "", "")) {
 		}
 	}
 	graphicUI->uiEndBlock();
 	return res;
+}
+
+void SceneTools::_displayPlayerHP(GUI *graphicUI, size_t hp) {
+	int rowHeight = std::min(WINDOW_H / 12, 50);
+	int rowWidth = _playerMaxHp * rowHeight;
+	int windowWidth = rowWidth + 26;
+	int windowHeight = rowHeight + 5;
+	(void)hp;
+	(void)rowHeight;
+	activeStyle[NK_COLOR_WINDOW] = nk_rgba(57, 67, 71, 150);
+
+	graphicUI->setStyle(activeStyle);
+	if (graphicUI->uiStartBlock("PlayerHP", "",
+								nk_rect(20, 20, windowWidth, windowHeight),
+								NK_WINDOW_NO_SCROLLBAR | NK_WINDOW_BORDER)) {
+		// activeStyle[NK_COLOR_BORDER] = nk_rgba(51, 55, 67, 0);
+		activeStyle[NK_COLOR_WINDOW] = nk_rgba(57, 67, 71, 0);
+
+		graphicUI->setStyle(activeStyle);
+
+		int imgWidth = rowHeight;
+		if (_playerHp != 0) {
+			graphicUI->uiRowMultipleElem(true, rowHeight, _playerMaxHp);
+			for (size_t i = 0; i < _playerHp; i++) {
+				graphicUI->uiAddElemInRow(imgWidth);
+				graphicUI->uiSetImage("heart");
+			}
+			graphicUI->uiRowMultipleElem(false);
+		}
+	}
+	graphicUI->uiEndBlock();
+	activeStyle = defaultStyle;
+	graphicUI->setStyle(activeStyle);
+}
+
+void SceneTools::_displayDeathScreen(GUI *graphicUI, int *_newSceneIdx,
+									 int restartIdx, int leaveIdx) {
+	int windowWidth = WINDOW_W / 4;
+	int windowHeight = WINDOW_H / 3;
+	int rowHeight = (windowHeight / 3) - 15;
+	int rowWidth = windowWidth - 10;
+	// int blockXPadding = 8;
+	(void)rowWidth;
+	(void)rowHeight;
+	// return;
+	if (graphicUI->uiStartBlock(
+			"DeathScreen", "Defeat !",
+			nk_rect((WINDOW_W / 2) - (WINDOW_W / 8), (WINDOW_H / 3),
+					windowWidth, windowHeight),
+			NK_WINDOW_NO_SCROLLBAR | NK_WINDOW_BORDER | NK_WINDOW_TITLE)) {
+		graphicUI->uiRowMultipleElem(true, rowHeight, 1);
+		graphicUI->uiAddElemInRow(rowHeight);
+		graphicUI->uiAddElemOffset((rowWidth - rowHeight) / 2);
+		graphicUI->uiSetImage("sad_chopper");
+		graphicUI->uiRowMultipleElem(false);
+
+		rowHeight += 10;
+		if (graphicUI->uiButton(windowWidth, rowHeight, 0, "Restart", "",
+								"14_BOMBERMAN")) {
+			*_newSceneIdx = restartIdx;
+		}
+		if (graphicUI->uiButton(windowWidth, rowHeight, 0, "Quit", "",
+								"14_BOMBERMAN")) {
+			*_newSceneIdx = leaveIdx;
+		}
+	}
+	graphicUI->uiEndBlock();
 }
 
 bool SceneTools::_btnHover(GUI *graphicUI, int rectWidth, int rectHeight,
@@ -124,7 +200,7 @@ void SceneTools::tellDestruction(Entity *entity) {
 	}
 }
 
-void SceneTools::configAI(void) { return ; }
+void SceneTools::configAI(void) { return; }
 
 void SceneTools::_savePositions(Entity *entity) {
 	std::vector<size_t> allNewSquareWeAreIn;
@@ -247,17 +323,17 @@ void SceneTools::putExplosion(float xCenter, float zCenter, size_t range) {
 	size_t xCoord = static_cast<size_t>(xCenter + _xOffset);
 	size_t zCoord = static_cast<size_t>(zCenter + _zOffset);
 
-	// Center explosion
+	// Center
 	_gameEngine->addNewEntity(new Explosion(
 		glm::vec3(xCoord - _xOffset + 0.5f, 0.0f, zCoord - _zOffset + 0.5f),
 		this));
-	// Left explosion
+	// Left
 	_putExplosionsInDirection(xCoord, zCoord, -1, 0, range);
-	// Right explosion
+	// Right
 	_putExplosionsInDirection(xCoord, zCoord, 1, 0, range);
-	// Top explosion
+	// Top
 	_putExplosionsInDirection(xCoord, zCoord, 0, -1, range);
-	// Down explosion
+	// Down
 	_putExplosionsInDirection(xCoord, zCoord, 0, 1, range);
 }
 
@@ -292,6 +368,15 @@ void SceneTools::_putExplosionsInDirection(size_t xCoord, size_t zCoord,
 		} else
 			break;
 		rangeIdx++;
+	}
+}
+
+void SceneTools::tellPlayerHp(size_t hp) {
+	_showPlayerHp = true;
+	if (hp > _playerMaxHp) _playerMaxHp = hp;
+	_playerHp = hp;
+	if (_playerHp == 0) {
+		_showDeathScreen = true;
 	}
 }
 
@@ -369,16 +454,17 @@ void SceneTools::_buildNewNode(size_t dist, size_t x, size_t z, size_t pos,
 							   Node *node, std::list<Node *> *nodesByDepth) {
 	for (const auto &entity : _entitiesInSquares[pos]) {
 		for (const auto &decor : _staticDecor) {
-			if (entity.second->getTag().compare(decor) == 0)
-				return ;
+			if (entity.second->getTag().compare(decor) == 0) return;
 		}
 	}
 	if (_graphe.find(pos) == _graphe.end()) {
 		// Save if it's a new node
 		bool isAnEntity = false;
 		for (const auto &map : _entitiesInSquares[pos]) {
-			if (static_cast<size_t>(map.second->getPosition().x + _xOffset) == x
-				&& static_cast<size_t>(map.second->getPosition().z + _zOffset) == z) {
+			if (static_cast<size_t>(map.second->getPosition().x + _xOffset) ==
+					x &&
+				static_cast<size_t>(map.second->getPosition().z + _zOffset) ==
+					z) {
 				for (const auto &decor : _tmpDecor) {
 					if (map.second->getTag().compare(decor) == 0)
 						isAnEntity = true;
@@ -387,8 +473,7 @@ void SceneTools::_buildNewNode(size_t dist, size_t x, size_t z, size_t pos,
 		}
 		Node *tmpNode = new Node(node, dist, x, z, pos);
 		_graphe.insert(std::pair<size_t, Node *>(pos, tmpNode));
-		if (!isAnEntity)
-			nodesByDepth->push_back(tmpNode);
+		if (!isAnEntity) nodesByDepth->push_back(tmpNode);
 
 	} else  // Save the change if the node exist
 		_graphe.at(pos)->updateNode(node, dist);

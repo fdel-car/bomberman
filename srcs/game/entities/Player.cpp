@@ -1,7 +1,6 @@
 #include "game/entities/Player.hpp"
 #include "engine/GameEngine.hpp"
 #include "game/Bomberman.hpp"
-#include "game/scenes/SceneTools.hpp"
 
 Player::Player(glm::vec3 position, glm::vec3 eulerAngles, Save &save,
 			   Entity *sceneManager)
@@ -15,13 +14,19 @@ Player::Player(glm::vec3 position, glm::vec3 eulerAngles, Save &save,
 	  _maxBombs(3),
 	  _bombCooldown(3.0f),
 	  _bombRange(2),
-	  _bombTimers(std::vector<float>()) {
+	  _bombTimers(std::vector<float>()),
+	  _cam(dynamic_cast<SceneTools *>(_sceneManager)) {
 	scale(glm::vec3(0.9, 0.9, 0.9));
+	if (_cam != nullptr) {
+		_cam->tellPlayerHp(_hp);
+	}
 }
 
 Player::~Player(void) {}
 
 void Player::update(void) {
+	if (!_alive) return;
+
 	Damageable::update();
 	float deltaTime = _gameEngine->getDeltaTime();
 
@@ -38,10 +43,9 @@ void Player::update(void) {
 	// Check if new bomb can be spawned
 	if (_gameEngine->isKeyJustPressed(KEY_SPACE) &&
 		_bombTimers.size() < _maxBombs && _timeDamaged <= 0.0f) {
-		SceneTools *cam = dynamic_cast<SceneTools *>(_sceneManager);
-		if (cam != nullptr) {
-			if (cam->putBomb(getPosition().x, getPosition().z, _bombCooldown,
-							 _bombRange)) {
+		if (_cam != nullptr) {
+			if (_cam->putBomb(getPosition().x, getPosition().z, _bombCooldown,
+							  _bombRange)) {
 				_bombTimers.push_back(_bombCooldown);
 			}
 		}
@@ -71,4 +75,15 @@ void Player::update(void) {
 
 	_targetMovement.x = xDirection * _speed * deltaTime;
 	_targetMovement.z = zDirection * _speed * deltaTime;
+}
+
+void Player::onTakeDamage(void) {
+	Damageable::onTakeDamage();
+	if (_cam != nullptr) {
+		_cam->tellPlayerHp(_hp);
+	}
+}
+
+void Player::onDeath(void) {
+	// TODO: start death animation
 }

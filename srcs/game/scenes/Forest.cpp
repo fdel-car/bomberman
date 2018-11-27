@@ -3,7 +3,8 @@
 
 Forest::Forest(glm::vec3 const &pos, glm::vec3 const &eulerAngles)
 	:  // Camera(pos, eulerAngles),
-	  SceneTools(17, 17, pos, eulerAngles), _cooldown(0.5f) {
+	  SceneTools(17, 17, pos, eulerAngles),
+	  _cooldown(0.5f) {
 	configAI();
 }
 
@@ -32,6 +33,13 @@ void Forest::drawGUI(GUI *graphicUI) {
 	if (_pauseMenu || _gameEngine->isKeyPressed("E"))
 		_pauseMenu = _displayPauseMenu(graphicUI, &_newSceneIdx, 1, 0);
 
+	if (_showPlayerHp) {
+		if (_showDeathScreen) {
+			_displayDeathScreen(graphicUI, &_newSceneIdx, 1, 0);
+		}
+		_displayPlayerHP(graphicUI, _playerHp);
+	}
+
 	// static int searchWord = 0;
 	// static int lastWord = 0;
 	// static int startStrIdx = 0;
@@ -39,8 +47,8 @@ void Forest::drawGUI(GUI *graphicUI) {
 	// 	"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do "
 	// 	"officia deserunt mollit anim id est laborum.";
 	// _displayDialogue(graphicUI, &searchWord, &lastWord, &startStrIdx,
-	// 				 "Bomberman", "", str, false, 1000, 1000,
-	// 				 NK_TEXT_LEFT, "12_BOMBERMAN", "18_BOMBERMAN");
+	// 				 "Bomberman", "heart", str, false, 1000, 1000, NK_TEXT_LEFT,
+	// 				 "12_BOMBERMAN", "18_BOMBERMAN");
 }
 
 void Forest::tellPosition(Entity *entity) { _savePositions(entity); }

@@ -2,6 +2,7 @@
 
 #include "game/Save.hpp"
 #include "game/entities/Damageable.hpp"
+#include "game/scenes/SceneTools.hpp"
 
 class Player : public Damageable {
    public:
@@ -10,6 +11,8 @@ class Player : public Damageable {
 	~Player(void);
 
 	virtual void update(void);
+	virtual void onTakeDamage(void);
+	virtual void onDeath(void);
 
    private:
 	Save &_save;
@@ -18,6 +21,7 @@ class Player : public Damageable {
 	float _bombCooldown;
 	size_t _bombRange;
 	std::vector<float> _bombTimers;
+	SceneTools *_cam;
 
 	Player(void);
 	Player(Player const &src);
