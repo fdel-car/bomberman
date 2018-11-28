@@ -82,7 +82,8 @@ class GameEngine {
 
 	GameEngine &operator=(GameEngine const &rhs);
 
-	bool initScene(size_t newSceneIdx);
+	bool _initScene(size_t newSceneIdx);
+	void _unloadScene(void);
 	void moveEntities(void);
 	void getPossibleCollisions(Entity *entity,
 							   std::vector<Entity *> &possibleCollisions,

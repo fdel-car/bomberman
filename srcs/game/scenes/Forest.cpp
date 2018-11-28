@@ -20,7 +20,7 @@ void Forest::configAI(void) {
 }
 
 void Forest::configGUI(GUI *graphicUI) {
-	graphicUI->setAssetImage(_neededImages);
+	graphicUI->setAssetImages(_neededImages);
 
 	graphicUI->getDefaultStyle(THEME_RED, &defaultStyle);
 	graphicUI->setStyle(defaultStyle);

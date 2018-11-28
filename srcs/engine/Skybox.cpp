@@ -30,7 +30,6 @@ void Skybox::_initSkyboxFaces(void) {
 
 void Skybox::_initBuffer(void) {
 	float _skyboxVertices[] = {
-		// positions
 		-1.0f, 1.0f,  -1.0f, -1.0f, -1.0f, -1.0f, 1.0f,  -1.0f, -1.0f,
 		1.0f,  -1.0f, -1.0f, 1.0f,  1.0f,  -1.0f, -1.0f, 1.0f,  -1.0f,
 
@@ -75,7 +74,7 @@ void Skybox::_initCubeMap(void) {
 			stbi_image_free(data);
 		} else {
 			std::cout << "Cubemap texture failed to load at path: " << _faces[i]
-					  << std::endl;
+					  << "." << std::endl;
 			stbi_image_free(data);
 		}
 	}

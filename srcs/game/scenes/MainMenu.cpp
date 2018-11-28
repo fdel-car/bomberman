@@ -19,7 +19,7 @@ MainMenu::MainMenu(glm::vec3 const &pos, glm::vec3 const &eulerAngles,
 MainMenu::~MainMenu(void) {}
 
 void MainMenu::configGUI(GUI *graphicUI) {
-	graphicUI->setAssetImage(_neededImages);
+	graphicUI->setAssetImages(_neededImages);
 	graphicUI->uiSetDefaultFont("18_BOMBERMAN");
 	graphicUI->getDefaultStyle(THEME_RED, &defaultStyle);
 	defaultStyle[NK_COLOR_WINDOW] = nk_rgba(57, 67, 71, 0);

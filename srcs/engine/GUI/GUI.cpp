@@ -736,7 +736,7 @@ void GUI::setStyle(std::map<int, nk_color> &styleMap) {
 	nk_style_from_table(&glfw.ctx, table);
 }
 
-void GUI::setAssetImage(
+void GUI::setAssetImages(
 	std::vector<std::tuple<std::string, std::string>> vFontImage) {
 	if (!vFontImage.empty()) _setImages(vFontImage);
 }
