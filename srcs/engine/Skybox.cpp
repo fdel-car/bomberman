@@ -73,7 +73,7 @@ void Skybox::_initCubeMap(void) {
 						 height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
 			stbi_image_free(data);
 		} else {
-			std::cout << "Cubemap texture failed to load at path: " << _faces[i]
+			std::cerr << "Cubemap texture failed to load at path: " << _faces[i]
 					  << "." << std::endl;
 			stbi_image_free(data);
 		}

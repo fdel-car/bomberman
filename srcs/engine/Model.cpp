@@ -18,7 +18,7 @@ Model::Model(std::string const &objDirName) {
 
 	// Error output
 	if (!warn.empty())
-		std::cout << "\033[0;33m:Warning:\033[0m " << warn << std::endl;
+		std::cerr << "\033[0;33m:Warning:\033[0m " << warn << std::endl;
 	if (!err.empty())
 		std::cerr << "\033[0;31m:Error:\033[0m " << err << std::endl;
 

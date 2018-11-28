@@ -1,6 +1,7 @@
 #include "game/Bomberman.hpp"
 #include "game/entities/Box.hpp"
 #include "game/entities/EnemyOFDT.hpp"
+#include "game/entities/Perk.hpp"
 #include "game/entities/Player.hpp"
 #include "game/scenes/Forest.hpp"
 #include "game/scenes/MainMenu.hpp"
@@ -9,7 +10,7 @@
 
 extern std::string _assetsDir;
 
-Bomberman::Bomberman(void) : AGame(8) {
+Bomberman::Bomberman(void) : AGame(9) {
 	// Set needed fonts
 	for (float size = 12.0f; size <= 48.0f; size += 1.0f)
 		_neededFonts.push_back(std::tuple<float, std::string, std::string>(
@@ -19,11 +20,19 @@ Bomberman::Bomberman(void) : AGame(8) {
 	setLayerCollision(WallLayer, WallLayer, false);
 	setLayerCollision(WallLayer, BoxLayer, false);
 	setLayerCollision(WallLayer, ExplosionLayer, false);
+	setLayerCollision(WallLayer, BombLayer, false);
+	setLayerCollision(WallLayer, PerkLayer, false);
+
 	setLayerCollision(PlayerLayer, EnemySpecialLayer, false);
 	setLayerCollision(PlayerSpecialLayer, ExplosionLayer, false);
 	setLayerCollision(PlayerSpecialLayer, EnemyLayer, false);
 	setLayerCollision(PlayerSpecialLayer, EnemySpecialLayer, false);
+
 	setLayerCollision(EnemySpecialLayer, ExplosionLayer, false);
+
+	setLayerCollision(PerkLayer, BoxLayer, false);
+	setLayerCollision(PerkLayer, ExplosionLayer, false);
+	setLayerCollision(PerkLayer, BombLayer, false);
 
 	// Set map of scenes
 	_initScenes();
@@ -58,6 +67,18 @@ void Bomberman::_forest(void) {
 								   "Island", "Island", "Island"));
 	_entities.push_back(new Player(glm::vec3(-7.0, 0.0, -7.0), glm::vec3(0.0f),
 								   _save, _camera));
+	_entities.push_back(new Perk(glm::vec3(-6.0, 0.0, -7.0), _camera));
+	_entities.push_back(new Perk(glm::vec3(-5.0, 0.0, -7.0), _camera));
+	_entities.push_back(new Perk(glm::vec3(-4.0, 0.0, -7.0), _camera));
+	_entities.push_back(new Perk(glm::vec3(-3.0, 0.0, -7.0), _camera));
+	_entities.push_back(new Perk(glm::vec3(-2.0, 0.0, -7.0), _camera));
+	_entities.push_back(new Perk(glm::vec3(-1.0, 0.0, -7.0), _camera));
+	_entities.push_back(new Perk(glm::vec3(0.0, 0.0, -7.0), _camera));
+	_entities.push_back(new Perk(glm::vec3(5.0, 0.0, -7.0), _camera));
+	_entities.push_back(new Perk(glm::vec3(4.0, 0.0, -7.0), _camera));
+	_entities.push_back(new Perk(glm::vec3(3.0, 0.0, -7.0), _camera));
+	_entities.push_back(new Perk(glm::vec3(2.0, 0.0, -7.0), _camera));
+	_entities.push_back(new Perk(glm::vec3(1.0, 0.0, -7.0), _camera));
 
 	// Enemies
 	_entities.push_back(

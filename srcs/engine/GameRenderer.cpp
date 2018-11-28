@@ -10,7 +10,7 @@ extern std::string _assetsDir;
 GameRenderer::GameRenderer(GameEngine *gameEngine, AGame *game) {
 	_gameEngine = gameEngine;
 	glfwSetErrorCallback(errorCallback);
-	if (!glfwInit()) throw new std::runtime_error("Failed to initialize GLFW");
+	if (!glfwInit()) throw std::runtime_error("Failed to initialize GLFW");
 	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
@@ -24,7 +24,7 @@ GameRenderer::GameRenderer(GameEngine *gameEngine, AGame *game) {
 							   NULL);  // Size of screen will change
 	if (!_window) {
 		glfwTerminate();
-		throw new std::runtime_error("Failed to create windows GLFW");
+		throw std::runtime_error("Failed to create windows GLFW");
 	}
 	const GLFWvidmode *mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
 	glfwSetWindowPos(_window, (mode->width / 2) - (WINDOW_W / 2),
@@ -32,7 +32,7 @@ GameRenderer::GameRenderer(GameEngine *gameEngine, AGame *game) {
 	glfwGetWindowSize(_window, &_width, &_height);
 	glfwMakeContextCurrent(_window);
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-		throw new std::runtime_error("Failed to initialize GLAD");
+		throw std::runtime_error("Failed to initialize GLAD");
 	glViewport(0, 0, WINDOW_W, WINDOW_H);
 	glfwSetKeyCallback(_window, keyCallback);
 	glfwSetCursorPosCallback(_window, mouseCallback);
@@ -85,7 +85,7 @@ bool GameRenderer::_initDepthMap(void) {
 
 	// Always check that our framebuffer is ok
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-		std::cout << "Failed to initialize Depth Map." << std::endl;
+		std::cerr << "Failed to initialize Depth Map." << std::endl;
 		return false;
 	}
 	return true;

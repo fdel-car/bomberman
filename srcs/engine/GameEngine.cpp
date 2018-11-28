@@ -255,7 +255,7 @@ bool GameEngine::_initScene(size_t newSceneIdx) {
 	_camera->configGUI(_gameRenderer->getGUI());
 	_light = _game->getLight();
 	if (_light == nullptr)
-		std::cout << "\033[0;33m:Warning:\033[0m There is no light in the "
+		std::cerr << "\033[0;33m:Warning:\033[0m There is no light in the "
 					 "loaded scene, you should definitely add one"
 				  << std::endl;
 	else

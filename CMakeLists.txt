@@ -31,6 +31,7 @@ set(SRCS
 
   srcs/game/Bomberman.cpp
   srcs/game/Save.cpp
+  srcs/game/scenes/SceneTools.cpp
   srcs/game/scenes/MainMenu.cpp
   srcs/game/scenes/Forest.cpp
   srcs/game/entities/Player.cpp
@@ -40,7 +41,7 @@ set(SRCS
   srcs/game/entities/Explosion.cpp
   srcs/game/entities/Box.cpp
   srcs/game/entities/Damageable.cpp
-  srcs/game/scenes/SceneTools.cpp
+  srcs/game/entities/Perk.cpp
 )
 
 include_directories(includes)
@@ -83,6 +84,7 @@ set(HEADERS
   includes/game/entities/Explosion.hpp
   includes/game/entities/Box.hpp
   includes/game/entities/Damageable.hpp
+  includes/game/entities/Perk.hpp
   includes/game/scenes/SceneTools.hpp
 )
 

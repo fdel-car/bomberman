@@ -11,7 +11,8 @@ enum LayerTag {
 	EnemyLayer,
 	EnemySpecialLayer,
 	BombLayer,
-	ExplosionLayer
+	ExplosionLayer,
+	PerkLayer
 };
 
 class Bomberman : public AGame {

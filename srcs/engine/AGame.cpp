@@ -47,6 +47,11 @@ int AGame::getSceneIndexByName(std::string sceneName) const {
 }
 
 void AGame::setLayerCollision(int layer1, int layer2, bool doCollide) {
+	if ((size_t)layer1 >= _collisionTable.size() ||
+		(size_t)layer2 >= _collisionTable.size()) {
+		throw std::runtime_error(
+			"\033[0;31m:Error:\033[0m Invalid layer for collision given !");
+	}
 	_collisionTable[layer1][layer2] = doCollide;
 	_collisionTable[layer2][layer1] = doCollide;
 }
