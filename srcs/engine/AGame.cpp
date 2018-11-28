@@ -1,6 +1,7 @@
 #include "engine/AGame.hpp"
 
-AGame::AGame(size_t enumSize) : _camera(nullptr) {
+AGame::AGame(size_t enumSize)
+	: _camera(nullptr), _light(nullptr), _skybox(nullptr) {
 	_collisionTable = std::vector<std::vector<bool>>(enumSize);
 	for (auto &collisionTag : _collisionTable) {
 		collisionTag = std::vector<bool>(enumSize, true);
@@ -27,13 +28,10 @@ std::vector<std::tuple<float, std::string, std::string>>
 }
 
 void AGame::unload(void) {
-	// for (auto entity : _entities) delete entity;
 	_entities.clear();
 
-	// if (_camera != nullptr) {
-	// 	delete _camera;
-	// 	_camera = nullptr;
-	// }
+	_light = nullptr;
+	_camera = nullptr;
 
 	// Reset counter for next scene
 	Entity::resetSpawnedEntities();

@@ -18,6 +18,7 @@ GameRenderer::GameRenderer(GameEngine *gameEngine, AGame *game) {
 #ifdef __APPLE__
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
+	glfwWindowHint(GLFW_FOCUSED, GL_TRUE);
 	glfwWindowHint(GLFW_SAMPLES, 4);
 	_window = glfwCreateWindow(WINDOW_W, WINDOW_H, "Bomberman", NULL,
 							   NULL);  // Size of screen will change
@@ -28,8 +29,8 @@ GameRenderer::GameRenderer(GameEngine *gameEngine, AGame *game) {
 	const GLFWvidmode *mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
 	glfwSetWindowPos(_window, (mode->width / 2) - (WINDOW_W / 2),
 					 (mode->height / 2) - (WINDOW_H / 2));
-	glfwMakeContextCurrent(_window);
 	glfwGetWindowSize(_window, &_width, &_height);
+	glfwMakeContextCurrent(_window);
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 		throw new std::runtime_error("Failed to initialize GLAD");
 	glViewport(0, 0, WINDOW_W, WINDOW_H);
@@ -91,9 +92,8 @@ bool GameRenderer::_initDepthMap(void) {
 }
 
 void GameRenderer::_initShader(void) {
-	_shaderProgram =
-		new ShaderProgram(_srcsDir + "engine/shaders/4.1.vs",
-							_srcsDir + "engine/shaders/4.1.fs");
+	_shaderProgram = new ShaderProgram(_srcsDir + "engine/shaders/4.1.vs",
+									   _srcsDir + "engine/shaders/4.1.fs");
 	_shadowShaderProgram =
 		new ShaderProgram(_srcsDir + "engine/shaders/depthMap.vs",
 						  _srcsDir + "engine/shaders/depthMap.fs");
@@ -169,20 +169,24 @@ void GameRenderer::refreshWindow(std::vector<Entity *> &entities,
 		entity->getModel()->draw(*_shaderProgram);
 	}
 
-	// Skybox
-	glDepthFunc(GL_LEQUAL);
-	glUseProgram(_skyboxShaderProgram->getID());
-	
-	_skyboxShaderProgram->setMat4("view", glm::mat4(glm::mat3(camera->getViewMatrix())));
-	_skyboxShaderProgram->setMat4("projection", camera->getProjectionMatrix());
-	
-	glBindVertexArray(skybox->getVAO());
-	glActiveTexture(GL_TEXTURE2);
-	glBindTexture(GL_TEXTURE_CUBE_MAP, skybox->getTexture());
-	_skyboxShaderProgram->setInt("skybox", 2);
-	glDrawArrays(GL_TRIANGLES, 0, 36);
-	glBindVertexArray(0);
-	glDepthFunc(GL_LESS); // set depth function back to default
+	if (skybox != nullptr) {
+		// Skybox
+		glDepthFunc(GL_LEQUAL);
+		glUseProgram(_skyboxShaderProgram->getID());
+
+		_skyboxShaderProgram->setMat4(
+			"view", glm::mat4(glm::mat3(camera->getViewMatrix())));
+		_skyboxShaderProgram->setMat4("projection",
+									  camera->getProjectionMatrix());
+
+		glBindVertexArray(skybox->getVAO());
+		glActiveTexture(GL_TEXTURE2);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, skybox->getTexture());
+		_skyboxShaderProgram->setInt("skybox", 2);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+		glBindVertexArray(0);
+		glDepthFunc(GL_LESS);  // Set depth function back to default
+	}
 
 	// Default OpenGL state
 	glUseProgram(0);

@@ -82,7 +82,7 @@ class GUI {
 
 	void getDefaultStyle(enum theme theme, std::map<int, nk_color> *styleMap);
 	void setStyle(std::map<int, nk_color> &styleMap);
-	void setAssetImage(
+	void setAssetImages(
 		std::vector<std::tuple<std::string, std::string>> vFontImage);
 
 	bool uiStartBlock(const char *id, const char *title, struct nk_rect bounds,

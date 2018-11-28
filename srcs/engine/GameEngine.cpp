@@ -52,6 +52,11 @@ GameEngine::GameEngine(AGame *game)
 
 	// Force load of first scene
 	_sceneIdx = 0;
+	_light = nullptr;
+	_camera = nullptr;
+
+	_skybox = new Skybox("default");
+	if (_skybox != nullptr) _skybox->initEntity(this);
 }
 
 GameEngine::~GameEngine(void) {
@@ -60,6 +65,7 @@ GameEngine::~GameEngine(void) {
 		delete _allEntities[idx];
 	}
 	if (_light != nullptr) delete _light;
+	if (_skybox != nullptr) delete _skybox;
 	if (_camera != nullptr) delete _camera;
 	_allEntities.clear();
 	delete _audioManager;
@@ -81,7 +87,7 @@ void GameEngine::run(void) {
 	// Init vars
 	_lastFrameTs = Clock::now();
 
-	if (!initScene(_sceneIdx)) throw std::runtime_error("Cannot load scene!");
+	if (!_initScene(_sceneIdx)) throw std::runtime_error("Cannot load scene!");
 	int newSceneIdx = -1;
 	// Start game loop
 	while (true) {
@@ -233,9 +239,35 @@ Entity *GameEngine::getEntityById(size_t id) {
 // 	return foundElem;
 // }
 
-bool GameEngine::initScene(size_t newSceneIdx) {
+bool GameEngine::_initScene(size_t newSceneIdx) {
 	if (!_game) return false;
+	_unloadScene();
 
+	// Add new entities
+	_sceneIdx = newSceneIdx;
+	if (!_game->loadSceneByIndex(_sceneIdx)) return false;
+	_camera = _game->getCamera();
+	if (_camera == nullptr)
+		throw std::runtime_error(
+			"\033[0;31m:Error:\033[0m No camera were created in the loaded "
+			"scene.");
+	_camera->initEntity(this);
+	_camera->configGUI(_gameRenderer->getGUI());
+	_light = _game->getLight();
+	if (_light == nullptr)
+		std::cout << "\033[0;33m:Warning:\033[0m There is no light in the "
+					 "loaded scene, you should definitely add one"
+				  << std::endl;
+	else
+		_light->initEntity(this);
+	for (auto entity : _game->getEntities()) {
+		_allEntities.push_back(entity);
+		_allEntities.back()->initEntity(this);
+	}
+	return true;
+}
+
+void GameEngine::_unloadScene(void) {
 	// Clear prev entities
 	for (size_t idx = _allEntities.size() - 1; idx < _allEntities.size();
 		 idx--) {
@@ -252,22 +284,6 @@ bool GameEngine::initScene(size_t newSceneIdx) {
 		_camera = nullptr;
 	}
 	_initialCollisionMap.clear();
-
-	// Add new entities
-	_sceneIdx = newSceneIdx;
-	if (!_game->loadSceneByIndex(_sceneIdx)) return false;
-	_camera = _game->getCamera();
-	_camera->initEntity(this);
-	_camera->configGUI(_gameRenderer->getGUI());
-	_light = _game->getLight();
-	_light->initEntity(this);
-	_skybox = _game->getSkybox();
-	_skybox->initEntity(this);
-	for (auto entity : _game->getEntities()) {
-		_allEntities.push_back(entity);
-		_allEntities.back()->initEntity(this);
-	}
-	return true;
 }
 
 void GameEngine::moveEntities(void) {

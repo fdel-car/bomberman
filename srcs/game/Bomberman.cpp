@@ -40,7 +40,6 @@ bool Bomberman::loadSceneByIndex(int sceneIdx) {
 }
 
 void Bomberman::_mainMenu(void) {
-	_skybox = new Skybox("default");
 	_camera = new MainMenu(
 		glm::vec3(0.0, 0.0, 10.0), glm::vec3(0.0f),
 		std::vector<std::string>(_scenesNames.begin() + 1, _scenesNames.end()),
@@ -52,7 +51,6 @@ void Bomberman::_mainMenu(void) {
 }
 
 void Bomberman::_forest(void) {
-	_skybox = new Skybox("default");
 	_camera =
 		new Forest(glm::vec3(0.0, 34.0, 20.0), glm::vec3(-60.0, 0.0, 0.0));
 	_light = new Light(glm::vec2(-20.0, 8.0), glm::vec3(0.0f));
@@ -91,9 +89,6 @@ void Bomberman::_forest(void) {
 			}
 		}
 	}
-
-	// Boxes generation
-	// _entities.push_back(new Box(glm::vec3(1.0, 0, 1.0), _camera));
 }
 
 void Bomberman::_initScenes(void) {
