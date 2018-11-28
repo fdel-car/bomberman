@@ -68,22 +68,22 @@ void Bomberman::_forest(void) {
 								   "Island", "Island", "Island"));
 	_entities.push_back(new Player(glm::vec3(-7.0, 0.0, -7.0), glm::vec3(0.0f),
 								   _save, _camera));
-	_entities.push_back(new Perk(glm::vec3(-6.0, 0.0, -7.0), _camera));
-	_entities.push_back(new Perk(glm::vec3(-5.0, 0.0, -7.0), _camera));
-	_entities.push_back(new Perk(glm::vec3(-4.0, 0.0, -7.0), _camera));
-	_entities.push_back(new Perk(glm::vec3(-3.0, 0.0, -7.0), _camera));
-	_entities.push_back(new Perk(glm::vec3(-2.0, 0.0, -7.0), _camera));
-	_entities.push_back(new Perk(glm::vec3(-1.0, 0.0, -7.0), _camera));
-	_entities.push_back(new Perk(glm::vec3(0.0, 0.0, -7.0), _camera));
-	_entities.push_back(new Perk(glm::vec3(5.0, 0.0, -7.0), _camera));
-	_entities.push_back(new Perk(glm::vec3(4.0, 0.0, -7.0), _camera));
-	_entities.push_back(new Perk(glm::vec3(3.0, 0.0, -7.0), _camera));
-	_entities.push_back(new Perk(glm::vec3(2.0, 0.0, -7.0), _camera));
-	_entities.push_back(new Perk(glm::vec3(1.0, 0.0, -7.0), _camera));
+	// _entities.push_back(new Perk(glm::vec3(-6.0, 0.0, -7.0), _camera));
+	// _entities.push_back(new Perk(glm::vec3(-5.0, 0.0, -7.0), _camera));
+	// _entities.push_back(new Perk(glm::vec3(-4.0, 0.0, -7.0), _camera));
+	// _entities.push_back(new Perk(glm::vec3(-3.0, 0.0, -7.0), _camera));
+	// _entities.push_back(new Perk(glm::vec3(-2.0, 0.0, -7.0), _camera));
+	// _entities.push_back(new Perk(glm::vec3(-1.0, 0.0, -7.0), _camera));
+	// _entities.push_back(new Perk(glm::vec3(0.0, 0.0, -7.0), _camera));
+	// _entities.push_back(new Perk(glm::vec3(5.0, 0.0, -7.0), _camera));
+	// _entities.push_back(new Perk(glm::vec3(4.0, 0.0, -7.0), _camera));
+	// _entities.push_back(new Perk(glm::vec3(3.0, 0.0, -7.0), _camera));
+	// _entities.push_back(new Perk(glm::vec3(2.0, 0.0, -7.0), _camera));
+	// _entities.push_back(new Perk(glm::vec3(1.0, 0.0, -7.0), _camera));
 
 	// Enemies
 	_entities.push_back(
-		new EnemyOFDT(glm::vec3(7.0, 0.0, 7.0), glm::vec3(0.0f), _camera));
+		new EnemyOFDT(glm::vec3(-7.0, 0.0, 7.0), glm::vec3(0.0f), _camera));
 	_entities.push_back(
 		new EnemyRunAway(glm::vec3(7.0, 0.0, 7.0), glm::vec3(0.0f), _camera));
 	// _entities.push_back(

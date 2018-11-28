@@ -429,7 +429,8 @@ void SceneTools::_startBuildingGrapheForPathFinding(void) {
 	_searchWay(false, _graphe[_runAwayPos], _runAwayPos);
 }
 
-void SceneTools::_searchWay(bool searchBestWay,  Node *originNode, size_t playerPos) {
+void SceneTools::_searchWay(bool searchBestWay, Node *originNode,
+							size_t playerPos) {
 	size_t x = playerPos % _mapWidth;
 	size_t z = playerPos / _mapHeight;
 	size_t pos;
@@ -467,9 +468,9 @@ void SceneTools::_searchWay(bool searchBestWay,  Node *originNode, size_t player
 	}
 }
 
-void SceneTools::_buildNewNode(size_t dist, size_t x,
-			size_t z, size_t pos, Node *node, std::list<Node *> *nodesByDepth,
-			bool saveInPrevious) {
+void SceneTools::_buildNewNode(size_t dist, size_t x, size_t z, size_t pos,
+							   Node *node, std::list<Node *> *nodesByDepth,
+							   bool saveInPrevious) {
 	for (const auto &entity : _entitiesInSquares[pos]) {
 		for (const auto &decor : _staticDecor) {
 			if (entity.second->getTag().compare(decor) == 0) return;
@@ -492,21 +493,17 @@ void SceneTools::_buildNewNode(size_t dist, size_t x,
 				}
 			}
 		}
-		if (!tmpNode->isAnEntity)
-			nodesByDepth->push_back(tmpNode);
-	} else {	// Save the change if the node exist
+		if (!tmpNode->isAnEntity) nodesByDepth->push_back(tmpNode);
+	} else {  // Save the change if the node exist
 		if (!saveInPrevious && _graphe.at(pos)->runAwayDist == 0) {
 			bool isPlayer = false;
 			for (const auto &entity : _graphe.at(pos)->entitiesOnMe) {
-				if (entity->getTag().compare("Player") == 0)
-					isPlayer = true;
+				if (entity->getTag().compare("Player") == 0) isPlayer = true;
 			}
-			if (!isPlayer)
-				nodesByDepth->push_back(_graphe.at(pos));
+			if (!isPlayer) nodesByDepth->push_back(_graphe.at(pos));
 		}
 		_graphe.at(pos)->updateNode(node, dist, saveInPrevious);
 	}
-
 }
 
 void SceneTools::_clearGraphe(void) {
@@ -536,8 +533,14 @@ Node::Node() {}
 
 Node::Node(Node *newPrev, size_t newDist, size_t xPos, size_t zPos,
 		   size_t newId)
-	: dist(newDist), runAwayDist(0), x(xPos), z(zPos), id(newId), isFatal(false), isAnEntity(false) {
-	if (newPrev == nullptr) return ;
+	: dist(newDist),
+	  runAwayDist(0),
+	  x(xPos),
+	  z(zPos),
+	  id(newId),
+	  isFatal(false),
+	  isAnEntity(false) {
+	if (newPrev == nullptr) return;
 	std::vector<Node *> tmpVector;
 	tmpVector.push_back(newPrev);
 	prevNodesByDist.insert(
@@ -547,7 +550,8 @@ Node::Node(Node *newPrev, size_t newDist, size_t xPos, size_t zPos,
 Node::~Node(void) {}
 
 void Node::updateNode(Node *old, size_t newDist, bool saveInPrevious) {
-	if (prevNodesByDist.find(newDist) == prevNodesByDist.end() && saveInPrevious) {
+	if (prevNodesByDist.find(newDist) == prevNodesByDist.end() &&
+		saveInPrevious) {
 		std::vector<Node *> tmpVector;
 		tmpVector.push_back(old);
 		prevNodesByDist.insert(
@@ -561,8 +565,7 @@ void Node::updateNode(Node *old, size_t newDist, bool saveInPrevious) {
 			tmpVector.push_back(old);
 			runAwayNodesByDist.insert(
 				std::pair<size_t, std::vector<Node *>>(runAwayDist, tmpVector));
-		}
-		else
+		} else
 			runAwayNodesByDist[runAwayDist].push_back(old);
 	}
 }
