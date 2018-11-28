@@ -5,26 +5,27 @@
 #include "engine/Entity.hpp"
 #include "engine/GUI/GUI.hpp"
 
-// Soon in a new file
 struct Node {
    public:
 	Node();
 	Node(Node *prev, size_t dist, size_t x, size_t z, size_t id);
 	~Node();
 
-	void updateNode(Node *old, size_t dist);
+	void updateNode(Node *old, size_t dist, bool saveInPrevious);
 	// previous nodes by distance from the target
 	std::map<size_t, std::vector<Node *>> prevNodesByDist;
-	// save when someone will walk on this node
-	std::map<size_t, bool> walkOnMe;
+	// next nodes by distance from the target
+	std::map<size_t, std::vector<Node *>> runAwayNodesByDist;
 	// Entities with hitbox on this node
 	std::vector<Entity *> entitiesOnMe;
 
 	size_t dist;
+	size_t runAwayDist;
 	size_t x;
 	size_t z;
 	size_t id;
 	bool isFatal;
+	bool isAnEntity;
 };
 
 class SceneTools : public Camera {
@@ -44,6 +45,7 @@ class SceneTools : public Camera {
 	void tellPlayerHp(size_t hp);
 
 	size_t const &getPlayerPos() const;
+	size_t const &getRunAwayPos() const;
 	std::map<size_t, std::vector<size_t>> const &getEntitiesInfos() const;
 	std::vector<std::map<size_t, Entity *>> const &getEntitiesInSquares() const;
 	size_t const &getMapWidth() const;
@@ -72,13 +74,15 @@ class SceneTools : public Camera {
 
 	// Build graphe
 	void _startBuildingGrapheForPathFinding(void);
+	void _searchWay(bool searchBestWay, Node *originNode, size_t playerPos);
 	void _buildNewNode(size_t dist, size_t x, size_t z, size_t pos, Node *node,
-					   std::list<Node *> *nodesByDepth);
+					   std::list<Node *> *nodesByDepth, bool saveInPrevious);
 	void _clearGraphe(void);
 	void _describeNode(Node *n);
 
 	bool _slowGUIAnimation;
 	size_t _playerPos;
+	size_t _runAwayPos;
 	size_t _playerMaxHp;
 	size_t _playerHp;
 	bool _showPlayerHp;

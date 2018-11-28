@@ -1,16 +1,15 @@
 #include "game/Bomberman.hpp"
 #include "game/entities/Box.hpp"
 #include "game/entities/EnemyOFDT.hpp"
+#include "game/entities/EnemyRunAway.hpp"
 #include "game/entities/Perk.hpp"
 #include "game/entities/Player.hpp"
 #include "game/scenes/Forest.hpp"
 #include "game/scenes/MainMenu.hpp"
 
-#include "json/json.hpp"  // https://github.com/nlohmann/json/blob/develop/single_include/nlohmann/json.hpp
-
 extern std::string _assetsDir;
 
-Bomberman::Bomberman(void) : AGame(9) {
+Bomberman::Bomberman(void) : AGame(10) {
 	// Set needed fonts
 	for (float size = 12.0f; size <= 48.0f; size += 1.0f)
 		_neededFonts.push_back(std::tuple<float, std::string, std::string>(
@@ -24,6 +23,8 @@ Bomberman::Bomberman(void) : AGame(9) {
 	setLayerCollision(WallLayer, PerkLayer, false);
 
 	setLayerCollision(PlayerLayer, EnemySpecialLayer, false);
+	setLayerCollision(EnemyRunAwayLayer, EnemySpecialLayer, false);
+	setLayerCollision(EnemyRunAwayLayer, EnemyLayer, false);
 	setLayerCollision(PlayerSpecialLayer, ExplosionLayer, false);
 	setLayerCollision(PlayerSpecialLayer, EnemyLayer, false);
 	setLayerCollision(PlayerSpecialLayer, EnemySpecialLayer, false);
@@ -84,9 +85,15 @@ void Bomberman::_forest(void) {
 	_entities.push_back(
 		new EnemyOFDT(glm::vec3(7.0, 0.0, 7.0), glm::vec3(0.0f), _camera));
 	_entities.push_back(
-		new EnemyOFDT(glm::vec3(7.0, 0.0, -7.0), glm::vec3(0.0f), _camera));
-	_entities.push_back(
-		new EnemyOFDT(glm::vec3(-7.0, 0.0, 7.0), glm::vec3(0.0f), _camera));
+		new EnemyRunAway(glm::vec3(7.0, 0.0, 7.0), glm::vec3(0.0f), _camera));
+	// _entities.push_back(
+	// 	new EnemyOFDT(glm::vec3(-7.0, 0.0, 7.0), glm::vec3(0.0f), _camera));
+	// _entities.push_back(
+	// 	new EnemyRunAway(glm::vec3(-3.0, 0.0, 3.0), glm::vec3(0.0f), _camera));
+	// _entities.push_back(
+	// 	new EnemyOFDT(glm::vec3(3.0, 0.0, -3.0), glm::vec3(0.0f), _camera));
+	// _entities.push_back(
+	// 	new EnemyOFDT(glm::vec3(3.0, 0.0, 3.0), glm::vec3(0.0f), _camera));
 
 	// Walls/Boxes
 	for (int x = -8; x <= 8; x++) {
@@ -106,7 +113,7 @@ void Bomberman::_forest(void) {
 							   "Wall", "Wall", "Wall", _camera));
 				_entities.back()->scale(glm::vec3(1.0, 0.8, 1.0));
 			} else if (x != -7 && z != -7 && x != 7 && z != 7) {
-				_entities.push_back(new Box(glm::vec3(x, 0, z), _camera));
+				// _entities.push_back(new Box(glm::vec3(x, 0, z), _camera));
 			}
 		}
 	}

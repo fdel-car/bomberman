@@ -38,6 +38,7 @@ set(SRCS
   srcs/game/entities/Bomb.cpp
   srcs/game/entities/AEnemy.cpp
   srcs/game/entities/EnemyOFDT.cpp
+  srcs/game/entities/EnemyRunAway.cpp
   srcs/game/entities/Explosion.cpp
   srcs/game/entities/Box.cpp
   srcs/game/entities/Damageable.cpp
@@ -81,6 +82,7 @@ set(HEADERS
   includes/game/entities/Bomb.hpp
   includes/game/entities/AEnemy.hpp
   includes/game/entities/EnemyOFDT.hpp
+  includes/game/entities/EnemyRunAway.hpp
   includes/game/entities/Explosion.hpp
   includes/game/entities/Box.hpp
   includes/game/entities/Damageable.hpp

@@ -1,12 +1,13 @@
 #pragma once
 
+#include "game/Bomberman.hpp"
 #include "game/entities/Damageable.hpp"
 #include "game/scenes/SceneTools.hpp"
 
 class AEnemy : public Damageable {
    public:
-	AEnemy(glm::vec3 position, glm::vec3 eulerAngles, bool doMeleeDmg,
-		   Entity *gameManager = nullptr);
+	AEnemy(glm::vec3 position, glm::vec3 eulerAngles, std::string name,
+		   LayerTag tag, bool doMeleeDmg, Entity *gameManager);
 	~AEnemy(void);
 
 	virtual void update(void) = 0;
