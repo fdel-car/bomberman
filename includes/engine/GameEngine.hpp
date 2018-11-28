@@ -105,6 +105,8 @@ class GameEngine {
 								  const glm::vec3 &circlePos,
 								  const Collider *rectangleCollider,
 								  const glm::vec3 &rectanglePos) const;
+	bool tryShortcut(Entity *entity, glm::vec3 &futureMovement,
+					 std::vector<Entity *> &collidedEntities);
 
 	// Graphic libraries vars
 	GameRenderer *_gameRenderer;
