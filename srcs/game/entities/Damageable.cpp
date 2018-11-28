@@ -45,5 +45,8 @@ void Damageable::onTakeDamage(void) {
 }
 
 void Damageable::onDeath(void) {
-	if (!_alive) _needToBeDestroyed = true;
+	if (!_alive) {
+		_collider->layerTag = _baseLayer;
+		_needToBeDestroyed = true;
+	}
 }

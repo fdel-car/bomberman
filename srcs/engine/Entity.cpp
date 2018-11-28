@@ -53,6 +53,8 @@ void Entity::tellPosition(Entity *entity) { (void)entity; }
 
 void Entity::tellDestruction(Entity *entity) { (void)entity; }
 
+void Entity::onCollisionEnter(Entity *entity) { (void)entity; }
+
 void Entity::onTriggerEnter(Entity *entity) { (void)entity; }
 
 GameEngine *Entity::getGameEngine(void) const { return _gameEngine; }

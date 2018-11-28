@@ -1,13 +1,16 @@
 #include "game/entities/AEnemy.hpp"
 #include "engine/GameEngine.hpp"
 #include "game/Bomberman.hpp"
+#include "game/entities/Player.hpp"
 
-AEnemy::AEnemy(glm::vec3 position, glm::vec3 eulerAngles, Entity *sceneManager)
+AEnemy::AEnemy(glm::vec3 position, glm::vec3 eulerAngles, bool doMeleeDmg,
+			   Entity *sceneManager)
 	: Damageable(
 		  glm::vec3(position.x, position.y + 0.4f, position.z), eulerAngles,
 		  new Collider(Collider::Circle, LayerTag::EnemyLayer, 0.45f, 0.45f),
 		  "Enemy", "Enemy", "Enemy", 1, EnemyLayer, EnemySpecialLayer, 2.0f,
-		  sceneManager) {}
+		  sceneManager),
+	  _doMeleeDmg(doMeleeDmg) {}
 
 AEnemy::~AEnemy(void) {}
 
@@ -82,5 +85,12 @@ void AEnemy::walk(SceneTools *cam) {
 			_targetMovement.x = xDirection * _speed * deltaTime;
 			_targetMovement.z = zDirection * _speed * deltaTime;
 		}
+	}
+}
+
+void AEnemy::onCollisionEnter(Entity *entity) {
+	if (_doMeleeDmg) {
+		Player *player = dynamic_cast<Player *>(entity);
+		if (player != nullptr) player->takeDamage();
 	}
 }

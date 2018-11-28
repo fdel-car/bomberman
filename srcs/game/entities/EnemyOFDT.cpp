@@ -1,8 +1,8 @@
 #include "game/entities/EnemyOFDT.hpp"
 
-
-EnemyOFDT::EnemyOFDT(glm::vec3 position, glm::vec3 eulerAngles, Entity *gameManager)
-	: AEnemy(position, eulerAngles, gameManager) {
+EnemyOFDT::EnemyOFDT(glm::vec3 position, glm::vec3 eulerAngles,
+					 Entity *gameManager)
+	: AEnemy(position, eulerAngles, true, gameManager) {
 	_speed = 2.0f;
 	scale(glm::vec3(0.8, 0.8, 0.8));
 }

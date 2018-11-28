@@ -86,4 +86,6 @@ void Player::onTakeDamage(void) {
 
 void Player::onDeath(void) {
 	// TODO: start death animation
+	_collider->layerTag = _baseLayer;
+	_targetMovement *= 0;
 }

@@ -21,6 +21,7 @@ Bomberman::Bomberman(void) : AGame(8) {
 	setLayerCollision(WallLayer, ExplosionLayer, false);
 	setLayerCollision(PlayerLayer, EnemySpecialLayer, false);
 	setLayerCollision(PlayerSpecialLayer, ExplosionLayer, false);
+	setLayerCollision(PlayerSpecialLayer, EnemyLayer, false);
 	setLayerCollision(PlayerSpecialLayer, EnemySpecialLayer, false);
 	setLayerCollision(EnemySpecialLayer, ExplosionLayer, false);
 

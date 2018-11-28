@@ -105,6 +105,7 @@ class GameEngine {
 								  const Collider *rectangleCollider,
 								  const glm::vec3 &rectanglePos) const;
 	bool tryShortcut(Entity *entity, glm::vec3 &futureMovement,
+					 glm::vec3 &shortcutMovement,
 					 std::vector<Entity *> &collidedEntities);
 
 	// Graphic libraries vars

@@ -272,21 +272,22 @@ bool GameEngine::initScene(size_t newSceneIdx) {
 
 void GameEngine::moveEntities(void) {
 	const Collider *collider;
-	bool collisionDetected = false;
+	bool isShortcut = false;
 	std::vector<Entity *> collidedEntities = std::vector<Entity *>();
 	std::vector<Entity *> collidedTriggers = std::vector<Entity *>();
 	glm::vec3 futureMovement = glm::vec3();
+	glm::vec3 shortcutMovement = glm::vec3();
 	LineInfo lineA;
 	LineInfo lineB;
-
 	size_t idx = 0;
+
 	size_t idxOfCollision = 0;
 	for (auto entity : _allEntities) {
 		if (!entity->getNeedToBeDestroyed()) {
 			collider = entity->getCollider();
 			collidedEntities.clear();
 			collidedTriggers.clear();
-			collisionDetected = false;
+			isShortcut = false;
 			futureMovement *= 0;
 
 			// Skip checks if entity doesnt have a collider
@@ -317,8 +318,10 @@ void GameEngine::moveEntities(void) {
 								// Special test that need to be done only on
 								// first loop
 								if (tryShortcut(entity, futureMovement,
+												shortcutMovement,
 												collidedEntities)) {
-									collidedEntities.clear();
+									isShortcut = true;
+									futureMovement = shortcutMovement;
 									break;
 								}
 								firstLoop = false;
@@ -339,24 +342,54 @@ void GameEngine::moveEntities(void) {
 				}
 			}
 
+			// Collide with colliders (do not consider shortcut move yet)
+			bool hasCollided = false;
+			while (!collidedEntities.empty() &&
+				   !entity->getNeedToBeDestroyed()) {
+				idx = checkCollision(entity, futureMovement, collidedEntities);
+				if (idx != collidedEntities.size()) {
+					hasCollided = true;
+					// Other entity will always be a collider
+					collidedEntities[idx]->onCollisionEnter(entity);
+					// Check if we are a trigger or a collider
+					if (collider->isTrigger)
+						entity->onTriggerEnter(collidedEntities[idx]);
+					else
+						entity->onCollisionEnter(collidedEntities[idx]);
+					// Clear entities
+					collidedEntities.erase(collidedEntities.begin(),
+										   collidedEntities.begin() + idx + 1);
+				} else
+					collidedEntities.clear();
+			}
+			// Apply shortcut and clear collisions
+			if (isShortcut) {
+				hasCollided = false;
+				futureMovement = shortcutMovement;
+				collidedEntities.clear();
+			}
 			// Trigger all triggers
 			while (!collidedTriggers.empty() &&
 				   !entity->getNeedToBeDestroyed()) {
-				size_t triggerIdx =
-					checkCollision(entity, futureMovement, collidedTriggers);
-				if (triggerIdx != collidedTriggers.size()) {
-					collidedTriggers[triggerIdx]->onTriggerEnter(entity);
-					collidedTriggers.erase(
-						collidedTriggers.begin(),
-						collidedTriggers.begin() + triggerIdx + 1);
+				idx = checkCollision(entity, futureMovement, collidedTriggers);
+				if (idx != collidedTriggers.size()) {
+					// Other entity will always be a trigger
+					collidedTriggers[idx]->onTriggerEnter(entity);
+					// Check if we are a trigger or a collider
+					if (collider->isTrigger)
+						entity->onTriggerEnter(collidedTriggers[idx]);
+					else
+						entity->onCollisionEnter(collidedTriggers[idx]);
+					// Clear entities
+					collidedTriggers.erase(collidedTriggers.begin(),
+										   collidedTriggers.begin() + idx + 1);
 				} else
 					collidedTriggers.clear();
 			}
-			if (collidedEntities.empty() && !entity->getNeedToBeDestroyed()) {
+			if (!hasCollided && !entity->getNeedToBeDestroyed()) {
 				entity->translate(futureMovement);
 			}
 		}
-		idx++;
 	}
 }
 void GameEngine::getPossibleCollisions(
@@ -737,8 +770,8 @@ bool GameEngine::collisionCircleRectangle(const Collider *circleCollider,
 }
 
 bool GameEngine::tryShortcut(Entity *entity, glm::vec3 &futureMovement,
+							 glm::vec3 &shortcutMovement,
 							 std::vector<Entity *> &collidedEntities) {
-	glm::vec3 tmpFutureMovement = glm::vec3();
 	size_t idxOfCollision;
 
 	float absX = abs(futureMovement.x);
@@ -746,20 +779,18 @@ bool GameEngine::tryShortcut(Entity *entity, glm::vec3 &futureMovement,
 	// Try moving indipendently one of the two axis
 	// (Only if its a two-axis move)
 	if (futureMovement.x != 0.0f && futureMovement.z != 0.0f) {
-		tmpFutureMovement.x = futureMovement.x;
-		tmpFutureMovement.z = 0.0f;
+		shortcutMovement.x = futureMovement.x;
+		shortcutMovement.z = 0.0f;
 		idxOfCollision =
-			checkCollision(entity, tmpFutureMovement, collidedEntities);
+			checkCollision(entity, shortcutMovement, collidedEntities);
 		if (idxOfCollision == collidedEntities.size()) {
-			futureMovement = tmpFutureMovement;
 			return true;
 		}
-		tmpFutureMovement.x = 0.0f;
-		tmpFutureMovement.z = futureMovement.z;
+		shortcutMovement.x = 0.0f;
+		shortcutMovement.z = futureMovement.z;
 		idxOfCollision =
-			checkCollision(entity, tmpFutureMovement, collidedEntities);
+			checkCollision(entity, shortcutMovement, collidedEntities);
 		if (idxOfCollision == collidedEntities.size()) {
-			futureMovement = tmpFutureMovement;
 			return true;
 		}
 	}
@@ -775,49 +806,47 @@ bool GameEngine::tryShortcut(Entity *entity, glm::vec3 &futureMovement,
 			float colliderZ = collidedEntities[0]->getPosition().z +
 							  collidedEntities[0]->getCollider()->height;
 			if (entity->getPosition().z > colliderZ) {
-				tmpFutureMovement.z =
+				shortcutMovement.z =
 					colliderZ -
 					(entity->getPosition().z - entity->getCollider()->height);
-				if (tmpFutureMovement.z > (absX / 2)) {
-					tmpFutureMovement.z = absX / 2;
+				if (shortcutMovement.z > (absX / 2)) {
+					shortcutMovement.z = absX / 2;
 				}
-				if (tmpFutureMovement.z < 0.0f)
-					tmpFutureMovement.z = EPSILON;
-				else if (tmpFutureMovement.z < EPSILON)
-					tmpFutureMovement.z += EPSILON;
+				if (shortcutMovement.z < 0.0f)
+					shortcutMovement.z = EPSILON;
+				else if (shortcutMovement.z < EPSILON)
+					shortcutMovement.z += EPSILON;
 				// Move along X will be less than Z
 				// so that no collision will occur
-				tmpFutureMovement.x = tmpFutureMovement.z * 0.5f;
-				if (futureMovement.x < 0) tmpFutureMovement.x *= -1.0f;
-				if (checkCollision(entity, tmpFutureMovement,
+				shortcutMovement.x = shortcutMovement.z * 0.5f;
+				if (futureMovement.x < 0) shortcutMovement.x *= -1.0f;
+				if (checkCollision(entity, shortcutMovement,
 								   collidedEntities) ==
 					collidedEntities.size()) {
-					futureMovement = tmpFutureMovement;
 					return true;
 				}
 			}
 			// Try slide over obstacle
 			colliderZ -= 2.0f * collidedEntities[0]->getCollider()->height;
 			if (entity->getPosition().z < colliderZ) {
-				tmpFutureMovement.z =
+				shortcutMovement.z =
 					(entity->getPosition().z + entity->getCollider()->height) -
 					colliderZ;
-				if (tmpFutureMovement.z > (absX / 2)) {
-					tmpFutureMovement.z = absX / 2;
+				if (shortcutMovement.z > (absX / 2)) {
+					shortcutMovement.z = absX / 2;
 				}
-				if (tmpFutureMovement.z < 0.0f)
-					tmpFutureMovement.z = EPSILON;
-				else if (tmpFutureMovement.z < EPSILON)
-					tmpFutureMovement.z += EPSILON;
+				if (shortcutMovement.z < 0.0f)
+					shortcutMovement.z = EPSILON;
+				else if (shortcutMovement.z < EPSILON)
+					shortcutMovement.z += EPSILON;
 				// Move along X will be less than Z
 				// so that no collision will occur
-				tmpFutureMovement.x = tmpFutureMovement.z * 0.5f;
-				if (futureMovement.x < 0) tmpFutureMovement.x *= -1.0f;
-				tmpFutureMovement.z *= -1;
+				shortcutMovement.x = shortcutMovement.z * 0.5f;
+				if (futureMovement.x < 0) shortcutMovement.x *= -1.0f;
+				shortcutMovement.z *= -1;
 				idxOfCollision =
-					checkCollision(entity, tmpFutureMovement, collidedEntities);
+					checkCollision(entity, shortcutMovement, collidedEntities);
 				if (idxOfCollision == collidedEntities.size()) {
-					futureMovement = tmpFutureMovement;
 					return true;
 				}
 			}
@@ -827,49 +856,46 @@ bool GameEngine::tryShortcut(Entity *entity, glm::vec3 &futureMovement,
 			float colliderX = collidedEntities[0]->getPosition().x +
 							  collidedEntities[0]->getCollider()->width;
 			if (entity->getPosition().x > colliderX) {
-				tmpFutureMovement.x =
-					colliderX -
-					(entity->getPosition().x - entity->getCollider()->width);
-				if (tmpFutureMovement.x > (absZ / 2)) {
-					tmpFutureMovement.x = absZ / 2;
+				shortcutMovement.x = colliderX - (entity->getPosition().x -
+												  entity->getCollider()->width);
+				if (shortcutMovement.x > (absZ / 2)) {
+					shortcutMovement.x = absZ / 2;
 				}
-				if (tmpFutureMovement.x < 0.0f)
-					tmpFutureMovement.x = EPSILON;
-				else if (tmpFutureMovement.x < EPSILON)
-					tmpFutureMovement.x += EPSILON;
+				if (shortcutMovement.x < 0.0f)
+					shortcutMovement.x = EPSILON;
+				else if (shortcutMovement.x < EPSILON)
+					shortcutMovement.x += EPSILON;
 				// Move along Z will be less than X
 				// so that no collision will occur
-				tmpFutureMovement.z = tmpFutureMovement.x * 0.5f;
-				if (futureMovement.z < 0) tmpFutureMovement.z *= -1.0f;
+				shortcutMovement.z = shortcutMovement.x * 0.5f;
+				if (futureMovement.z < 0) shortcutMovement.z *= -1.0f;
 				idxOfCollision =
-					checkCollision(entity, tmpFutureMovement, collidedEntities);
+					checkCollision(entity, shortcutMovement, collidedEntities);
 				if (idxOfCollision == collidedEntities.size()) {
-					futureMovement = tmpFutureMovement;
 					return true;
 				}
 			}
 			// Try slide over obstacle
 			colliderX -= 2.0f * collidedEntities[0]->getCollider()->width;
 			if (entity->getPosition().x < colliderX) {
-				tmpFutureMovement.x =
+				shortcutMovement.x =
 					(entity->getPosition().x + entity->getCollider()->width) -
 					colliderX;
-				if (tmpFutureMovement.x > (absZ / 2)) {
-					tmpFutureMovement.x = absZ / 2;
+				if (shortcutMovement.x > (absZ / 2)) {
+					shortcutMovement.x = absZ / 2;
 				}
-				if (tmpFutureMovement.x < 0.0f)
-					tmpFutureMovement.x = EPSILON;
-				else if (tmpFutureMovement.x < EPSILON)
-					tmpFutureMovement.x += EPSILON;
+				if (shortcutMovement.x < 0.0f)
+					shortcutMovement.x = EPSILON;
+				else if (shortcutMovement.x < EPSILON)
+					shortcutMovement.x += EPSILON;
 				// Move along X will be less than Z
 				// so that no collision will occur
-				tmpFutureMovement.z = tmpFutureMovement.x * 0.5f;
-				if (futureMovement.z < 0) tmpFutureMovement.z *= -1.0f;
-				tmpFutureMovement.x *= -1;
+				shortcutMovement.z = shortcutMovement.x * 0.5f;
+				if (futureMovement.z < 0) shortcutMovement.z *= -1.0f;
+				shortcutMovement.x *= -1;
 				idxOfCollision =
-					checkCollision(entity, tmpFutureMovement, collidedEntities);
+					checkCollision(entity, shortcutMovement, collidedEntities);
 				if (idxOfCollision == collidedEntities.size()) {
-					futureMovement = tmpFutureMovement;
 					return true;
 				}
 			}
