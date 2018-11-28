@@ -2,10 +2,11 @@
 
 #include "game/entities/Damageable.hpp"
 #include "game/scenes/SceneTools.hpp"
+#include "game/Bomberman.hpp"
 
 class AEnemy : public Damageable {
    public:
-	AEnemy(glm::vec3 position, glm::vec3 eulerAngles,
+	AEnemy(glm::vec3 position, glm::vec3 eulerAngles, std::string name, LayerTag tag,
 		   Entity *gameManager = nullptr);
 	~AEnemy(void);
 

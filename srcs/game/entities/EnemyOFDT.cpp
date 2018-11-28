@@ -2,7 +2,7 @@
 
 
 EnemyOFDT::EnemyOFDT(glm::vec3 position, glm::vec3 eulerAngles, Entity *gameManager)
-	: AEnemy(position, eulerAngles, gameManager) {
+	: AEnemy(position, eulerAngles, "OFDT", EnemyLayer, gameManager) {
 	_speed = 2.0f;
 	scale(glm::vec3(0.8, 0.8, 0.8));
 }

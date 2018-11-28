@@ -9,6 +9,7 @@ enum LayerTag {
 	PlayerLayer,
 	PlayerSpecialLayer,
 	EnemyLayer,
+	EnemyRunAwayLayer,
 	EnemySpecialLayer,
 	BombLayer,
 	ExplosionLayer
