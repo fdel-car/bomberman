@@ -24,6 +24,8 @@ set(SRCS
   srcs/engine/Light.cpp
   srcs/engine/Model.cpp
   srcs/engine/Mesh.cpp
+  srcs/engine/Skybox.cpp
+
 
   srcs/engine/GUI/GUI.cpp
 
@@ -51,6 +53,7 @@ set(HEADERS
   includes/glm/glm.hpp
   includes/glm/gtc/matrix_transform.hpp
   includes/glm/gtc/type_ptr.hpp
+  # includes/glm/gtx/euler_angles.hpp
   includes/json/json.hpp
 
   includes/engine/Engine.hpp
@@ -65,6 +68,8 @@ set(HEADERS
   includes/engine/Light.hpp
   includes/engine/Model.hpp
   includes/engine/Mesh.hpp
+  includes/engine/Skybox.hpp
+  
 
   includes/engine/GUI/GUI.hpp
 

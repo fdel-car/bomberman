@@ -1,12 +1,10 @@
-#include "engine/GameEngine.hpp"
 #include "game/scenes/Forest.hpp"
+#include "engine/GameEngine.hpp"
 
 Forest::Forest(glm::vec3 const &pos, glm::vec3 const &eulerAngles)
 	:  // Camera(pos, eulerAngles),
-	  SceneTools(17, 17, pos, eulerAngles), _cooldown(0.0f) {
-	_light = new Entity(glm::vec3(-10.0f, 10.0f, 10.0f),
-						glm::vec3(45.0f, 45.0f, 45.0f), nullptr, "Box", "Light",
-						"Light");
+	  SceneTools(17, 17, pos, eulerAngles),
+	  _cooldown(0.0f) {
 	configAI();
 }
 
@@ -23,7 +21,7 @@ void Forest::configAI(void) {
 }
 
 void Forest::configGUI(GUI *graphicUI) {
-	graphicUI->setAssetImage(_neededImages);
+	graphicUI->setAssetImages(_neededImages);
 
 	graphicUI->getDefaultStyle(THEME_RED, &defaultStyle);
 	graphicUI->setStyle(defaultStyle);
@@ -33,8 +31,17 @@ void Forest::configGUI(GUI *graphicUI) {
 }
 
 void Forest::drawGUI(GUI *graphicUI) {
-	if (_pauseMenu || _gameEngine->isKeyPressed("E"))
+	if (!_debugMode && (_pauseMenu || _gameEngine->isKeyPressed("ESCAPE"))) {
 		_pauseMenu = _displayPauseMenu(graphicUI, &_newSceneIdx, 1, 0);
+		_isPause = _pauseMenu;
+	}
+
+	if (_showPlayerHp) {
+		if (_showDeathScreen) {
+			_displayDeathScreen(graphicUI, &_newSceneIdx, 1, 0);
+		}
+		_displayPlayerHP(graphicUI, _playerHp);
+	}
 
 	// static int searchWord = 0;
 	// static int lastWord = 0;
@@ -43,8 +50,8 @@ void Forest::drawGUI(GUI *graphicUI) {
 	// 	"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do "
 	// 	"officia deserunt mollit anim id est laborum.";
 	// _displayDialogue(graphicUI, &searchWord, &lastWord, &startStrIdx,
-	// 				 "Bomberman", "", str, false, 1000, 1000,
-	// 				 NK_TEXT_LEFT, "12_BOMBERMAN", "18_BOMBERMAN");
+	// 				 "Bomberman", "heart", str, false, 1000, 1000, NK_TEXT_LEFT,
+	// 				 "12_BOMBERMAN", "18_BOMBERMAN");
 }
 
 void Forest::tellPosition(Entity *entity) { _savePositions(entity); }

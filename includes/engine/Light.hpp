@@ -4,7 +4,8 @@
 
 class Light : public Entity {
    public:
-	Light(glm::vec3 const &pos, glm::vec3 const &lightDir);
+	Light(glm::vec2 const &lightPos, glm::vec3 const &lightDir,
+		  float gameDuration = 180.0f);
 	virtual ~Light(void);
 
 	virtual void update(void);
@@ -15,8 +16,13 @@ class Light : public Entity {
 	glm::mat4 const &getViewMatrix(void) const;
 
    private:
+	float _step;
+	float _total;
+
+	glm::vec3 _target;
 	glm::vec3 _color;
 	glm::vec3 _dir;
+	glm::vec3 _rotationAxis;
 	glm::mat4 _projection;
 	glm::mat4 _view;
 

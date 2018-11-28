@@ -5,6 +5,7 @@
 #include "engine/Camera.hpp"
 #include "engine/Collider.hpp"
 #include "engine/Light.hpp"
+#include "engine/Skybox.hpp"
 
 #define KEY_W "W"
 #define KEY_A "A"
@@ -81,7 +82,8 @@ class GameEngine {
 
 	GameEngine &operator=(GameEngine const &rhs);
 
-	bool initScene(size_t newSceneIdx);
+	bool _initScene(size_t newSceneIdx);
+	void _unloadScene(void);
 	void moveEntities(void);
 	void getPossibleCollisions(Entity *entity,
 							   std::vector<Entity *> &possibleCollisions,
@@ -103,6 +105,9 @@ class GameEngine {
 								  const glm::vec3 &circlePos,
 								  const Collider *rectangleCollider,
 								  const glm::vec3 &rectanglePos) const;
+	bool tryShortcut(Entity *entity, glm::vec3 &futureMovement,
+					 glm::vec3 &shortcutMovement,
+					 std::vector<Entity *> &collidedEntities);
 
 	// Graphic libraries vars
 	GameRenderer *_gameRenderer;
@@ -120,6 +125,7 @@ class GameEngine {
 	AGame *_game;
 	Camera *_camera;
 	Light *_light;
+	Skybox *_skybox;
 	std::vector<Entity *> _allEntities;
 	std::vector<Entity *> _newEntities;
 	std::map<size_t, std::vector<size_t>> _initialCollisionMap;

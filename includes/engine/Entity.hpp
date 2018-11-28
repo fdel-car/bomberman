@@ -31,10 +31,12 @@ class Entity {
 	virtual void initEntity(GameEngine *gameEngine);
 	virtual void tellPosition(Entity *entity);
 	virtual void tellDestruction(Entity *entity);
+	virtual void onCollisionEnter(Entity *entity);
 	virtual void onTriggerEnter(Entity *entity);
 
 	void scale(glm::vec3 scale);
 	void rotate(glm::vec3 axis, float angle);
+	void rotate(float angle, glm::vec3 axis);
 	void rotateX(float angle);
 	void rotateY(float angle);
 	void moveFromPosition(glm::vec3 &newPos);
@@ -46,21 +48,22 @@ class Entity {
    private:
 	glm::vec3 _position;
 	glm::vec3 _eulerAngles;
-	glm::vec3 _scale;
-	glm::mat4 _modelMatrix;
 
-	// We can probably avoid that quaternion
-	glm::quat _rotation;
+	glm::mat4 _scaleMatrix;
+	glm::mat4 _rotationMatrix;
+	glm::mat4 _translationMatrix;
+	glm::mat4 _modelMatrix;
 
 	Entity &operator=(Entity const &rhs);
 
-	void _updateData(void);
+	void _updateModelMatrix(void);
 
    protected:
 	static size_t _spawnedEntities;
 
 	size_t _id;
 	bool _needToBeDestroyed;
+	bool _localOrientation = true;
 	std::string _modelName;
 	std::string _name;
 	std::string _tag;

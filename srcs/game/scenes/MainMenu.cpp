@@ -1,5 +1,5 @@
-#include "engine/GameEngine.hpp"
 #include "game/scenes/MainMenu.hpp"
+#include "engine/GameEngine.hpp"
 
 extern std::string _assetsDir;
 
@@ -19,7 +19,7 @@ MainMenu::MainMenu(glm::vec3 const &pos, glm::vec3 const &eulerAngles,
 MainMenu::~MainMenu(void) {}
 
 void MainMenu::configGUI(GUI *graphicUI) {
-	graphicUI->setAssetImage(_neededImages);
+	graphicUI->setAssetImages(_neededImages);
 	graphicUI->uiSetDefaultFont("18_BOMBERMAN");
 	graphicUI->getDefaultStyle(THEME_RED, &defaultStyle);
 	defaultStyle[NK_COLOR_WINDOW] = nk_rgba(57, 67, 71, 0);
@@ -84,7 +84,7 @@ void MainMenu::drawGUI(GUI *graphicUI) {
 					  (WINDOW_W / 5) * 4 - ((WINDOW_W / 5) / 2),
 					  (WINDOW_H / 5) * 4, 14, "_BOMBERMAN", &extraSizeExit, 10,
 					  &isExitButtonHover, "Exit"))
-			std::cout << "Exits" << std::endl;
+			_isRunning = false;
 	} else
 		_settings(graphicUI);
 }

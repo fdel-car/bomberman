@@ -82,7 +82,7 @@ class GUI {
 
 	void getDefaultStyle(enum theme theme, std::map<int, nk_color> *styleMap);
 	void setStyle(std::map<int, nk_color> &styleMap);
-	void setAssetImage(
+	void setAssetImages(
 		std::vector<std::tuple<std::string, std::string>> vFontImage);
 
 	bool uiStartBlock(const char *id, const char *title, struct nk_rect bounds,
@@ -94,6 +94,8 @@ class GUI {
 	void uiSetImage(std::string imgName);
 	void uiHeader(const char *title, nk_flags flags, int rowSize,
 				  std::string fontName = "");
+	void uiText(std::string text, nk_flags textFlags,
+				std::string fontName = "");
 	void uiWidget(float height, std::string fontName = "");
 	bool uiButton(int width, int height, nk_flags flags, std::string text = "",
 				  std::string imgName = "", std::string fontName = "",
@@ -111,9 +113,10 @@ class GUI {
 	void uiHorizontalEditString(int widgetWidth, std::string leftText,
 								nk_flags flags, char *fieldBuffer, int *len,
 								int max, nk_plugin_filter filter);
-	void uiRowMultipleElem(bool isSart, int height = 30, int nbrOfElem = 1,
+	void uiRowMultipleElem(bool isStart, int height = 30, int nbrOfElem = 1,
 						   nk_layout_format flags = NK_STATIC);
 	void uiAddElemInRow(int width);
+	void uiAddElemOffset(int offset);
 
    private:
 	GUI();

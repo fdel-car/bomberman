@@ -6,17 +6,19 @@
 
 class AEnemy : public Damageable {
    public:
-	AEnemy(glm::vec3 position, glm::vec3 eulerAngles, std::string name, LayerTag tag,
-		   Entity *gameManager = nullptr);
+	AEnemy(glm::vec3 position, glm::vec3 eulerAngles, std::string name, LayerTag tag, bool doMeleeDmg,
+		   Entity *gameManager);
 	~AEnemy(void);
 
 	virtual void update(void) = 0;
+	virtual void onCollisionEnter(Entity *entity);
 
    protected:
 	void findBestWay(SceneTools *cam, bool runAway = false);
 	void walk(SceneTools *cam);
 
 	float _speed;
+	bool _doMeleeDmg;
 	bool changeDir;
 	std::vector<float> _way;
 

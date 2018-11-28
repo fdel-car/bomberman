@@ -52,6 +52,11 @@ GameEngine::GameEngine(AGame *game)
 
 	// Force load of first scene
 	_sceneIdx = 0;
+	_light = nullptr;
+	_camera = nullptr;
+
+	_skybox = new Skybox("default");
+	if (_skybox != nullptr) _skybox->initEntity(this);
 }
 
 GameEngine::~GameEngine(void) {
@@ -60,6 +65,7 @@ GameEngine::~GameEngine(void) {
 		delete _allEntities[idx];
 	}
 	if (_light != nullptr) delete _light;
+	if (_skybox != nullptr) delete _skybox;
 	if (_camera != nullptr) delete _camera;
 	_allEntities.clear();
 	delete _audioManager;
@@ -79,13 +85,12 @@ void GameEngine::addNewEntity(Entity *entity) {
 
 void GameEngine::run(void) {
 	// Init vars
-	_running = true;
 	_lastFrameTs = Clock::now();
 
-	if (!initScene(_sceneIdx)) throw std::runtime_error("Cannot load scene!");
+	if (!_initScene(_sceneIdx)) throw std::runtime_error("Cannot load scene!");
 	int newSceneIdx = -1;
 	// Start game loop
-	while (_running) {
+	while (true) {
 		// Get delta time in order to synch entities positions
 		_frameTs = Clock::now();
 		_deltaTime = (std::chrono::duration_cast<std::chrono::milliseconds>(
@@ -99,21 +104,17 @@ void GameEngine::run(void) {
 			key.second.prevFrame = key.second.currFrame;
 		_gameRenderer->getUserInput();
 
-		// TODO: Update game engine statuses (ex. when to quit)
-		if (_running) {
-			_running = !isKeyPressed("ESCAPE");
-			if (!_running) break;
-		}
-
 		// Update game camera
 		_camera->update();
 		newSceneIdx = _camera->getNewSceneIdx();
 		if (newSceneIdx != -1) break;
 		newSceneIdx = _game->getSceneIndexByName(_camera->getNewSceneName());
 		if (newSceneIdx != -1) break;
+		if (!_camera->isGameRunning()) break;
 
 		// Freeze everything else if camera is in debug
-		if (!_camera->isDebug()) {
+		if (!_camera->isPause()) {
+			_light->update();
 			// Update game entities states
 			for (auto entity : _allEntities) {
 				entity->update();
@@ -208,7 +209,7 @@ void GameEngine::run(void) {
 				}
 			}
 		}
-		_gameRenderer->refreshWindow(_allEntities, _camera, _light);
+		_gameRenderer->refreshWindow(_allEntities, _camera, _light, _skybox);
 	}
 	if (newSceneIdx != -1) {
 		_sceneIdx = newSceneIdx;
@@ -238,9 +239,35 @@ Entity *GameEngine::getEntityById(size_t id) {
 // 	return foundElem;
 // }
 
-bool GameEngine::initScene(size_t newSceneIdx) {
+bool GameEngine::_initScene(size_t newSceneIdx) {
 	if (!_game) return false;
+	_unloadScene();
 
+	// Add new entities
+	_sceneIdx = newSceneIdx;
+	if (!_game->loadSceneByIndex(_sceneIdx)) return false;
+	_camera = _game->getCamera();
+	if (_camera == nullptr)
+		throw std::runtime_error(
+			"\033[0;31m:Error:\033[0m No camera were created in the loaded "
+			"scene.");
+	_camera->initEntity(this);
+	_camera->configGUI(_gameRenderer->getGUI());
+	_light = _game->getLight();
+	if (_light == nullptr)
+		std::cout << "\033[0;33m:Warning:\033[0m There is no light in the "
+					 "loaded scene, you should definitely add one"
+				  << std::endl;
+	else
+		_light->initEntity(this);
+	for (auto entity : _game->getEntities()) {
+		_allEntities.push_back(entity);
+		_allEntities.back()->initEntity(this);
+	}
+	return true;
+}
+
+void GameEngine::_unloadScene(void) {
 	// Clear prev entities
 	for (size_t idx = _allEntities.size() - 1; idx < _allEntities.size();
 		 idx--) {
@@ -257,40 +284,26 @@ bool GameEngine::initScene(size_t newSceneIdx) {
 		_camera = nullptr;
 	}
 	_initialCollisionMap.clear();
-
-	// Add new entities
-	_sceneIdx = newSceneIdx;
-	if (!_game->loadSceneByIndex(_sceneIdx)) return false;
-	_camera = _game->getCamera();
-	_camera->initEntity(this);
-	_camera->configGUI(_gameRenderer->getGUI());
-	_light = _game->getLight();
-	_light->initEntity(this);
-	for (auto entity : _game->getEntities()) {
-		_allEntities.push_back(entity);
-		_allEntities.back()->initEntity(this);
-	}
-	return true;
 }
 
 void GameEngine::moveEntities(void) {
 	const Collider *collider;
-	bool collisionDetected = false;
+	bool isShortcut = false;
 	std::vector<Entity *> collidedEntities = std::vector<Entity *>();
 	std::vector<Entity *> collidedTriggers = std::vector<Entity *>();
 	glm::vec3 futureMovement = glm::vec3();
-	glm::vec3 tmpFutureMovement = glm::vec3();
+	glm::vec3 shortcutMovement = glm::vec3();
 	LineInfo lineA;
 	LineInfo lineB;
-
 	size_t idx = 0;
+
 	size_t idxOfCollision = 0;
 	for (auto entity : _allEntities) {
 		if (!entity->getNeedToBeDestroyed()) {
 			collider = entity->getCollider();
 			collidedEntities.clear();
 			collidedTriggers.clear();
-			collisionDetected = false;
+			isShortcut = false;
 			futureMovement *= 0;
 
 			// Skip checks if entity doesnt have a collider
@@ -303,7 +316,6 @@ void GameEngine::moveEntities(void) {
 					futureMovement.x = entity->getTargetMovement().x;
 					futureMovement.z = entity->getTargetMovement().z;
 					bool firstLoop = true;
-					bool isShortcut = false;
 					while (collidedEntities.size() != 0) {
 						idxOfCollision = checkCollision(entity, futureMovement,
 														collidedEntities);
@@ -318,196 +330,16 @@ void GameEngine::moveEntities(void) {
 						// If some collisions are detected, try with a different
 						// movement
 						if (collidedEntities.size() != 0) {
-							// Safe break to avoid infinite loop
-							float absX = abs(futureMovement.x);
-							float absZ = abs(futureMovement.z);
-
-							// Special test that need to be done only on first
-							// loop
 							if (firstLoop) {
-								// Try moving indipendently one of the two axis
-								// (Only if its a two-axis move)
-								if (futureMovement.x != 0.0f &&
-									futureMovement.z != 0.0f) {
-									tmpFutureMovement.x = futureMovement.x;
-									tmpFutureMovement.z = 0.0f;
-									idxOfCollision = checkCollision(
-										entity, tmpFutureMovement,
-										collidedEntities);
-									if (idxOfCollision ==
-										collidedEntities.size()) {
-										isShortcut = true;
-										break;
-									}
-									tmpFutureMovement.x = 0.0f;
-									tmpFutureMovement.z = futureMovement.z;
-									idxOfCollision = checkCollision(
-										entity, tmpFutureMovement,
-										collidedEntities);
-									if (idxOfCollision ==
-										collidedEntities.size()) {
-										isShortcut = true;
-										break;
-									}
+								// Special test that need to be done only on
+								// first loop
+								if (tryShortcut(entity, futureMovement,
+												shortcutMovement,
+												collidedEntities)) {
+									isShortcut = true;
+									futureMovement = shortcutMovement;
+									break;
 								}
-
-								// Special cases for Circle, will be able to
-								// "circle around" obstacles more easily if more
-								// than half is outside collision
-								if (collider->shape == Collider::Circle) {
-									// Only try to move along the most important
-									// targetMovement
-									if (absX >= absZ) {
-										// Try slide under obstacle
-										float colliderZ = collidedEntities[0]
-															  ->getPosition()
-															  .z +
-														  collidedEntities[0]
-															  ->getCollider()
-															  ->height;
-										if (entity->getPosition().z >
-											colliderZ) {
-											tmpFutureMovement.z =
-												colliderZ -
-												(entity->getPosition().z -
-												 entity->getCollider()->height);
-											if (tmpFutureMovement.z >
-												(absX / 2)) {
-												tmpFutureMovement.z = absX / 2;
-											}
-											if (tmpFutureMovement.z < 0.0f)
-												tmpFutureMovement.z = EPSILON;
-											else if (tmpFutureMovement.z <
-													 EPSILON)
-												tmpFutureMovement.z += EPSILON;
-											// Move along X will be less than Z
-											// so that no collision will occur
-											tmpFutureMovement.x =
-												tmpFutureMovement.z * 0.5f;
-											if (futureMovement.x < 0)
-												tmpFutureMovement.x *= -1.0f;
-											idxOfCollision = checkCollision(
-												entity, tmpFutureMovement,
-												collidedEntities);
-											if (idxOfCollision ==
-												collidedEntities.size()) {
-												isShortcut = true;
-												break;
-											}
-										}
-										// Try slide over obstacle
-										colliderZ -= 2.0f * collidedEntities[0]
-																->getCollider()
-																->height;
-										if (entity->getPosition().z <
-											colliderZ) {
-											tmpFutureMovement.z =
-												(entity->getPosition().z +
-												 entity->getCollider()
-													 ->height) -
-												colliderZ;
-											if (tmpFutureMovement.z >
-												(absX / 2)) {
-												tmpFutureMovement.z = absX / 2;
-											}
-											if (tmpFutureMovement.z < 0.0f)
-												tmpFutureMovement.z = EPSILON;
-											else if (tmpFutureMovement.z <
-													 EPSILON)
-												tmpFutureMovement.z += EPSILON;
-											// Move along X will be less than Z
-											// so that no collision will occur
-											tmpFutureMovement.x =
-												tmpFutureMovement.z * 0.5f;
-											if (futureMovement.x < 0)
-												tmpFutureMovement.x *= -1.0f;
-											tmpFutureMovement.z *= -1;
-											idxOfCollision = checkCollision(
-												entity, tmpFutureMovement,
-												collidedEntities);
-											if (idxOfCollision ==
-												collidedEntities.size()) {
-												isShortcut = true;
-												break;
-											}
-										}
-									}
-									if (absZ >= absX) {
-										// Try slide right of obstacle
-										float colliderX = collidedEntities[0]
-															  ->getPosition()
-															  .x +
-														  collidedEntities[0]
-															  ->getCollider()
-															  ->width;
-										if (entity->getPosition().x >
-											colliderX) {
-											tmpFutureMovement.x =
-												colliderX -
-												(entity->getPosition().x -
-												 entity->getCollider()->width);
-											if (tmpFutureMovement.x >
-												(absZ / 2)) {
-												tmpFutureMovement.x = absZ / 2;
-											}
-											if (tmpFutureMovement.x < 0.0f)
-												tmpFutureMovement.x = EPSILON;
-											else if (tmpFutureMovement.x <
-													 EPSILON)
-												tmpFutureMovement.x += EPSILON;
-											// Move along Z will be less than X
-											// so that no collision will occur
-											tmpFutureMovement.z =
-												tmpFutureMovement.x * 0.5f;
-											if (futureMovement.z < 0)
-												tmpFutureMovement.z *= -1.0f;
-											idxOfCollision = checkCollision(
-												entity, tmpFutureMovement,
-												collidedEntities);
-											if (idxOfCollision ==
-												collidedEntities.size()) {
-												isShortcut = true;
-												break;
-											}
-										}
-										// Try slide over obstacle
-										colliderX -= 2.0f * collidedEntities[0]
-																->getCollider()
-																->width;
-										if (entity->getPosition().x <
-											colliderX) {
-											tmpFutureMovement.x =
-												(entity->getPosition().x +
-												 entity->getCollider()->width) -
-												colliderX;
-											if (tmpFutureMovement.x >
-												(absZ / 2)) {
-												tmpFutureMovement.x = absZ / 2;
-											}
-											if (tmpFutureMovement.x < 0.0f)
-												tmpFutureMovement.x = EPSILON;
-											else if (tmpFutureMovement.x <
-													 EPSILON)
-												tmpFutureMovement.x += EPSILON;
-											// Move along X will be less than Z
-											// so that no collision will occur
-											tmpFutureMovement.z =
-												tmpFutureMovement.x * 0.5f;
-											if (futureMovement.z < 0)
-												tmpFutureMovement.z *= -1.0f;
-											tmpFutureMovement.x *= -1;
-											idxOfCollision = checkCollision(
-												entity, tmpFutureMovement,
-												collidedEntities);
-											if (idxOfCollision ==
-												collidedEntities.size()) {
-												isShortcut = true;
-												break;
-											}
-										}
-									}
-								}
-
 								firstLoop = false;
 							}
 
@@ -516,38 +348,64 @@ void GameEngine::moveEntities(void) {
 							futureMovement.x /= 2.0f;
 							futureMovement.z /= 2.0f;
 
-							if (absX <= EPSILON && absZ <= EPSILON) {
+							// Safe break to avoid infinite loop
+							if (abs(futureMovement.x) <= EPSILON &&
+								abs(futureMovement.z) <= EPSILON) {
 								break;
 							}
 						}
 					}
-
-					if (isShortcut) {
-						futureMovement.x = tmpFutureMovement.x;
-						futureMovement.z = tmpFutureMovement.z;
-						collidedEntities.clear();
-					}
 				}
 			}
 
-			// TODO: trigger all triggers
+			// Collide with colliders (do not consider shortcut move yet)
+			bool hasCollided = false;
+			while (!collidedEntities.empty() &&
+				   !entity->getNeedToBeDestroyed()) {
+				idx = checkCollision(entity, futureMovement, collidedEntities);
+				if (idx != collidedEntities.size()) {
+					hasCollided = true;
+					// Other entity will always be a collider
+					collidedEntities[idx]->onCollisionEnter(entity);
+					// Check if we are a trigger or a collider
+					if (collider->isTrigger)
+						entity->onTriggerEnter(collidedEntities[idx]);
+					else
+						entity->onCollisionEnter(collidedEntities[idx]);
+					// Clear entities
+					collidedEntities.erase(collidedEntities.begin(),
+										   collidedEntities.begin() + idx + 1);
+				} else
+					collidedEntities.clear();
+			}
+			// Apply shortcut and clear collisions
+			if (isShortcut) {
+				hasCollided = false;
+				futureMovement = shortcutMovement;
+				collidedEntities.clear();
+			}
+			// Trigger all triggers
 			while (!collidedTriggers.empty() &&
 				   !entity->getNeedToBeDestroyed()) {
-				size_t triggerIdx =
-					checkCollision(entity, futureMovement, collidedTriggers);
-				if (triggerIdx != collidedTriggers.size()) {
-					collidedTriggers[triggerIdx]->onTriggerEnter(entity);
-					collidedTriggers.erase(
-						collidedTriggers.begin(),
-						collidedTriggers.begin() + triggerIdx + 1);
+				idx = checkCollision(entity, futureMovement, collidedTriggers);
+				if (idx != collidedTriggers.size()) {
+					// Other entity will always be a trigger
+					collidedTriggers[idx]->onTriggerEnter(entity);
+					// Check if we are a trigger or a collider
+					if (collider->isTrigger)
+						entity->onTriggerEnter(collidedTriggers[idx]);
+					else
+						entity->onCollisionEnter(collidedTriggers[idx]);
+					// Clear entities
+					collidedTriggers.erase(collidedTriggers.begin(),
+										   collidedTriggers.begin() + idx + 1);
 				} else
 					collidedTriggers.clear();
 			}
-			if (collidedEntities.empty() && !entity->getNeedToBeDestroyed()) {
+			if (!hasCollided && !entity->getNeedToBeDestroyed()) {
 				entity->translate(futureMovement);
 			}
 		}
-		idx++;
 	}
 }
 void GameEngine::getPossibleCollisions(
@@ -925,6 +783,141 @@ bool GameEngine::collisionCircleRectangle(const Collider *circleCollider,
 				  pow(circlePos.z - closestZ, 2))) -
 				circleCollider->width <=
 			EPSILON);
+}
+
+bool GameEngine::tryShortcut(Entity *entity, glm::vec3 &futureMovement,
+							 glm::vec3 &shortcutMovement,
+							 std::vector<Entity *> &collidedEntities) {
+	size_t idxOfCollision;
+
+	float absX = abs(futureMovement.x);
+	float absZ = abs(futureMovement.z);
+	// Try moving indipendently one of the two axis
+	// (Only if its a two-axis move)
+	if (futureMovement.x != 0.0f && futureMovement.z != 0.0f) {
+		shortcutMovement.x = futureMovement.x;
+		shortcutMovement.z = 0.0f;
+		idxOfCollision =
+			checkCollision(entity, shortcutMovement, collidedEntities);
+		if (idxOfCollision == collidedEntities.size()) {
+			return true;
+		}
+		shortcutMovement.x = 0.0f;
+		shortcutMovement.z = futureMovement.z;
+		idxOfCollision =
+			checkCollision(entity, shortcutMovement, collidedEntities);
+		if (idxOfCollision == collidedEntities.size()) {
+			return true;
+		}
+	}
+
+	// Special cases for Circle, will be able to
+	// "circle around" obstacles more easily if more
+	// than half is outside collision
+	if (entity->getCollider()->shape == Collider::Circle) {
+		// Only try to move along the most important
+		// targetMovement
+		if (absX >= absZ) {
+			// Try slide under obstacle
+			float colliderZ = collidedEntities[0]->getPosition().z +
+							  collidedEntities[0]->getCollider()->height;
+			if (entity->getPosition().z > colliderZ) {
+				shortcutMovement.z =
+					colliderZ -
+					(entity->getPosition().z - entity->getCollider()->height);
+				if (shortcutMovement.z > (absX / 2)) {
+					shortcutMovement.z = absX / 2;
+				}
+				if (shortcutMovement.z < 0.0f)
+					shortcutMovement.z = EPSILON;
+				else if (shortcutMovement.z < EPSILON)
+					shortcutMovement.z += EPSILON;
+				// Move along X will be less than Z
+				// so that no collision will occur
+				shortcutMovement.x = shortcutMovement.z * 0.5f;
+				if (futureMovement.x < 0) shortcutMovement.x *= -1.0f;
+				if (checkCollision(entity, shortcutMovement,
+								   collidedEntities) ==
+					collidedEntities.size()) {
+					return true;
+				}
+			}
+			// Try slide over obstacle
+			colliderZ -= 2.0f * collidedEntities[0]->getCollider()->height;
+			if (entity->getPosition().z < colliderZ) {
+				shortcutMovement.z =
+					(entity->getPosition().z + entity->getCollider()->height) -
+					colliderZ;
+				if (shortcutMovement.z > (absX / 2)) {
+					shortcutMovement.z = absX / 2;
+				}
+				if (shortcutMovement.z < 0.0f)
+					shortcutMovement.z = EPSILON;
+				else if (shortcutMovement.z < EPSILON)
+					shortcutMovement.z += EPSILON;
+				// Move along X will be less than Z
+				// so that no collision will occur
+				shortcutMovement.x = shortcutMovement.z * 0.5f;
+				if (futureMovement.x < 0) shortcutMovement.x *= -1.0f;
+				shortcutMovement.z *= -1;
+				idxOfCollision =
+					checkCollision(entity, shortcutMovement, collidedEntities);
+				if (idxOfCollision == collidedEntities.size()) {
+					return true;
+				}
+			}
+		}
+		if (absZ >= absX) {
+			// Try slide right of obstacle
+			float colliderX = collidedEntities[0]->getPosition().x +
+							  collidedEntities[0]->getCollider()->width;
+			if (entity->getPosition().x > colliderX) {
+				shortcutMovement.x = colliderX - (entity->getPosition().x -
+												  entity->getCollider()->width);
+				if (shortcutMovement.x > (absZ / 2)) {
+					shortcutMovement.x = absZ / 2;
+				}
+				if (shortcutMovement.x < 0.0f)
+					shortcutMovement.x = EPSILON;
+				else if (shortcutMovement.x < EPSILON)
+					shortcutMovement.x += EPSILON;
+				// Move along Z will be less than X
+				// so that no collision will occur
+				shortcutMovement.z = shortcutMovement.x * 0.5f;
+				if (futureMovement.z < 0) shortcutMovement.z *= -1.0f;
+				idxOfCollision =
+					checkCollision(entity, shortcutMovement, collidedEntities);
+				if (idxOfCollision == collidedEntities.size()) {
+					return true;
+				}
+			}
+			// Try slide over obstacle
+			colliderX -= 2.0f * collidedEntities[0]->getCollider()->width;
+			if (entity->getPosition().x < colliderX) {
+				shortcutMovement.x =
+					(entity->getPosition().x + entity->getCollider()->width) -
+					colliderX;
+				if (shortcutMovement.x > (absZ / 2)) {
+					shortcutMovement.x = absZ / 2;
+				}
+				if (shortcutMovement.x < 0.0f)
+					shortcutMovement.x = EPSILON;
+				else if (shortcutMovement.x < EPSILON)
+					shortcutMovement.x += EPSILON;
+				// Move along X will be less than Z
+				// so that no collision will occur
+				shortcutMovement.z = shortcutMovement.x * 0.5f;
+				if (futureMovement.z < 0) shortcutMovement.z *= -1.0f;
+				shortcutMovement.x *= -1;
+				idxOfCollision =
+					checkCollision(entity, shortcutMovement, collidedEntities);
+				if (idxOfCollision == collidedEntities.size()) {
+					return true;
+				}
+			}
+		}
+	}
+	return false;
 }
 
 void GameEngine::buttonStateChanged(std::string buttonName, bool isPressed) {

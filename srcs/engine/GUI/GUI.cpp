@@ -736,7 +736,7 @@ void GUI::setStyle(std::map<int, nk_color> &styleMap) {
 	nk_style_from_table(&glfw.ctx, table);
 }
 
-void GUI::setAssetImage(
+void GUI::setAssetImages(
 	std::vector<std::tuple<std::string, std::string>> vFontImage) {
 	if (!vFontImage.empty()) _setImages(vFontImage);
 }
@@ -775,6 +775,12 @@ void GUI::uiHeader(const char *title, nk_flags flags, int rowSize,
 	uiApplyFont(fontName);
 	nk_layout_row_dynamic(&glfw.ctx, rowSize, 1);
 	nk_label(&glfw.ctx, title, flags);
+	uiApplyDefaultFont();
+}
+
+void GUI::uiText(std::string text, nk_flags textFlags, std::string fontName) {
+	uiApplyFont(fontName);
+	nk_label(&glfw.ctx, text.c_str(), textFlags);
 	uiApplyDefaultFont();
 }
 
@@ -935,3 +941,8 @@ void GUI::uiRowMultipleElem(bool isSart, int height, int nbrOfElem,
 }
 
 void GUI::uiAddElemInRow(int width) { nk_layout_row_push(&glfw.ctx, width); }
+
+void GUI::uiAddElemOffset(int offset) {
+	glfw.ctx.current->layout->row.item_offset +=
+		offset;  // Do not have any other way to change offset
+}
