@@ -5,13 +5,14 @@ set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 
-add_subdirectory(glfw-3.2.1)
+add_subdirectory(libs/glfw-3.2.1)
 
 include_directories(scrs)
+
 set(SRCS
   srcs/main.cpp
 
-  srcs/glad/glad.cpp
+  libs/srcs/glad/glad.cpp
 
   srcs/engine/Entity.cpp
   srcs/engine/AudioManager.cpp
@@ -25,8 +26,6 @@ set(SRCS
   srcs/engine/Model.cpp
   srcs/engine/Mesh.cpp
   srcs/engine/Skybox.cpp
-
-
   srcs/engine/GUI/GUI.cpp
 
   srcs/game/Bomberman.cpp
@@ -44,16 +43,16 @@ set(SRCS
 )
 
 include_directories(includes)
+include_directories(libs/includes)
+
 set(HEADERS
-  includes/glad/glad.h
-  includes/KHR/khrplatform.h
-  includes/nuklear/nuklear.h
-  includes/tiny_obj_loader/tiny_obj_loader.h
-  includes/glm/glm.hpp
-  includes/glm/gtc/matrix_transform.hpp
-  includes/glm/gtc/type_ptr.hpp
-  # includes/glm/gtx/euler_angles.hpp
-  includes/json/json.hpp
+  libs/includes/glad/glad.h
+  libs/includes/KHR/khrplatform.h
+  libs/includes/nuklear/nuklear.h
+  libs/includes/glm/glm.hpp
+  libs/includes/glm/gtc/matrix_transform.hpp
+  libs/includes/glm/gtc/type_ptr.hpp
+  libs/includes/json/json.hpp
 
   includes/engine/Engine.hpp
   includes/engine/Entity.hpp
@@ -68,8 +67,6 @@ set(HEADERS
   includes/engine/Model.hpp
   includes/engine/Mesh.hpp
   includes/engine/Skybox.hpp
-  
-
   includes/engine/GUI/GUI.hpp
 
   includes/game/Bomberman.hpp

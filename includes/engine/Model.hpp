@@ -4,7 +4,7 @@
 
 class Model {
    public:
-	Model(std::string const &objDirName);
+	Model(std::string const &objPath);
 	virtual ~Model(void);
 
 	std::vector<Mesh *> const getMeshes(void) const;

@@ -88,7 +88,7 @@ void SceneTools::_displayPlayerHP(GUI *graphicUI, size_t hp) {
 	int rowHeight = std::min(WINDOW_H / 12, 50);
 	int rowWidth = _playerMaxHp * rowHeight;
 	int windowWidth = rowWidth + 26;
-	int windowHeight = rowHeight + 5;
+	int windowHeight = rowHeight + 10;
 	(void)hp;
 	(void)rowHeight;
 	activeStyle[NK_COLOR_WINDOW] = nk_rgba(57, 67, 71, 150);

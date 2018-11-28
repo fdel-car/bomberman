@@ -113,14 +113,15 @@ void GameRenderer::_initShader(void) {
 }
 
 void GameRenderer::_initModels(void) {
-	_models["Box"] = new Model("box");
-	_models["Explosion"] = new Model("explosion");
-	_models["Wall"] = new Model("wall");
+	_models["Cube"] = new Model("models/cube/cube.dae");
+	// _models["Box"] = new Model("box");
+	// _models["Explosion"] = new Model("explosion");
+	// _models["Wall"] = new Model("wall");
 	// _models["Light"] = new Model("light");
-	_models["Player"] = new Model("player");
-	_models["Bomb"] = new Model("bomb");
-	_models["Enemy"] = new Model("enemy");
-	_models["Island"] = new Model("island");
+	// _models["Player"] = new Model("player");
+	// _models["Bomb"] = new Model("bomb");
+	// _models["Enemy"] = new Model("enemy");
+	// _models["Island"] = new Model("island");
 }
 
 void GameRenderer::getUserInput(void) { glfwPollEvents(); }
@@ -128,8 +129,8 @@ void GameRenderer::getUserInput(void) { glfwPollEvents(); }
 void GameRenderer::refreshWindow(std::vector<Entity *> &entities,
 								 Camera *camera, Light *light, Skybox *skybox) {
 	glfwSetWindowTitle(_window,
-					   toString(1.0f / _gameEngine->getDeltaTime()).c_str());
-	_lightSpaceMatrix = light->getProjectionMatrix() * light->getViewMatrix();
+					   toString(1.0f / _gameEngine->getDeltaTime())
+						   .c_str());  // TODO: Don't forget to remove this
 
 	// Custom OpenGL state
 	glEnable(GL_DEPTH_TEST);
@@ -138,19 +139,23 @@ void GameRenderer::refreshWindow(std::vector<Entity *> &entities,
 	glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	// Shadow map
-	glUseProgram(_shadowShaderProgram->getID());
-	glViewport(0, 0, SHADOW_W, SHADOW_H);
-	glBindFramebuffer(GL_FRAMEBUFFER, _depthMapFBO);
-	glClear(GL_DEPTH_BUFFER_BIT);
-	_shadowShaderProgram->setMat4("lightSpaceMatrix", _lightSpaceMatrix);
-	glCullFace(GL_FRONT);
-	for (auto entity : entities) {
-		_shadowShaderProgram->setMat4("M", entity->getModelMatrix());
-		entity->getModel()->draw(*_shadowShaderProgram);
+	if (light != nullptr) {
+		_lightSpaceMatrix =
+			light->getProjectionMatrix() * light->getViewMatrix();
+		// Shadow map
+		glUseProgram(_shadowShaderProgram->getID());
+		glViewport(0, 0, SHADOW_W, SHADOW_H);
+		glBindFramebuffer(GL_FRAMEBUFFER, _depthMapFBO);
+		glClear(GL_DEPTH_BUFFER_BIT);
+		_shadowShaderProgram->setMat4("lightSpaceMatrix", _lightSpaceMatrix);
+		glCullFace(GL_FRONT);
+		for (auto entity : entities) {
+			_shadowShaderProgram->setMat4("M", entity->getModelMatrix());
+			entity->getModel()->draw(*_shadowShaderProgram);
+		}
+		glCullFace(GL_BACK);
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
-	glCullFace(GL_BACK);
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	// Basic rendering OpenGL state
 	glViewport(0, 0, WINDOW_W, WINDOW_H);
@@ -158,10 +163,17 @@ void GameRenderer::refreshWindow(std::vector<Entity *> &entities,
 	glUseProgram(_shaderProgram->getID());
 	_shaderProgram->setMat4("V", camera->getViewMatrix());
 	_shaderProgram->setMat4("P", camera->getProjectionMatrix());
-	_shaderProgram->setMat4("lightSpaceMatrix", _lightSpaceMatrix);
-	_shaderProgram->setVec3("lightDir", light->getDir());
 	_shaderProgram->setVec3("viewPos", camera->getPosition());
-	_shaderProgram->setVec3("lightColor", light->getColor());
+	if (light == nullptr) {
+		_shaderProgram->setVec3("lightDir",
+								glm::normalize(glm::vec3(0.5, -0.5, -0.5)));
+		_shaderProgram->setVec3("lightColor", glm::vec3(1.0f));
+		_shaderProgram->setMat4("lightSpaceMatrix", glm::mat4(1.0f));
+	} else {
+		_shaderProgram->setVec3("lightDir", light->getDir());
+		_shaderProgram->setVec3("lightColor", light->getColor());
+		_shaderProgram->setMat4("lightSpaceMatrix", _lightSpaceMatrix);
+	}
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, _depthMap);
 	for (auto entity : entities) {

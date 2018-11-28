@@ -55,7 +55,7 @@ GameEngine::GameEngine(AGame *game)
 	_light = nullptr;
 	_camera = nullptr;
 
-	_skybox = new Skybox("default");
+	// _skybox = new Skybox("default");
 	if (_skybox != nullptr) _skybox->initEntity(this);
 }
 

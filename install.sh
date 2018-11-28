@@ -1,14 +1,19 @@
 #!/bin/bash
 
+# Create libs directory if needed
+if [ ! -d "libs" ]; then
+    mkdir libs
+fi
+
 # GLFW 3.2.1 install
-if [ ! -d "glfw-3.2.1" ]; then
+if [ ! -d "libs/glfw-3.2.1" ]; then
     curl -OL https://github.com/glfw/glfw/releases/download/3.2.1/glfw-3.2.1.zip
     unzip glfw-3.2.1.zip > /dev/null
+    mv glfw-3.2.1 libs/
     rm "glfw-3.2.1.zip"
 fi
 
 which python >> /dev/null || (echo "You need to have python installed first, you can use 'brew install python' for instance." || exit 0)
-pythonVersion="$(python -c 'import sys; print(".".join(map(str, sys.version_info[:2])))')"
 # pip install
 which pip >> /dev/null
 if [ $? == 1 ]; then
@@ -21,44 +26,42 @@ fi
 
 # GLAD install
 which glad >> /dev/null || pip install glad --user
-if [[ ! -d "srcs/glad" && ! -d "includes/glad" && ! -d "includes/KHR" ]]; then
+if [[ ! -d "libs/srcs/glad" && ! -d "libs/includes/glad" && ! -d "libs/includes/KHR" ]]; then
     glad --api gl=4.1 --profile=core --generator=c --out-path=tmp-glad
-    mkdir srcs/glad && mv tmp-glad/src/glad.c srcs/glad/glad.cpp
-    mv tmp-glad/include/KHR includes/ && mv tmp-glad/include/glad includes/
+    mkdir -p libs/srcs/glad
+    mv tmp-glad/src/glad.c libs/srcs/glad/glad.cpp
+    mkdir -p libs/includes/glad
+    mv tmp-glad/include/glad/glad.h libs/includes/glad
+    mkdir -p libs/includes/KHR
+    mv tmp-glad/include/KHR/khrplatform.h libs/includes/KHR
     rm -rf tmp-glad
 fi
 
 # GLM 0.9.9.3 install
-if [ ! -d "includes/glm" ]; then
+if [ ! -d "libs/includes/glm" ]; then
 	curl -OL https://github.com/g-truc/glm/releases/download/0.9.9.3/glm-0.9.9.3.zip
 	unzip glm-0.9.9.3.zip > /dev/null
 	rm "glm-0.9.9.3.zip"
-	mv glm/glm includes/
+	mv glm/glm libs/includes/
 	rm -rf glm
 fi
 
 # stb_image install
-if [ ! -d "includes/stb_image" ]; then
-    mkdir includes/stb_image
-    curl -L -o includes/stb_image/stb_image.h "https://drive.google.com/uc?export=download&id=1u29S1t-cOXgSlJv_e8D8Qjn929VyT2Go"
-fi
-
-# tiny_obj_loader install
-if [ ! -d "includes/tiny_obj_loader" ]; then
-    mkdir includes/tiny_obj_loader
-    curl https://raw.githubusercontent.com/syoyo/tinyobjloader/master/tiny_obj_loader.h -o includes/tiny_obj_loader/tiny_obj_loader.h
+if [ ! -d "libs/includes/stb_image" ]; then
+    mkdir -p libs/includes/stb_image
+    curl -L -o libs/includes/stb_image/stb_image.h "https://drive.google.com/uc?export=download&id=1u29S1t-cOXgSlJv_e8D8Qjn929VyT2Go"
 fi
 
 # Nuklear install
-if [ ! -d "includes/nuklear" ]; then
-    mkdir includes/nuklear
-    curl https://raw.githubusercontent.com/vurtun/nuklear/master/nuklear.h -o includes/nuklear/nuklear.h
+if [ ! -d "libs/includes/nuklear" ]; then
+    mkdir -p libs/includes/nuklear
+    curl https://raw.githubusercontent.com/vurtun/nuklear/master/nuklear.h -o libs/includes/nuklear/nuklear.h
 fi
 
 # Json parser install
-if [ ! -d "includes/json" ]; then
-    mkdir includes/json
-    curl https://raw.githubusercontent.com/nlohmann/json/develop/single_include/nlohmann/json.hpp -o includes/json/json.hpp
+if [ ! -d "libs/includes/json" ]; then
+    mkdir libs/includes/json
+    curl https://raw.githubusercontent.com/nlohmann/json/develop/single_include/nlohmann/json.hpp -o libs/includes/json/json.hpp
 fi
 
 which cmake >> /dev/null || (echo "Without cmake installed on your computer you can't fully finish the installation. The command 'brew install cmake' can be pretty useful!" || exit 0)
