@@ -61,6 +61,7 @@ GameEngine::~GameEngine(void) {
 	}
 	if (_light != nullptr) delete _light;
 	if (_camera != nullptr) delete _camera;
+	if (_skybox != nullptr) delete _skybox;
 	_allEntities.clear();
 	delete _audioManager;
 	delete _gameRenderer;

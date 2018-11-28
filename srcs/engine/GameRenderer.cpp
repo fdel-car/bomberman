@@ -170,19 +170,21 @@ void GameRenderer::refreshWindow(std::vector<Entity *> &entities,
 	}
 
 	// Skybox
-	glDepthFunc(GL_LEQUAL);
-	glUseProgram(_skyboxShaderProgram->getID());
-	
-	_skyboxShaderProgram->setMat4("view", glm::mat4(glm::mat3(camera->getViewMatrix())));
-	_skyboxShaderProgram->setMat4("projection", camera->getProjectionMatrix());
-	
-	glBindVertexArray(skybox->getVAO());
-	glActiveTexture(GL_TEXTURE2);
-	glBindTexture(GL_TEXTURE_CUBE_MAP, skybox->getTexture());
-	_skyboxShaderProgram->setInt("skybox", 2);
-	glDrawArrays(GL_TRIANGLES, 0, 36);
-	glBindVertexArray(0);
-	glDepthFunc(GL_LESS); // set depth function back to default
+	if (skybox != nullptr) {
+		glDepthFunc(GL_LEQUAL);
+		glUseProgram(_skyboxShaderProgram->getID());
+		
+		_skyboxShaderProgram->setMat4("view", glm::mat4(glm::mat3(camera->getViewMatrix())));
+		_skyboxShaderProgram->setMat4("projection", camera->getProjectionMatrix());
+		
+		glBindVertexArray(skybox->getVAO());
+		glActiveTexture(GL_TEXTURE2);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, skybox->getTexture());
+		_skyboxShaderProgram->setInt("skybox", 2);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+		glBindVertexArray(0);
+		glDepthFunc(GL_LESS); // set depth function back to default
+	}
 
 	// Default OpenGL state
 	glUseProgram(0);
