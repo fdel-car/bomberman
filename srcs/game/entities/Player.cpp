@@ -15,7 +15,7 @@ Player::Player(glm::vec3 position, glm::vec3 eulerAngles, Save &save,
 	  _maxBombs(3),
 	  _bombCooldown(3.0f),
 	  _bombRange(2),
-	  _bombKick(true),
+	  _bombKick(false),
 	  _bombTimers(std::vector<float>()),
 	  _cam(dynamic_cast<SceneTools *>(_sceneManager)) {
 	scale(glm::vec3(0.9, 0.9, 0.9));

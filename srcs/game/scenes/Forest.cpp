@@ -4,6 +4,7 @@
 Forest::Forest(glm::vec3 const &pos, glm::vec3 const &eulerAngles)
 	:  // Camera(pos, eulerAngles),
 	  SceneTools(17, 17, pos, eulerAngles),
+	  _timer(181),
 	  _cooldown(0.0f) {
 	configAI();
 }
@@ -15,10 +16,15 @@ void Forest::configAI(void) {
 
 	_tmpDecor.push_back("Explosion");
 	_tmpDecor.push_back("OFDT");
+	_tmpDecor.push_back("RunAway");
 	_tmpDecor.push_back("EPB");
 	_tmpDecor.push_back("Basic");
 	_tmpDecor.push_back("Bomb");
 	_tmpDecor.push_back("Box");
+
+	_tmpDecorForRunAway.push_back("Explosion");
+	_tmpDecorForRunAway.push_back("Bomb");
+	_tmpDecorForRunAway.push_back("Box");
 }
 
 void Forest::configGUI(GUI *graphicUI) {
@@ -46,6 +52,11 @@ void Forest::drawGUI(GUI *graphicUI) {
 		_displayPlayerHP(graphicUI, _playerHp);
 	}
 
+	if (!_isPause && !_showDeathScreen && !_showVictoryScreen)
+		_displayTimer(graphicUI, &_timer, false);
+	else
+		_displayTimer(graphicUI, &_timer, true);
+	if ((int)_timer == 0) _showDeathScreen = true;
 	// static int searchWord = 0;
 	// static int lastWord = 0;
 	// static int startStrIdx = 0;

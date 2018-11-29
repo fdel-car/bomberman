@@ -71,6 +71,7 @@ class SceneTools : public Camera {
 							   int restartIdx, int leaveIdx);
 	void _displayDeathScreen(GUI *graphicUI, int *_newSceneIdx, int restartIdx,
 							 int leaveIdx);
+	void _displayTimer(GUI *graphicUI, float *currentTime, bool isPause);
 	bool _btnHover(GUI *graphicUI, int rectWidth, int rectHeight, int xRectPos,
 				   int yRectPos, int fontSize, std::string fontName,
 				   int *extraSizePlay, int maxSize, bool *isPlayButtonHover,
@@ -103,6 +104,8 @@ class SceneTools : public Camera {
 		_staticDecor;  // Decor who can't be destroy (like arena walls)
 	std::vector<std::string>
 		_tmpDecor;  // Decor who can be destroy (like bombes or brick walls)
+	std::vector<std::string>
+			_tmpDecorForRunAway;
 	bool _refreshAI;
 
    private:

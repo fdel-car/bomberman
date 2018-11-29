@@ -189,6 +189,23 @@ void SceneTools::_displayDeathScreen(GUI *graphicUI, int *_newSceneIdx,
 	graphicUI->uiEndBlock();
 }
 
+void SceneTools::_displayTimer(GUI *graphicUI, float *currentTime,
+							   bool isPause) {
+	if (*currentTime > 0.0f && !isPause)
+		*currentTime -= _gameEngine->getDeltaTime();
+	if (graphicUI->uiStartBlock("timer", "",
+								nk_rect(WINDOW_W / 7 * 3, 0, WINDOW_W / 7, 60),
+								NK_WINDOW_NO_SCROLLBAR)) {
+		int tmpMinutes = *currentTime / 60;
+		std::string minutes = std::to_string(tmpMinutes);
+		int tmpSec = static_cast<int>(*currentTime) % 60;
+		std::string sec = tmpSec == 0 ? "00" : std::to_string(tmpSec);
+		graphicUI->uiHeader((minutes + " : " + sec).c_str(), NK_TEXT_CENTERED,
+							60, "30_BOMBERMAN");
+	}
+	graphicUI->uiEndBlock();
+}
+
 bool SceneTools::_btnHover(GUI *graphicUI, int rectWidth, int rectHeight,
 						   int xRectPos, int yRectPos, int fontSize,
 						   std::string fontName, int *extraSize, int maxSize,
