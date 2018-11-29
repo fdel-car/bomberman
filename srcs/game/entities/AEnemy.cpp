@@ -33,6 +33,8 @@ void AEnemy::findBestWay(SceneTools *cam, bool runAway) {
 					for (const auto &n : currentPos.prevNodesByDist) {
 						if (bestDist > n.first) bestDist = n.first;
 					}
+					if (currentPos.prevNodesByDist[bestDist].size() == 0)
+						break ;
 					if (bestDist != std::numeric_limits<std::size_t>::max())
 						currentPos = *currentPos.prevNodesByDist[bestDist][0];
 					_way.push_back(currentPos.z * mapHeight + currentPos.x);
