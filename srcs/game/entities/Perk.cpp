@@ -8,11 +8,11 @@ const float Perk::TIME_BETWEEN_ANIM = 3.0f;
 
 const std::vector<std::tuple<PerkType, size_t>> getPossiblePerks(void) {
 	std::vector<std::tuple<PerkType, size_t>> vPerk;
-	vPerk.push_back(std::make_tuple<PerkType, size_t>(SpeedBoost, 1));
-	vPerk.push_back(std::make_tuple<PerkType, size_t>(BombRange, 1));
-	vPerk.push_back(std::make_tuple<PerkType, size_t>(MaxBomb, 1));
+	vPerk.push_back(std::make_tuple<PerkType, size_t>(SpeedBoost, 4));
+	vPerk.push_back(std::make_tuple<PerkType, size_t>(BombRange, 2));
+	vPerk.push_back(std::make_tuple<PerkType, size_t>(MaxBomb, 2));
 	vPerk.push_back(std::make_tuple<PerkType, size_t>(Damage, 1));
-	vPerk.push_back(std::make_tuple<PerkType, size_t>(KickBomb, 1));
+	vPerk.push_back(std::make_tuple<PerkType, size_t>(KickBomb, 3));
 	return vPerk;
 }
 const std::vector<std::tuple<PerkType, size_t>> Perk::POSSIBLE_PERKS =
@@ -66,23 +66,29 @@ void Perk::onTriggerEnter(Entity *entity) {
 	if (player != nullptr) {
 		switch (_perkType) {
 			case SpeedBoost:
-				// std::cout << "SpeedBoost Perk" << std::endl;
+				std::cout << "SpeedBoost Perk" << std::endl;
+				player->gotSpeedBoost(0.3f);
 				break;
 			case BombRange:
-				// std::cout << "BombRange Perk" << std::endl;
+				std::cout << "BombRange Perk" << std::endl;
+				player->gotBombRangeBoost(1);
 				break;
 			case MaxBomb:
-				// std::cout << "MaxBomb Perk" << std::endl;
+				std::cout << "MaxBomb Perk" << std::endl;
+				player->gotMaxBombBoost(1);
 				break;
 			case Damage:
-				// std::cout << "Damage Perk" << std::endl;
+				std::cout << "Damage Perk" << std::endl;
+				player->takeDamage();
 				break;
 			case KickBomb:
-				// std::cout << "KickBomb Perk" << std::endl;
+				std::cout << "KickBomb Perk" << std::endl;
+				player->gotBombKickBoost(true);
 				break;
 			default:
-				// std::cout << "default Perk" << std::endl;
+				std::cout << "No Perk" << std::endl;
 				break;
 		}
+		_needToBeDestroyed = true;
 	}
 }

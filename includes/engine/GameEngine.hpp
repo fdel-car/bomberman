@@ -7,18 +7,6 @@
 #include "engine/Light.hpp"
 #include "engine/Skybox.hpp"
 
-#define KEY_W "W"
-#define KEY_A "A"
-#define KEY_S "S"
-#define KEY_D "D"
-#define KEY_C "C"
-#define KEY_SPACE "SPACE"
-#define KEY_LEFT "LEFT"
-#define KEY_UP "UP"
-#define KEY_RIGHT "RIGHT"
-#define KEY_DOWN "DOWN"
-#define KEY_ESCAPE "ESCAPE"
-
 #define EPSILON 0.01f
 
 typedef std::chrono::high_resolution_clock Clock;
@@ -44,11 +32,11 @@ class GameEngine {
 	// std::vector<Entity *> getEntitiesWithName(std::string entityName);
 	// Entity *getFirstEntityWithLabel(std::string entityLabel);
 	// std::vector<Entity *> getEntitiesWithLabel(std::string entityLabel);
-	void buttonStateChanged(std::string button, bool isPressed);
+	void buttonStateChanged(int keyID, bool isPressed);
 
 	// Functions needed by entities
-	bool isKeyPressed(std::string keyName);
-	bool isKeyJustPressed(std::string keyName);
+	bool isKeyPressed(int keyID);
+	bool isKeyJustPressed(int keyID);
 	float getDeltaTime();
 	void addNewEntity(Entity *entity);
 
@@ -75,7 +63,7 @@ class GameEngine {
 		float right;
 		RectanglePoints(Entity *entity, glm::vec3 movement = glm::vec3(0.0f));
 	};
-	static std::map<std::string, KeyState> keyboardMap;
+	static std::map<int, KeyState> keyboardMap;
 
 	GameEngine(void);
 	GameEngine(GameEngine const &src);

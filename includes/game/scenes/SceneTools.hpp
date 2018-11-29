@@ -39,6 +39,7 @@ class SceneTools : public Camera {
 	virtual void configAI(void);
 
 	void printMapInfo(void);
+	bool canPutBomb(float xCenter, float zCenter);
 	bool putBomb(float xCenter, float zCenter, float explosionTimer,
 				 size_t range);
 	void putExplosion(float xCenter, float zCenter, size_t range);

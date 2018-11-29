@@ -21,7 +21,6 @@ Bomberman::Bomberman(void) : AGame(10) {
 	setLayerCollision(WallLayer, WallLayer, false);
 	setLayerCollision(WallLayer, BoxLayer, false);
 	setLayerCollision(WallLayer, ExplosionLayer, false);
-	setLayerCollision(WallLayer, BombLayer, false);
 	setLayerCollision(WallLayer, PerkLayer, false);
 
 	setLayerCollision(PlayerLayer, EnemySpecialLayer, false);
@@ -84,6 +83,10 @@ void Bomberman::_forest(void) {
 	// _entities.push_back(new Perk(glm::vec3(1.0, 0.0, -7.0), _camera));
 
 	// Enemies
+	_entities.push_back(
+		new EnemyOFDT(glm::vec3(7.0, 0.0, -7.0), glm::vec3(0.0f), _camera));
+	_entities.push_back(
+		new EnemyRunAway(glm::vec3(7.0, 0.0, 7.0), glm::vec3(0.0f), _camera));
 	// _entities.push_back(
 	// 	new EnemyOFDT(glm::vec3(-7.0, 0.0, 7.0), glm::vec3(0.0f), _camera));
 	// _entities.push_back(
@@ -96,6 +99,9 @@ void Bomberman::_forest(void) {
 	// 	new EnemyBasic(glm::vec3(3.0, 0.0, 3.0), glm::vec3(0.0f), _camera));
 
 	// Walls/Boxes
+	size_t totalBoxes = 120;
+	size_t avgPerks = 10;
+	size_t perkProb = (avgPerks * 100) / totalBoxes;
 	for (int x = -8; x <= 8; x++) {
 		for (int z = -8; z <= 8; z++) {
 			if (abs(x) == 8 || abs(z) == 8) {
@@ -113,7 +119,8 @@ void Bomberman::_forest(void) {
 							   "Wall", "Wall", "Wall", _camera));
 				_entities.back()->scale(glm::vec3(1.0, 0.8, 1.0));
 			} else if (x != -7 && z != -7 && x != 7 && z != 7) {
-				// _entities.push_back(new Box(glm::vec3(x, 0, z), _camera));
+				_entities.push_back(
+					new Box(glm::vec3(x, 0, z), _camera, perkProb));
 			}
 		}
 	}

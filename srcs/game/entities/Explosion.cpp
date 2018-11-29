@@ -26,7 +26,6 @@ void Explosion::update(void) {
 
 void Explosion::onTriggerEnter(Entity *entity) {
 	Damageable *damageable = dynamic_cast<Damageable *>(entity);
-
 	if (damageable != nullptr) {
 		damageable->takeDamage();
 	}

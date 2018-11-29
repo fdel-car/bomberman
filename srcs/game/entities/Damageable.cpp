@@ -18,6 +18,7 @@ Damageable::Damageable(glm::vec3 position, glm::vec3 eulerAngles,
 Damageable::~Damageable(void) {}
 
 void Damageable::update(void) {
+	// Every Damageable with > 1 hp must do this
 	if (_alive && _timeDamaged > 0.0f) {
 		_timeDamaged -= _gameEngine->getDeltaTime();
 		if (_timeDamaged <= 0.0f) {
