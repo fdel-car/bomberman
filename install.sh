@@ -67,17 +67,23 @@ fi
 which cmake >> /dev/null || (echo "Without cmake installed on your computer you can't fully finish the installation. The command 'brew install cmake' can be pretty useful!" || exit 0)
 
 # SFML 2.5.1 audio install
-if [ ! -d "SFML-2.5.1" ]; then
+if [ ! -d "libs/SFML-2.5.1" ]; then
     curl -OL https://www.sfml-dev.org/files/SFML-2.5.1-sources.zip
     unzip SFML-2.5.1-sources.zip > /dev/null
     rm "SFML-2.5.1-sources.zip"
-    mkdir SFML-2.5.1/build && cd SFML-2.5.1/build
-    cmake -DSFML_BUILD_EXAMPLES=OFF -DSFML_BUILD_DOC=OFF -DCMAKE_BUILD_TYPE:STRING=Release -DSFML_BUILD_GRAPHICS=OFF -DSFML_BUILD_WINDOW=OFF -DSFML_BUILD_NETWORK=OFF -SFML_BUILD_AUDIO=ON ..
-    make && cd ../..
+    mv SFML-2.5.1 libs/
+fi
+
+# Assimp 4.1.0 install
+if [ ! -d "libs/assimp-4.1.0" ]; then
+    curl -OL https://github.com/assimp/assimp/archive/v4.1.0.zip
+    unzip v4.1.0.zip > /dev/null
+    rm "v4.1.0.zip"
+    mv assimp-4.1.0 libs/
 fi
 
 # At the end off the first install, build the game
 if [ ! -d "build" ]; then
     mkdir "build"
-    cd build && cmake .. && make
+    cd build && cmake .. && make -j
 fi

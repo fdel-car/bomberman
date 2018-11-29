@@ -7,7 +7,7 @@ struct Material {
 	glm::vec3 ambientColor;
 	glm::vec3 diffuseColor;
 	glm::vec3 specularColor;
-	bool isTextured;
+	bool hasDiffuseTexture;
 	float shininess;
 };
 
@@ -30,6 +30,8 @@ class Mesh {
 
 	Mesh(void);
 	Mesh(Mesh const &src);
+
+	void _setupBuffers(std::vector<Vertex> const &vertices);
 
 	Mesh &operator=(Mesh const &rhs);
 };

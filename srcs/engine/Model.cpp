@@ -1,123 +1,101 @@
 #include "engine/Model.hpp"
+#include <assimp/postprocess.h>
+#include <assimp/Importer.hpp>
 
 extern std::string _assetsDir;
 
-Model::Model(std::string const &objPath) {
-	(void)objPath;
-	// tinyobj::attrib_t attrib;
-	// std::vector<tinyobj::shape_t> shapes;
-	// std::vector<tinyobj::material_t> materials;
-	// std::string warn;
-	// std::string err;
+Model::Model(std::string const &objPath) : _meshes(std::vector<Mesh *>()) {
+	Assimp::Importer importer;
+	const aiScene *scene =
+		importer.ReadFile(_assetsDir + objPath, aiProcess_Triangulate);
+	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE ||
+		!scene->mRootNode) {
+		std::cout << "\033[0;31m:Error:Assimp:\033[0m "
+				  << importer.GetErrorString() << std::endl;
+		return;
+	}
 
-	// tinyobj::LoadObj(
-	// 	&attrib, &shapes, &materials, &warn, &err,
-	// 	(_assetsDir + "objs/" + objDirName + '/' + objDirName +
-	// ".obj").c_str(),
-	// 	(_assetsDir + "objs/" + objDirName + '/').c_str());
+	// Blender fix. TODO: think of something better
+	scene->mRootNode->mTransformation = aiMatrix4x4();
 
-	// // Error output
-	// if (!warn.empty())
-	// 	std::cout << "\033[0;33m:Warning:\033[0m " << warn << std::endl;
-	// if (!err.empty())
-	// 	std::cerr << "\033[0;31m:Error:\033[0m " << err << std::endl;
-
-	// std::vector<std::vector<Vertex>> meshesVertices(materials.size());
-	// for (size_t s = 0; s < shapes.size(); s++) {
-	// 	size_t index_offset = 0;
-	// 	for (size_t f = 0; f < shapes[s].mesh.num_face_vertices.size(); f++)
-	// { 		size_t fv = 			shapes[s].mesh.num_face_vertices[f];  //
-	// Will always be 3 since
-	// 												  // we triangulate the
-	// .obj
-	// 		// Per-face material ID
-	// 		int materialID = shapes[s].mesh.material_ids[f];
-	// 		Vertex vertex;
-
-	// 		for (size_t v = 0; v < fv; v++) {
-	// 			tinyobj::index_t idx = shapes[s].mesh.indices[index_offset +
-	// v];
-
-	// 			vertex.position.x = attrib.vertices[3 * idx.vertex_index +
-	// 0]; 			vertex.position.y = attrib.vertices[3 * idx.vertex_index +
-	// 1]; 			vertex.position.z = attrib.vertices[3 * idx.vertex_index +
-	// 2];
-
-	// 			vertex.normal.x = attrib.normals[3 * idx.normal_index + 0];
-	// 			vertex.normal.y = attrib.normals[3 * idx.normal_index + 1];
-	// 			vertex.normal.z = attrib.normals[3 * idx.normal_index + 2];
-
-	// 			if (!attrib.texcoords.empty()) {
-	// 				vertex.texCoords.x =
-	// 					attrib.texcoords[2 * idx.texcoord_index + 0];
-	// 				vertex.texCoords.y =
-	// 					attrib.texcoords[2 * idx.texcoord_index + 1];
-	// 			}
-
-	// 			meshesVertices[materialID].push_back(vertex);
-	// 		}
-	// 		index_offset += fv;
-	// 	}
-	// }
-
-	// int idx = 0;
-	// for (auto vertices : meshesVertices) {
-	// 	Material material;
-
-	// 	material.ambientColor =
-	// 		glm::vec3(materials[idx].ambient[0], materials[idx].ambient[1],
-	// 				  materials[idx].ambient[2]);
-	// 	material.diffuseColor =
-	// 		glm::vec3(materials[idx].diffuse[0], materials[idx].diffuse[1],
-	// 				  materials[idx].diffuse[2]);
-	// 	material.specularColor =
-	// 		glm::vec3(materials[idx].specular[0],
-	// materials[idx].specular[1], 				  materials[idx].specular[2]);
-	// 	material.shininess = materials[idx].shininess;
-	// 	material.isTextured = false;
-
-	// 	unsigned int diffuseTexture = -1;
-	// 	if (!materials[idx].diffuse_texname.empty()) {
-	// 		glGenTextures(1, &diffuseTexture);
-	// 		glBindTexture(GL_TEXTURE_2D, diffuseTexture);
-
-	// 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	// 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	// 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
-	// GL_LINEAR); 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
-	// GL_LINEAR);
-
-	// 		int x, y, n;
-	// 		std::string textureName = _assetsDir + "objs/" + objDirName + '/'
-	// + 								  materials[idx].diffuse_texname;
-	// 		stbi_set_flip_vertically_on_load(true);
-	// 		unsigned char *data =
-	// 			stbi_load((textureName).c_str(), &x, &y, &n, 0);
-	// 		if (data) {
-	// 			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, x, y, 0, GL_RGBA,
-	// 						 GL_UNSIGNED_BYTE, data);
-	// 			glGenerateMipmap(GL_TEXTURE_2D);
-	// 			material.isTextured = true;
-	// 		} else {
-	// 			std::cerr << "Failed to load texture: " + textureName
-	// 					  << std::endl;
-	// 			diffuseTexture = -1;
-	// 		}
-	// 		stbi_set_flip_vertically_on_load(false);
-	// 		stbi_image_free(data);
-	// 	}
-	// 	_meshes.push_back(new Mesh(vertices, material, diffuseTexture));
-	// 	idx++;
-	// }
+	_processNode(scene->mRootNode, scene, glm::mat4(1.0f));
 }
 
 Model::~Model(void) {
 	for (auto mesh : _meshes) delete mesh;
 }
 
+Mesh *Model::_processMesh(aiMesh *mesh, const aiScene *scene,
+						  glm::mat4 transform) {
+	std::vector<Vertex> vertices;
+	std::vector<unsigned int> indices;
+	GLuint diffuseTexture = -1;
+	Material material;
+
+	for (unsigned int i = 0; i < mesh->mNumVertices; i++) {
+		Vertex vertex;
+		glm::vec4 position =
+			glm::vec4(mesh->mVertices[i].x, mesh->mVertices[i].y,
+					  mesh->mVertices[i].z, 1.0f) *
+			transform;
+		vertex.position.x = position.x;
+		vertex.position.y = position.y;
+		vertex.position.z = position.z;
+		vertex.normal = glm::vec3(mesh->mNormals[i].x, mesh->mNormals[i].y,
+								  mesh->mNormals[i].z);
+		if (mesh->mTextureCoords[0])
+			vertex.texCoords = glm::vec2(mesh->mTextureCoords[0][i].x,
+										 mesh->mTextureCoords[0][i].y);
+		else
+			vertex.texCoords = glm::vec2(0.0f, 0.0f);
+		vertices.push_back(vertex);
+	}
+
+	// Set default material
+	material.diffuseColor = glm::vec3(0.5f);
+	material.ambientColor = glm::vec3(0.5f);
+	material.specularColor = glm::vec3(0.5f);
+	material.hasDiffuseTexture = false;
+	material.shininess = 64;
+
+	if (mesh->mMaterialIndex >= 0) {
+		aiColor3D color;
+		aiMaterial *mat = scene->mMaterials[mesh->mMaterialIndex];
+
+		mat->Get(AI_MATKEY_COLOR_AMBIENT, color);
+		material.ambientColor.x = color.r;
+		material.ambientColor.y = color.g;
+		material.ambientColor.z = color.b;
+		mat->Get(AI_MATKEY_COLOR_DIFFUSE, color);
+		material.diffuseColor.x = color.r;
+		material.diffuseColor.y = color.g;
+		material.diffuseColor.z = color.b;
+		mat->Get(AI_MATKEY_COLOR_SPECULAR, color);
+		material.specularColor.x = color.r;
+		material.specularColor.y = color.g;
+		material.specularColor.z = color.b;
+
+		mat->Get(AI_MATKEY_SHININESS, material.shininess);
+		std::cout << material.shininess << std::endl;
+	}
+	return new Mesh(vertices, material, diffuseTexture);
+}
+
+void Model::_processNode(aiNode *node, const aiScene *scene,
+						 glm::mat4 transform) {
+	transform *= toGlmMat4(node->mTransformation);
+
+	for (unsigned int i = 0; i < node->mNumMeshes; i++) {
+		aiMesh *mesh = scene->mMeshes[node->mMeshes[i]];
+		_meshes.push_back(_processMesh(mesh, scene, transform));
+	}
+	for (size_t i = 0; i < node->mNumChildren; i++) {
+		_processNode(node->mChildren[i], scene, transform);
+	}
+}
+
 void Model::draw(ShaderProgram const &shaderProgram) const {
-	// for (const auto mesh : _meshes) mesh->draw(shaderProgram);
-	(void)shaderProgram;
+	for (const auto mesh : _meshes) mesh->draw(shaderProgram);
 }
 
 std::vector<Mesh *> const Model::getMeshes(void) const { return _meshes; }

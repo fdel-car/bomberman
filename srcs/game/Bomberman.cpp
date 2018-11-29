@@ -43,7 +43,7 @@ void Bomberman::_mainMenu(void) {
 		glm::vec3(0.0, 0.0, 10.0), glm::vec3(0.0f),
 		std::vector<std::string>(_scenesNames.begin() + 1, _scenesNames.end()),
 		_save);
-	_light = new Light(glm::vec2(-10.0, -10.0), glm::vec3(0.0f), 10.0f);
+	_light = new Light(glm::vec2(-10.0, 5.0), glm::vec3(0.0f), 10.0f);
 	_entities.push_back(new Entity(glm::vec3(2.0, 0.5, -2.0), glm::vec3(0.0f),
 								   nullptr, "Cube", "Cube", "Cube"));
 	// _entities.push_back(new Entity(glm::vec3(2.0, 0.5, -2.0),

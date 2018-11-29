@@ -17,7 +17,7 @@ struct Material {
     vec3 ambientColor;
     vec3 diffuseColor;
     vec3 specularColor;
-    bool isTextured;
+    bool hasDiffuseTexture;
     float shininess;
 };
 
@@ -51,7 +51,7 @@ void main() {
     // Difuse
     vec3 diffuse;
     float diffCoeff = max(dot(_normal, -lightDir), 0.0f);
-    if (material.isTextured)
+    if (material.hasDiffuseTexture)
         diffuse = diffCoeff * texture(diffuseTexture, _texCoords).xyz * lightColor;
     else
         diffuse = diffCoeff * material.diffuseColor * lightColor;

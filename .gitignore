@@ -31,7 +31,6 @@
 *.out
 *.app
 
-SFML-2.5.1/*
 libs/
 build/
 .DS_Store
