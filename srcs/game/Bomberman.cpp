@@ -1,6 +1,8 @@
 #include "game/Bomberman.hpp"
 #include "game/entities/Box.hpp"
 #include "game/entities/EnemyOFDT.hpp"
+#include "game/entities/EnemyBasic.hpp"
+#include "game/entities/EnemyPutBomb.hpp"
 #include "game/entities/EnemyRunAway.hpp"
 #include "game/entities/Perk.hpp"
 #include "game/entities/Player.hpp"
@@ -82,18 +84,16 @@ void Bomberman::_forest(void) {
 	// _entities.push_back(new Perk(glm::vec3(1.0, 0.0, -7.0), _camera));
 
 	// Enemies
-	_entities.push_back(
-		new EnemyOFDT(glm::vec3(-7.0, 0.0, 7.0), glm::vec3(0.0f), _camera));
-	_entities.push_back(
-		new EnemyRunAway(glm::vec3(7.0, 0.0, 7.0), glm::vec3(0.0f), _camera));
 	// _entities.push_back(
 	// 	new EnemyOFDT(glm::vec3(-7.0, 0.0, 7.0), glm::vec3(0.0f), _camera));
 	// _entities.push_back(
+	// 	new EnemyPutBomb(glm::vec3(7.0, 0.0, -7.0), glm::vec3(0.0f), _camera));
+	// _entities.push_back(
 	// 	new EnemyRunAway(glm::vec3(-3.0, 0.0, 3.0), glm::vec3(0.0f), _camera));
 	// _entities.push_back(
-	// 	new EnemyOFDT(glm::vec3(3.0, 0.0, -3.0), glm::vec3(0.0f), _camera));
+	// 	new EnemyBasic(glm::vec3(3.0, 0.0, -3.0), glm::vec3(0.0f), _camera));
 	// _entities.push_back(
-	// 	new EnemyOFDT(glm::vec3(3.0, 0.0, 3.0), glm::vec3(0.0f), _camera));
+	// 	new EnemyBasic(glm::vec3(3.0, 0.0, 3.0), glm::vec3(0.0f), _camera));
 
 	// Walls/Boxes
 	for (int x = -8; x <= 8; x++) {
@@ -113,7 +113,7 @@ void Bomberman::_forest(void) {
 							   "Wall", "Wall", "Wall", _camera));
 				_entities.back()->scale(glm::vec3(1.0, 0.8, 1.0));
 			} else if (x != -7 && z != -7 && x != 7 && z != 7) {
-				_entities.push_back(new Box(glm::vec3(x, 0, z), _camera));
+				// _entities.push_back(new Box(glm::vec3(x, 0, z), _camera));
 			}
 		}
 	}

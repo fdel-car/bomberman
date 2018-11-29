@@ -31,7 +31,6 @@ Entity::Entity(glm::vec3 position, glm::vec3 eulerAngles, Collider *collider,
 	_rotationMatrix = glm::mat4(glm::quat(glm::radians(eulerAngles)));
 	_scaleMatrix = glm::mat4(1.0f);
 	_eulerAngles = eulerAngles;
-	_name = _modelName;
 	_gameEngine = nullptr;
 	_updateModelMatrix();
 

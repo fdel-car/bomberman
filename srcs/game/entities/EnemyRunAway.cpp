@@ -16,6 +16,7 @@ void EnemyRunAway::update(void) {
 		std::cerr << "Update as fail" << std::endl;
 		return;
 	}
-	findBestWay(cam, true);
+	findBestWay(cam, 3, true, true); // Run away and put bombs
+	// findBestWay(cam, 0, true); // Just run away
 	walk(cam);
 }

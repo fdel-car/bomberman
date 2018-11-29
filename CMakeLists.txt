@@ -38,6 +38,8 @@ set(SRCS
   srcs/game/entities/Bomb.cpp
   srcs/game/entities/AEnemy.cpp
   srcs/game/entities/EnemyOFDT.cpp
+  srcs/game/entities/EnemyBasic.cpp
+  srcs/game/entities/EnemyPutBomb.cpp
   srcs/game/entities/EnemyRunAway.cpp
   srcs/game/entities/Explosion.cpp
   srcs/game/entities/Box.cpp
@@ -70,7 +72,7 @@ set(HEADERS
   includes/engine/Model.hpp
   includes/engine/Mesh.hpp
   includes/engine/Skybox.hpp
-  
+
 
   includes/engine/GUI/GUI.hpp
 
@@ -82,6 +84,8 @@ set(HEADERS
   includes/game/entities/Bomb.hpp
   includes/game/entities/AEnemy.hpp
   includes/game/entities/EnemyOFDT.hpp
+  includes/game/entities/EnemyBasic.hpp
+  includes/game/entities/EnemyPutBomb.hpp
   includes/game/entities/EnemyRunAway.hpp
   includes/game/entities/Explosion.hpp
   includes/game/entities/Box.hpp

@@ -93,10 +93,10 @@ void GameEngine::run(void) {
 	while (true) {
 		// Get delta time in order to synch entities positions
 		_frameTs = Clock::now();
-		_deltaTime = (std::chrono::duration_cast<std::chrono::milliseconds>(
+		_deltaTime = (std::chrono::duration_cast<std::chrono::microseconds>(
 						  _frameTs - _lastFrameTs)
 						  .count()) /
-					 1000.0f;
+					 1000000.0f;
 		_lastFrameTs = _frameTs;
 
 		// Update inputs

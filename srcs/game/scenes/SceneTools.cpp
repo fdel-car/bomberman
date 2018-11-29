@@ -121,11 +121,11 @@ void SceneTools::_displayDeathScreen(GUI *graphicUI, int *_newSceneIdx,
 									 int restartIdx, int leaveIdx) {
 	int windowWidth = WINDOW_W / 4;
 	int windowHeight = WINDOW_H / 3;
-	int rowHeight = (windowHeight / 3) - 15;
+	int rowHeight = (windowHeight / 3) - 17;
 	int rowWidth = windowWidth - 10;
 	// int blockXPadding = 8;
-	(void)rowWidth;
-	(void)rowHeight;
+	// (void)rowWidth;
+	// (void)rowHeight;
 	// return;
 	if (graphicUI->uiStartBlock(
 			"DeathScreen", "Defeat !",
@@ -473,7 +473,7 @@ void SceneTools::_buildNewNode(size_t dist, size_t x, size_t z, size_t pos,
 							   bool saveInPrevious) {
 	for (const auto &entity : _entitiesInSquares[pos]) {
 		for (const auto &decor : _staticDecor) {
-			if (entity.second->getTag().compare(decor) == 0) return;
+			if (entity.second->getName().compare(decor) == 0) return;
 		}
 	}
 	if (_graphe.find(pos) == _graphe.end()) {
@@ -486,7 +486,7 @@ void SceneTools::_buildNewNode(size_t dist, size_t x, size_t z, size_t pos,
 				static_cast<size_t>(map.second->getPosition().z + _zOffset) ==
 					z) {
 				for (const auto &decor : _tmpDecor) {
-					if (map.second->getTag().compare(decor) == 0) {
+					if (map.second->getName().compare(decor) == 0) {
 						tmpNode->entitiesOnMe.push_back(map.second);
 						tmpNode->isAnEntity = true;
 					}
@@ -498,7 +498,11 @@ void SceneTools::_buildNewNode(size_t dist, size_t x, size_t z, size_t pos,
 		if (!saveInPrevious && _graphe.at(pos)->runAwayDist == 0) {
 			bool isPlayer = false;
 			for (const auto &entity : _graphe.at(pos)->entitiesOnMe) {
-				if (entity->getTag().compare("Player") == 0) isPlayer = true;
+				if (entity->getName().compare("Player") == 0) isPlayer = true;
+				for (const auto &vec : _tmpDecor) {
+					if (vec.compare(entity->getName()) == 0)
+						isPlayer = true;
+				}
 			}
 			if (!isPlayer) nodesByDepth->push_back(_graphe.at(pos));
 		}
