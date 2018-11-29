@@ -98,6 +98,8 @@ class SceneTools : public Camera {
 		_staticDecor;  // Decor who can't be destroy (like arena walls)
 	std::vector<std::string>
 		_tmpDecor;  // Decor who can be destroy (like bombes or brick walls)
+	std::vector<std::string>
+			_tmpDecorForRunAway;
 	bool _refreshAI;
 
    private:

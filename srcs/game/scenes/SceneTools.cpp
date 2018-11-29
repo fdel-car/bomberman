@@ -522,7 +522,7 @@ void SceneTools::_buildNewNode(size_t dist, size_t x, size_t z, size_t pos,
 			bool isPlayer = false;
 			for (const auto &entity : _graphe.at(pos)->entitiesOnMe) {
 				if (entity->getName().compare("Player") == 0) isPlayer = true;
-				for (const auto &vec : _tmpDecor) {
+				for (const auto &vec : _tmpDecorForRunAway) {
 					if (vec.compare(entity->getName()) == 0)
 						isPlayer = true;
 				}

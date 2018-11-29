@@ -15,10 +15,15 @@ void Forest::configAI(void) {
 
 	_tmpDecor.push_back("Explosion");
 	_tmpDecor.push_back("OFDT");
+	_tmpDecor.push_back("RunAway");
 	_tmpDecor.push_back("EPB");
 	_tmpDecor.push_back("Basic");
 	_tmpDecor.push_back("Bomb");
 	_tmpDecor.push_back("Box");
+
+	_tmpDecorForRunAway.push_back("Explosion");
+	_tmpDecorForRunAway.push_back("Bomb");
+	_tmpDecorForRunAway.push_back("Box");
 }
 
 void Forest::configGUI(GUI *graphicUI) {
