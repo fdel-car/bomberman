@@ -11,13 +11,19 @@ Box::Box(glm::vec3 position, Entity *sceneManager, size_t perkProb,
 		  new Collider(Collider::Rectangle, LayerTag::BoxLayer, 0.45f, 0.45f),
 		  "Box", "Box", "Box", 1, BoxLayer, WallLayer, 1.0f, sceneManager),
 	  _onFire(false),
+	  _hasSpawned(false),
 	  _timer(1.0f),
 	  _perkProb(perkProb),
 	  _toSpawn(toSpawn) {
 	scale(glm::vec3(0.9, 0.8, 0.9));
 }
 
-Box::~Box(void) {}
+Box::~Box(void) {
+	if (!_hasSpawned && _toSpawn != nullptr) {
+		delete _toSpawn;
+		_toSpawn = nullptr;
+	}
+}
 
 void Box::update(void) {
 	if (!_onFire) return;
@@ -28,6 +34,8 @@ void Box::update(void) {
 	if (_timer <= 0.0f) {
 		_needToBeDestroyed = true;
 		if (_toSpawn != nullptr) {
+			_hasSpawned = true;
+			_toSpawn->translate(getPosition() - _toSpawn->getPosition());
 			_gameEngine->addNewEntity(_toSpawn);
 		} else if (rand() % 100 < _perkProb) {
 			_gameEngine->addNewEntity(new Perk(getPosition(), _sceneManager));

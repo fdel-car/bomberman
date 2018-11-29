@@ -39,7 +39,6 @@ class Entity {
 	void rotate(float angle, glm::vec3 axis);
 	void rotateX(float angle);
 	void rotateY(float angle);
-	void moveFromPosition(glm::vec3 &newPos);
 	void translate(glm::vec3 translation);
 
 	// Animation *anim;

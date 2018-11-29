@@ -13,6 +13,7 @@ class Box : public Damageable {
 
    private:
 	bool _onFire;
+	bool _hasSpawned;
 	float _timer;
 	size_t _perkProb;
 	Entity *_toSpawn;

@@ -15,8 +15,8 @@ class Camera : public Entity {
 	std::vector<std::tuple<std::string, std::string>> const &getNeededImages()
 		const;
 	bool isGameRunning(void) const;
-	bool isPause(void) const;
 
+	virtual bool isPause(void) const;
 	virtual void drawGUI(GUI *graphicUI);
 	virtual void update(void);
 	virtual void configGUI(GUI *graphicUI);

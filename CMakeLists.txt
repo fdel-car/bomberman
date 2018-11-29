@@ -45,6 +45,7 @@ set(SRCS
   srcs/game/entities/Box.cpp
   srcs/game/entities/Damageable.cpp
   srcs/game/entities/Perk.cpp
+  srcs/game/entities/Portal.cpp
 )
 
 include_directories(includes)
@@ -91,6 +92,7 @@ set(HEADERS
   includes/game/entities/Box.hpp
   includes/game/entities/Damageable.hpp
   includes/game/entities/Perk.hpp
+  includes/game/entities/Portal.hpp
   includes/game/scenes/SceneTools.hpp
 )
 

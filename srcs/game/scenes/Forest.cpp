@@ -38,7 +38,9 @@ void Forest::drawGUI(GUI *graphicUI) {
 	}
 
 	if (_showPlayerHp) {
-		if (_showDeathScreen) {
+		if (_showVictoryScreen) {
+			_displayVictoryScreen(graphicUI, &_newSceneIdx, 0, 1, 0);
+		} else if (_showDeathScreen) {
 			_displayDeathScreen(graphicUI, &_newSceneIdx, 1, 0);
 		}
 		_displayPlayerHP(graphicUI, _playerHp);

@@ -6,7 +6,7 @@
 class EnemyRunAway : public AEnemy {
    public:
 	EnemyRunAway(glm::vec3 position, glm::vec3 eulerAngles,
-				 Entity *gameManager = nullptr);
+				 Entity *gameManager = nullptr, Entity *toSpawn = nullptr);
 	~EnemyRunAway(void);
 
 	virtual void update(void);

@@ -4,15 +4,27 @@
 #include "game/entities/Player.hpp"
 
 AEnemy::AEnemy(glm::vec3 position, glm::vec3 eulerAngles, std::string name,
-			   LayerTag tag, bool doMeleeDmg, Entity *sceneManager)
+			   LayerTag tag, bool doMeleeDmg, Entity *sceneManager,
+			   Entity *toSpawn)
 	: Damageable(glm::vec3(position.x, position.y + 0.4f, position.z),
 				 eulerAngles, new Collider(Collider::Circle, tag, 0.45f, 0.45f),
 				 "Enemy", name, "Enemy", 1, tag, EnemySpecialLayer, 2.0f,
-				 sceneManager), _bombCooldown(0.0f), _resetMoveCoolDown(0.0f),
-	  _doMeleeDmg(doMeleeDmg) {}
-AEnemy::~AEnemy(void) {}
+				 sceneManager),
+	  _bombCooldown(0.0f),
+	  _resetMoveCoolDown(0.0f),
+	  _doMeleeDmg(doMeleeDmg),
+	  _hasSpawned(false),
+	  _toSpawn(toSpawn) {}
 
-void AEnemy::findBestWay(SceneTools *cam, size_t distFromPlayer, bool runAway, bool putBomb) {
+AEnemy::~AEnemy(void) {
+	if (!_hasSpawned && _toSpawn != nullptr) {
+		delete _toSpawn;
+		_toSpawn = nullptr;
+	}
+}
+
+void AEnemy::findBestWay(SceneTools *cam, size_t distFromPlayer, bool runAway,
+						 bool putBomb) {
 	if (_bombCooldown >= 0.0f && putBomb)
 		_bombCooldown -= _gameEngine->getDeltaTime();
 	if (cam->getRefreshAI()) {
@@ -43,12 +55,12 @@ void AEnemy::_runIn(SceneTools *cam, size_t distFromPlayer, bool putBomb) {
 				_bombCooldown = 2.0f;
 				cam->putBomb(getPosition().x, getPosition().z, 2.0f, 1);
 				_runAway(cam, distFromPlayer, false);
-				return ;
+				return;
 			}
 		}
 		if (_bombCooldown >= 0.0f && putBomb) {
 			_runAway(cam, distFromPlayer, false);
-			return ;
+			return;
 		}
 		while (1) {
 			if (currentPos.prevNodesByDist.size() == 0) return;
@@ -58,8 +70,7 @@ void AEnemy::_runIn(SceneTools *cam, size_t distFromPlayer, bool putBomb) {
 				_targetMovement *= 0;
 				break;
 			}
-			if (currentPos.prevNodesByDist[bestDist].size() == 0)
-				break ;
+			if (currentPos.prevNodesByDist[bestDist].size() == 0) break;
 			if (bestDist != std::numeric_limits<std::size_t>::max())
 				currentPos = *currentPos.prevNodesByDist[bestDist][0];
 			_way.push_back(currentPos.z * mapHeight + currentPos.x);
@@ -86,16 +97,14 @@ void AEnemy::_runAway(SceneTools *cam, size_t distFromPlayer, bool putBomb) {
 				}
 		while (1) {
 			if (currentPos.runAwayNodesByDist.size() == 0) return;
-			if (xPlayer == currentPos.x && zPlayer == currentPos.z)
-				break;
+			if (xPlayer == currentPos.x && zPlayer == currentPos.z) break;
 			for (const auto &n : currentPos.runAwayNodesByDist)
 				if (bestDist > n.first) bestDist = n.first;
 			if (bestDist != std::numeric_limits<std::size_t>::max()) {
 				size_t playerDist = 0;
 				size_t idx = 0;
 				size_t saveIdx = 0;
-				for (const auto &v :
-					 currentPos.runAwayNodesByDist[bestDist]) {
+				for (const auto &v : currentPos.runAwayNodesByDist[bestDist]) {
 					if (v->dist > playerDist) {
 						playerDist = v->dist;
 						saveIdx = idx;
@@ -103,8 +112,7 @@ void AEnemy::_runAway(SceneTools *cam, size_t distFromPlayer, bool putBomb) {
 					idx++;
 				}
 				if (idx == 0) break;
-				currentPos =
-					*currentPos.runAwayNodesByDist[bestDist][saveIdx];
+				currentPos = *currentPos.runAwayNodesByDist[bestDist][saveIdx];
 			}
 			_way.push_back(currentPos.z * mapHeight + currentPos.x);
 		}
@@ -132,8 +140,7 @@ void AEnemy::randomMove(SceneTools *cam, float timer) {
 		if (x < mapWidth - 1) {
 			pos = z * mapHeight + (x + 1);
 			if (cam->getEntitiesInSquares()[pos].size() == 0) {
-				if (_way.size() != 0 && std::rand() % 4 != 0)
-					return ;
+				if (_way.size() != 0 && std::rand() % 4 != 0) return;
 				_way.clear();
 				for (size_t tmpX = x + 1; tmpX < mapWidth - 1; tmpX++) {
 					pos = z * mapHeight + tmpX;
@@ -144,8 +151,7 @@ void AEnemy::randomMove(SceneTools *cam, float timer) {
 		if (z > 1) {
 			pos = (z - 1) * mapHeight + x;
 			if (cam->getEntitiesInSquares()[pos].size() == 0) {
-				if (_way.size() != 0 && std::rand() % 4 != 0)
-					return ;
+				if (_way.size() != 0 && std::rand() % 4 != 0) return;
 				_way.clear();
 				for (size_t tmpZ = z - 1; tmpZ > 0; tmpZ--) {
 					pos = tmpZ * mapHeight + x;
@@ -156,8 +162,7 @@ void AEnemy::randomMove(SceneTools *cam, float timer) {
 		if (z < mapHeight - 1) {
 			pos = (z + 1) * mapHeight + x;
 			if (cam->getEntitiesInSquares()[pos].size() == 0) {
-				if (_way.size() != 0 && std::rand() % 4 != 0)
-					return ;
+				if (_way.size() != 0 && std::rand() % 4 != 0) return;
 				_way.clear();
 				for (size_t tmpZ = z + 1; tmpZ < mapHeight - 1; tmpZ++) {
 					pos = tmpZ * mapHeight + x;
@@ -210,5 +215,14 @@ void AEnemy::onCollisionEnter(Entity *entity) {
 	if (_doMeleeDmg) {
 		Player *player = dynamic_cast<Player *>(entity);
 		if (player != nullptr) player->takeDamage();
+	}
+}
+
+void AEnemy::onDeath(void) {
+	Damageable::onDeath();
+	if (_toSpawn != nullptr && !_hasSpawned) {
+		_hasSpawned = true;
+		_toSpawn->translate(getPosition() - _toSpawn->getPosition());
+		_gameEngine->addNewEntity(_toSpawn);
 	}
 }

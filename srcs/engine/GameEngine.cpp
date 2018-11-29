@@ -112,7 +112,7 @@ void GameEngine::run(void) {
 		if (newSceneIdx != -1) break;
 		if (!_camera->isGameRunning()) break;
 
-		// Freeze everything else if camera is in debug
+		// Freeze everything else if camera tells so
 		if (!_camera->isPause()) {
 			_light->update();
 			// Update game entities states
@@ -368,7 +368,7 @@ void GameEngine::moveEntities(void) {
 			// Collide with colliders (do not consider shortcut move yet)
 			while (!collidedEntities.empty() &&
 				   !entity->getNeedToBeDestroyed()) {
-								idx = checkCollision(entity, futureMovement, collidedEntities);
+				idx = checkCollision(entity, futureMovement, collidedEntities);
 				if (idx != collidedEntities.size()) {
 					hasCollided = true;
 					// Other entity will always be a collider

@@ -34,6 +34,8 @@ class SceneTools : public Camera {
 			   glm::vec3 const &eulerAngles);
 	virtual ~SceneTools(void);
 
+	virtual bool isPause(void) const;
+
 	virtual void tellPosition(Entity *entity);
 	virtual void tellDestruction(Entity *entity);
 	virtual void configAI(void);
@@ -44,6 +46,7 @@ class SceneTools : public Camera {
 				 size_t range);
 	void putExplosion(float xCenter, float zCenter, size_t range);
 	void tellPlayerHp(size_t hp);
+	void tellLevelSuccess();
 
 	size_t const &getPlayerPos() const;
 	size_t const &getRunAwayPos() const;
@@ -64,6 +67,8 @@ class SceneTools : public Camera {
 	bool _displayPauseMenu(GUI *graphicUI, int *_newSceneIdx, int restartIdx,
 						   int leaveIdx);
 	void _displayPlayerHP(GUI *graphicUI, size_t hp);
+	void _displayVictoryScreen(GUI *graphicUI, int *_newSceneIdx, int nextIdx,
+							   int restartIdx, int leaveIdx);
 	void _displayDeathScreen(GUI *graphicUI, int *_newSceneIdx, int restartIdx,
 							 int leaveIdx);
 	bool _btnHover(GUI *graphicUI, int rectWidth, int rectHeight, int xRectPos,
@@ -87,6 +92,7 @@ class SceneTools : public Camera {
 	size_t _playerMaxHp;
 	size_t _playerHp;
 	bool _showPlayerHp;
+	bool _showVictoryScreen;
 	bool _showDeathScreen;
 	size_t _mapWidth;
 	size_t _mapHeight;

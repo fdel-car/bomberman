@@ -12,6 +12,7 @@ SceneTools::SceneTools(size_t mapWidth, size_t mapHeight, glm::vec3 const &pos,
 	  _playerMaxHp(0),
 	  _playerHp(0),
 	  _showPlayerHp(false),
+	  _showVictoryScreen(false),
 	  _showDeathScreen(false),
 	  _mapWidth(mapWidth),
 	  _mapHeight(mapHeight),
@@ -26,6 +27,10 @@ SceneTools::SceneTools(size_t mapWidth, size_t mapHeight, glm::vec3 const &pos,
 }
 
 SceneTools::~SceneTools(void) { _clearGraphe(); }
+
+bool SceneTools::isPause(void) const {
+	return _debugMode || _isPause || _showVictoryScreen || _showDeathScreen;
+}
 
 void SceneTools::_displayDialogue(GUI *graphicUI, int *searchWord,
 								  int *lastWord, int *startStrIdx,
@@ -115,6 +120,39 @@ void SceneTools::_displayPlayerHP(GUI *graphicUI, size_t hp) {
 	graphicUI->uiEndBlock();
 	activeStyle = defaultStyle;
 	graphicUI->setStyle(activeStyle);
+}
+
+void SceneTools::_displayVictoryScreen(GUI *graphicUI, int *_newSceneIdx,
+									   int nextIdx, int restartIdx,
+									   int leaveIdx) {
+	int windowWidth = WINDOW_W / 4;
+	int windowHeight = WINDOW_H / 3;
+	int rowHeight = (windowHeight / 3) - 17;
+	// int rowWidth = windowWidth - 10;
+	// int blockXPadding = 8;
+	// (void)rowWidth;
+	// (void)rowHeight;
+	// return;
+	if (graphicUI->uiStartBlock(
+			"VictoryScreen", "Victory !",
+			nk_rect((WINDOW_W / 2) - (WINDOW_W / 8), (WINDOW_H / 3),
+					windowWidth, windowHeight),
+			NK_WINDOW_NO_SCROLLBAR | NK_WINDOW_BORDER | NK_WINDOW_TITLE)) {
+		rowHeight += 10;
+		if (graphicUI->uiButton(windowWidth, rowHeight, 0, "Next", "",
+								"14_BOMBERMAN")) {
+			*_newSceneIdx = nextIdx;
+		}
+		if (graphicUI->uiButton(windowWidth, rowHeight, 0, "Restart", "",
+								"14_BOMBERMAN")) {
+			*_newSceneIdx = restartIdx;
+		}
+		if (graphicUI->uiButton(windowWidth, rowHeight, 0, "Quit", "",
+								"14_BOMBERMAN")) {
+			*_newSceneIdx = leaveIdx;
+		}
+	}
+	graphicUI->uiEndBlock();
 }
 
 void SceneTools::_displayDeathScreen(GUI *graphicUI, int *_newSceneIdx,
@@ -386,6 +424,12 @@ void SceneTools::tellPlayerHp(size_t hp) {
 	}
 }
 
+void SceneTools::tellLevelSuccess() {
+	if (_playerHp != 0) {
+		_showVictoryScreen = true;
+	}
+}
+
 std::map<size_t, std::vector<size_t>> const &SceneTools::getEntitiesInfos()
 	const {
 	return _entitiesInfos;
@@ -506,8 +550,7 @@ void SceneTools::_buildNewNode(size_t dist, size_t x, size_t z, size_t pos,
 			for (const auto &entity : _graphe.at(pos)->entitiesOnMe) {
 				if (entity->getName().compare("Player") == 0) isPlayer = true;
 				for (const auto &vec : _tmpDecor) {
-					if (vec.compare(entity->getName()) == 0)
-						isPlayer = true;
+					if (vec.compare(entity->getName()) == 0) isPlayer = true;
 				}
 			}
 			if (!isPlayer) nodesByDepth->push_back(_graphe.at(pos));
