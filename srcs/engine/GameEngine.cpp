@@ -146,6 +146,9 @@ void GameEngine::run(void) {
 						for (auto collidedEntity : collidedEntities) {
 							initialCollisions.push_back(
 								collidedEntity->getId());
+							// Add for other entity too
+							_initialCollisionMap[collidedEntity->getId()]
+								.push_back(newEntity->getId());
 						}
 						_initialCollisionMap[newEntity->getId()] =
 							initialCollisions;
@@ -195,11 +198,13 @@ void GameEngine::run(void) {
 					}
 					for (size_t idIdx = initialCollisions.second.size() - 1;
 						 idIdx < initialCollisions.second.size(); idIdx--) {
-						if (!doCollide(
-								entityA->getCollider(), entityA->getPosition(),
-								getEntityById(initialCollisions.second[idIdx])))
+						if (!doCollide(entityA->getCollider(),
+									   entityA->getPosition(),
+									   getEntityById(
+										   initialCollisions.second[idIdx]))) {
 							initialCollisions.second.erase(
 								initialCollisions.second.begin() + idIdx);
+						}
 					}
 					if (initialCollisions.second.empty())
 						idxToDelete.push_back(initialCollisions.first);
@@ -298,28 +303,31 @@ void GameEngine::moveEntities(void) {
 	size_t idx = 0;
 
 	size_t idxOfCollision = 0;
+	bool firstLoop = true;
+	bool hasCollided = true;
 	for (auto entity : _allEntities) {
 		if (!entity->getNeedToBeDestroyed()) {
 			collider = entity->getCollider();
 			collidedEntities.clear();
 			collidedTriggers.clear();
 			isShortcut = false;
+			firstLoop = true;
+			hasCollided = false;
 			futureMovement *= 0;
 
 			// Skip checks if entity doesnt have a collider
 			if (collider != nullptr) {
 				getPossibleCollisions(entity, collidedEntities,
 									  collidedTriggers, _allEntities);
+
 				// Init vars before first loop
 				if (entity->getTargetMovement().x != 0.0f ||
 					entity->getTargetMovement().z != 0.0f) {
 					futureMovement.x = entity->getTargetMovement().x;
 					futureMovement.z = entity->getTargetMovement().z;
-					bool firstLoop = true;
 					while (collidedEntities.size() != 0) {
 						idxOfCollision = checkCollision(entity, futureMovement,
 														collidedEntities);
-
 						// Update entities to check collisions with
 						if (idxOfCollision != 0) {
 							collidedEntities.erase(
@@ -343,40 +351,42 @@ void GameEngine::moveEntities(void) {
 								firstLoop = false;
 							}
 
+							// Loop again only for big movements
+							if (abs(futureMovement.x) <= 0.5f &&
+								abs(futureMovement.z) <= 0.5f) {
+								break;
+							}
 							// Slightly decrease futureMovement to see if
 							// smaller movement can be performed
 							futureMovement.x /= 2.0f;
 							futureMovement.z /= 2.0f;
-
-							// Safe break to avoid infinite loop
-							if (abs(futureMovement.x) <= EPSILON &&
-								abs(futureMovement.z) <= EPSILON) {
-								break;
-							}
 						}
 					}
 				}
 			}
 
 			// Collide with colliders (do not consider shortcut move yet)
-			bool hasCollided = false;
 			while (!collidedEntities.empty() &&
 				   !entity->getNeedToBeDestroyed()) {
-				idx = checkCollision(entity, futureMovement, collidedEntities);
+								idx = checkCollision(entity, futureMovement, collidedEntities);
 				if (idx != collidedEntities.size()) {
 					hasCollided = true;
 					// Other entity will always be a collider
-					collidedEntities[idx]->onCollisionEnter(entity);
+					if (!collidedEntities[idx]->getNeedToBeDestroyed())
+						collidedEntities[idx]->onCollisionEnter(entity);
 					// Check if we are a trigger or a collider
-					if (collider->isTrigger)
-						entity->onTriggerEnter(collidedEntities[idx]);
-					else
-						entity->onCollisionEnter(collidedEntities[idx]);
+					if (!entity->getNeedToBeDestroyed()) {
+						if (collider->isTrigger)
+							entity->onTriggerEnter(collidedEntities[idx]);
+						else
+							entity->onCollisionEnter(collidedEntities[idx]);
+					}
 					// Clear entities
 					collidedEntities.erase(collidedEntities.begin(),
 										   collidedEntities.begin() + idx + 1);
-				} else
+				} else {
 					collidedEntities.clear();
+				}
 			}
 			// Apply shortcut and clear collisions
 			if (isShortcut) {
@@ -920,150 +930,23 @@ bool GameEngine::tryShortcut(Entity *entity, glm::vec3 &futureMovement,
 	return false;
 }
 
-void GameEngine::buttonStateChanged(std::string buttonName, bool isPressed) {
-	if (keyboardMap.find(buttonName) == keyboardMap.end()) {
-		std::runtime_error("Unkown Mapping for '" + buttonName + "'!");
+void GameEngine::buttonStateChanged(int keyID, bool isPressed) {
+	if (keyboardMap.find(keyID) == keyboardMap.end()) {
+		KeyState keyState;
+		keyboardMap[keyID] = keyState;
 	}
-	keyboardMap[buttonName].currFrame = isPressed;
+	keyboardMap[keyID].currFrame = isPressed;
 }
 
-bool GameEngine::isKeyPressed(std::string keyName) {
-	return keyboardMap[keyName].currFrame;
+bool GameEngine::isKeyPressed(int keyID) {
+	auto result = keyboardMap.find(keyID);
+	return result != keyboardMap.end() && result->second.currFrame;
 }
 
-bool GameEngine::isKeyJustPressed(std::string keyName) {
-	return keyboardMap[keyName].currFrame && !keyboardMap[keyName].prevFrame;
+bool GameEngine::isKeyJustPressed(int keyID) {
+	auto result = keyboardMap.find(keyID);
+	return result != keyboardMap.end() && result->second.currFrame &&
+		   !result->second.prevFrame;
 }
 
-static std::map<std::string, KeyState>
-generateKeyboardMap() {  // static here is "internal linkage"
-	KeyState keyState;
-	std::map<std::string, KeyState> map = std::map<std::string, KeyState>();
-
-	keyState.currFrame = false;
-	keyState.prevFrame = false;
-
-	map["UNKNOWN"] = keyState;
-	map["SPACE"] = keyState;
-	map["APOSTROPHE"] = keyState;
-	map["COMMA"] = keyState;
-	map["MINUS"] = keyState;
-	map["PERIOD"] = keyState;
-	map["SLASH"] = keyState;
-	map["0"] = keyState;
-	map["1"] = keyState;
-	map["2"] = keyState;
-	map["3"] = keyState;
-	map["4"] = keyState;
-	map["5"] = keyState;
-	map["6"] = keyState;
-	map["7"] = keyState;
-	map["8"] = keyState;
-	map["9"] = keyState;
-	map[";"] = keyState;
-	map["EQUAL"] = keyState;
-	map["A"] = keyState;
-	map["B"] = keyState;
-	map["C"] = keyState;
-	map["D"] = keyState;
-	map["E"] = keyState;
-	map["F"] = keyState;
-	map["G"] = keyState;
-	map["H"] = keyState;
-	map["I"] = keyState;
-	map["L"] = keyState;
-	map["K"] = keyState;
-	map["L"] = keyState;
-	map["M"] = keyState;
-	map["N"] = keyState;
-	map["O"] = keyState;
-	map["P"] = keyState;
-	map["Q"] = keyState;
-	map["R"] = keyState;
-	map["S"] = keyState;
-	map["T"] = keyState;
-	map["U"] = keyState;
-	map["V"] = keyState;
-	map["W"] = keyState;
-	map["X"] = keyState;
-	map["Y"] = keyState;
-	map["Z"] = keyState;
-	map["["] = keyState;
-	map["\\"] = keyState;
-	map["]"] = keyState;
-	map["`"] = keyState;
-	map["WORLD_1"] = keyState;
-	map["WORLD_2"] = keyState;
-	map["ESCAPE"] = keyState;
-	map["ENTER"] = keyState;
-	map["TAB"] = keyState;
-	map["BACKSPACE"] = keyState;
-	map["INSERT"] = keyState;
-	map["DELETE"] = keyState;
-	map["RIGHT"] = keyState;
-	map["LEFT"] = keyState;
-	map["DOWN"] = keyState;
-	map["UP"] = keyState;
-	map["PAGE_UP"] = keyState;
-	map["PAGE_DOWN"] = keyState;
-	map["HOME"] = keyState;
-	map["END"] = keyState;
-	map["CAPS_LOCK"] = keyState;
-	map["SCROLL_LOCK"] = keyState;
-	map["NUM_LOCK"] = keyState;
-	map["PRINT_SCREEN"] = keyState;
-	map["PAUSE"] = keyState;
-	map["F1"] = keyState;
-	map["F2"] = keyState;
-	map["F3"] = keyState;
-	map["F4"] = keyState;
-	map["F5"] = keyState;
-	map["F6"] = keyState;
-	map["F7"] = keyState;
-	map["F8"] = keyState;
-	map["F9"] = keyState;
-	map["F10"] = keyState;
-	map["F11"] = keyState;
-	map["F12"] = keyState;
-	map["F13"] = keyState;
-	map["F14"] = keyState;
-	map["F15"] = keyState;
-	map["F16"] = keyState;
-	map["F17"] = keyState;
-	map["F18"] = keyState;
-	map["F19"] = keyState;
-	map["F20"] = keyState;
-	map["F21"] = keyState;
-	map["F22"] = keyState;
-	map["F23"] = keyState;
-	map["F24"] = keyState;
-	map["F25"] = keyState;
-	map["KP_0"] = keyState;
-	map["KP_1"] = keyState;
-	map["KP_2"] = keyState;
-	map["KP_3"] = keyState;
-	map["KP_4"] = keyState;
-	map["KP_5"] = keyState;
-	map["KP_6"] = keyState;
-	map["KP_7"] = keyState;
-	map["KP_8"] = keyState;
-	map["KP_9"] = keyState;
-	map["KP_DECIMAL"] = keyState;
-	map["KP_DIVIDE"] = keyState;
-	map["KP_MULTIPLY"] = keyState;
-	map["KP_SUBTRACT"] = keyState;
-	map["KP_ADD"] = keyState;
-	map["KP_ENTER"] = keyState;
-	map["KP_EQUAL"] = keyState;
-	map["LEFT_SHIFT"] = keyState;
-	map["LEFT_CONTROL"] = keyState;
-	map["LEFT_ALT"] = keyState;
-	map["LEFT_SUPER"] = keyState;
-	map["RIGHT_SHIFT"] = keyState;
-	map["RIGHT_CONTROL"] = keyState;
-	map["RIGHT_ALT"] = keyState;
-	map["RIGHT_SUPER"] = keyState;
-	map["MENU"] = keyState;
-	return map;
-}
-std::map<std::string, KeyState> GameEngine::keyboardMap = generateKeyboardMap();
+std::map<int, KeyState> GameEngine::keyboardMap = std::map<int, KeyState>();

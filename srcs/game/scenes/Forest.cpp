@@ -31,7 +31,7 @@ void Forest::configGUI(GUI *graphicUI) {
 }
 
 void Forest::drawGUI(GUI *graphicUI) {
-	if (!_debugMode && (_pauseMenu || _gameEngine->isKeyPressed("ESCAPE"))) {
+	if (!_debugMode && (_pauseMenu || _gameEngine->isKeyPressed(KEY_ESCAPE))) {
 		_pauseMenu = _displayPauseMenu(graphicUI, &_newSceneIdx, 1, 0);
 		_isPause = _pauseMenu;
 	}

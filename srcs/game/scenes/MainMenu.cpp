@@ -188,10 +188,10 @@ void MainMenu::_updateVarsFromSave(void) {
 	len2 = 1;
 	len3 = 1;
 	len4 = 1;
-	_upChoice[0] = _save.upKey.at(0);
-	_leftChoice[0] = _save.leftKey.at(0);
-	_downChoice[0] = _save.downKey.at(0);
-	_rightChoice[0] = _save.rightKey.at(0);
+	_upChoice[0] = static_cast<char>(_save.upKey);
+	_leftChoice[0] = static_cast<char>(_save.leftKey);
+	_downChoice[0] = static_cast<char>(_save.downKey);
+	_rightChoice[0] = static_cast<char>(_save.rightKey);
 	_isFullScreen = _save.isFullScreen;
 	_resolutionsIdx = _save.resolutionsIdx;
 	_musicVolume = _save.musicVolume;

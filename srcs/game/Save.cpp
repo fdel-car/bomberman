@@ -72,6 +72,7 @@ Save::Save(void) {
 
 		try {
 			from_json(parsedJson, *this);
+			if (!areValuesGood()) initNewSave();
 		} catch (std::exception e) {
 			initNewSave();
 		}
@@ -97,10 +98,10 @@ void Save::doSave(void) {
 }
 
 void Save::resetSettings(void) {
-	upKey = "W";
-	leftKey = "A";
-	downKey = "S";
-	rightKey = "D";
+	upKey = KEY_W;
+	leftKey = KEY_A;
+	downKey = KEY_S;
+	rightKey = KEY_D;
 	level = 0;
 	isFullScreen = 0;
 	resolutionsIdx = 1;
@@ -116,8 +117,14 @@ void Save::resetAll(void) {
 }
 
 bool Save::areValuesGood(void) {
-	if (upKey.size() != 1 || downKey.size() != 1 || leftKey.size() != 1 ||
-		rightKey.size() != 1)
+	if (!isalpha(upKey) || !isupper(upKey) || !isalpha(downKey) ||
+		!isupper(downKey) || !isalpha(leftKey) || !isupper(leftKey) ||
+		!isalpha(rightKey) || !isupper(rightKey))
+		return false;
+	if (isFullScreen > 1) return false;
+	if (resolutionsIdx >= RESOLUTIONS.size()) return false;
+	if (musicVolume == 0 || musicVolume > 10 || soundsVolume == 0 ||
+		soundsVolume > 10)
 		return false;
 	return true;
 }

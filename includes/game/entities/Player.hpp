@@ -13,6 +13,7 @@ class Player : public Damageable {
 	virtual void update(void);
 	virtual void onTakeDamage(void);
 	virtual void onDeath(void);
+	virtual void onCollisionEnter(Entity *entity);
 
 	void gotSpeedBoost(float boost);
 	void gotBombRangeBoost(size_t boost);

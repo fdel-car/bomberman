@@ -9,8 +9,15 @@ class Bomb : public Damageable {
 
 	virtual void update(void);
 	virtual void onDeath(void);
+	virtual void onCollisionEnter(Entity *entity);
+
+	void pushBomb(int xSign, int zSign, size_t pusherID);
 
    private:
 	float _timer;
 	size_t _range;
+	size_t _pusherID;
+	float _slideSpeed;
+	float _xDirection;
+	float _zDirection;
 };

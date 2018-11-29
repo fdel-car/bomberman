@@ -297,26 +297,33 @@ void SceneTools::printMapInfo(void) {
 	}
 }
 
-bool SceneTools::putBomb(float xCenter, float zCenter, float explosionTimer,
-						 size_t range) {
+bool SceneTools::canPutBomb(float xCenter, float zCenter) {
 	size_t xCoord = static_cast<size_t>(xCenter + _xOffset);
 	size_t zCoord = static_cast<size_t>(zCenter + _zOffset);
-	bool canPutBomb = true;
+	bool canPut = true;
 	for (auto entity : _entitiesInSquares[zCoord * _mapWidth + xCoord]) {
 		if (entity.second->getTag().compare("Bomb") == 0 ||
 			entity.second->getTag().compare("Wall") == 0 ||
 			entity.second->getTag().compare("Box") == 0) {
-			canPutBomb = false;
+			canPut = false;
 			break;
 		}
 	}
+	return canPut;
+}
+
+bool SceneTools::putBomb(float xCenter, float zCenter, float explosionTimer,
+						 size_t range) {
 	// Add bomb to entities
-	if (canPutBomb) {
+	if (canPutBomb(xCenter, zCenter)) {
+		size_t xCoord = static_cast<size_t>(xCenter + _xOffset);
+		size_t zCoord = static_cast<size_t>(zCenter + _zOffset);
 		_gameEngine->addNewEntity(new Bomb(
 			glm::vec3(xCoord - _xOffset + 0.5f, 0.0f, zCoord - _zOffset + 0.5f),
 			explosionTimer, range, this));
+		return true;
 	}
-	return canPutBomb;
+	return false;
 }
 
 void SceneTools::putExplosion(float xCenter, float zCenter, size_t range) {
@@ -353,11 +360,10 @@ void SceneTools::_putExplosionsInDirection(size_t xCoord, size_t zCoord,
 			if (entity.second->getTag().compare("Wall") == 0) {
 				canPutExplosion = false;
 				break;
-			} else if (entity.second->getTag().compare("Box") == 0) {
-				// Force stop when destroying first Box
+			} else if (entity.second->getTag().compare("Box") == 0 ||
+					   entity.second->getTag().compare("Bomb") == 0) {
+				// Force stop when destroying first Box/Bomb
 				rangeIdx = range;
-			} else if (entity.second->getTag().compare("Bomb") == 0) {
-				// TODO: one explosion trigger other bombs to explode ?
 			}
 		}
 		if (canPutExplosion) {

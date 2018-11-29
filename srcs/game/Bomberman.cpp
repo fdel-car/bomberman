@@ -19,7 +19,6 @@ Bomberman::Bomberman(void) : AGame(10) {
 	setLayerCollision(WallLayer, WallLayer, false);
 	setLayerCollision(WallLayer, BoxLayer, false);
 	setLayerCollision(WallLayer, ExplosionLayer, false);
-	setLayerCollision(WallLayer, BombLayer, false);
 	setLayerCollision(WallLayer, PerkLayer, false);
 
 	setLayerCollision(PlayerLayer, EnemySpecialLayer, false);
@@ -83,7 +82,7 @@ void Bomberman::_forest(void) {
 
 	// Enemies
 	_entities.push_back(
-		new EnemyOFDT(glm::vec3(-7.0, 0.0, 7.0), glm::vec3(0.0f), _camera));
+		new EnemyOFDT(glm::vec3(7.0, 0.0, -7.0), glm::vec3(0.0f), _camera));
 	_entities.push_back(
 		new EnemyRunAway(glm::vec3(7.0, 0.0, 7.0), glm::vec3(0.0f), _camera));
 	// _entities.push_back(
