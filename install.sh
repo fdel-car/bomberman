@@ -49,7 +49,7 @@ fi
 # stb_image install
 if [ ! -d "libs/includes/stb_image" ]; then
     mkdir -p libs/includes/stb_image
-    curl -L -o libs/includes/stb_image/stb_image.h "https://drive.google.com/uc?export=download&id=1u29S1t-cOXgSlJv_e8D8Qjn929VyT2Go"
+    curl -L -o libs/includes/stb_image/stb_image.h "https://drive.google.com/uc?export=download&id=1jBJNXJDpU7lbIIsNup9U0vgTyx33UKeN"
 fi
 
 # Nuklear install
