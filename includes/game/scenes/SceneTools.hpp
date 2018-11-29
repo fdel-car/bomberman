@@ -66,6 +66,7 @@ class SceneTools : public Camera {
 	void _displayPlayerHP(GUI *graphicUI, size_t hp);
 	void _displayDeathScreen(GUI *graphicUI, int *_newSceneIdx, int restartIdx,
 							 int leaveIdx);
+	void _displayTimer(GUI *graphicUI, float *currentTime, bool isPause);
 	bool _btnHover(GUI *graphicUI, int rectWidth, int rectHeight, int xRectPos,
 				   int yRectPos, int fontSize, std::string fontName,
 				   int *extraSizePlay, int maxSize, bool *isPlayButtonHover,

@@ -4,7 +4,7 @@
 Forest::Forest(glm::vec3 const &pos, glm::vec3 const &eulerAngles)
 	:  // Camera(pos, eulerAngles),
 	  SceneTools(17, 17, pos, eulerAngles),
-	  _cooldown(0.0f) {
+	  _timer(181), _cooldown(0.0f) {
 	configAI();
 }
 
@@ -44,6 +44,12 @@ void Forest::drawGUI(GUI *graphicUI) {
 		_displayPlayerHP(graphicUI, _playerHp);
 	}
 
+	if (!_isPause && !_showDeathScreen)
+		_displayTimer(graphicUI, &_timer, false);
+	else
+		_displayTimer(graphicUI, &_timer, true);
+	if ((int)_timer == 0)
+		_showDeathScreen = true;
 	// static int searchWord = 0;
 	// static int lastWord = 0;
 	// static int startStrIdx = 0;
