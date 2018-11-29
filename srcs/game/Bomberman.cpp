@@ -96,6 +96,9 @@ void Bomberman::_forest(void) {
 	// 	new EnemyOFDT(glm::vec3(3.0, 0.0, 3.0), glm::vec3(0.0f), _camera));
 
 	// Walls/Boxes
+	size_t totalBoxes = 120;
+	size_t avgPerks = 60;
+	size_t perkProb = (avgPerks * 100) / totalBoxes;
 	for (int x = -8; x <= 8; x++) {
 		for (int z = -8; z <= 8; z++) {
 			if (abs(x) == 8 || abs(z) == 8) {

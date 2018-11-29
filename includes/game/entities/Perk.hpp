@@ -6,7 +6,7 @@ enum PerkType { SpeedBoost = 0, BombRange, MaxBomb, Damage, KickBomb };
 
 class Perk : public Entity {
    public:
-	Perk(glm::vec3 position, Entity *gameManager);
+	Perk(glm::vec3 position, Entity *sceneManager);
 	virtual ~Perk(void);
 
 	virtual void update(void);
