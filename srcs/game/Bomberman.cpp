@@ -113,7 +113,7 @@ void Bomberman::_forest(void) {
 							   "Wall", "Wall", "Wall", _camera));
 				_entities.back()->scale(glm::vec3(1.0, 0.8, 1.0));
 			} else if (x != -7 && z != -7 && x != 7 && z != 7) {
-				// _entities.push_back(new Box(glm::vec3(x, 0, z), _camera));
+				_entities.push_back(new Box(glm::vec3(x, 0, z), _camera));
 			}
 		}
 	}
