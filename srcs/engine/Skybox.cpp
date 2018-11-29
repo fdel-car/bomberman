@@ -2,18 +2,13 @@
 
 extern std::string _assetsDir;
 
-std::thread *Skybox::loadImageThread = nullptr;
-
 Skybox::Skybox(std::string str)
 	: Entity(glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0f), nullptr, "", "Skybox",
 			 "Skybox"),
 	  nameTextureDir(str) {
 	_initSkyboxFaces();
 	_initBuffer();
-
-	loadImageThread = new std::thread(_initCubeMap);
-
-	// _initCubeMap();
+	_initCubeMap();
 }
 
 Skybox::~Skybox(void) {}

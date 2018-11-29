@@ -21,6 +21,13 @@
 
 #define EPSILON 0.01f
 
+// For Threads
+#include <atomic>
+
+#define LOAD_IDLE 0
+#define LOAD_STARTED 1
+#define LOAD_FINISHED 2
+
 typedef std::chrono::high_resolution_clock Clock;
 
 struct KeyState {
@@ -83,6 +90,7 @@ class GameEngine {
 	GameEngine &operator=(GameEngine const &rhs);
 
 	bool initScene(size_t newSceneIdx);
+	void initLoadScene(void);
 	void moveEntities(void);
 	void getPossibleCollisions(Entity *entity,
 							   std::vector<Entity *> &possibleCollisions,
@@ -111,6 +119,10 @@ class GameEngine {
 	Clock::time_point _lastFrameTs;
 	double _deltaTime;
 	AudioManager *_audioManager;
+
+	// Thread
+	std::thread _loadSceneThread;
+	std::atomic_int _loadState;
 
 	// Game model vars
 	bool _running;

@@ -3,13 +3,6 @@
 #include "engine/AGame.hpp"
 #include "game/Save.hpp"
 
-// For Threads
-#include <atomic>
-
-#define LOAD_IDLE 0
-#define LOAD_STARTED 1
-#define LOAD_FINISHED 2
-
 enum LayerTag {
 	WallLayer = 0,
 	BoxLayer,
@@ -37,10 +30,11 @@ class Bomberman : public AGame {
 	std::map<std::string, Scene> _scenesMap;
 	
 
-	std::atomic_int loadState;
+	// std::atomic_int loadState;
 
 	void _initScenes(void);
 
 	void _mainMenu(void);
 	void _forest(void);
+	void _loadScene(void);
 };

@@ -38,6 +38,14 @@ bool Bomberman::loadSceneByIndex(int sceneIdx) {
 	return true;
 }
 
+void Bomberman::_loadScene(void) {
+	_camera = new MainMenu(
+		glm::vec3(0.0, 0.0, 10.0), glm::vec3(0.0f),
+		std::vector<std::string>(_scenesNames.begin() + 1, _scenesNames.end()),
+		_save); // TODO: Change UI
+	_light = new Light(glm::vec2(-10.0, -10.0), glm::vec3(0.0f), 10.0f);
+}
+
 void Bomberman::_mainMenu(void) {
 	_skybox = new Skybox("default");
 	_camera = new MainMenu(
@@ -96,6 +104,8 @@ void Bomberman::_forest(void) {
 }
 
 void Bomberman::_initScenes(void) {
+	_scenesNames.push_back("LoadScene");
+	_scenesMap[_scenesNames.back()] = &Bomberman::_loadScene;
 	_scenesNames.push_back("MainMenu");
 	_scenesMap[_scenesNames.back()] = &Bomberman::_mainMenu;
 	_scenesNames.push_back("Forest");

@@ -51,7 +51,10 @@ GameEngine::GameEngine(AGame *game)
 	_audioManager = new AudioManager();
 
 	// Force load of first scene
-	_sceneIdx = 0;
+	_sceneIdx = 1;
+
+	// Thread atomic Int
+	_loadState = LOAD_IDLE;
 }
 
 GameEngine::~GameEngine(void) {
@@ -81,9 +84,37 @@ void GameEngine::addNewEntity(Entity *entity) {
 void GameEngine::run(void) {
 	// Init vars
 	_lastFrameTs = Clock::now();
+	/*
+		TODO:
+		- Launch LoadScene for each Scene change.
+		- While LoadScene is Active launch background Thread to load the Scene we want.
+		- When background thread finish I need to Join/Delete and Run new scene.
+	*/
 
-	if (!initScene(_sceneIdx)) throw std::runtime_error("Cannot load scene!");
+	// if (!initScene(_sceneIdx)) throw std::runtime_error("Cannot load scene!");
 	int newSceneIdx = -1;
+
+	// Init thread to load the scene we want
+	std::cout << "AA" << std::endl;
+	_loadSceneThread = std::thread([this] { initScene(1); });
+	std::cout << "BB" << std::endl;
+
+
+	// if (_loadState == LOAD_IDLE)
+	// {
+	// 	std::cout << "CC" << std::endl;
+		initLoadScene();
+		// std::cout << "AA" << std::endl;
+	// }
+	// else if (_loadState == LOAD_FINISHED)
+	// {
+	// 	std::cout << "DD" << std::endl;
+	// 	std::cout << "Load finish" << std::endl;
+	// }
+
+	// std::cout << "ZZ" << std::endl;
+
+
 	// Start game loop
 	while (true) {
 		// Get delta time in order to synch entities positions
@@ -263,12 +294,34 @@ bool GameEngine::initScene(size_t newSceneIdx) {
 	_light = _game->getLight();
 	_light->initEntity(this);
 	_skybox = _game->getSkybox();
-	_skybox->initEntity(this);
+	if (_skybox != nullptr)
+		_skybox->initEntity(this);
 	for (auto entity : _game->getEntities()) {
 		_allEntities.push_back(entity);
 		_allEntities.back()->initEntity(this);
 	}
+	_loadState = LOAD_FINISHED;
 	return true;
+}
+
+void GameEngine::initLoadScene(void) {
+	// Clear prev entities
+	if (_light != nullptr) {
+		delete _light;
+		_light = nullptr;
+	}
+	if (_camera != nullptr) {
+		delete _camera;
+		_camera = nullptr;
+	}
+
+	// Add new entities
+	_game->loadSceneByIndex(0);
+	_camera = _game->getCamera();
+	_camera->initEntity(this);
+	_camera->configGUI(_gameRenderer->getGUI());
+	_light = _game->getLight();
+	_light->initEntity(this);
 }
 
 void GameEngine::moveEntities(void) {

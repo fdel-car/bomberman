@@ -2,10 +2,6 @@
 
 #include "Entity.hpp"
 
-// For threads
-#include <atomic>
-#include <thread>
-
 class Skybox : public Entity {
    public:
 	// Skybox(glm::vec3 const &pos, glm::vec3 const &SkyboxDir);
@@ -26,8 +22,6 @@ class Skybox : public Entity {
     void _initSkyboxFaces(void);
     void _initBuffer(void);
 	void _initCubeMap(void);
-
-    static std::thread *loadImageThread;
 
     std::vector<std::string> _faces;
     std::string nameTextureDir;
