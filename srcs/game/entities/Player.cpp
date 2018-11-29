@@ -14,6 +14,7 @@ Player::Player(glm::vec3 position, glm::vec3 eulerAngles, Save &save,
 	  _maxBombs(3),
 	  _bombCooldown(3.0f),
 	  _bombRange(2),
+	  _bombKick(false),
 	  _bombTimers(std::vector<float>()),
 	  _cam(dynamic_cast<SceneTools *>(_sceneManager)) {
 	scale(glm::vec3(0.9, 0.9, 0.9));
@@ -89,3 +90,11 @@ void Player::onDeath(void) {
 	_collider->layerTag = _baseLayer;
 	_targetMovement *= 0;
 }
+
+void Player::gotSpeedBoost(float boost) { _speed += boost; }
+
+void Player::gotBombRangeBoost(size_t boost) { _bombRange += boost; }
+
+void Player::gotMaxBombBoost(size_t boost) { _maxBombs += boost; }
+
+void Player::gotBombKickBoost(bool boost) { _bombKick = boost; }

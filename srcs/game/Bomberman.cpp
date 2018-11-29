@@ -97,7 +97,7 @@ void Bomberman::_forest(void) {
 
 	// Walls/Boxes
 	size_t totalBoxes = 120;
-	size_t avgPerks = 60;
+	size_t avgPerks = 10;
 	size_t perkProb = (avgPerks * 100) / totalBoxes;
 	for (int x = -8; x <= 8; x++) {
 		for (int z = -8; z <= 8; z++) {
@@ -116,7 +116,8 @@ void Bomberman::_forest(void) {
 							   "Wall", "Wall", "Wall", _camera));
 				_entities.back()->scale(glm::vec3(1.0, 0.8, 1.0));
 			} else if (x != -7 && z != -7 && x != 7 && z != 7) {
-				_entities.push_back(new Box(glm::vec3(x, 0, z), _camera));
+				_entities.push_back(
+					new Box(glm::vec3(x, 0, z), _camera, perkProb));
 			}
 		}
 	}

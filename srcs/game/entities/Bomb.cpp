@@ -4,9 +4,10 @@
 #include "game/scenes/SceneTools.hpp"
 
 Bomb::Bomb(glm::vec3 position, float timer, size_t range, Entity *sceneManager)
-	: Entity(glm::vec3(position.x, position.y + 0.3f, position.z), glm::vec3(0),
-			 new Collider(Collider::Rectangle, LayerTag::BombLayer, 0.4f, 0.4f),
-			 "Bomb", "Bomb", "Bomb", sceneManager),
+	: Damageable(
+		  glm::vec3(position.x, position.y + 0.3f, position.z), glm::vec3(0),
+		  new Collider(Collider::Rectangle, LayerTag::BombLayer, 0.4f, 0.4f),
+		  "Bomb", "Bomb", "Bomb", 1, BombLayer, BombLayer, 0.0f, sceneManager),
 	  _timer(timer),
 	  _range(range) {}
 
@@ -19,11 +20,15 @@ void Bomb::update(void) {
 	(void)_range;
 
 	if (_timer <= 0.0f) {
-		SceneTools *cam = dynamic_cast<SceneTools *>(_sceneManager);
-
-		if (cam != nullptr) {
-			cam->putExplosion(getPosition().x, getPosition().z, _range);
-		}
-		_needToBeDestroyed = true;
+		this->takeDamage();
 	}
+}
+
+void Bomb::onDeath(void) {
+	SceneTools *cam = dynamic_cast<SceneTools *>(_sceneManager);
+
+	if (cam != nullptr) {
+		cam->putExplosion(getPosition().x, getPosition().z, _range);
+	}
+	_needToBeDestroyed = true;
 }
