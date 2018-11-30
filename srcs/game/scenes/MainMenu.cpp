@@ -26,7 +26,7 @@ void MainMenu::configGUI(GUI *graphicUI) {
 	graphicUI->setStyle(defaultStyle);
 	activeStyle = defaultStyle;
 
-	_lvlIndex = 0;
+	_lvlIndex = 1;
 	_changeSettings = false;
 	_slowTitle = false;
 }

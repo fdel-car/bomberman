@@ -214,6 +214,8 @@ int GameRenderer::getWidth(void) const { return _width; }
 
 int GameRenderer::getHeight(void) const { return _height; }
 
+GLFWwindow *GameRenderer::getWindow(void) const { return _window; }
+
 void GameRenderer::errorCallback(int error, const char *description) {
 	std::cerr << "Error n." << error << ": " << description << std::endl;
 }

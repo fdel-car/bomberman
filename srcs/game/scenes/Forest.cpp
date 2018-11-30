@@ -31,13 +31,13 @@ void Forest::configGUI(GUI *graphicUI) {
 
 void Forest::drawGUI(GUI *graphicUI) {
 	if (!_debugMode && (_pauseMenu || _gameEngine->isKeyPressed("ESCAPE"))) {
-		_pauseMenu = _displayPauseMenu(graphicUI, &_newSceneIdx, 1, 0);
+		_pauseMenu = _displayPauseMenu(graphicUI, &_newSceneIdx, 2, 1);
 		_isPause = _pauseMenu;
 	}
 
 	if (_showPlayerHp) {
 		if (_showDeathScreen) {
-			_displayDeathScreen(graphicUI, &_newSceneIdx, 1, 0);
+			_displayDeathScreen(graphicUI, &_newSceneIdx, 2, 1);
 		}
 		_displayPlayerHP(graphicUI, _playerHp);
 	}

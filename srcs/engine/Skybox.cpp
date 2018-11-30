@@ -7,7 +7,9 @@ Skybox::Skybox(std::string str)
 			 "Skybox"),
 	  nameTextureDir(str) {
 	_initSkyboxFaces();
+	std::cout << "BB" << std::endl;
 	_initBuffer();
+	std::cout << "CC" << std::endl;
 	_initCubeMap();
 }
 
@@ -29,6 +31,8 @@ void Skybox::_initSkyboxFaces(void) {
 }
 
 void Skybox::_initBuffer(void) {
+	std::cout << "11" << std::endl;
+
 	float _skyboxVertices[] = {
 		// positions
 		-1.0f, 1.0f,  -1.0f, -1.0f, -1.0f, -1.0f, 1.0f,  -1.0f, -1.0f,
@@ -49,15 +53,23 @@ void Skybox::_initBuffer(void) {
 		-1.0f, -1.0f, -1.0f, -1.0f, -1.0f, 1.0f,  1.0f,  -1.0f, -1.0f,
 		1.0f,  -1.0f, -1.0f, -1.0f, -1.0f, 1.0f,  1.0f,  -1.0f, 1.0f};
 
+	std::cout << "22" << std::endl;
 	glGenVertexArrays(1, &_skyboxVAO);
+	std::cout << "33" << std::endl;
 	glGenBuffers(1, &_skyboxVBO);
+	std::cout << "44" << std::endl;
 	glBindVertexArray(_skyboxVAO);
+	std::cout << "55" << std::endl;
 	glBindBuffer(GL_ARRAY_BUFFER, _skyboxVBO);
+	std::cout << "66" << std::endl;
 	glBufferData(GL_ARRAY_BUFFER, sizeof(_skyboxVertices), &_skyboxVertices,
 				 GL_STATIC_DRAW);
+	std::cout << "77" << std::endl;
 	glEnableVertexAttribArray(0);
+	std::cout << "88" << std::endl;
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float),
 						  (void *)0);
+	std::cout << "99" << std::endl;
 	glBindVertexArray(0);
 }
 

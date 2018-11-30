@@ -56,7 +56,8 @@ GameEngine::GameEngine(AGame *game)
 	_sceneIdx = 1;
 
 	// Thread atomic Int
-	_loadState = LOAD_IDLE;
+	_sceneState = LOAD_IDLE;
+	_checkLoadSceneIsGood = false;
 }
 
 GameEngine::~GameEngine(void) {
@@ -84,43 +85,69 @@ void GameEngine::addNewEntity(Entity *entity) {
 }
 
 void GameEngine::test(std::atomic_int *state) {
+	Clock::time_point t = Clock::now();
+
+	while (true)
+	{
+		Clock::time_point t2 = Clock::now();
+		std::chrono::milliseconds timeLoad = std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t);
+		std::cout << "Loading Time: " << timeLoad.count() << std::endl;
+		if (timeLoad.count() >= 500)
+			break;
+	}
 	*state = LOAD_FINISHED;
 }
 
 void GameEngine::run(void) {
 	// Init vars
 	_lastFrameTs = Clock::now();
+	_timer = Clock::now();
+	
 	/*
 		TODO:
-		- Launch LoadScene for each Scene change.
-		- While LoadScene is Active launch background Thread to load the Scene we want.
+		- Launch LoadScene for each Scene change. DONE
+		- While LoadScene is Active launch background Thread to load the Scene we want.  ALMOST need to fix issue in function "Bomberman::loadSceneByIndex"
 		- When background thread finish I need to Join/Delete and Run new scene.
 	*/
 
 	// if (!initScene(_sceneIdx)) throw std::runtime_error("Cannot load scene!");
+
 	int newSceneIdx = -1;
 
-	// Init thread to load the scene we want
-	if (_loadState == LOAD_IDLE)
+	if (_sceneState == LOAD_IDLE)
 	{
 		std::cout << "LoadScene Started" << std::endl;
-		_loadSceneIsActive = true;
 		initLoadScene();
-		_loadSceneThread = new std::thread(&GameEngine::test, this, &_loadState);
+
+		// Init thread to load the scene we want
+		// _loadSceneThread = new std::thread(&GameEngine::test, this, &_sceneState); // Test function
+
+		/*
+			TODO: Load everything we need in a background Thread 
+		*/
+		_loadSceneThread = new std::thread(&GameEngine::loadScene, this, _sceneIdx, &_sceneState, &_checkLoadSceneIsGood); // <-- this need to change
+
 		std::cout << "Background Thread Launched" << std::endl;
+		std::cout << "Scene to Load: " << _sceneIdx << std::endl << std::endl << std::endl;
 	}
-	else if (_loadState == LOAD_FINISHED)
+	else if (_sceneState == LOAD_FINISHED)
 	{
 		std::cout << "LoadScene Finished" << std::endl;
-		std::cout << "Scene to Load: " << _sceneIdx << std::endl;
-		_loadSceneIsActive = false;
-		if (!initScene(_sceneIdx)) throw std::runtime_error("Cannot load scene!");
-		_loadState = LOAD_IDLE;
+		
+		/*
+			TODO: Once every thing loaded need to Init Scene with all the variable Loaded from the
+			Background Thread
+		*/
+		if (!initScene(_sceneIdx)) throw std::runtime_error("Cannot load scene!"); // <-- this need to change
+		
+		_sceneState = LOAD_IDLE;
+		std::cout << "Scene Loaded: " << _sceneIdx << std::endl << std::endl << std::endl;
 	}
 
 	// Start game loop
 	while (true) {
 		// Get delta time in order to synch entities positions
+
 		_frameTs = Clock::now();
 		_deltaTime = (std::chrono::duration_cast<std::chrono::milliseconds>(
 						  _frameTs - _lastFrameTs)
@@ -129,21 +156,32 @@ void GameEngine::run(void) {
 		_lastFrameTs = _frameTs;
 
 		// Check if thread is finish
-		if (_loadState == LOAD_FINISHED) {
-			std::cout << "Load finish" << std::endl;
+		// std::chrono::milliseconds timeLoad = std::chrono::duration_cast<std::chrono::milliseconds>(_frameTs - _timer);
+		// std::cout << timeLoad.count() << std::endl;
 
-			_loadSceneThread->join();
-			delete _loadSceneThread;
-			_loadSceneThread = nullptr;
-			if (_loadSceneIsActive)
-				run();
-			else
+		if (_sceneState == LOAD_FINISHED) {
+			std::cout << "Scene: " << _sceneIdx << std::endl;
+
+			// std::cout << "counting Time: " << timeLoad.count() << std::endl;
+			// if (timeLoad.count() >= 1000) {
+				std::cout << "Load finish" << std::endl;
+
+				_loadSceneThread->join();
+				delete _loadSceneThread;
+				_loadSceneThread = nullptr;
+				
+				if (_checkLoadSceneIsGood == false)
+					throw std::runtime_error("Cannot load scene!");
+
+				newSceneIdx = _sceneIdx;	
 				break;
+			// }
 		}
 
 		// Update inputs
 		for (auto &key : keyboardMap)
 			key.second.prevFrame = key.second.currFrame;
+
 		_gameRenderer->getUserInput();
 
 		// Update game camera
@@ -152,6 +190,7 @@ void GameEngine::run(void) {
 		if (newSceneIdx != -1) break;
 		newSceneIdx = _game->getSceneIndexByName(_camera->getNewSceneName());
 		if (newSceneIdx != -1) break;
+
 		if (!_camera->isGameRunning()) break;
 
 		// Freeze everything else if camera is in debug
@@ -223,6 +262,7 @@ void GameEngine::run(void) {
 				}
 			}
 
+
 			// Check if there are changes for _initialCollisionMap
 			if (!_initialCollisionMap.empty()) {
 				std::vector<size_t> idxToDelete;
@@ -285,11 +325,13 @@ bool GameEngine::initScene(size_t newSceneIdx) {
 	if (!_game) return false;
 
 	// Clear prev entities
-	for (size_t idx = _allEntities.size() - 1; idx < _allEntities.size();
-		 idx--) {
-		// TODO: add logic for entities that survive between scenes
-		delete _allEntities[idx];
-		_allEntities.erase(_allEntities.begin() + idx);
+	if (_allEntities.empty() != true) {
+		for (size_t idx = _allEntities.size() - 1; idx < _allEntities.size();
+			idx--) {
+			// TODO: add logic for entities that survive between scenes
+			// delete _allEntities[idx];
+			_allEntities.erase(_allEntities.begin() + idx);
+		}
 	}
 	if (_light != nullptr) {
 		delete _light;
@@ -303,25 +345,45 @@ bool GameEngine::initScene(size_t newSceneIdx) {
 
 	// Add new entities
 	_sceneIdx = newSceneIdx;
-	if (!_game->loadSceneByIndex(_sceneIdx)) return false;
+	std::cout << "index initScene" << std::endl;
+	_game->initLoadScene(_sceneIdx); // <-- this need to be erased, only here for test
+	std::cout << "toto initScene" << std::endl;
+
 	_camera = _game->getCamera();
 	_camera->initEntity(this);
 	_camera->configGUI(_gameRenderer->getGUI());
+
 	_light = _game->getLight();
 	_light->initEntity(this);
+
 	_skybox = _game->getSkybox();
 	if (_skybox != nullptr)
 		_skybox->initEntity(this);
+
 	for (auto entity : _game->getEntities()) {
 		_allEntities.push_back(entity);
 		_allEntities.back()->initEntity(this);
 	}
-	_loadState = LOAD_FINISHED;
+	_sceneState = LOAD_FINISHED;
 	return true;
 }
 
+void GameEngine::loadScene(size_t newSceneIdx, std::atomic_int *_sceneState, bool *_checkLoadSceneIsGood) {
+	_game->loadSceneByIndex(newSceneIdx, _sceneState, _checkLoadSceneIsGood);
+}
+
 void GameEngine::initLoadScene(void) {
+	
 	// Clear prev entities
+	if (_allEntities.empty() != true) {
+		for (size_t idx = _allEntities.size() - 1; idx < _allEntities.size();
+			idx--) {
+			// TODO: add logic for entities that survive between scenes
+			// delete _allEntities[idx];
+			_allEntities.erase(_allEntities.begin() + idx);
+		}
+	}
+
 	if (_light != nullptr) {
 		delete _light;
 		_light = nullptr;
@@ -330,9 +392,13 @@ void GameEngine::initLoadScene(void) {
 		delete _camera;
 		_camera = nullptr;
 	}
+	if (_skybox != nullptr) {
+		delete _skybox;
+		_skybox = nullptr;
+	}
 
 	// Add new entities
-	_game->loadSceneByIndex(0);
+	_game->initLoadScene(0);
 	_camera = _game->getCamera();
 	_camera->initEntity(this);
 	_camera->configGUI(_gameRenderer->getGUI());

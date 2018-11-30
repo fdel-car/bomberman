@@ -92,6 +92,9 @@ class GameEngine {
 
 	bool initScene(size_t newSceneIdx);
 	void initLoadScene(void);
+	
+	void loadScene(size_t newSceneIdx, std::atomic_int *_sceneState, bool *_checkLoadSceneIsGood); // function to call for background Thread
+
 	void moveEntities(void);
 	void getPossibleCollisions(Entity *entity,
 							   std::vector<Entity *> &possibleCollisions,
@@ -125,8 +128,9 @@ class GameEngine {
 
 	// Thread
 	std::thread *_loadSceneThread;
-	std::atomic_int _loadState;
-	bool _loadSceneIsActive;
+	std::atomic_int _sceneState;
+	Clock::time_point _timer;
+	bool _checkLoadSceneIsGood;
 
 	// Game model vars
 	bool _running;
