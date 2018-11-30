@@ -339,12 +339,16 @@ void SceneTools::_savePositions(Entity *entity) {
 			if (xCoord < MIN_DISTANCE_FROM_WALL_TO_MOVE_CAM ||
 				xCoord > _mapWidth - MIN_DISTANCE_FROM_WALL_TO_MOVE_CAM) {
 				_distanceFromPlayer.x +=
-					(xCoord < MIN_DISTANCE_FROM_WALL_TO_MOVE_CAM) ? -FOLLOW_CORRECTION : FOLLOW_CORRECTION;
+					(xCoord < MIN_DISTANCE_FROM_WALL_TO_MOVE_CAM)
+						? -FOLLOW_CORRECTION
+						: FOLLOW_CORRECTION;
 			}
 			if (zCoord < MIN_DISTANCE_FROM_WALL_TO_MOVE_CAM ||
 				zCoord > _mapHeight - MIN_DISTANCE_FROM_WALL_TO_MOVE_CAM) {
 				_distanceFromPlayer.z +=
-					(zCoord < MIN_DISTANCE_FROM_WALL_TO_MOVE_CAM) ? -FOLLOW_CORRECTION : FOLLOW_CORRECTION;
+					(zCoord < MIN_DISTANCE_FROM_WALL_TO_MOVE_CAM)
+						? -FOLLOW_CORRECTION
+						: FOLLOW_CORRECTION;
 			}
 		} else {
 			glm::vec3 targetMove = entity->getPosition() + _distanceFromPlayer;

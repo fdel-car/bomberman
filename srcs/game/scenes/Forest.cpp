@@ -53,7 +53,7 @@ void Forest::drawGUI(GUI *graphicUI) {
 		_displayPlayerHP(graphicUI, _playerHp);
 	}
 
-	if (!_isPause && !_showDeathScreen && !_showVictoryScreen)
+	if (!isPause() && !_showDeathScreen && !_showVictoryScreen)
 		_displayTimer(graphicUI, &_timer, false);
 	else
 		_displayTimer(graphicUI, &_timer, true);
