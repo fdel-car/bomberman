@@ -2,11 +2,11 @@
 
 #include "game/scenes/SceneTools.hpp"
 
-class Forest : public SceneTools {
+class Desert : public SceneTools {
    public:
-	Forest(glm::vec3 const &pos, glm::vec3 const &eulerAngles,
+	Desert(glm::vec3 const &pos, glm::vec3 const &eulerAngles,
 		   Bomberman *bomberman);
-	virtual ~Forest(void);
+	virtual ~Desert(void);
 
 	virtual void drawGUI(GUI *graphicUI);
 	virtual void configGUI(GUI *graphicUI);
@@ -17,9 +17,9 @@ class Forest : public SceneTools {
 	// void printMapInfo(void);
 
    private:
-	Forest(void);
-	Forest(Forest const &src);
-	Forest &operator=(Forest const &rhs);
+	Desert(void);
+	Desert(Desert const &src);
+	Desert &operator=(Desert const &rhs);
 
 	float _timer;
 	float _cooldown;

@@ -34,6 +34,8 @@ set(SRCS
   srcs/game/scenes/SceneTools.cpp
   srcs/game/scenes/MainMenu.cpp
   srcs/game/scenes/Forest.cpp
+  srcs/game/scenes/Volcano.cpp
+  srcs/game/scenes/Desert.cpp
   srcs/game/entities/Player.cpp
   srcs/game/entities/Bomb.cpp
   srcs/game/entities/AEnemy.cpp
@@ -81,6 +83,8 @@ set(HEADERS
   includes/game/Save.hpp
   includes/game/scenes/MainMenu.hpp
   includes/game/scenes/Forest.hpp
+  includes/game/scenes/Volcano.hpp
+  includes/game/scenes/Desert.hpp
   includes/game/entities/Player.hpp
   includes/game/entities/Bomb.hpp
   includes/game/entities/AEnemy.hpp

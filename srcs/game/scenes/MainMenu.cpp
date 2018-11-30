@@ -4,8 +4,10 @@
 extern std::string _assetsDir;
 
 MainMenu::MainMenu(glm::vec3 const &pos, glm::vec3 const &eulerAngles,
-				   std::vector<std::string> levelsName, Save &save)
-	: SceneTools(0, 0, pos, eulerAngles), _levelsName(levelsName), _save(save) {
+				   std::vector<std::string> levelsName, Bomberman *bomberman)
+	: SceneTools(0, 0, pos, eulerAngles, bomberman,
+				 bomberman->getStartLevelName()),
+	  _levelsName(levelsName) {
 	_neededImages.push_back(std::tuple<std::string, std::string>(
 		(_assetsDir + "GUI/icons/rightAngleBracket.png"), "rightAngleBracket"));
 	_neededImages.push_back(std::tuple<std::string, std::string>(
@@ -43,7 +45,7 @@ void MainMenu::drawGUI(GUI *graphicUI) {
 			if (graphicUI->uiHorizontalSelection(
 					(WINDOW_W / 5), "", _levelsName[_lvlIndex], &_lvlIndex,
 					_levelsName.size() - 1)) {
-				std::cout << _lvlIndex << std::endl;
+				// std::cout << _lvlIndex << std::endl;
 			}
 		}
 		graphicUI->uiEndBlock();

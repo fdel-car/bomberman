@@ -1,12 +1,11 @@
 #pragma once
 
-#include "game/Save.hpp"
 #include "game/scenes/SceneTools.hpp"
 
 class MainMenu : public SceneTools {
    public:
 	MainMenu(glm::vec3 const &pos, glm::vec3 const &eulerAngles,
-			 std::vector<std::string> levelsName, Save &save);
+			 std::vector<std::string> levelsName, Bomberman *bomberman);
 	virtual ~MainMenu(void);
 
 	virtual void drawGUI(GUI *graphicUI);
@@ -29,7 +28,6 @@ class MainMenu : public SceneTools {
 	std::vector<std::string> _levelsName;
 
 	// Vars for settings
-	Save &_save;
 	char _upChoice[1];
 	int len1 = 1;
 	char _leftChoice[1];

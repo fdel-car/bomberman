@@ -4,6 +4,7 @@
 #include "engine/Engine.hpp"
 #include "engine/Entity.hpp"
 #include "engine/GUI/GUI.hpp"
+#include "game/Bomberman.hpp"
 
 struct Node {
    public:
@@ -31,7 +32,8 @@ struct Node {
 class SceneTools : public Camera {
    public:
 	SceneTools(size_t mapWidth, size_t mapHeight, glm::vec3 const &pos,
-			   glm::vec3 const &eulerAngles);
+			   glm::vec3 const &eulerAngles, Bomberman *bomberman,
+			   std::string ownLvlName = "", std::string nextLvlName = "");
 	virtual ~SceneTools(void);
 
 	virtual bool isPause(void) const;
@@ -64,13 +66,10 @@ class SceneTools : public Camera {
 						  size_t maxCharPerLine, int nbrOfLine,
 						  nk_flags textPosition, std::string fontText,
 						  std::string fontTitle);
-	bool _displayPauseMenu(GUI *graphicUI, int *_newSceneIdx, int restartIdx,
-						   int leaveIdx);
+	bool _displayPauseMenu(GUI *graphicUI);
 	void _displayPlayerHP(GUI *graphicUI, size_t hp);
-	void _displayVictoryScreen(GUI *graphicUI, int *_newSceneIdx, int nextIdx,
-							   int restartIdx, int leaveIdx);
-	void _displayDeathScreen(GUI *graphicUI, int *_newSceneIdx, int restartIdx,
-							 int leaveIdx);
+	void _displayVictoryScreen(GUI *graphicUI);
+	void _displayDeathScreen(GUI *graphicUI);
 	void _displayTimer(GUI *graphicUI, float *currentTime, bool isPause);
 	bool _btnHover(GUI *graphicUI, int rectWidth, int rectHeight, int xRectPos,
 				   int yRectPos, int fontSize, std::string fontName,
@@ -87,6 +86,8 @@ class SceneTools : public Camera {
 	void _clearGraphe(void);
 	void _describeNode(Node *n);
 
+	Bomberman *_bomberman;
+	Save &_save;
 	bool _slowGUIAnimation;
 	size_t _playerPos;
 	size_t _runAwayPos;
@@ -104,9 +105,10 @@ class SceneTools : public Camera {
 		_staticDecor;  // Decor who can't be destroy (like arena walls)
 	std::vector<std::string>
 		_tmpDecor;  // Decor who can be destroy (like bombes or brick walls)
-	std::vector<std::string>
-			_tmpDecorForRunAway;
+	std::vector<std::string> _tmpDecorForRunAway;
 	bool _refreshAI;
+	bool _firstPlayerPos;
+	glm::vec3 _distanceFromPlayer;
 
    private:
 	SceneTools(void);
@@ -116,4 +118,7 @@ class SceneTools : public Camera {
 
 	float _xOffset = static_cast<float>(_mapWidth) / 2;
 	float _zOffset = static_cast<float>(_mapHeight) / 2;
+	std::string _ownLvlName;
+	std::string _startLvlName;
+	std::string _nextLvlName;
 };

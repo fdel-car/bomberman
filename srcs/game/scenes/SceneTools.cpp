@@ -6,8 +6,11 @@
 extern std::string _assetsDir;
 
 SceneTools::SceneTools(size_t mapWidth, size_t mapHeight, glm::vec3 const &pos,
-					   glm::vec3 const &eulerAngles)
+					   glm::vec3 const &eulerAngles, Bomberman *bomberman,
+					   std::string ownLvlName, std::string nextLvlName)
 	: Camera(pos, eulerAngles),
+	  _bomberman(bomberman),
+	  _save(bomberman->getSave()),
 	  _slowGUIAnimation(true),
 	  _playerMaxHp(0),
 	  _playerHp(0),
@@ -18,12 +21,20 @@ SceneTools::SceneTools(size_t mapWidth, size_t mapHeight, glm::vec3 const &pos,
 	  _mapHeight(mapHeight),
 	  _entitiesInSquares(
 		  std::vector<std::map<size_t, Entity *>>(mapWidth * mapHeight)),
+	  _firstPlayerPos(true),
+	  _distanceFromPlayer(glm::vec3(0)),
 	  _xOffset(static_cast<float>(_mapWidth) / 2.0f),
-	  _zOffset(static_cast<float>(_mapHeight) / 2.0f) {
+	  _zOffset(static_cast<float>(_mapHeight) / 2.0f),
+	  _ownLvlName(ownLvlName),
+	  _startLvlName(bomberman->getStartLevelName()),
+	  _nextLvlName(nextLvlName) {
 	_neededImages.push_back(std::tuple<std::string, std::string>(
 		(_assetsDir + "GUI/icons/heart.png"), "heart"));
 	_neededImages.push_back(std::tuple<std::string, std::string>(
 		(_assetsDir + "GUI/icons/sad_chopper.png"), "sad_chopper"));
+
+	// _firstPlayerPos = false;
+	// _distanceFromPlayer = getPosition();
 }
 
 SceneTools::~SceneTools(void) { _clearGraphe(); }
@@ -62,8 +73,7 @@ void SceneTools::_displayDialogue(GUI *graphicUI, int *searchWord,
 						   fontText, fontTitle);
 }
 
-bool SceneTools::_displayPauseMenu(GUI *graphicUI, int *_newSceneIdx,
-								   int restartIdx, int leaveIdx) {
+bool SceneTools::_displayPauseMenu(GUI *graphicUI) {
 	bool res = true;
 	if (graphicUI->uiStartBlock(
 			"PauseMenu", "Pause",
@@ -76,12 +86,12 @@ bool SceneTools::_displayPauseMenu(GUI *graphicUI, int *_newSceneIdx,
 		}
 		if (graphicUI->uiButton(WINDOW_W / 4, (WINDOW_H / 9) - 8, 0, "Restart",
 								"", "14_BOMBERMAN")) {
-			*_newSceneIdx = restartIdx;
+			_newSceneName = _ownLvlName;
 			res = false;
 		}
 		if (graphicUI->uiButton(WINDOW_W / 4, (WINDOW_H / 9) - 8, 0, "Quit", "",
 								"14_BOMBERMAN")) {
-			*_newSceneIdx = leaveIdx;
+			_newSceneName = _startLvlName;
 			res = false;
 		}
 	}
@@ -122,9 +132,7 @@ void SceneTools::_displayPlayerHP(GUI *graphicUI, size_t hp) {
 	graphicUI->setStyle(activeStyle);
 }
 
-void SceneTools::_displayVictoryScreen(GUI *graphicUI, int *_newSceneIdx,
-									   int nextIdx, int restartIdx,
-									   int leaveIdx) {
+void SceneTools::_displayVictoryScreen(GUI *graphicUI) {
 	int windowWidth = WINDOW_W / 4;
 	int windowHeight = WINDOW_H / 3;
 	int rowHeight = (windowHeight / 3) - 17;
@@ -141,22 +149,21 @@ void SceneTools::_displayVictoryScreen(GUI *graphicUI, int *_newSceneIdx,
 		rowHeight += 10;
 		if (graphicUI->uiButton(windowWidth, rowHeight, 0, "Next", "",
 								"14_BOMBERMAN")) {
-			*_newSceneIdx = nextIdx;
+			_newSceneName = _nextLvlName;
 		}
 		if (graphicUI->uiButton(windowWidth, rowHeight, 0, "Restart", "",
 								"14_BOMBERMAN")) {
-			*_newSceneIdx = restartIdx;
+			_newSceneName = _ownLvlName;
 		}
 		if (graphicUI->uiButton(windowWidth, rowHeight, 0, "Quit", "",
 								"14_BOMBERMAN")) {
-			*_newSceneIdx = leaveIdx;
+			_newSceneName = _startLvlName;
 		}
 	}
 	graphicUI->uiEndBlock();
 }
 
-void SceneTools::_displayDeathScreen(GUI *graphicUI, int *_newSceneIdx,
-									 int restartIdx, int leaveIdx) {
+void SceneTools::_displayDeathScreen(GUI *graphicUI) {
 	int windowWidth = WINDOW_W / 4;
 	int windowHeight = WINDOW_H / 3;
 	int rowHeight = (windowHeight / 3) - 17;
@@ -179,11 +186,11 @@ void SceneTools::_displayDeathScreen(GUI *graphicUI, int *_newSceneIdx,
 		rowHeight += 10;
 		if (graphicUI->uiButton(windowWidth, rowHeight, 0, "Restart", "",
 								"14_BOMBERMAN")) {
-			*_newSceneIdx = restartIdx;
+			_newSceneName = _ownLvlName;
 		}
 		if (graphicUI->uiButton(windowWidth, rowHeight, 0, "Quit", "",
 								"14_BOMBERMAN")) {
-			*_newSceneIdx = leaveIdx;
+			_newSceneName = _startLvlName;
 		}
 	}
 	graphicUI->uiEndBlock();
@@ -314,7 +321,44 @@ void SceneTools::_savePositions(Entity *entity) {
 	}
 
 	// Save Player position
-	if (entity->getTag().compare("Player") == 0) _playerPos = vectorIdx;
+	if (entity->getTag().compare("Player") == 0) {
+		size_t MIN_DISTANCE_FROM_WALL_TO_MOVE_CAM = 5;
+		int FOLLOW_CORRECTION = static_cast<int>(_mapHeight / 2) -
+								MIN_DISTANCE_FROM_WALL_TO_MOVE_CAM;  // 3
+		// std::cout << "FOLLOW_CORRECTION " << FOLLOW_CORRECTION << std::endl;
+		// FOLLOW_CORRECTION = 3;
+		_playerPos = vectorIdx;
+		// Move cam
+		if (_firstPlayerPos) {
+			_firstPlayerPos = false;
+			_distanceFromPlayer = getPosition() - entity->getPosition();
+			if (xCoord < MIN_DISTANCE_FROM_WALL_TO_MOVE_CAM ||
+				xCoord > _mapWidth - MIN_DISTANCE_FROM_WALL_TO_MOVE_CAM) {
+				_distanceFromPlayer.x +=
+					(xCoord < MIN_DISTANCE_FROM_WALL_TO_MOVE_CAM) ? -3 : 3;
+			}
+			if (zCoord < MIN_DISTANCE_FROM_WALL_TO_MOVE_CAM ||
+				zCoord > _mapHeight - MIN_DISTANCE_FROM_WALL_TO_MOVE_CAM) {
+				_distanceFromPlayer.z +=
+					(zCoord < MIN_DISTANCE_FROM_WALL_TO_MOVE_CAM) ? -3 : 3;
+			}
+		} else {
+			glm::vec3 targetMove = entity->getPosition() + _distanceFromPlayer;
+			glm::vec3 translation = targetMove - getPosition();
+			if (xCoord < MIN_DISTANCE_FROM_WALL_TO_MOVE_CAM ||
+				xCoord > _mapWidth - MIN_DISTANCE_FROM_WALL_TO_MOVE_CAM) {
+				translation.x = 0;
+			}
+			if (zCoord < MIN_DISTANCE_FROM_WALL_TO_MOVE_CAM ||
+				zCoord > _mapHeight - MIN_DISTANCE_FROM_WALL_TO_MOVE_CAM) {
+				translation.z = 0;
+			}
+			if (translation.x != 0 || translation.z != 0) {
+				this->translate(translation);
+				_updateData();
+			}
+		}
+	}
 
 	// Clear entity old Idx saved in _entitiesInSquares
 	for (auto savedIdx : _entitiesInfos[entity->getId()]) {
@@ -444,6 +488,12 @@ void SceneTools::tellPlayerHp(size_t hp) {
 void SceneTools::tellLevelSuccess() {
 	if (_playerHp != 0) {
 		_showVictoryScreen = true;
+		// Save if it's first time we complete lvl
+		size_t levelIdx = _bomberman->getSceneIndexByName(_ownLvlName);
+		if (_save.level < levelIdx) {
+			_save.level = levelIdx;
+			_save.doSave();
+		}
 	}
 }
 

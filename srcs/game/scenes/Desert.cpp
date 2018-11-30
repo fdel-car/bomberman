@@ -1,18 +1,18 @@
-#include "game/scenes/Forest.hpp"
+#include "game/scenes/Desert.hpp"
 #include "engine/GameEngine.hpp"
 
-Forest::Forest(glm::vec3 const &pos, glm::vec3 const &eulerAngles,
+Desert::Desert(glm::vec3 const &pos, glm::vec3 const &eulerAngles,
 			   Bomberman *bomberman)
 	:  // Camera(pos, eulerAngles),
-	  SceneTools(17, 17, pos, eulerAngles, bomberman, "Forest", "Volcano"),
+	  SceneTools(21, 21, pos, eulerAngles, bomberman, "Desert", "Credits"),
 	  _timer(181),
 	  _cooldown(0.0f) {
 	configAI();
 }
 
-Forest::~Forest(void) {}
+Desert::~Desert(void) {}
 
-void Forest::configAI(void) {
+void Desert::configAI(void) {
 	_staticDecor.push_back("Wall");
 
 	_tmpDecor.push_back("Explosion");
@@ -28,7 +28,7 @@ void Forest::configAI(void) {
 	_tmpDecorForRunAway.push_back("Box");
 }
 
-void Forest::configGUI(GUI *graphicUI) {
+void Desert::configGUI(GUI *graphicUI) {
 	graphicUI->setAssetImages(_neededImages);
 
 	graphicUI->getDefaultStyle(THEME_RED, &defaultStyle);
@@ -38,7 +38,7 @@ void Forest::configGUI(GUI *graphicUI) {
 	_pauseMenu = false;
 }
 
-void Forest::drawGUI(GUI *graphicUI) {
+void Desert::drawGUI(GUI *graphicUI) {
 	if (!_debugMode && (_pauseMenu || _gameEngine->isKeyPressed(KEY_ESCAPE))) {
 		_pauseMenu = _displayPauseMenu(graphicUI);
 		_isPause = _pauseMenu;
@@ -69,9 +69,9 @@ void Forest::drawGUI(GUI *graphicUI) {
 	// 				 "12_BOMBERMAN", "18_BOMBERMAN");
 }
 
-void Forest::tellPosition(Entity *entity) { _savePositions(entity); }
+void Desert::tellPosition(Entity *entity) { _savePositions(entity); }
 
-void Forest::update(void) {
+void Desert::update(void) {
 	Camera::update();
 	_refreshAI = false;
 	if (_cooldown <= 0.0f) {
