@@ -39,6 +39,8 @@ class GameEngine {
 	bool isKeyJustPressed(int keyID);
 	float getDeltaTime();
 	void addNewEntity(Entity *entity);
+	void playMusic(std::string musicName);
+	void playSound(std::string soundName);
 
    private:
 	struct LineInfo {  // Equation of a line: z = mx + q

@@ -950,4 +950,11 @@ bool GameEngine::isKeyJustPressed(int keyID) {
 		   !result->second.prevFrame;
 }
 
+void GameEngine::playMusic(std::string musicName) {
+	_audioManager->playMusic(musicName);
+}
+void GameEngine::playSound(std::string soundName) {
+	_audioManager->playSound(soundName);
+}
+
 std::map<int, KeyState> GameEngine::keyboardMap = std::map<int, KeyState>();

@@ -22,6 +22,10 @@ class AGame {
 	Light *getLight() const;
 	Skybox *getSkybox() const;
 	std::vector<std::vector<bool>> const &getCollisionTable(void);
+	const std::vector<std::tuple<std::string, std::string>> &getNeeededMusic()
+		const;
+	const std::vector<std::tuple<std::string, std::string>> &getNeeededSounds()
+		const;
 
 	void unload(void);
 
@@ -33,6 +37,8 @@ class AGame {
 	Light *_light;
 	Skybox *_skybox;
 	std::vector<std::tuple<float, std::string, std::string>> _neededFonts;
+	std::vector<std::tuple<std::string, std::string>> _neededMusic;
+	std::vector<std::tuple<std::string, std::string>> _neededSounds;
 	std::vector<std::vector<bool>> _collisionTable;
 
 	void setLayerCollision(int layer1, int layer2, bool doCollide);

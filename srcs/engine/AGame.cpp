@@ -1,7 +1,11 @@
 #include "engine/AGame.hpp"
 
 AGame::AGame(size_t enumSize)
-	: _camera(nullptr), _light(nullptr), _skybox(nullptr) {
+	: _camera(nullptr),
+	  _light(nullptr),
+	  _skybox(nullptr),
+	  _neededMusic(std::vector<std::tuple<std::string, std::string>>()),
+	  _neededSounds(std::vector<std::tuple<std::string, std::string>>()) {
 	_collisionTable = std::vector<std::vector<bool>>(enumSize);
 	for (auto &collisionTag : _collisionTable) {
 		collisionTag = std::vector<bool>(enumSize, true);
@@ -17,6 +21,15 @@ Camera *AGame::getCamera(void) const { return _camera; }
 Light *AGame::getLight(void) const { return _light; }
 
 Skybox *AGame::getSkybox(void) const { return _skybox; }
+
+const std::vector<std::tuple<std::string, std::string>>
+	&AGame::getNeeededMusic() const {
+	return _neededMusic;
+}
+const std::vector<std::tuple<std::string, std::string>>
+	&AGame::getNeeededSounds() const {
+	return _neededSounds;
+}
 
 std::vector<std::vector<bool>> const &AGame::getCollisionTable(void) {
 	return _collisionTable;
