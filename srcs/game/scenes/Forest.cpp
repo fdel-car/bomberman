@@ -72,6 +72,7 @@ void Forest::tellPosition(Entity *entity) { _savePositions(entity); }
 
 void Forest::update(void) {
 	Camera::update();
+
 	_refreshAI = false;
 	if (_cooldown <= 0.0f) {
 		_cooldown = 0.1f;

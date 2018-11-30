@@ -95,7 +95,7 @@ void SceneTools::_displayPlayerHP(GUI *graphicUI, size_t hp) {
 	int windowWidth = rowWidth + 26;
 	int windowHeight = rowHeight + 5;
 	(void)hp;
-	(void)rowHeight;
+	// (void)rowHeight;
 	activeStyle[NK_COLOR_WINDOW] = nk_rgba(57, 67, 71, 150);
 
 	graphicUI->setStyle(activeStyle);
@@ -193,17 +193,21 @@ void SceneTools::_displayTimer(GUI *graphicUI, float *currentTime,
 							   bool isPause) {
 	if (*currentTime > 0.0f && !isPause)
 		*currentTime -= _gameEngine->getDeltaTime();
+	activeStyle[NK_COLOR_WINDOW] = nk_rgba(57, 67, 71, 150);
+	graphicUI->setStyle(activeStyle);
 	if (graphicUI->uiStartBlock("timer", "",
 								nk_rect(WINDOW_W / 7 * 3, 0, WINDOW_W / 7, 60),
-								NK_WINDOW_NO_SCROLLBAR)) {
+								NK_WINDOW_NO_SCROLLBAR | NK_COLOR_BORDER)) {
 		int tmpMinutes = *currentTime / 60;
 		std::string minutes = std::to_string(tmpMinutes);
 		int tmpSec = static_cast<int>(*currentTime) % 60;
-		std::string sec = tmpSec == 0 ? "00" : std::to_string(tmpSec);
+		std::string sec = tmpSec < 10 ? "0" + std::to_string(tmpSec) : std::to_string(tmpSec);
 		graphicUI->uiHeader((minutes + " : " + sec).c_str(), NK_TEXT_CENTERED,
-							60, "30_BOMBERMAN");
+							50, "30_BOMBERMAN");
 	}
 	graphicUI->uiEndBlock();
+	activeStyle = defaultStyle;
+	graphicUI->setStyle(activeStyle);
 }
 
 bool SceneTools::_btnHover(GUI *graphicUI, int rectWidth, int rectHeight,
