@@ -18,7 +18,7 @@ class Mesh {
 	virtual ~Mesh(void);
 
 	size_t getSize(void) const;
-	void draw(ShaderProgram const &shaderProgram) const;
+	void draw(ShaderProgram const &shaderProgram, glm::vec3 const &color) const;
 
 	GLuint VAO;
 	GLuint VBO;

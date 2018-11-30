@@ -6,7 +6,7 @@ AEnemy::AEnemy(glm::vec3 position, glm::vec3 eulerAngles, Entity *sceneManager)
 	: Damageable(
 		  glm::vec3(position.x, position.y + 0.4f, position.z), eulerAngles,
 		  new Collider(Collider::Circle, LayerTag::EnemyLayer, 0.45f, 0.45f),
-		  "Cube", "Enemy", "Enemy", 1, EnemyLayer, EnemySpecialLayer, 2.0f,
+		  "Sphere", "Enemy", "Enemy", 1, EnemyLayer, EnemySpecialLayer, 2.0f,
 		  sceneManager) {}
 
 AEnemy::~AEnemy(void) {}

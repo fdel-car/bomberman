@@ -113,15 +113,14 @@ void GameRenderer::_initShader(void) {
 }
 
 void GameRenderer::_initModels(void) {
-	_models["Cube"] = new Model("models/cube/cube.dae");
-	// _models["Box"] = new Model("box");
-	// _models["Explosion"] = new Model("explosion");
-	// _models["Wall"] = new Model("wall");
+	_models["Sphere"] = new Model("models/sphere/sphere.dae");
+	_models["Wall"] = new Model("models/wall/wall.dae");
 	// _models["Light"] = new Model("light");
 	// _models["Player"] = new Model("player");
-	// _models["Bomb"] = new Model("bomb");
+	_models["Bomb"] = new Model("models/bomb/bomb.dae");
 	// _models["Enemy"] = new Model("enemy");
-	// _models["Island"] = new Model("island");
+	// _models["Box"] = new Model("box");
+	_models["Island"] = new Model("models/island/island.obj");
 }
 
 void GameRenderer::getUserInput(void) { glfwPollEvents(); }
@@ -178,7 +177,7 @@ void GameRenderer::refreshWindow(std::vector<Entity *> &entities,
 	glBindTexture(GL_TEXTURE_2D, _depthMap);
 	for (auto entity : entities) {
 		_shaderProgram->setMat4("M", entity->getModelMatrix());
-		entity->getModel()->draw(*_shaderProgram);
+		entity->getModel()->draw(*_shaderProgram, entity->getColor());
 	}
 
 	if (skybox != nullptr) {

@@ -41,10 +41,21 @@ void Mesh::_setupBuffers(std::vector<Vertex> const &vertices) {
 	glBindVertexArray(0);
 }
 
-void Mesh::draw(ShaderProgram const &shaderProgram) const {
-	shaderProgram.setVec3("material.ambientColor", _material.ambientColor);
-	shaderProgram.setVec3("material.diffuseColor", _material.diffuseColor);
-	shaderProgram.setVec3("material.specularColor", _material.specularColor);
+void Mesh::draw(ShaderProgram const &shaderProgram,
+				glm::vec3 const &color) const {
+	if (color.x != -1.0f && color.y != -1.0f && color.z != -1.0f) {
+		shaderProgram.setVec3("material.ambientColor",
+							  glm::mix(_material.ambientColor, color, 0.5));
+		shaderProgram.setVec3("material.diffuseColor",
+							  glm::mix(_material.diffuseColor, color, 0.5));
+		shaderProgram.setVec3("material.specularColor",
+							  glm::mix(_material.specularColor, color, 0.5));
+	} else {
+		shaderProgram.setVec3("material.ambientColor", _material.ambientColor);
+		shaderProgram.setVec3("material.diffuseColor", _material.diffuseColor);
+		shaderProgram.setVec3("material.specularColor",
+							  _material.specularColor);
+	}
 	shaderProgram.setFloat("material.shininess", _material.shininess);
 	shaderProgram.setBool("material.hasDiffuseTexture",
 						  _material.hasDiffuseTexture);

@@ -25,6 +25,7 @@ class Entity {
 	std::string const &getName(void) const;
 	std::string const &getTag(void) const;
 	glm::vec3 const &getTargetMovement(void) const;
+	glm::vec3 const &getColor(void) const;
 	bool getNeedToBeDestroyed(void) const;
 
 	virtual void update(void);
@@ -33,6 +34,8 @@ class Entity {
 	virtual void tellDestruction(Entity *entity);
 	virtual void onTriggerEnter(Entity *entity);
 
+	void setColor(glm::vec3 const &color);
+	void resetColor(void);
 	void scale(glm::vec3 scale);
 	void rotate(glm::vec3 axis, float angle);
 	void rotate(float angle, glm::vec3 axis);
@@ -47,6 +50,7 @@ class Entity {
    private:
 	glm::vec3 _position;
 	glm::vec3 _eulerAngles;
+	glm::vec3 _color = glm::vec3(-1.0f);
 
 	glm::mat4 _scaleMatrix;
 	glm::mat4 _rotationMatrix;

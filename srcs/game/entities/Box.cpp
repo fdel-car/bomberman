@@ -7,10 +7,11 @@ Box::Box(glm::vec3 position, Entity *sceneManager)
 	: Damageable(
 		  glm::vec3(position.x, position.y + 0.4f, position.z), glm::vec3(0.0f),
 		  new Collider(Collider::Rectangle, LayerTag::BoxLayer, 0.45f, 0.45f),
-		  "Box", "Box", "Box", 1, BoxLayer, WallLayer, 1.0f, sceneManager),
+		  "Wall", "Box", "Box", 1, BoxLayer, WallLayer, 1.0f, sceneManager),
 	  _onFire(false),
 	  _timer(1.0f) {
 	scale(glm::vec3(0.9, 0.8, 0.9));
+	setColor(glm::vec3(0.55, 0.3, 0.1));
 }
 
 Box::~Box(void) {}
@@ -26,4 +27,7 @@ void Box::update(void) {
 	}
 }
 
-void Box::onDeath(void) { _onFire = true; }
+void Box::onDeath(void) {
+	setColor(glm::vec3(0.9, 0.6, 0.1));
+	_onFire = true;
+}

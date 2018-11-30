@@ -59,6 +59,8 @@ GameEngine *Entity::getGameEngine(void) const { return _gameEngine; }
 
 const glm::vec3 &Entity::getPosition(void) const { return _position; }
 
+const glm::vec3 &Entity::getColor(void) const { return _color; }
+
 const glm::mat4 &Entity::getModelMatrix(void) const { return _modelMatrix; }
 
 const Collider *Entity::getCollider(void) const { return _collider; }
@@ -82,6 +84,10 @@ glm::vec3 const &Entity::getTargetMovement(void) const {
 }
 
 bool Entity::getNeedToBeDestroyed(void) const { return _needToBeDestroyed; }
+
+void Entity::setColor(glm::vec3 const &color) { _color = color; }
+
+void Entity::resetColor(void) { _color = glm::vec3(-1.0f); }
 
 void Entity::translate(glm::vec3 translation) {
 	_translationMatrix = glm::translate(_translationMatrix, translation);
