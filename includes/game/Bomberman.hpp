@@ -9,9 +9,12 @@ enum LayerTag {
 	PlayerLayer,
 	PlayerSpecialLayer,
 	EnemyLayer,
+	EnemyRunAwayLayer,
 	EnemySpecialLayer,
 	BombLayer,
-	ExplosionLayer
+	ExplosionLayer,
+	PerkLayer,
+	PortalLayer
 };
 
 class Bomberman : public AGame {

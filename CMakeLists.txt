@@ -31,16 +31,21 @@ set(SRCS
 
   srcs/game/Bomberman.cpp
   srcs/game/Save.cpp
+  srcs/game/scenes/SceneTools.cpp
   srcs/game/scenes/MainMenu.cpp
   srcs/game/scenes/Forest.cpp
   srcs/game/entities/Player.cpp
   srcs/game/entities/Bomb.cpp
   srcs/game/entities/AEnemy.cpp
   srcs/game/entities/EnemyOFDT.cpp
+  srcs/game/entities/EnemyBasic.cpp
+  srcs/game/entities/EnemyPutBomb.cpp
+  srcs/game/entities/EnemyRunAway.cpp
   srcs/game/entities/Explosion.cpp
   srcs/game/entities/Box.cpp
   srcs/game/entities/Damageable.cpp
-  srcs/game/scenes/SceneTools.cpp
+  srcs/game/entities/Perk.cpp
+  srcs/game/entities/Portal.cpp
 )
 
 include_directories(includes)
@@ -68,7 +73,7 @@ set(HEADERS
   includes/engine/Model.hpp
   includes/engine/Mesh.hpp
   includes/engine/Skybox.hpp
-  
+
 
   includes/engine/GUI/GUI.hpp
 
@@ -80,9 +85,14 @@ set(HEADERS
   includes/game/entities/Bomb.hpp
   includes/game/entities/AEnemy.hpp
   includes/game/entities/EnemyOFDT.hpp
+  includes/game/entities/EnemyBasic.hpp
+  includes/game/entities/EnemyPutBomb.hpp
+  includes/game/entities/EnemyRunAway.hpp
   includes/game/entities/Explosion.hpp
   includes/game/entities/Box.hpp
   includes/game/entities/Damageable.hpp
+  includes/game/entities/Perk.hpp
+  includes/game/entities/Portal.hpp
   includes/game/scenes/SceneTools.hpp
 )
 

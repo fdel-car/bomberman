@@ -12,6 +12,7 @@ SceneTools::SceneTools(size_t mapWidth, size_t mapHeight, glm::vec3 const &pos,
 	  _playerMaxHp(0),
 	  _playerHp(0),
 	  _showPlayerHp(false),
+	  _showVictoryScreen(false),
 	  _showDeathScreen(false),
 	  _mapWidth(mapWidth),
 	  _mapHeight(mapHeight),
@@ -26,6 +27,10 @@ SceneTools::SceneTools(size_t mapWidth, size_t mapHeight, glm::vec3 const &pos,
 }
 
 SceneTools::~SceneTools(void) { _clearGraphe(); }
+
+bool SceneTools::isPause(void) const {
+	return _debugMode || _isPause || _showVictoryScreen || _showDeathScreen;
+}
 
 void SceneTools::_displayDialogue(GUI *graphicUI, int *searchWord,
 								  int *lastWord, int *startStrIdx,
@@ -117,15 +122,48 @@ void SceneTools::_displayPlayerHP(GUI *graphicUI, size_t hp) {
 	graphicUI->setStyle(activeStyle);
 }
 
+void SceneTools::_displayVictoryScreen(GUI *graphicUI, int *_newSceneIdx,
+									   int nextIdx, int restartIdx,
+									   int leaveIdx) {
+	int windowWidth = WINDOW_W / 4;
+	int windowHeight = WINDOW_H / 3;
+	int rowHeight = (windowHeight / 3) - 17;
+	// int rowWidth = windowWidth - 10;
+	// int blockXPadding = 8;
+	// (void)rowWidth;
+	// (void)rowHeight;
+	// return;
+	if (graphicUI->uiStartBlock(
+			"VictoryScreen", "Victory !",
+			nk_rect((WINDOW_W / 2) - (WINDOW_W / 8), (WINDOW_H / 3),
+					windowWidth, windowHeight),
+			NK_WINDOW_NO_SCROLLBAR | NK_WINDOW_BORDER | NK_WINDOW_TITLE)) {
+		rowHeight += 10;
+		if (graphicUI->uiButton(windowWidth, rowHeight, 0, "Next", "",
+								"14_BOMBERMAN")) {
+			*_newSceneIdx = nextIdx;
+		}
+		if (graphicUI->uiButton(windowWidth, rowHeight, 0, "Restart", "",
+								"14_BOMBERMAN")) {
+			*_newSceneIdx = restartIdx;
+		}
+		if (graphicUI->uiButton(windowWidth, rowHeight, 0, "Quit", "",
+								"14_BOMBERMAN")) {
+			*_newSceneIdx = leaveIdx;
+		}
+	}
+	graphicUI->uiEndBlock();
+}
+
 void SceneTools::_displayDeathScreen(GUI *graphicUI, int *_newSceneIdx,
 									 int restartIdx, int leaveIdx) {
 	int windowWidth = WINDOW_W / 4;
 	int windowHeight = WINDOW_H / 3;
-	int rowHeight = (windowHeight / 3) - 15;
+	int rowHeight = (windowHeight / 3) - 17;
 	int rowWidth = windowWidth - 10;
 	// int blockXPadding = 8;
-	(void)rowWidth;
-	(void)rowHeight;
+	// (void)rowWidth;
+	// (void)rowHeight;
 	// return;
 	if (graphicUI->uiStartBlock(
 			"DeathScreen", "Defeat !",
@@ -147,6 +185,23 @@ void SceneTools::_displayDeathScreen(GUI *graphicUI, int *_newSceneIdx,
 								"14_BOMBERMAN")) {
 			*_newSceneIdx = leaveIdx;
 		}
+	}
+	graphicUI->uiEndBlock();
+}
+
+void SceneTools::_displayTimer(GUI *graphicUI, float *currentTime,
+							   bool isPause) {
+	if (*currentTime > 0.0f && !isPause)
+		*currentTime -= _gameEngine->getDeltaTime();
+	if (graphicUI->uiStartBlock("timer", "",
+								nk_rect(WINDOW_W / 7 * 3, 0, WINDOW_W / 7, 60),
+								NK_WINDOW_NO_SCROLLBAR)) {
+		int tmpMinutes = *currentTime / 60;
+		std::string minutes = std::to_string(tmpMinutes);
+		int tmpSec = static_cast<int>(*currentTime) % 60;
+		std::string sec = tmpSec == 0 ? "00" : std::to_string(tmpSec);
+		graphicUI->uiHeader((minutes + " : " + sec).c_str(), NK_TEXT_CENTERED,
+							60, "30_BOMBERMAN");
 	}
 	graphicUI->uiEndBlock();
 }
@@ -297,26 +352,33 @@ void SceneTools::printMapInfo(void) {
 	}
 }
 
-bool SceneTools::putBomb(float xCenter, float zCenter, float explosionTimer,
-						 size_t range) {
+bool SceneTools::canPutBomb(float xCenter, float zCenter) {
 	size_t xCoord = static_cast<size_t>(xCenter + _xOffset);
 	size_t zCoord = static_cast<size_t>(zCenter + _zOffset);
-	bool canPutBomb = true;
+	bool canPut = true;
 	for (auto entity : _entitiesInSquares[zCoord * _mapWidth + xCoord]) {
 		if (entity.second->getTag().compare("Bomb") == 0 ||
 			entity.second->getTag().compare("Wall") == 0 ||
 			entity.second->getTag().compare("Box") == 0) {
-			canPutBomb = false;
+			canPut = false;
 			break;
 		}
 	}
+	return canPut;
+}
+
+bool SceneTools::putBomb(float xCenter, float zCenter, float explosionTimer,
+						 size_t range) {
 	// Add bomb to entities
-	if (canPutBomb) {
+	if (canPutBomb(xCenter, zCenter)) {
+		size_t xCoord = static_cast<size_t>(xCenter + _xOffset);
+		size_t zCoord = static_cast<size_t>(zCenter + _zOffset);
 		_gameEngine->addNewEntity(new Bomb(
 			glm::vec3(xCoord - _xOffset + 0.5f, 0.0f, zCoord - _zOffset + 0.5f),
 			explosionTimer, range, this));
+		return true;
 	}
-	return canPutBomb;
+	return false;
 }
 
 void SceneTools::putExplosion(float xCenter, float zCenter, size_t range) {
@@ -353,11 +415,10 @@ void SceneTools::_putExplosionsInDirection(size_t xCoord, size_t zCoord,
 			if (entity.second->getTag().compare("Wall") == 0) {
 				canPutExplosion = false;
 				break;
-			} else if (entity.second->getTag().compare("Box") == 0) {
-				// Force stop when destroying first Box
+			} else if (entity.second->getTag().compare("Box") == 0 ||
+					   entity.second->getTag().compare("Bomb") == 0) {
+				// Force stop when destroying first Box/Bomb
 				rangeIdx = range;
-			} else if (entity.second->getTag().compare("Bomb") == 0) {
-				// TODO: one explosion trigger other bombs to explode ?
 			}
 		}
 		if (canPutExplosion) {
@@ -377,6 +438,12 @@ void SceneTools::tellPlayerHp(size_t hp) {
 	_playerHp = hp;
 	if (_playerHp == 0) {
 		_showDeathScreen = true;
+	}
+}
+
+void SceneTools::tellLevelSuccess() {
+	if (_playerHp != 0) {
+		_showVictoryScreen = true;
 	}
 }
 
@@ -402,22 +469,39 @@ size_t const &SceneTools::getMapHeight() const { return _mapHeight; }
 
 size_t const &SceneTools::getPlayerPos() const { return _playerPos; }
 
+size_t const &SceneTools::getRunAwayPos() const { return _runAwayPos; }
+
 void SceneTools::_startBuildingGrapheForPathFinding(void) {
 	// Clear the old graphe
 	_clearGraphe();
-	// std::cout << "Pos player "<< _playerPos << std::endl;
+
 	// Get coord of the player
 	size_t x = _playerPos % _mapWidth;
 	size_t z = _playerPos / _mapHeight;
-	size_t pos;
-	size_t dist = 0;
 
 	// Create the first node who will be the target for the enemies with the
 	// player position
-	Node *originNode = new Node(nullptr, dist, x, z, _playerPos);
+	Node *originNode = new Node(nullptr, 0, x, z, _playerPos);
 	_graphe.insert(std::pair<size_t, Node *>(_playerPos, originNode));
+	_searchWay(true, originNode, _playerPos);
+	size_t dist = 0;
+	_runAwayPos = 0;
+	for (const auto &node : _graphe) {
+		if (dist < node.second->dist) {
+			dist = node.second->dist;
+			_runAwayPos = node.second->id;
+		}
+	}
+	// std::cout << _runAwayPos << std::endl;
+	_searchWay(false, _graphe[_runAwayPos], _runAwayPos);
+}
 
-	// Build the graphe depth by depth
+void SceneTools::_searchWay(bool searchBestWay, Node *originNode,
+							size_t playerPos) {
+	size_t x = playerPos % _mapWidth;
+	size_t z = playerPos / _mapHeight;
+	size_t pos;
+	size_t dist = 0;
 	std::list<Node *> nodesByDepth;
 	nodesByDepth.push_back(originNode);
 
@@ -425,58 +509,71 @@ void SceneTools::_startBuildingGrapheForPathFinding(void) {
 		// _describeNode(nodesByDepth.front());
 		x = nodesByDepth.front()->x;
 		z = nodesByDepth.front()->z;
-		if (dist == nodesByDepth.front()->dist) dist++;
+		if (dist == nodesByDepth.front()->dist && searchBestWay) dist++;
+		if (dist == nodesByDepth.front()->runAwayDist && !searchBestWay) dist++;
 		if (x > 1) {
 			pos = z * _mapHeight + (x - 1);
 			_buildNewNode(dist, x - 1, z, pos, nodesByDepth.front(),
-						  &nodesByDepth);
+						  &nodesByDepth, searchBestWay);
 		}
 		if (x < _mapWidth - 1) {
 			pos = z * _mapHeight + (x + 1);
 			_buildNewNode(dist, x + 1, z, pos, nodesByDepth.front(),
-						  &nodesByDepth);
+						  &nodesByDepth, searchBestWay);
 		}
 		if (z > 1) {
 			pos = (z - 1) * _mapHeight + x;
 			_buildNewNode(dist, x, z - 1, pos, nodesByDepth.front(),
-						  &nodesByDepth);
+						  &nodesByDepth, searchBestWay);
 		}
 		if (z < _mapHeight - 1) {
 			pos = (z + 1) * _mapHeight + x;
 			_buildNewNode(dist, x, z + 1, pos, nodesByDepth.front(),
-						  &nodesByDepth);
+						  &nodesByDepth, searchBestWay);
 		}
 		nodesByDepth.pop_front();
 	}
 }
 
 void SceneTools::_buildNewNode(size_t dist, size_t x, size_t z, size_t pos,
-							   Node *node, std::list<Node *> *nodesByDepth) {
+							   Node *node, std::list<Node *> *nodesByDepth,
+							   bool saveInPrevious) {
 	for (const auto &entity : _entitiesInSquares[pos]) {
 		for (const auto &decor : _staticDecor) {
-			if (entity.second->getTag().compare(decor) == 0) return;
+			if (entity.second->getName().compare(decor) == 0) return;
 		}
 	}
 	if (_graphe.find(pos) == _graphe.end()) {
 		// Save if it's a new node
-		bool isAnEntity = false;
+		Node *tmpNode = new Node(node, dist, x, z, pos);
+		_graphe.insert(std::pair<size_t, Node *>(pos, tmpNode));
 		for (const auto &map : _entitiesInSquares[pos]) {
 			if (static_cast<size_t>(map.second->getPosition().x + _xOffset) ==
 					x &&
 				static_cast<size_t>(map.second->getPosition().z + _zOffset) ==
 					z) {
 				for (const auto &decor : _tmpDecor) {
-					if (map.second->getTag().compare(decor) == 0)
-						isAnEntity = true;
+					if (map.second->getName().compare(decor) == 0) {
+						tmpNode->entitiesOnMe.push_back(map.second);
+						tmpNode->isAnEntity = true;
+					}
 				}
 			}
 		}
-		Node *tmpNode = new Node(node, dist, x, z, pos);
-		_graphe.insert(std::pair<size_t, Node *>(pos, tmpNode));
-		if (!isAnEntity) nodesByDepth->push_back(tmpNode);
-
-	} else  // Save the change if the node exist
-		_graphe.at(pos)->updateNode(node, dist);
+		if (!tmpNode->isAnEntity) nodesByDepth->push_back(tmpNode);
+	} else {  // Save the change if the node exist
+		if (!saveInPrevious && _graphe.at(pos)->runAwayDist == 0) {
+			bool isPlayer = false;
+			for (const auto &entity : _graphe.at(pos)->entitiesOnMe) {
+				if (entity->getName().compare("Player") == 0) isPlayer = true;
+				for (const auto &vec : _tmpDecor) {
+					if (vec.compare(entity->getName()) == 0) isPlayer = true;
+				}
+			}
+			if (!isPlayer) nodesByDepth->push_back(_graphe.at(pos));
+		}
+		_graphe.at(pos)->updateNode(node, dist, saveInPrevious);
+	}
 }
 
 void SceneTools::_clearGraphe(void) {
@@ -502,29 +599,43 @@ void SceneTools::_describeNode(Node *n) {
 	}
 }
 
-// Soon in a new file
-
 Node::Node() {}
 
 Node::Node(Node *newPrev, size_t newDist, size_t xPos, size_t zPos,
 		   size_t newId)
-	: dist(newDist), x(xPos), z(zPos), id(newId), isFatal(false) {
-	if (newPrev != nullptr) {
-		std::vector<Node *> tmpVector;
-		tmpVector.push_back(newPrev);
-		prevNodesByDist.insert(
-			std::pair<size_t, std::vector<Node *>>(newDist, tmpVector));
-	}
+	: dist(newDist),
+	  runAwayDist(0),
+	  x(xPos),
+	  z(zPos),
+	  id(newId),
+	  isFatal(false),
+	  isAnEntity(false) {
+	if (newPrev == nullptr) return;
+	std::vector<Node *> tmpVector;
+	tmpVector.push_back(newPrev);
+	prevNodesByDist.insert(
+		std::pair<size_t, std::vector<Node *>>(dist, tmpVector));
 }
 
 Node::~Node(void) {}
 
-void Node::updateNode(Node *old, size_t dist) {
-	if (prevNodesByDist.find(dist) == prevNodesByDist.end()) {
+void Node::updateNode(Node *old, size_t newDist, bool saveInPrevious) {
+	if (prevNodesByDist.find(newDist) == prevNodesByDist.end() &&
+		saveInPrevious) {
 		std::vector<Node *> tmpVector;
 		tmpVector.push_back(old);
 		prevNodesByDist.insert(
-			std::pair<size_t, std::vector<Node *>>(dist, tmpVector));
-	} else
-		prevNodesByDist[dist].push_back(old);
+			std::pair<size_t, std::vector<Node *>>(newDist, tmpVector));
+	} else if (saveInPrevious)
+		prevNodesByDist[newDist].push_back(old);
+	else {
+		runAwayDist = newDist;
+		if (runAwayNodesByDist.find(runAwayDist) == runAwayNodesByDist.end()) {
+			std::vector<Node *> tmpVector;
+			tmpVector.push_back(old);
+			runAwayNodesByDist.insert(
+				std::pair<size_t, std::vector<Node *>>(runAwayDist, tmpVector));
+		} else
+			runAwayNodesByDist[runAwayDist].push_back(old);
+	}
 }

@@ -6,7 +6,7 @@
 class EnemyOFDT : public AEnemy {
    public:
 	EnemyOFDT(glm::vec3 position, glm::vec3 eulerAngles,
-		  Entity *gameManager = nullptr);
+			  Entity *gameManager = nullptr);
 	~EnemyOFDT(void);
 
 	virtual void update(void);

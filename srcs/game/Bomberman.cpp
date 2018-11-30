@@ -1,15 +1,18 @@
 #include "game/Bomberman.hpp"
 #include "game/entities/Box.hpp"
+#include "game/entities/EnemyBasic.hpp"
 #include "game/entities/EnemyOFDT.hpp"
+#include "game/entities/EnemyPutBomb.hpp"
+#include "game/entities/EnemyRunAway.hpp"
+#include "game/entities/Perk.hpp"
 #include "game/entities/Player.hpp"
+#include "game/entities/Portal.hpp"
 #include "game/scenes/Forest.hpp"
 #include "game/scenes/MainMenu.hpp"
 
-#include "json/json.hpp"  // https://github.com/nlohmann/json/blob/develop/single_include/nlohmann/json.hpp
-
 extern std::string _assetsDir;
 
-Bomberman::Bomberman(void) : AGame(8) {
+Bomberman::Bomberman(void) : AGame(11) {
 	// Set needed fonts
 	for (float size = 12.0f; size <= 48.0f; size += 1.0f)
 		_neededFonts.push_back(std::tuple<float, std::string, std::string>(
@@ -19,10 +22,35 @@ Bomberman::Bomberman(void) : AGame(8) {
 	setLayerCollision(WallLayer, WallLayer, false);
 	setLayerCollision(WallLayer, BoxLayer, false);
 	setLayerCollision(WallLayer, ExplosionLayer, false);
+	setLayerCollision(WallLayer, PerkLayer, false);
+
 	setLayerCollision(PlayerLayer, EnemySpecialLayer, false);
+
 	setLayerCollision(PlayerSpecialLayer, ExplosionLayer, false);
+	setLayerCollision(PlayerSpecialLayer, EnemyLayer, false);
 	setLayerCollision(PlayerSpecialLayer, EnemySpecialLayer, false);
+
+	setLayerCollision(EnemyRunAwayLayer, EnemyRunAwayLayer, false);
+	setLayerCollision(EnemyRunAwayLayer, EnemySpecialLayer, false);
+	setLayerCollision(EnemyRunAwayLayer, EnemyLayer, false);
+
+	setLayerCollision(EnemySpecialLayer, EnemySpecialLayer, false);
 	setLayerCollision(EnemySpecialLayer, ExplosionLayer, false);
+
+	setLayerCollision(PerkLayer, PerkLayer, false);
+	setLayerCollision(PerkLayer, BoxLayer, false);
+	setLayerCollision(PerkLayer, ExplosionLayer, false);
+	setLayerCollision(PerkLayer, BombLayer, false);
+
+	setLayerCollision(PortalLayer, WallLayer, false);
+	setLayerCollision(PortalLayer, BoxLayer, false);
+	setLayerCollision(PortalLayer, PlayerSpecialLayer, false);
+	setLayerCollision(PortalLayer, EnemyRunAwayLayer, false);
+	setLayerCollision(PortalLayer, EnemySpecialLayer, false);
+	setLayerCollision(PortalLayer, BombLayer, false);
+	setLayerCollision(PortalLayer, ExplosionLayer, false);
+	setLayerCollision(PortalLayer, PerkLayer, false);
+	setLayerCollision(PortalLayer, PortalLayer, false);
 
 	// Set map of scenes
 	_initScenes();
@@ -57,16 +85,42 @@ void Bomberman::_forest(void) {
 								   "Island", "Island", "Island"));
 	_entities.push_back(new Player(glm::vec3(-7.0, 0.0, -7.0), glm::vec3(0.0f),
 								   _save, _camera));
+	// _entities.push_back(new Perk(glm::vec3(-6.0, 0.0, -7.0), _camera));
+	// _entities.push_back(new Perk(glm::vec3(-5.0, 0.0, -7.0), _camera));
+	// _entities.push_back(new Perk(glm::vec3(-4.0, 0.0, -7.0), _camera));
+	// _entities.push_back(new Perk(glm::vec3(-3.0, 0.0, -7.0), _camera));
+	// _entities.push_back(new Perk(glm::vec3(-2.0, 0.0, -7.0), _camera));
+	// _entities.push_back(new Perk(glm::vec3(-1.0, 0.0, -7.0), _camera));
+	// _entities.push_back(new Perk(glm::vec3(0.0, 0.0, -7.0), _camera));
+	// _entities.push_back(new Perk(glm::vec3(5.0, 0.0, -7.0), _camera));
+	// _entities.push_back(new Perk(glm::vec3(4.0, 0.0, -7.0), _camera));
+	// _entities.push_back(new Perk(glm::vec3(3.0, 0.0, -7.0), _camera));
+	// _entities.push_back(new Perk(glm::vec3(2.0, 0.0, -7.0), _camera));
+	// _entities.push_back(new Perk(glm::vec3(1.0, 0.0, -7.0), _camera));
+
+	// Portal to clear lvl
+	Entity *portal = new Portal(glm::vec3(0), _camera);
 
 	// Enemies
 	_entities.push_back(
-		new EnemyOFDT(glm::vec3(7.0, 0.0, 7.0), glm::vec3(0.0f), _camera));
-	_entities.push_back(
 		new EnemyOFDT(glm::vec3(7.0, 0.0, -7.0), glm::vec3(0.0f), _camera));
-	_entities.push_back(
-		new EnemyOFDT(glm::vec3(-7.0, 0.0, 7.0), glm::vec3(0.0f), _camera));
+	_entities.push_back(new EnemyRunAway(glm::vec3(7.0, 0.0, 7.0),
+										 glm::vec3(0.0f), _camera, portal));
+	// _entities.push_back(
+	// 	new EnemyOFDT(glm::vec3(-7.0, 0.0, 7.0), glm::vec3(0.0f), _camera));
+	// _entities.push_back(
+	// 	new EnemyPutBomb(glm::vec3(7.0, 0.0, -7.0), glm::vec3(0.0f), _camera));
+	// _entities.push_back(
+	// 	new EnemyRunAway(glm::vec3(-3.0, 0.0, 3.0), glm::vec3(0.0f), _camera));
+	// _entities.push_back(
+	// 	new EnemyBasic(glm::vec3(3.0, 0.0, -3.0), glm::vec3(0.0f), _camera));
+	// _entities.push_back(
+	// 	new EnemyBasic(glm::vec3(3.0, 0.0, 3.0), glm::vec3(0.0f), _camera));
 
 	// Walls/Boxes
+	size_t totalBoxes = 120;
+	size_t avgPerks = 10;
+	size_t perkProb = (avgPerks * 100) / totalBoxes;
 	for (int x = -8; x <= 8; x++) {
 		for (int z = -8; z <= 8; z++) {
 			if (abs(x) == 8 || abs(z) == 8) {
@@ -83,8 +137,12 @@ void Bomberman::_forest(void) {
 											LayerTag::WallLayer, 0.5, 0.5),
 							   "Wall", "Wall", "Wall", _camera));
 				_entities.back()->scale(glm::vec3(1.0, 0.8, 1.0));
+			} else if (x == 0 && z == -7) {
+				// _entities.push_back(
+				// 	new Box(glm::vec3(x, 0, z), _camera, 0, portal));
 			} else if (x != -7 && z != -7 && x != 7 && z != 7) {
-				_entities.push_back(new Box(glm::vec3(x, 0, z), _camera));
+				_entities.push_back(
+					new Box(glm::vec3(x, 0, z), _camera, perkProb));
 			}
 		}
 	}

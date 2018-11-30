@@ -16,7 +16,7 @@ int main(void) {
 	_srcsDir += "srcs/";
 	try {
 		/* Initialize random seed: */
-		srand(time(NULL));
+		srand(clock());
 		AGame *myGame = new Bomberman();
 		GameEngine gameEngine(myGame);
 		gameEngine.run();

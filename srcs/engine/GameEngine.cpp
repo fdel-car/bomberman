@@ -93,10 +93,10 @@ void GameEngine::run(void) {
 	while (true) {
 		// Get delta time in order to synch entities positions
 		_frameTs = Clock::now();
-		_deltaTime = (std::chrono::duration_cast<std::chrono::milliseconds>(
+		_deltaTime = (std::chrono::duration_cast<std::chrono::microseconds>(
 						  _frameTs - _lastFrameTs)
 						  .count()) /
-					 1000.0f;
+					 1000000.0f;
 		_lastFrameTs = _frameTs;
 
 		// Update inputs
@@ -112,7 +112,7 @@ void GameEngine::run(void) {
 		if (newSceneIdx != -1) break;
 		if (!_camera->isGameRunning()) break;
 
-		// Freeze everything else if camera is in debug
+		// Freeze everything else if camera tells so
 		if (!_camera->isPause()) {
 			_light->update();
 			// Update game entities states
@@ -146,6 +146,9 @@ void GameEngine::run(void) {
 						for (auto collidedEntity : collidedEntities) {
 							initialCollisions.push_back(
 								collidedEntity->getId());
+							// Add for other entity too
+							_initialCollisionMap[collidedEntity->getId()]
+								.push_back(newEntity->getId());
 						}
 						_initialCollisionMap[newEntity->getId()] =
 							initialCollisions;
@@ -195,11 +198,13 @@ void GameEngine::run(void) {
 					}
 					for (size_t idIdx = initialCollisions.second.size() - 1;
 						 idIdx < initialCollisions.second.size(); idIdx--) {
-						if (!doCollide(
-								entityA->getCollider(), entityA->getPosition(),
-								getEntityById(initialCollisions.second[idIdx])))
+						if (!doCollide(entityA->getCollider(),
+									   entityA->getPosition(),
+									   getEntityById(
+										   initialCollisions.second[idIdx]))) {
 							initialCollisions.second.erase(
 								initialCollisions.second.begin() + idIdx);
+						}
 					}
 					if (initialCollisions.second.empty())
 						idxToDelete.push_back(initialCollisions.first);
@@ -255,7 +260,7 @@ bool GameEngine::_initScene(size_t newSceneIdx) {
 	_camera->configGUI(_gameRenderer->getGUI());
 	_light = _game->getLight();
 	if (_light == nullptr)
-		std::cout << "\033[0;33m:Warning:\033[0m There is no light in the "
+		std::cerr << "\033[0;33m:Warning:\033[0m There is no light in the "
 					 "loaded scene, you should definitely add one"
 				  << std::endl;
 	else
@@ -288,37 +293,41 @@ void GameEngine::_unloadScene(void) {
 
 void GameEngine::moveEntities(void) {
 	const Collider *collider;
-	bool collisionDetected = false;
+	bool isShortcut = false;
 	std::vector<Entity *> collidedEntities = std::vector<Entity *>();
 	std::vector<Entity *> collidedTriggers = std::vector<Entity *>();
 	glm::vec3 futureMovement = glm::vec3();
+	glm::vec3 shortcutMovement = glm::vec3();
 	LineInfo lineA;
 	LineInfo lineB;
-
 	size_t idx = 0;
+
 	size_t idxOfCollision = 0;
+	bool firstLoop = true;
+	bool hasCollided = true;
 	for (auto entity : _allEntities) {
 		if (!entity->getNeedToBeDestroyed()) {
 			collider = entity->getCollider();
 			collidedEntities.clear();
 			collidedTriggers.clear();
-			collisionDetected = false;
+			isShortcut = false;
+			firstLoop = true;
+			hasCollided = false;
 			futureMovement *= 0;
 
 			// Skip checks if entity doesnt have a collider
 			if (collider != nullptr) {
 				getPossibleCollisions(entity, collidedEntities,
 									  collidedTriggers, _allEntities);
+
 				// Init vars before first loop
 				if (entity->getTargetMovement().x != 0.0f ||
 					entity->getTargetMovement().z != 0.0f) {
 					futureMovement.x = entity->getTargetMovement().x;
 					futureMovement.z = entity->getTargetMovement().z;
-					bool firstLoop = true;
 					while (collidedEntities.size() != 0) {
 						idxOfCollision = checkCollision(entity, futureMovement,
 														collidedEntities);
-
 						// Update entities to check collisions with
 						if (idxOfCollision != 0) {
 							collidedEntities.erase(
@@ -333,46 +342,80 @@ void GameEngine::moveEntities(void) {
 								// Special test that need to be done only on
 								// first loop
 								if (tryShortcut(entity, futureMovement,
+												shortcutMovement,
 												collidedEntities)) {
-									collidedEntities.clear();
+									isShortcut = true;
+									futureMovement = shortcutMovement;
 									break;
 								}
 								firstLoop = false;
 							}
 
+							// Loop again only for big movements
+							if (abs(futureMovement.x) <= 0.5f &&
+								abs(futureMovement.z) <= 0.5f) {
+								break;
+							}
 							// Slightly decrease futureMovement to see if
 							// smaller movement can be performed
 							futureMovement.x /= 2.0f;
 							futureMovement.z /= 2.0f;
-
-							// Safe break to avoid infinite loop
-							if (abs(futureMovement.x) <= EPSILON &&
-								abs(futureMovement.z) <= EPSILON) {
-								break;
-							}
 						}
 					}
 				}
 			}
 
+			// Collide with colliders (do not consider shortcut move yet)
+			while (!collidedEntities.empty() &&
+				   !entity->getNeedToBeDestroyed()) {
+				idx = checkCollision(entity, futureMovement, collidedEntities);
+				if (idx != collidedEntities.size()) {
+					hasCollided = true;
+					// Other entity will always be a collider
+					if (!collidedEntities[idx]->getNeedToBeDestroyed())
+						collidedEntities[idx]->onCollisionEnter(entity);
+					// Check if we are a trigger or a collider
+					if (!entity->getNeedToBeDestroyed()) {
+						if (collider->isTrigger)
+							entity->onTriggerEnter(collidedEntities[idx]);
+						else
+							entity->onCollisionEnter(collidedEntities[idx]);
+					}
+					// Clear entities
+					collidedEntities.erase(collidedEntities.begin(),
+										   collidedEntities.begin() + idx + 1);
+				} else {
+					collidedEntities.clear();
+				}
+			}
+			// Apply shortcut and clear collisions
+			if (isShortcut) {
+				hasCollided = false;
+				futureMovement = shortcutMovement;
+				collidedEntities.clear();
+			}
 			// Trigger all triggers
 			while (!collidedTriggers.empty() &&
 				   !entity->getNeedToBeDestroyed()) {
-				size_t triggerIdx =
-					checkCollision(entity, futureMovement, collidedTriggers);
-				if (triggerIdx != collidedTriggers.size()) {
-					collidedTriggers[triggerIdx]->onTriggerEnter(entity);
-					collidedTriggers.erase(
-						collidedTriggers.begin(),
-						collidedTriggers.begin() + triggerIdx + 1);
+				idx = checkCollision(entity, futureMovement, collidedTriggers);
+				if (idx != collidedTriggers.size()) {
+					// Other entity will always be a trigger
+					collidedTriggers[idx]->onTriggerEnter(entity);
+					// Check if we are a trigger or a collider
+					if (collider->isTrigger)
+						entity->onTriggerEnter(collidedTriggers[idx]);
+					else
+						entity->onCollisionEnter(collidedTriggers[idx]);
+					// Clear entities
+					collidedTriggers.erase(collidedTriggers.begin(),
+										   collidedTriggers.begin() + idx + 1);
 				} else
 					collidedTriggers.clear();
 			}
-			if (collidedEntities.empty() && !entity->getNeedToBeDestroyed()) {
+			if (!hasCollided && !entity->getNeedToBeDestroyed()) {
 				entity->translate(futureMovement);
 			}
 		}
-		idx++;
 	}
 }
 void GameEngine::getPossibleCollisions(
@@ -753,8 +796,8 @@ bool GameEngine::collisionCircleRectangle(const Collider *circleCollider,
 }
 
 bool GameEngine::tryShortcut(Entity *entity, glm::vec3 &futureMovement,
+							 glm::vec3 &shortcutMovement,
 							 std::vector<Entity *> &collidedEntities) {
-	glm::vec3 tmpFutureMovement = glm::vec3();
 	size_t idxOfCollision;
 
 	float absX = abs(futureMovement.x);
@@ -762,20 +805,18 @@ bool GameEngine::tryShortcut(Entity *entity, glm::vec3 &futureMovement,
 	// Try moving indipendently one of the two axis
 	// (Only if its a two-axis move)
 	if (futureMovement.x != 0.0f && futureMovement.z != 0.0f) {
-		tmpFutureMovement.x = futureMovement.x;
-		tmpFutureMovement.z = 0.0f;
+		shortcutMovement.x = futureMovement.x;
+		shortcutMovement.z = 0.0f;
 		idxOfCollision =
-			checkCollision(entity, tmpFutureMovement, collidedEntities);
+			checkCollision(entity, shortcutMovement, collidedEntities);
 		if (idxOfCollision == collidedEntities.size()) {
-			futureMovement = tmpFutureMovement;
 			return true;
 		}
-		tmpFutureMovement.x = 0.0f;
-		tmpFutureMovement.z = futureMovement.z;
+		shortcutMovement.x = 0.0f;
+		shortcutMovement.z = futureMovement.z;
 		idxOfCollision =
-			checkCollision(entity, tmpFutureMovement, collidedEntities);
+			checkCollision(entity, shortcutMovement, collidedEntities);
 		if (idxOfCollision == collidedEntities.size()) {
-			futureMovement = tmpFutureMovement;
 			return true;
 		}
 	}
@@ -791,49 +832,47 @@ bool GameEngine::tryShortcut(Entity *entity, glm::vec3 &futureMovement,
 			float colliderZ = collidedEntities[0]->getPosition().z +
 							  collidedEntities[0]->getCollider()->height;
 			if (entity->getPosition().z > colliderZ) {
-				tmpFutureMovement.z =
+				shortcutMovement.z =
 					colliderZ -
 					(entity->getPosition().z - entity->getCollider()->height);
-				if (tmpFutureMovement.z > (absX / 2)) {
-					tmpFutureMovement.z = absX / 2;
+				if (shortcutMovement.z > (absX / 2)) {
+					shortcutMovement.z = absX / 2;
 				}
-				if (tmpFutureMovement.z < 0.0f)
-					tmpFutureMovement.z = EPSILON;
-				else if (tmpFutureMovement.z < EPSILON)
-					tmpFutureMovement.z += EPSILON;
+				if (shortcutMovement.z < 0.0f)
+					shortcutMovement.z = EPSILON;
+				else if (shortcutMovement.z < EPSILON)
+					shortcutMovement.z += EPSILON;
 				// Move along X will be less than Z
 				// so that no collision will occur
-				tmpFutureMovement.x = tmpFutureMovement.z * 0.5f;
-				if (futureMovement.x < 0) tmpFutureMovement.x *= -1.0f;
-				if (checkCollision(entity, tmpFutureMovement,
+				shortcutMovement.x = shortcutMovement.z * 0.5f;
+				if (futureMovement.x < 0) shortcutMovement.x *= -1.0f;
+				if (checkCollision(entity, shortcutMovement,
 								   collidedEntities) ==
 					collidedEntities.size()) {
-					futureMovement = tmpFutureMovement;
 					return true;
 				}
 			}
 			// Try slide over obstacle
 			colliderZ -= 2.0f * collidedEntities[0]->getCollider()->height;
 			if (entity->getPosition().z < colliderZ) {
-				tmpFutureMovement.z =
+				shortcutMovement.z =
 					(entity->getPosition().z + entity->getCollider()->height) -
 					colliderZ;
-				if (tmpFutureMovement.z > (absX / 2)) {
-					tmpFutureMovement.z = absX / 2;
+				if (shortcutMovement.z > (absX / 2)) {
+					shortcutMovement.z = absX / 2;
 				}
-				if (tmpFutureMovement.z < 0.0f)
-					tmpFutureMovement.z = EPSILON;
-				else if (tmpFutureMovement.z < EPSILON)
-					tmpFutureMovement.z += EPSILON;
+				if (shortcutMovement.z < 0.0f)
+					shortcutMovement.z = EPSILON;
+				else if (shortcutMovement.z < EPSILON)
+					shortcutMovement.z += EPSILON;
 				// Move along X will be less than Z
 				// so that no collision will occur
-				tmpFutureMovement.x = tmpFutureMovement.z * 0.5f;
-				if (futureMovement.x < 0) tmpFutureMovement.x *= -1.0f;
-				tmpFutureMovement.z *= -1;
+				shortcutMovement.x = shortcutMovement.z * 0.5f;
+				if (futureMovement.x < 0) shortcutMovement.x *= -1.0f;
+				shortcutMovement.z *= -1;
 				idxOfCollision =
-					checkCollision(entity, tmpFutureMovement, collidedEntities);
+					checkCollision(entity, shortcutMovement, collidedEntities);
 				if (idxOfCollision == collidedEntities.size()) {
-					futureMovement = tmpFutureMovement;
 					return true;
 				}
 			}
@@ -843,49 +882,46 @@ bool GameEngine::tryShortcut(Entity *entity, glm::vec3 &futureMovement,
 			float colliderX = collidedEntities[0]->getPosition().x +
 							  collidedEntities[0]->getCollider()->width;
 			if (entity->getPosition().x > colliderX) {
-				tmpFutureMovement.x =
-					colliderX -
-					(entity->getPosition().x - entity->getCollider()->width);
-				if (tmpFutureMovement.x > (absZ / 2)) {
-					tmpFutureMovement.x = absZ / 2;
+				shortcutMovement.x = colliderX - (entity->getPosition().x -
+												  entity->getCollider()->width);
+				if (shortcutMovement.x > (absZ / 2)) {
+					shortcutMovement.x = absZ / 2;
 				}
-				if (tmpFutureMovement.x < 0.0f)
-					tmpFutureMovement.x = EPSILON;
-				else if (tmpFutureMovement.x < EPSILON)
-					tmpFutureMovement.x += EPSILON;
+				if (shortcutMovement.x < 0.0f)
+					shortcutMovement.x = EPSILON;
+				else if (shortcutMovement.x < EPSILON)
+					shortcutMovement.x += EPSILON;
 				// Move along Z will be less than X
 				// so that no collision will occur
-				tmpFutureMovement.z = tmpFutureMovement.x * 0.5f;
-				if (futureMovement.z < 0) tmpFutureMovement.z *= -1.0f;
+				shortcutMovement.z = shortcutMovement.x * 0.5f;
+				if (futureMovement.z < 0) shortcutMovement.z *= -1.0f;
 				idxOfCollision =
-					checkCollision(entity, tmpFutureMovement, collidedEntities);
+					checkCollision(entity, shortcutMovement, collidedEntities);
 				if (idxOfCollision == collidedEntities.size()) {
-					futureMovement = tmpFutureMovement;
 					return true;
 				}
 			}
 			// Try slide over obstacle
 			colliderX -= 2.0f * collidedEntities[0]->getCollider()->width;
 			if (entity->getPosition().x < colliderX) {
-				tmpFutureMovement.x =
+				shortcutMovement.x =
 					(entity->getPosition().x + entity->getCollider()->width) -
 					colliderX;
-				if (tmpFutureMovement.x > (absZ / 2)) {
-					tmpFutureMovement.x = absZ / 2;
+				if (shortcutMovement.x > (absZ / 2)) {
+					shortcutMovement.x = absZ / 2;
 				}
-				if (tmpFutureMovement.x < 0.0f)
-					tmpFutureMovement.x = EPSILON;
-				else if (tmpFutureMovement.x < EPSILON)
-					tmpFutureMovement.x += EPSILON;
+				if (shortcutMovement.x < 0.0f)
+					shortcutMovement.x = EPSILON;
+				else if (shortcutMovement.x < EPSILON)
+					shortcutMovement.x += EPSILON;
 				// Move along X will be less than Z
 				// so that no collision will occur
-				tmpFutureMovement.z = tmpFutureMovement.x * 0.5f;
-				if (futureMovement.z < 0) tmpFutureMovement.z *= -1.0f;
-				tmpFutureMovement.x *= -1;
+				shortcutMovement.z = shortcutMovement.x * 0.5f;
+				if (futureMovement.z < 0) shortcutMovement.z *= -1.0f;
+				shortcutMovement.x *= -1;
 				idxOfCollision =
-					checkCollision(entity, tmpFutureMovement, collidedEntities);
+					checkCollision(entity, shortcutMovement, collidedEntities);
 				if (idxOfCollision == collidedEntities.size()) {
-					futureMovement = tmpFutureMovement;
 					return true;
 				}
 			}
@@ -894,150 +930,23 @@ bool GameEngine::tryShortcut(Entity *entity, glm::vec3 &futureMovement,
 	return false;
 }
 
-void GameEngine::buttonStateChanged(std::string buttonName, bool isPressed) {
-	if (keyboardMap.find(buttonName) == keyboardMap.end()) {
-		std::runtime_error("Unkown Mapping for '" + buttonName + "'!");
+void GameEngine::buttonStateChanged(int keyID, bool isPressed) {
+	if (keyboardMap.find(keyID) == keyboardMap.end()) {
+		KeyState keyState;
+		keyboardMap[keyID] = keyState;
 	}
-	keyboardMap[buttonName].currFrame = isPressed;
+	keyboardMap[keyID].currFrame = isPressed;
 }
 
-bool GameEngine::isKeyPressed(std::string keyName) {
-	return keyboardMap[keyName].currFrame;
+bool GameEngine::isKeyPressed(int keyID) {
+	auto result = keyboardMap.find(keyID);
+	return result != keyboardMap.end() && result->second.currFrame;
 }
 
-bool GameEngine::isKeyJustPressed(std::string keyName) {
-	return keyboardMap[keyName].currFrame && !keyboardMap[keyName].prevFrame;
+bool GameEngine::isKeyJustPressed(int keyID) {
+	auto result = keyboardMap.find(keyID);
+	return result != keyboardMap.end() && result->second.currFrame &&
+		   !result->second.prevFrame;
 }
 
-static std::map<std::string, KeyState>
-generateKeyboardMap() {  // static here is "internal linkage"
-	KeyState keyState;
-	std::map<std::string, KeyState> map = std::map<std::string, KeyState>();
-
-	keyState.currFrame = false;
-	keyState.prevFrame = false;
-
-	map["UNKNOWN"] = keyState;
-	map["SPACE"] = keyState;
-	map["APOSTROPHE"] = keyState;
-	map["COMMA"] = keyState;
-	map["MINUS"] = keyState;
-	map["PERIOD"] = keyState;
-	map["SLASH"] = keyState;
-	map["0"] = keyState;
-	map["1"] = keyState;
-	map["2"] = keyState;
-	map["3"] = keyState;
-	map["4"] = keyState;
-	map["5"] = keyState;
-	map["6"] = keyState;
-	map["7"] = keyState;
-	map["8"] = keyState;
-	map["9"] = keyState;
-	map[";"] = keyState;
-	map["EQUAL"] = keyState;
-	map["A"] = keyState;
-	map["B"] = keyState;
-	map["C"] = keyState;
-	map["D"] = keyState;
-	map["E"] = keyState;
-	map["F"] = keyState;
-	map["G"] = keyState;
-	map["H"] = keyState;
-	map["I"] = keyState;
-	map["L"] = keyState;
-	map["K"] = keyState;
-	map["L"] = keyState;
-	map["M"] = keyState;
-	map["N"] = keyState;
-	map["O"] = keyState;
-	map["P"] = keyState;
-	map["Q"] = keyState;
-	map["R"] = keyState;
-	map["S"] = keyState;
-	map["T"] = keyState;
-	map["U"] = keyState;
-	map["V"] = keyState;
-	map["W"] = keyState;
-	map["X"] = keyState;
-	map["Y"] = keyState;
-	map["Z"] = keyState;
-	map["["] = keyState;
-	map["\\"] = keyState;
-	map["]"] = keyState;
-	map["`"] = keyState;
-	map["WORLD_1"] = keyState;
-	map["WORLD_2"] = keyState;
-	map["ESCAPE"] = keyState;
-	map["ENTER"] = keyState;
-	map["TAB"] = keyState;
-	map["BACKSPACE"] = keyState;
-	map["INSERT"] = keyState;
-	map["DELETE"] = keyState;
-	map["RIGHT"] = keyState;
-	map["LEFT"] = keyState;
-	map["DOWN"] = keyState;
-	map["UP"] = keyState;
-	map["PAGE_UP"] = keyState;
-	map["PAGE_DOWN"] = keyState;
-	map["HOME"] = keyState;
-	map["END"] = keyState;
-	map["CAPS_LOCK"] = keyState;
-	map["SCROLL_LOCK"] = keyState;
-	map["NUM_LOCK"] = keyState;
-	map["PRINT_SCREEN"] = keyState;
-	map["PAUSE"] = keyState;
-	map["F1"] = keyState;
-	map["F2"] = keyState;
-	map["F3"] = keyState;
-	map["F4"] = keyState;
-	map["F5"] = keyState;
-	map["F6"] = keyState;
-	map["F7"] = keyState;
-	map["F8"] = keyState;
-	map["F9"] = keyState;
-	map["F10"] = keyState;
-	map["F11"] = keyState;
-	map["F12"] = keyState;
-	map["F13"] = keyState;
-	map["F14"] = keyState;
-	map["F15"] = keyState;
-	map["F16"] = keyState;
-	map["F17"] = keyState;
-	map["F18"] = keyState;
-	map["F19"] = keyState;
-	map["F20"] = keyState;
-	map["F21"] = keyState;
-	map["F22"] = keyState;
-	map["F23"] = keyState;
-	map["F24"] = keyState;
-	map["F25"] = keyState;
-	map["KP_0"] = keyState;
-	map["KP_1"] = keyState;
-	map["KP_2"] = keyState;
-	map["KP_3"] = keyState;
-	map["KP_4"] = keyState;
-	map["KP_5"] = keyState;
-	map["KP_6"] = keyState;
-	map["KP_7"] = keyState;
-	map["KP_8"] = keyState;
-	map["KP_9"] = keyState;
-	map["KP_DECIMAL"] = keyState;
-	map["KP_DIVIDE"] = keyState;
-	map["KP_MULTIPLY"] = keyState;
-	map["KP_SUBTRACT"] = keyState;
-	map["KP_ADD"] = keyState;
-	map["KP_ENTER"] = keyState;
-	map["KP_EQUAL"] = keyState;
-	map["LEFT_SHIFT"] = keyState;
-	map["LEFT_CONTROL"] = keyState;
-	map["LEFT_ALT"] = keyState;
-	map["LEFT_SUPER"] = keyState;
-	map["RIGHT_SHIFT"] = keyState;
-	map["RIGHT_CONTROL"] = keyState;
-	map["RIGHT_ALT"] = keyState;
-	map["RIGHT_SUPER"] = keyState;
-	map["MENU"] = keyState;
-	return map;
-}
-std::map<std::string, KeyState> GameEngine::keyboardMap = generateKeyboardMap();
+std::map<int, KeyState> GameEngine::keyboardMap = std::map<int, KeyState>();
