@@ -4,7 +4,7 @@
 Forest::Forest(glm::vec3 const &pos, glm::vec3 const &eulerAngles,
 			   Bomberman *bomberman)
 	:  // Camera(pos, eulerAngles),
-	  SceneTools(17, 17, pos, eulerAngles, bomberman, "Forest", "Volcano"),
+	  SceneTools(21, 21, pos, eulerAngles, bomberman, "Forest", "Volcano"),
 	  _timer(181),
 	  _cooldown(0.0f) {
 	configAI();

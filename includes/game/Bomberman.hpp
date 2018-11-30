@@ -38,6 +38,7 @@ class Bomberman : public AGame {
 	std::map<std::string, Scene> _scenesMap;
 
 	void _initScenes(void);
+	void _createMap(int width, int height);
 
 	void _mainMenu(void);
 	void _forest(void);
