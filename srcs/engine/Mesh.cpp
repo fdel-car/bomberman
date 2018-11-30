@@ -45,11 +45,11 @@ void Mesh::draw(ShaderProgram const &shaderProgram,
 				glm::vec3 const &color) const {
 	if (color.x != -1.0f && color.y != -1.0f && color.z != -1.0f) {
 		shaderProgram.setVec3("material.ambientColor",
-							  glm::mix(_material.ambientColor, color, 0.5));
+							  glm::mix(_material.ambientColor, color, 0.7));
 		shaderProgram.setVec3("material.diffuseColor",
-							  glm::mix(_material.diffuseColor, color, 0.5));
+							  glm::mix(_material.diffuseColor, color, 0.7));
 		shaderProgram.setVec3("material.specularColor",
-							  glm::mix(_material.specularColor, color, 0.5));
+							  glm::mix(_material.specularColor, color, 0.7));
 	} else {
 		shaderProgram.setVec3("material.ambientColor", _material.ambientColor);
 		shaderProgram.setVec3("material.diffuseColor", _material.diffuseColor);
