@@ -8,7 +8,7 @@ AEnemy::AEnemy(glm::vec3 position, glm::vec3 eulerAngles, std::string name,
 			   Entity *toSpawn)
 	: Damageable(glm::vec3(position.x, position.y + 0.4f, position.z),
 				 eulerAngles, new Collider(Collider::Circle, tag, 0.45f, 0.45f),
-				 "Enemy", name, "Enemy", 1, tag, EnemySpecialLayer, 2.0f,
+				 "Sphere", name, "Enemy", 1, tag, EnemySpecialLayer, 2.0f,
 				 sceneManager),
 	  _bombCooldown(0.0f),
 	  _resetMoveCoolDown(0.0f),

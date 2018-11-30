@@ -46,7 +46,7 @@ GameEngine::GameEngine(AGame *game)
 	_running = false;
 
 	// Create interface class
-	_gameRenderer = new GameRenderer(this, game);
+	_gameRenderer = new GameRenderer(this, _game);
 	// Create audio manager
 	_audioManager = new AudioManager();
 
@@ -56,7 +56,7 @@ GameEngine::GameEngine(AGame *game)
 	_camera = nullptr;
 
 	_skybox = new Skybox("default");
-	if (_skybox != nullptr) _skybox->initEntity(this);
+	_skybox->initEntity(this);
 }
 
 GameEngine::~GameEngine(void) {

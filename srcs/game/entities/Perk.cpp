@@ -33,7 +33,7 @@ Perk::Perk(glm::vec3 position, Entity *sceneManager)
 	: Entity(glm::vec3(position.x, position.y + 0.3f, position.z), glm::vec3(0),
 			 new Collider(Collider::Rectangle, LayerTag::PerkLayer, 0.4f, 0.4f,
 						  true),
-			 "Box", "Perk", "Perk", sceneManager),
+			 "Wall", "Perk", "Perk", sceneManager),
 	  _timer(TIME_BETWEEN_ANIM) {
 	scale(glm::vec3(0.8, 0.4, 0.8));
 

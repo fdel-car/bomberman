@@ -90,7 +90,7 @@ void Bomberman::_mainMenu(void) {
 	_light = new Light(glm::vec2(-10.0, -10.0), glm::vec3(0.0f), 10.0f);
 	_entities.push_back(new Entity(glm::vec3(2.0, 0.5, -2.0), glm::vec3(0.0f),
 								   nullptr, "Bomb", "Bomb", "Bomb"));
-	_entities.back()->scale(glm::vec3(5.0));
+	_entities.back()->scale(glm::vec3(2.5f));
 }
 
 void Bomberman::_forest(void) {
@@ -148,8 +148,8 @@ void Bomberman::_volcano(void) {
 	_light = new Light(glm::vec2(-20.0, 8.0), glm::vec3(0.0f));
 	_entities.push_back(new Entity(glm::vec3(0.0f), glm::vec3(0.0f), nullptr,
 								   "Island", "Island", "Island"));
-	_entities.push_back(
-		new Player(glm::vec3(-17.0, 0.0, -17.0), glm::vec3(0.0f), _save, _camera));
+	_entities.push_back(new Player(glm::vec3(-17.0, 0.0, -17.0),
+								   glm::vec3(0.0f), _save, _camera));
 
 	// Portal to clear lvl
 	_entities.push_back(new Portal(glm::vec3(-7, 0, 0), _camera));
@@ -185,6 +185,10 @@ void Bomberman::_createMap(int width, int height) {
 							   "Wall", "Wall", "Wall", _camera));
 				_entities.back()->scale(glm::vec3(1.0, 0.8, 1.0));
 			}
+			//  else if (x != -7 && z != -7 && x != 7 && z != 7 && x % 2 != 0 &&
+			//    z % 2 != 0) {
+			// _entities.push_back(new Box(glm::vec3(x, 0, z), _camera));
+			// }
 		}
 	}
 }

@@ -5,6 +5,7 @@ EnemyOFDT::EnemyOFDT(glm::vec3 position, glm::vec3 eulerAngles,
 	: AEnemy(position, eulerAngles, "OFDT", EnemyLayer, true, sceneManager) {
 	_speed = 3.0f;
 	scale(glm::vec3(0.8, 0.8, 0.8));
+	setColor(glm::vec3(1.0, 0.2, 0.2));
 }
 
 EnemyOFDT::~EnemyOFDT(void) {}

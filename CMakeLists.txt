@@ -1,17 +1,28 @@
 cmake_minimum_required(VERSION 3.0)
 project(SuperBomberman)
 
-set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
-set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
-set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_DOCS OFF)
+set(GLFW_BUILD_TESTS OFF)
+set(GLFW_BUILD_EXAMPLES OFF)
+add_subdirectory(libs/glfw-3.2.1)
 
-add_subdirectory(glfw-3.2.1)
+set(CMAKE_BUILD_TYPE "Release") 
+set(SFML_BUILD_DOC OFF) 
+set(SFML_BUILD_GRAPHICS OFF) 
+set(SFML_BUILD_WINDOW OFF) 
+set(SFML_BUILD_NETWORK OFF)
+set(SFML_BUILD_AUDIO ON)
+set(SFML_BUILD_EXAMPLES OFF)
+add_subdirectory(libs/SFML-2.5.1)
+
+set(ASSIMP_BUILD_TESTS OFF)
+add_subdirectory(libs/assimp-4.1.0)
 
 include_directories(scrs)
 set(SRCS
   srcs/main.cpp
 
-  srcs/glad/glad.cpp
+  libs/srcs/glad/glad.cpp
 
   srcs/engine/Entity.cpp
   srcs/engine/AudioManager.cpp
@@ -25,8 +36,6 @@ set(SRCS
   srcs/engine/Model.cpp
   srcs/engine/Mesh.cpp
   srcs/engine/Skybox.cpp
-
-
   srcs/engine/GUI/GUI.cpp
 
   srcs/game/Bomberman.cpp
@@ -50,17 +59,17 @@ set(SRCS
   srcs/game/entities/Portal.cpp
 )
 
-include_directories(includes)
+include_directories("includes")
+include_directories("libs/includes")
+include_directories("libs/assimp-4.1.0/include" "build/libs/assimp-4.1.0/include")
 set(HEADERS
-  includes/glad/glad.h
-  includes/KHR/khrplatform.h
-  includes/nuklear/nuklear.h
-  includes/tiny_obj_loader/tiny_obj_loader.h
-  includes/glm/glm.hpp
-  includes/glm/gtc/matrix_transform.hpp
-  includes/glm/gtc/type_ptr.hpp
-  # includes/glm/gtx/euler_angles.hpp
-  includes/json/json.hpp
+  libs/includes/glad/glad.h
+  libs/includes/KHR/khrplatform.h
+  libs/includes/nuklear/nuklear.h
+  libs/includes/glm/glm.hpp
+  libs/includes/glm/gtc/matrix_transform.hpp
+  libs/includes/glm/gtc/type_ptr.hpp
+  libs/includes/json/json.hpp
 
   includes/engine/Engine.hpp
   includes/engine/Entity.hpp
@@ -75,8 +84,6 @@ set(HEADERS
   includes/engine/Model.hpp
   includes/engine/Mesh.hpp
   includes/engine/Skybox.hpp
-
-
   includes/engine/GUI/GUI.hpp
 
   includes/game/Bomberman.hpp
@@ -104,15 +111,14 @@ add_executable(super_bomberman ${SRCS} ${HEADERS})
 
 if(MSVC)
   target_compile_options(glfw PRIVATE /W2)
+  target_compile_options(sfml-audio PRIVATE /W2)
+  target_compile_options(assimp PRIVATE /W2)
   target_compile_options(super_bomberman PRIVATE /W4 /WX)
 else()
-  target_compile_options(glfw PRIVATE -Wno-deprecated)
+  target_compile_options(glfw PRIVATE -Wno-deprecated -Wno-macro-redefined)
+  target_compile_options(sfml-audio PRIVATE -Wno-deprecated)
+  target_compile_options(assimp PRIVATE -Wno-deprecated -Wno-delete-non-virtual-dtor -Wno-address-of-packed-member -Wno-unused-private-field)
   target_compile_options(super_bomberman PRIVATE -Wall -Wextra -Werror)
 endif()
-
 target_compile_features(super_bomberman PRIVATE cxx_std_11)
-
-set(SFML_DIR "${CMAKE_SOURCE_DIR}/SFML-2.5.1/build")
-find_package(SFML 2.5.1 COMPONENTS audio REQUIRED)
-
-target_link_libraries(super_bomberman glfw sfml-audio)
+target_link_libraries(super_bomberman glfw sfml-audio assimp)
