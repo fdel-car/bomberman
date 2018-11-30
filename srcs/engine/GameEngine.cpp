@@ -412,7 +412,8 @@ void GameEngine::moveEntities(void) {
 				} else
 					collidedTriggers.clear();
 			}
-			if (!hasCollided && !entity->getNeedToBeDestroyed()) {
+			if ((futureMovement.x != 0 || futureMovement.z != 0) &&
+				!hasCollided && !entity->getNeedToBeDestroyed()) {
 				entity->translate(futureMovement);
 			}
 		}

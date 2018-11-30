@@ -2,11 +2,11 @@
 
 #include "game/scenes/SceneTools.hpp"
 
-class Forest : public SceneTools {
+class Volcano : public SceneTools {
    public:
-	Forest(glm::vec3 const &pos, glm::vec3 const &eulerAngles,
-		   Bomberman *bomberman);
-	virtual ~Forest(void);
+	Volcano(glm::vec3 const &pos, glm::vec3 const &eulerAngles,
+			Bomberman *bomberman);
+	virtual ~Volcano(void);
 
 	virtual void drawGUI(GUI *graphicUI);
 	virtual void configGUI(GUI *graphicUI);
@@ -17,9 +17,9 @@ class Forest : public SceneTools {
 	// void printMapInfo(void);
 
    private:
-	Forest(void);
-	Forest(Forest const &src);
-	Forest &operator=(Forest const &rhs);
+	Volcano(void);
+	Volcano(Volcano const &src);
+	Volcano &operator=(Volcano const &rhs);
 
 	float _timer;
 	float _cooldown;

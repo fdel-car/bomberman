@@ -34,6 +34,8 @@ class Camera : public Entity {
 	std::map<int, nk_color> defaultStyle;
 	std::map<int, nk_color> activeStyle;
 	std::vector<std::tuple<std::string, std::string>> _neededImages;
+	void _updateData(
+		void);  // TODO: Put back to private and override translate func
 
    private:
 	float _speed;
@@ -48,8 +50,6 @@ class Camera : public Entity {
 
 	Camera(void);
 	Camera(Camera const &src);
-
-	void _updateData(void);
 
 	Camera &operator=(Camera const &rhs);
 };

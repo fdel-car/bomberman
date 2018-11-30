@@ -23,17 +23,24 @@ class Bomberman : public AGame {
    public:
 	Bomberman(void);
 	virtual ~Bomberman(void);
+
 	virtual bool loadSceneByIndex(int sceneIdx);
-	virtual size_t getWindowWidth();
-	virtual size_t getWindowHeight();
-	virtual bool isFullScreen();
+	virtual size_t getWindowWidth(void);
+	virtual size_t getWindowHeight(void);
+	virtual bool isFullScreen(void);
+	virtual std::string getStartLevelName(void);
+
+	Save &getSave(void);
 
    private:
 	Save _save;
+	const std::string _startLevelName;
 	std::map<std::string, Scene> _scenesMap;
 
 	void _initScenes(void);
 
 	void _mainMenu(void);
 	void _forest(void);
+	void _volcano(void);
+	void _desert(void);
 };
