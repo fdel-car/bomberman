@@ -20,6 +20,7 @@ class Camera : public Entity {
 	virtual void drawGUI(GUI *graphicUI);
 	virtual void update(void);
 	virtual void configGUI(GUI *graphicUI);
+	virtual void translate(glm::vec3 translation);
 
 	void initEntity(GameEngine *gameEngine);
 	void mouseCallback(GLFWwindow *window, double xpos, double ypos);

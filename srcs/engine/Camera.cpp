@@ -89,6 +89,11 @@ void Camera::update(void) {
 	_updateData();
 }
 
+void Camera::translate(glm::vec3 translation) {
+	Entity::translate(translation);
+	_view = glm::inverse(getModelMatrix());
+}
+
 void Camera::_updateData(void) {
 	_right =
 		glm::normalize(glm::vec3(getModelMatrix()[0][0], getModelMatrix()[0][1],
