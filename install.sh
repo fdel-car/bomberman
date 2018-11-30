@@ -85,5 +85,5 @@ fi
 # At the end off the first install, build the game
 if [ ! -d "build" ]; then
     mkdir "build"
-    cd build && cmake .. && make -j
+    cd build && cmake .. && cd .. && make -j4 -C build
 fi
