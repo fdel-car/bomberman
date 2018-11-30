@@ -1,6 +1,8 @@
 #include "engine/GameEngine.hpp"
 #include "engine/GameRenderer.hpp"
 
+// std::thread *_loadSceneThread = nullptr;
+
 GameEngine::LineInfo::LineInfo(void)
 	: m(0.0f),
 	  q(0.0f),
@@ -81,6 +83,10 @@ void GameEngine::addNewEntity(Entity *entity) {
 	_newEntities.back()->initEntity(this);
 }
 
+void GameEngine::test(std::atomic_int *state) {
+	*state = LOAD_FINISHED;
+}
+
 void GameEngine::run(void) {
 	// Init vars
 	_lastFrameTs = Clock::now();
@@ -95,25 +101,22 @@ void GameEngine::run(void) {
 	int newSceneIdx = -1;
 
 	// Init thread to load the scene we want
-	std::cout << "AA" << std::endl;
-	_loadSceneThread = std::thread([this] { initScene(1); });
-	std::cout << "BB" << std::endl;
-
-
-	// if (_loadState == LOAD_IDLE)
-	// {
-	// 	std::cout << "CC" << std::endl;
+	if (_loadState == LOAD_IDLE)
+	{
+		std::cout << "LoadScene Started" << std::endl;
+		_loadSceneIsActive = true;
 		initLoadScene();
-		// std::cout << "AA" << std::endl;
-	// }
-	// else if (_loadState == LOAD_FINISHED)
-	// {
-	// 	std::cout << "DD" << std::endl;
-	// 	std::cout << "Load finish" << std::endl;
-	// }
-
-	// std::cout << "ZZ" << std::endl;
-
+		_loadSceneThread = new std::thread(&GameEngine::test, this, &_loadState);
+		std::cout << "Background Thread Launched" << std::endl;
+	}
+	else if (_loadState == LOAD_FINISHED)
+	{
+		std::cout << "LoadScene Finished" << std::endl;
+		std::cout << "Scene to Load: " << _sceneIdx << std::endl;
+		_loadSceneIsActive = false;
+		if (!initScene(_sceneIdx)) throw std::runtime_error("Cannot load scene!");
+		_loadState = LOAD_IDLE;
+	}
 
 	// Start game loop
 	while (true) {
@@ -124,6 +127,19 @@ void GameEngine::run(void) {
 						  .count()) /
 					 1000.0f;
 		_lastFrameTs = _frameTs;
+
+		// Check if thread is finish
+		if (_loadState == LOAD_FINISHED) {
+			std::cout << "Load finish" << std::endl;
+
+			_loadSceneThread->join();
+			delete _loadSceneThread;
+			_loadSceneThread = nullptr;
+			if (_loadSceneIsActive)
+				run();
+			else
+				break;
+		}
 
 		// Update inputs
 		for (auto &key : keyboardMap)

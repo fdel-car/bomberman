@@ -23,6 +23,7 @@
 
 // For Threads
 #include <atomic>
+#include <thread>
 
 #define LOAD_IDLE 0
 #define LOAD_STARTED 1
@@ -113,6 +114,8 @@ class GameEngine {
 								  const Collider *rectangleCollider,
 								  const glm::vec3 &rectanglePos) const;
 
+	void test(std::atomic_int *state);
+
 	// Graphic libraries vars
 	GameRenderer *_gameRenderer;
 	Clock::time_point _frameTs;
@@ -121,8 +124,9 @@ class GameEngine {
 	AudioManager *_audioManager;
 
 	// Thread
-	std::thread _loadSceneThread;
+	std::thread *_loadSceneThread;
 	std::atomic_int _loadState;
+	bool _loadSceneIsActive;
 
 	// Game model vars
 	bool _running;
