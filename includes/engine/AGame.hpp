@@ -12,7 +12,7 @@ class AGame {
 	AGame(size_t enumSize);
 	virtual ~AGame(void);
 
-	virtual void loadSceneByIndex(int sceneIdx, std::atomic_int *_sceneState, bool *_checkLoadSceneIsGood, GLFWwindow *_window) = 0;
+	virtual void loadSceneByIndex(int sceneIdx, std::atomic_int *_sceneState, bool *_checkLoadSceneIsGood) = 0;
 	virtual void initLoadScene(int sceneIdx) = 0;
 	virtual size_t getWindowWidth() = 0;
 	virtual size_t getWindowHeight() = 0;

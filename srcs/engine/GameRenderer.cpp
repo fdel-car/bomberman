@@ -5,7 +5,7 @@
 #include "engine/Model.hpp"
 
 extern std::string _srcsDir;
-extern std::string _assetsDir;
+// extern std::string _assetsDir;
 
 GameRenderer::GameRenderer(GameEngine *gameEngine, AGame *game) {
 	_gameEngine = gameEngine;

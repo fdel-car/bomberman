@@ -92,7 +92,6 @@ class GameEngine {
 
 	bool initScene(size_t newSceneIdx);
 	void initLoadScene(void);
-	
 	void loadScene(size_t newSceneIdx, std::atomic_int *_sceneState, bool *_checkLoadSceneIsGood); // function to call for background Thread
 
 	void moveEntities(void);
@@ -116,8 +115,6 @@ class GameEngine {
 								  const glm::vec3 &circlePos,
 								  const Collider *rectangleCollider,
 								  const glm::vec3 &rectanglePos) const;
-
-	void test(std::atomic_int *state);
 
 	// Graphic libraries vars
 	GameRenderer *_gameRenderer;

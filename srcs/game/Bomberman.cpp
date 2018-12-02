@@ -30,29 +30,12 @@ Bomberman::Bomberman(void) : AGame(8) {
 
 Bomberman::~Bomberman(void) {}
 
-void Bomberman::loadSceneByIndex(int sceneIdx, std::atomic_int *_sceneState, bool *_checkLoadSceneIsGood, GLFWwindow *_window) {
+void Bomberman::loadSceneByIndex(int sceneIdx, std::atomic_int *_sceneState, bool *_checkLoadSceneIsGood) {
 	unload();
 	if (sceneIdx < 0 || sceneIdx >= static_cast<int>(_scenesNames.size()))
 		*_checkLoadSceneIsGood = false;
 	else {
-		this->_window = _window;
-
-		(this->*(_scenesMap[_scenesNames[sceneIdx]]))(); // <-- this cause segfault, need to create another Thread for Skybox (tested)
-
-		// std::chrono::high_resolution_clock::time_point t = std::chrono::high_resolution_clock::now();
-
-		// while (true)
-		// {
-		// 	std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
-		// 	std::chrono::milliseconds timeLoad = std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t);
-		// 	std::cout << "Loading Time: " << timeLoad.count() << std::endl;
-		// 	if (timeLoad.count() >= 250)
-		// 		break;
-		// }
-
-		/*
-			TODO: If all the state are finish (skyboxState, ...), then SceneState is finish
-		*/
+		(this->*(_scenesMap[_scenesNames[sceneIdx]]))();
 		*_checkLoadSceneIsGood = true;
 	}
 	*_sceneState = 2; // 2 == finished state
@@ -76,6 +59,7 @@ void Bomberman::_loadScene(void) {
 
 void Bomberman::_mainMenu(void) {
 	_skybox = new Skybox("default");
+	// _skybox = nullptr;
 	_camera = new MainMenu(
 		glm::vec3(0.0, 0.0, 10.0), glm::vec3(0.0f),
 		std::vector<std::string>(_scenesNames.begin() + 1, _scenesNames.end()),
