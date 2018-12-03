@@ -74,7 +74,6 @@ void Skybox::_initCubeMap(void) {
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 }
-<<<<<<< HEAD
 
 void Skybox::_initData(void) {
 	int nrChannels;
@@ -86,5 +85,3 @@ void Skybox::_initData(void) {
 					  << std::endl;
 	}
 }
-=======
->>>>>>> dd9f5fc3e23fcbc5c333780413eae6facb5d30cc
