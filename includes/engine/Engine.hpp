@@ -35,6 +35,11 @@ std::string toString(const T& val) {
 // #define WINDOW_W 2560
 // #define WINDOW_H 1400
 
+#define BACKGROUND_LOAD_NEEDED 0
+#define BACKGROUND_LOAD_NOT_NEEDED 1
+#define BACKGROUND_LOAD_STARTED 2
+#define BACKGROUND_LOAD_FINISHED 3
+
 // https://www.glfw.org/docs/latest/group__keys.html
 #define KEY_UNKNOWN GLFW_KEY_UNKNOWN
 #define KEY_SPACE GLFW_KEY_SPACE
