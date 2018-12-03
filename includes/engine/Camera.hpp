@@ -19,6 +19,7 @@ class Camera : public Entity {
 	virtual bool isPause(void) const;
 	virtual void drawGUI(GUI *graphicUI);
 	virtual void update(void);
+	virtual void updateDebugMode(void);
 	virtual void configGUI(GUI *graphicUI);
 	virtual void translate(glm::vec3 translation);
 
@@ -37,7 +38,6 @@ class Camera : public Entity {
 	void _updateData(
 		void);  // TODO: Put back to private and override translate func
 
-   private:
 	float _speed;
 	float _aspectRatio;
 	glm::mat4 _view;
@@ -48,6 +48,7 @@ class Camera : public Entity {
 	glm::vec3 _right;
 	glm::vec3 _up;
 
+   private:
 	Camera(void);
 	Camera(Camera const &src);
 

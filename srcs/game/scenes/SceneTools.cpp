@@ -1,8 +1,9 @@
 #include "game/scenes/SceneTools.hpp"
 #include "engine/GameEngine.hpp"
+#include "engine/GameRenderer.hpp"
 #include "game/entities/Bomb.hpp"
-#include "game/entities/Explosion.hpp"
 #include "game/entities/Damageable.hpp"
+#include "game/entities/Explosion.hpp"
 
 extern std::string _assetsDir;
 
@@ -42,6 +43,34 @@ SceneTools::~SceneTools(void) { _clearGraphe(); }
 
 bool SceneTools::isPause(void) const {
 	return _debugMode || _isPause || _showVictoryScreen || _showDeathScreen;
+}
+
+void SceneTools::updateDebugMode(void) {
+	if (!_isPause && _gameEngine->isKeyJustPressed(KEY_GRAVE_ACCENT)) {
+		_debugMode = !_debugMode;
+		if (_debugMode) {
+			// Save position and rotation
+			_positionPrevDebug = getPosition();
+			_eulerAnglesPrevDebug = getEulerAngles();
+		} else {
+			// Put back to position
+			// translate(_positionPrevDebug - getPosition());
+			// float xOffset = _eulerAnglesPrevDebug.x - getEulerAngles().x;
+
+			// float yOffset = _eulerAnglesPrevDebug.y - getEulerAngles().y;
+
+			// if (glm::epsilonNotEqual(0.0f, xOffset, EPSILON))
+			// rotateX(xOffset);
+
+			// if (glm::epsilonNotEqual(0.0f, yOffset, EPSILON))
+			// rotateY(yOffset);
+			// _updateData();
+		}
+		// Avoid camera jump on first frame
+		_lastMousePos.x = _gameEngine->getGameRenderer()->getMousePos().x;
+		_lastMousePos.y = _gameEngine->getGameRenderer()->getMousePos().y;
+		_gameEngine->getGameRenderer()->switchCursorMode(_debugMode);
+	}
 }
 
 void SceneTools::_displayDialogue(GUI *graphicUI, int *searchWord,
@@ -209,7 +238,8 @@ void SceneTools::_displayTimer(GUI *graphicUI, float *currentTime,
 		int tmpMinutes = *currentTime / 60;
 		std::string minutes = std::to_string(tmpMinutes);
 		int tmpSec = static_cast<int>(*currentTime) % 60;
-		std::string sec = tmpSec < 10 ? "0" + std::to_string(tmpSec) : std::to_string(tmpSec);
+		std::string sec =
+			tmpSec < 10 ? "0" + std::to_string(tmpSec) : std::to_string(tmpSec);
 		graphicUI->uiHeader((minutes + " : " + sec).c_str(), NK_TEXT_CENTERED,
 							50, "30_BOMBERMAN");
 	}
@@ -393,7 +423,8 @@ void SceneTools::_savePositions(Entity *entity) {
 }
 
 void SceneTools::printMapInfo(void) {
-	std::cout << "------------------------------------------- " << _mapWidth << " " << _mapHeight  << std::endl;
+	std::cout << "------------------------------------------- " << _mapWidth
+			  << " " << _mapHeight << std::endl;
 	size_t i = 0;
 	size_t j = 0;
 	for (const auto &info : _entitiesInSquares) {
@@ -476,11 +507,11 @@ void SceneTools::_putExplosionsInDirection(size_t xCoord, size_t zCoord,
 			} else if (entity.second->getTag().compare("Bomb") == 0) {
 				// Force stop when destroying first Box/Bomb
 				rangeIdx = range;
-			}
-			else if (entity.second->getTag().compare("Box") == 0) {
+			} else if (entity.second->getTag().compare("Box") == 0) {
 				rangeIdx = range;
 				canPutExplosion = false;
-				Damageable *damageable = dynamic_cast<Damageable *>(entity.second);
+				Damageable *damageable =
+					dynamic_cast<Damageable *>(entity.second);
 				if (damageable != nullptr) {
 					damageable->takeDamage();
 				}
@@ -564,8 +595,7 @@ void SceneTools::_startBuildingGrapheForPathFinding(void) {
 		}
 	}
 	// std::cout << _runAway << std::endl;
-	if (_runAwayPos != 0)
-		_searchWay(false, _graphe[_runAwayPos], _runAwayPos);
+	if (_runAwayPos != 0) _searchWay(false, _graphe[_runAwayPos], _runAwayPos);
 }
 
 void SceneTools::_searchWay(bool searchBestWay, Node *originNode,
@@ -603,7 +633,6 @@ void SceneTools::_searchWay(bool searchBestWay, Node *originNode,
 		}
 		nodesByDepth.pop_front();
 	}
-
 }
 
 void SceneTools::_buildNewNode(size_t dist, size_t x, size_t z, size_t pos,
