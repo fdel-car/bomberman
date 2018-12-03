@@ -1,9 +1,7 @@
 #ifndef SAVE_HPP
 #define SAVE_HPP
 
-#include <string>
-#include <tuple>
-#include <vector>
+#include "engine/Engine.hpp"
 
 struct Save {
    public:
@@ -11,10 +9,10 @@ struct Save {
 		RESOLUTIONS;
 	static const std::vector<std::tuple<std::string, bool>> FULL_SCREEN;
 
-	std::string upKey = "W";
-	std::string leftKey = "A";
-	std::string downKey = "S";
-	std::string rightKey = "D";
+	int upKey = KEY_W;
+	int leftKey = KEY_A;
+	int downKey = KEY_S;
+	int rightKey = KEY_D;
 	size_t level = 0;
 	size_t isFullScreen = 0;
 	size_t resolutionsIdx = 0;

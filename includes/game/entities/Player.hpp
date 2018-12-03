@@ -13,6 +13,12 @@ class Player : public Damageable {
 	virtual void update(void);
 	virtual void onTakeDamage(void);
 	virtual void onDeath(void);
+	virtual void onCollisionEnter(Entity *entity);
+
+	void gotSpeedBoost(float boost);
+	void gotBombRangeBoost(size_t boost);
+	void gotMaxBombBoost(size_t boost);
+	void gotBombKickBoost(bool boost);
 
    private:
 	Save &_save;
@@ -20,6 +26,7 @@ class Player : public Damageable {
 	size_t _maxBombs;
 	float _bombCooldown;
 	size_t _bombRange;
+	bool _bombKick;
 	std::vector<float> _bombTimers;
 	SceneTools *_cam;
 

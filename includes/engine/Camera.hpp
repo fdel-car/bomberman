@@ -15,11 +15,12 @@ class Camera : public Entity {
 	std::vector<std::tuple<std::string, std::string>> const &getNeededImages()
 		const;
 	bool isGameRunning(void) const;
-	bool isPause(void) const;
 
+	virtual bool isPause(void) const;
 	virtual void drawGUI(GUI *graphicUI);
 	virtual void update(void);
 	virtual void configGUI(GUI *graphicUI);
+	virtual void translate(glm::vec3 translation);
 
 	void initEntity(GameEngine *gameEngine);
 	void mouseCallback(GLFWwindow *window, double xpos, double ypos);
@@ -33,6 +34,8 @@ class Camera : public Entity {
 	std::map<int, nk_color> defaultStyle;
 	std::map<int, nk_color> activeStyle;
 	std::vector<std::tuple<std::string, std::string>> _neededImages;
+	void _updateData(
+		void);  // TODO: Put back to private and override translate func
 
    private:
 	float _speed;
@@ -47,8 +50,6 @@ class Camera : public Entity {
 
 	Camera(void);
 	Camera(Camera const &src);
-
-	void _updateData(void);
 
 	Camera &operator=(Camera const &rhs);
 };

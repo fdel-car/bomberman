@@ -1,22 +1,25 @@
 #include "game/entities/Player.hpp"
 #include "engine/GameEngine.hpp"
 #include "game/Bomberman.hpp"
+#include "game/entities/Bomb.hpp"
 
 Player::Player(glm::vec3 position, glm::vec3 eulerAngles, Save &save,
 			   Entity *sceneManager)
 	: Damageable(
 		  glm::vec3(position.x, position.y + 0.45f, position.z), eulerAngles,
 		  new Collider(Collider::Circle, LayerTag::PlayerLayer, 0.45f, 0.45f),
-		  "Player", "Player", "Player", 3, PlayerLayer, PlayerSpecialLayer,
+		  "Sphere", "Player", "Player", 3, PlayerLayer, PlayerSpecialLayer,
 		  2.0f, sceneManager),
 	  _save(save),
 	  _speed(6.0f),
 	  _maxBombs(3),
 	  _bombCooldown(3.0f),
 	  _bombRange(2),
+	  _bombKick(false),
 	  _bombTimers(std::vector<float>()),
 	  _cam(dynamic_cast<SceneTools *>(_sceneManager)) {
 	scale(glm::vec3(0.9, 0.9, 0.9));
+	setColor(glm::vec3(0.2, 0.2, 0.8));
 	if (_cam != nullptr) {
 		_cam->tellPlayerHp(_hp);
 	}
@@ -26,8 +29,8 @@ Player::~Player(void) {}
 
 void Player::update(void) {
 	if (!_alive) return;
-
 	Damageable::update();
+
 	float deltaTime = _gameEngine->getDeltaTime();
 
 	// Refresh cooldown of bombs
@@ -86,4 +89,39 @@ void Player::onTakeDamage(void) {
 
 void Player::onDeath(void) {
 	// TODO: start death animation
+	_collider->layerTag = _baseLayer;
+	_targetMovement *= 0;
+}
+
+void Player::gotSpeedBoost(float boost) { _speed += boost; }
+
+void Player::gotBombRangeBoost(size_t boost) { _bombRange += boost; }
+
+void Player::gotMaxBombBoost(size_t boost) { _maxBombs += boost; }
+
+void Player::gotBombKickBoost(bool boost) { _bombKick = boost; }
+
+void Player::onCollisionEnter(Entity *entity) {
+	if (_bombKick && _gameEngine->isKeyPressed(KEY_LEFT_SHIFT)) {
+		Bomb *bomb = dynamic_cast<Bomb *>(entity);
+		if (bomb != nullptr) {
+			if (_cam != nullptr) {
+				float xDistance = bomb->getPosition().x - getPosition().x;
+				float zDistance = bomb->getPosition().z - getPosition().z;
+				if (abs(xDistance) >= abs(zDistance))
+					zDistance = 0.0f;
+				else
+					xDistance = 0.0f;
+				int xSign =
+					(xDistance > 0.0f) ? 1 : (xDistance < 0.0f) ? -1 : 0;
+				int zSign =
+					(zDistance > 0.0f) ? 1 : (zDistance < 0.0f) ? -1 : 0;
+				// Check that bomb can actually be pushed in dir
+				if (_cam->canPutBomb(bomb->getPosition().x + xSign,
+									 bomb->getPosition().z + zSign)) {
+					bomb->pushBomb(xSign, zSign, _id);
+				}
+			}
+		}
+	}
 }

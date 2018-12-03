@@ -4,7 +4,8 @@
 
 class Forest : public SceneTools {
    public:
-	Forest(glm::vec3 const &pos, glm::vec3 const &eulerAngles);
+	Forest(glm::vec3 const &pos, glm::vec3 const &eulerAngles,
+		   Bomberman *bomberman);
 	virtual ~Forest(void);
 
 	virtual void drawGUI(GUI *graphicUI);
@@ -20,6 +21,7 @@ class Forest : public SceneTools {
 	Forest(Forest const &src);
 	Forest &operator=(Forest const &rhs);
 
+	float _timer;
 	float _cooldown;
 	bool _pauseMenu;
 };

@@ -32,7 +32,6 @@ void Skybox::_initSkyboxFaces(void) {
 
 void Skybox::_initBuffer(void) {
 	float _skyboxVertices[] = {
-		// positions
 		-1.0f, 1.0f,  -1.0f, -1.0f, -1.0f, -1.0f, 1.0f,  -1.0f, -1.0f,
 		1.0f,  -1.0f, -1.0f, 1.0f,  1.0f,  -1.0f, -1.0f, 1.0f,  -1.0f,
 

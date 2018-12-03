@@ -7,7 +7,7 @@ struct Material {
 	glm::vec3 ambientColor;
 	glm::vec3 diffuseColor;
 	glm::vec3 specularColor;
-	bool isTextured;
+	bool hasDiffuseTexture;
 	float shininess;
 };
 
@@ -18,7 +18,7 @@ class Mesh {
 	virtual ~Mesh(void);
 
 	size_t getSize(void) const;
-	void draw(ShaderProgram const &shaderProgram) const;
+	void draw(ShaderProgram const &shaderProgram, glm::vec3 const &color) const;
 
 	GLuint VAO;
 	GLuint VBO;
@@ -30,6 +30,8 @@ class Mesh {
 
 	Mesh(void);
 	Mesh(Mesh const &src);
+
+	void _setupBuffers(std::vector<Vertex> const &vertices);
 
 	Mesh &operator=(Mesh const &rhs);
 };

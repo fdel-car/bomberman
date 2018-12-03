@@ -31,7 +31,6 @@ Entity::Entity(glm::vec3 position, glm::vec3 eulerAngles, Collider *collider,
 	_rotationMatrix = glm::mat4(glm::quat(glm::radians(eulerAngles)));
 	_scaleMatrix = glm::mat4(1.0f);
 	_eulerAngles = eulerAngles;
-	_name = _modelName;
 	_gameEngine = nullptr;
 	_updateModelMatrix();
 
@@ -53,11 +52,15 @@ void Entity::tellPosition(Entity *entity) { (void)entity; }
 
 void Entity::tellDestruction(Entity *entity) { (void)entity; }
 
+void Entity::onCollisionEnter(Entity *entity) { (void)entity; }
+
 void Entity::onTriggerEnter(Entity *entity) { (void)entity; }
 
 GameEngine *Entity::getGameEngine(void) const { return _gameEngine; }
 
 const glm::vec3 &Entity::getPosition(void) const { return _position; }
+
+const glm::vec3 &Entity::getColor(void) const { return _color; }
 
 const glm::mat4 &Entity::getModelMatrix(void) const { return _modelMatrix; }
 
@@ -82,6 +85,10 @@ glm::vec3 const &Entity::getTargetMovement(void) const {
 }
 
 bool Entity::getNeedToBeDestroyed(void) const { return _needToBeDestroyed; }
+
+void Entity::setColor(glm::vec3 const &color) { _color = color; }
+
+void Entity::resetColor(void) { _color = glm::vec3(-1.0f); }
 
 void Entity::translate(glm::vec3 translation) {
 	_translationMatrix = glm::translate(_translationMatrix, translation);

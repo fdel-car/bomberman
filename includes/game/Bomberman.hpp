@@ -13,9 +13,12 @@ enum LayerTag {
 	PlayerLayer,
 	PlayerSpecialLayer,
 	EnemyLayer,
+	EnemyRunAwayLayer,
 	EnemySpecialLayer,
 	BombLayer,
-	ExplosionLayer
+	ExplosionLayer,
+	PerkLayer,
+	PortalLayer
 };
 
 class Bomberman : public AGame {
@@ -25,13 +28,19 @@ class Bomberman : public AGame {
 	Bomberman(void);
 	virtual ~Bomberman(void);
 	virtual void loadSceneByIndex(int sceneIdx, std::atomic_int *_sceneState, bool *_checkLoadSceneIsGood);
-	virtual void initLoadScene(int sceneIdx);
+	virtual void initLoadScene(void);
 	virtual size_t getWindowWidth();
 	virtual size_t getWindowHeight();
 	virtual bool isFullScreen();
+	virtual std::string getStartLevelName(void);
+	virtual int getLoadingSceneIdx(void) const;
+	virtual int getFirstSceneIdx(void) const;
+
+	Save &getSave(void);
 
    private:
 	Save _save;
+	const std::string _startLevelName;
 	std::map<std::string, Scene> _scenesMap;
 	// GLFWwindow *_window; // to get current context in the Skybox thread or GL Function will segfault
 	
@@ -39,8 +48,11 @@ class Bomberman : public AGame {
 	// std::atomic_int loadState;
 
 	void _initScenes(void);
+	void _createMap(int width, int height);
 
 	void _mainMenu(void);
 	void _forest(void);
 	void _loadScene(void);
+	void _volcano(void);
+	void _desert(void);
 };

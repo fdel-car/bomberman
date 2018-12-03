@@ -7,28 +7,11 @@
 #include "engine/Light.hpp"
 #include "engine/Skybox.hpp"
 
-#define KEY_W "W"
-#define KEY_A "A"
-#define KEY_S "S"
-#define KEY_D "D"
-#define KEY_C "C"
-#define KEY_SPACE "SPACE"
-#define KEY_LEFT "LEFT"
-#define KEY_UP "UP"
-#define KEY_RIGHT "RIGHT"
-#define KEY_DOWN "DOWN"
-#define KEY_ESCAPE "ESCAPE"
-
 #define EPSILON 0.01f
 
 // For Threads
 #include <atomic>
 #include <thread>
-
-#define LOAD_IDLE 0
-#define LOAD_STARTED 1
-#define LOAD_FINISHED 2
-
 typedef std::chrono::high_resolution_clock Clock;
 
 struct KeyState {
@@ -52,13 +35,15 @@ class GameEngine {
 	// std::vector<Entity *> getEntitiesWithName(std::string entityName);
 	// Entity *getFirstEntityWithLabel(std::string entityLabel);
 	// std::vector<Entity *> getEntitiesWithLabel(std::string entityLabel);
-	void buttonStateChanged(std::string button, bool isPressed);
+	void buttonStateChanged(int keyID, bool isPressed);
 
 	// Functions needed by entities
-	bool isKeyPressed(std::string keyName);
-	bool isKeyJustPressed(std::string keyName);
+	bool isKeyPressed(int keyID);
+	bool isKeyJustPressed(int keyID);
 	float getDeltaTime();
 	void addNewEntity(Entity *entity);
+	void playMusic(std::string musicName);
+	void playSound(std::string soundName);
 
    private:
 	struct LineInfo {  // Equation of a line: z = mx + q
@@ -83,14 +68,15 @@ class GameEngine {
 		float right;
 		RectanglePoints(Entity *entity, glm::vec3 movement = glm::vec3(0.0f));
 	};
-	static std::map<std::string, KeyState> keyboardMap;
+	static std::map<int, KeyState> keyboardMap;
 
 	GameEngine(void);
 	GameEngine(GameEngine const &src);
 
 	GameEngine &operator=(GameEngine const &rhs);
 
-	bool initScene(size_t newSceneIdx);
+	bool _initScene(size_t newSceneIdx);
+	void _unloadScene(void);
 	void initLoadScene(void);
 	void loadScene(size_t newSceneIdx, std::atomic_int *_sceneState, bool *_checkLoadSceneIsGood); // function to call for background Thread
 
@@ -115,6 +101,10 @@ class GameEngine {
 								  const glm::vec3 &circlePos,
 								  const Collider *rectangleCollider,
 								  const glm::vec3 &rectanglePos) const;
+	bool tryShortcut(Entity *entity, glm::vec3 &futureMovement,
+					 glm::vec3 &shortcutMovement,
+					 std::vector<Entity *> &collidedEntities);
+	void _setSceneVariables(void);
 
 	// Graphic libraries vars
 	GameRenderer *_gameRenderer;

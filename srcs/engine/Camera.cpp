@@ -52,7 +52,7 @@ void Camera::configGUI(GUI *graphicUI) { (void)graphicUI; }
 void Camera::update(void) {
 	float deltaTime = _gameEngine->getDeltaTime();
 
-	if (!_isPause && _gameEngine->isKeyJustPressed("`")) {
+	if (!_isPause && _gameEngine->isKeyJustPressed(KEY_GRAVE_ACCENT)) {
 		_debugMode = !_debugMode;
 		// Avoid camera jump on first frame
 		_lastMousePos.x = _gameEngine->getGameRenderer()->getMousePos().x;
@@ -87,6 +87,11 @@ void Camera::update(void) {
 	if (glm::epsilonNotEqual(0.0f, yOffset, EPSILON)) rotateX(yOffset);
 	if (glm::epsilonNotEqual(0.0f, xOffset, EPSILON)) rotateY(-xOffset);
 	_updateData();
+}
+
+void Camera::translate(glm::vec3 translation) {
+	Entity::translate(translation);
+	_view = glm::inverse(getModelMatrix());
 }
 
 void Camera::_updateData(void) {

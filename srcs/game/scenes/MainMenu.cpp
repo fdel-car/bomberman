@@ -4,8 +4,10 @@
 extern std::string _assetsDir;
 
 MainMenu::MainMenu(glm::vec3 const &pos, glm::vec3 const &eulerAngles,
-				   std::vector<std::string> levelsName, Save &save)
-	: SceneTools(0, 0, pos, eulerAngles), _levelsName(levelsName), _save(save) {
+				   std::vector<std::string> levelsName, Bomberman *bomberman)
+	: SceneTools(0, 0, pos, eulerAngles, bomberman,
+				 bomberman->getStartLevelName()),
+	  _levelsName(levelsName) {
 	_neededImages.push_back(std::tuple<std::string, std::string>(
 		(_assetsDir + "GUI/icons/rightAngleBracket.png"), "rightAngleBracket"));
 	_neededImages.push_back(std::tuple<std::string, std::string>(
@@ -19,7 +21,7 @@ MainMenu::MainMenu(glm::vec3 const &pos, glm::vec3 const &eulerAngles,
 MainMenu::~MainMenu(void) {}
 
 void MainMenu::configGUI(GUI *graphicUI) {
-	graphicUI->setAssetImage(_neededImages);
+	graphicUI->setAssetImages(_neededImages);
 	graphicUI->uiSetDefaultFont("18_BOMBERMAN");
 	graphicUI->getDefaultStyle(THEME_RED, &defaultStyle);
 	defaultStyle[NK_COLOR_WINDOW] = nk_rgba(57, 67, 71, 0);
@@ -43,7 +45,7 @@ void MainMenu::drawGUI(GUI *graphicUI) {
 			if (graphicUI->uiHorizontalSelection(
 					(WINDOW_W / 5), "", _levelsName[_lvlIndex], &_lvlIndex,
 					_levelsName.size() - 1)) {
-				std::cout << _lvlIndex << std::endl;
+				// std::cout << _lvlIndex << std::endl;
 			}
 		}
 		graphicUI->uiEndBlock();
@@ -188,10 +190,10 @@ void MainMenu::_updateVarsFromSave(void) {
 	len2 = 1;
 	len3 = 1;
 	len4 = 1;
-	_upChoice[0] = _save.upKey.at(0);
-	_leftChoice[0] = _save.leftKey.at(0);
-	_downChoice[0] = _save.downKey.at(0);
-	_rightChoice[0] = _save.rightKey.at(0);
+	_upChoice[0] = static_cast<char>(_save.upKey);
+	_leftChoice[0] = static_cast<char>(_save.leftKey);
+	_downChoice[0] = static_cast<char>(_save.downKey);
+	_rightChoice[0] = static_cast<char>(_save.rightKey);
 	_isFullScreen = _save.isFullScreen;
 	_resolutionsIdx = _save.resolutionsIdx;
 	_musicVolume = _save.musicVolume;

@@ -48,16 +48,19 @@ GameEngine::GameEngine(AGame *game)
 	_running = false;
 
 	// Create interface class
-	_gameRenderer = new GameRenderer(this, game);
+	_gameRenderer = new GameRenderer(this, _game);
 	// Create audio manager
 	_audioManager = new AudioManager();
 
 	// Force load of first scene
-	_sceneIdx = 1;
+	_sceneIdx = _game->getFirstSceneIdx(); // TODO: get first Scene
 
 	// Thread atomic Int
-	_sceneState = LOAD_IDLE;
+	_sceneState = BACKGROUND_LOAD_NEEDED;
 	_checkLoadSceneIsGood = false;
+	_light = nullptr;
+	_camera = nullptr;
+	_skybox = nullptr;
 }
 
 GameEngine::~GameEngine(void) {
@@ -66,8 +69,8 @@ GameEngine::~GameEngine(void) {
 		delete _allEntities[idx];
 	}
 	if (_light != nullptr) delete _light;
+	if (_skybox != nullptr) delete _skybox; // TODO: AGame need to free this
 	if (_camera != nullptr) delete _camera;
-	if (_skybox != nullptr) delete _skybox;
 	_allEntities.clear();
 	delete _audioManager;
 	delete _gameRenderer;
@@ -85,55 +88,43 @@ void GameEngine::addNewEntity(Entity *entity) {
 }
 
 void GameEngine::run(void) {
-	// Init vars
-	_lastFrameTs = Clock::now();
-	_timer = Clock::now();
-	
-	/*
-		TODO:
-		- Launch LoadScene for each Scene change. DONE
-		- While LoadScene is Active launch background Thread to load the Scene we want. DONE
-		- When background thread finish I need to Join/Delete and Run new scene. DONE
-	*/
-	int newSceneIdx = -1;
-
-	if (_sceneState == LOAD_IDLE)
+	if (_sceneState == BACKGROUND_LOAD_NEEDED)
 	{
+		_sceneState = BACKGROUND_LOAD_STARTED;
 		std::cout << "LoadScene Started" << std::endl;
 		initLoadScene();
 
+		std::cout << "AA" << std::endl;
+
 		// Init thread to load the scene we want
+		_checkLoadSceneIsGood = false;
 		_loadSceneThread = new std::thread(&GameEngine::loadScene, this, _sceneIdx, &_sceneState, &_checkLoadSceneIsGood);
+
+		std::cout << "BB" << std::endl;
 
 		std::cout << "Background Thread Launched" << std::endl;
 		std::cout << "Scene to Load: " << _sceneIdx << std::endl << std::endl;
 	}
-	else if (_sceneState == LOAD_FINISHED)
-	{
-		std::cout << "LoadScene Finished" << std::endl;
-		
-		if (!initScene(_sceneIdx)) throw std::runtime_error("Cannot load scene!");		
-		_sceneState = LOAD_IDLE;
-		std::cout << "Scene Loaded: " << _sceneIdx << std::endl;
-		std::cout << "------------------------------------------------------------------" << std::endl;
-	}
+	// else if (_sceneState == BACKGROUND_LOAD_FINISHED)
+	// {
+	// 	std::cout << "LoadScene Finished" << std::endl;
+			
+	// 	std::cout << "Scene Loaded: " << _sceneIdx << std::endl;
+	// 	std::cout << "------------------------------------------------------------------" << std::endl;
+	// }
 
 	// Start game loop
+	int newSceneIdx = -1;
+	_lastFrameTs = Clock::now();
 	while (true) {
 		// Get delta time in order to synch entities positions
 
-		_frameTs = Clock::now();
-		_deltaTime = (std::chrono::duration_cast<std::chrono::milliseconds>(
-						  _frameTs - _lastFrameTs)
-						  .count()) /
-					 1000.0f;
-		_lastFrameTs = _frameTs;
 
 		// Check if thread is finish
 		// std::chrono::milliseconds timeLoad = std::chrono::duration_cast<std::chrono::milliseconds>(_frameTs - _timer);
 		// std::cout << timeLoad.count() << std::endl;
 
-		if (_sceneState == LOAD_FINISHED) {
+		if (_sceneState == BACKGROUND_LOAD_FINISHED) {
 			std::cout << "Scene: " << _sceneIdx << std::endl;
 
 			// std::cout << "counting Time: " << timeLoad.count() << std::endl;
@@ -147,10 +138,19 @@ void GameEngine::run(void) {
 				
 				if (_checkLoadSceneIsGood == false)
 					throw std::runtime_error("Cannot load scene!");
-				newSceneIdx = _sceneIdx;	
-				break;
+				// newSceneIdx = _sceneIdx;	
+				if (!_initScene(_sceneIdx)) throw std::runtime_error("Cannot load scene " + std::to_string(_sceneIdx) + "!");	
+				_sceneState = BACKGROUND_LOAD_NOT_NEEDED;
+				// break;
 			// }
 		}
+
+		_frameTs = Clock::now();
+		_deltaTime = (std::chrono::duration_cast<std::chrono::microseconds>(
+						  _frameTs - _lastFrameTs)
+						  .count()) /
+					 1000000.0f;
+		_lastFrameTs = _frameTs;
 
 		// Update inputs
 		for (auto &key : keyboardMap)
@@ -167,7 +167,7 @@ void GameEngine::run(void) {
 
 		if (!_camera->isGameRunning()) break;
 
-		// Freeze everything else if camera is in debug
+		// Freeze everything else if camera tells so
 		if (!_camera->isPause()) {
 			_light->update();
 			// Update game entities states
@@ -201,6 +201,9 @@ void GameEngine::run(void) {
 						for (auto collidedEntity : collidedEntities) {
 							initialCollisions.push_back(
 								collidedEntity->getId());
+							// Add for other entity too
+							_initialCollisionMap[collidedEntity->getId()]
+								.push_back(newEntity->getId());
 						}
 						_initialCollisionMap[newEntity->getId()] =
 							initialCollisions;
@@ -251,11 +254,13 @@ void GameEngine::run(void) {
 					}
 					for (size_t idIdx = initialCollisions.second.size() - 1;
 						 idIdx < initialCollisions.second.size(); idIdx--) {
-						if (!doCollide(
-								entityA->getCollider(), entityA->getPosition(),
-								getEntityById(initialCollisions.second[idIdx])))
+						if (!doCollide(entityA->getCollider(),
+									   entityA->getPosition(),
+									   getEntityById(
+										   initialCollisions.second[idIdx]))) {
 							initialCollisions.second.erase(
 								initialCollisions.second.begin() + idIdx);
+						}
 					}
 					if (initialCollisions.second.empty())
 						idxToDelete.push_back(initialCollisions.first);
@@ -269,6 +274,8 @@ void GameEngine::run(void) {
 	}
 	if (newSceneIdx != -1) {
 		_sceneIdx = newSceneIdx;
+		_sceneState = BACKGROUND_LOAD_NEEDED;
+		std::cout << "**************************" << std::endl;
 		run();
 	}
 }
@@ -295,59 +302,48 @@ Entity *GameEngine::getEntityById(size_t id) {
 // 	return foundElem;
 // }
 
-bool GameEngine::initScene(size_t newSceneIdx) {
-	if (!_game) return false;
-
-	// Clear prev entities
-	if (_allEntities.empty() != true) {
-		for (size_t idx = _allEntities.size() - 1; idx < _allEntities.size();
-			idx--) {
-			// TODO: add logic for entities that survive between scenes
-			delete _allEntities[idx];
-			_allEntities.erase(_allEntities.begin() + idx);
-		}
-	}
-	if (_light != nullptr) {
-		delete _light;
-		_light = nullptr;
-	}
-	if (_camera != nullptr) {
-		delete _camera;
-		_camera = nullptr;
-	}
-	_initialCollisionMap.clear();
-
-	// Add new entities
-	_sceneIdx = newSceneIdx;
-
+void GameEngine::_setSceneVariables(void) {
 	_camera = _game->getCamera();
+	if (_camera == nullptr)
+		throw std::runtime_error(
+			"\033[0;31m:Error:\033[0m No camera were created in the loaded "
+			"scene.");
 	_camera->initEntity(this);
 	_camera->configGUI(_gameRenderer->getGUI());
-
-	_light = _game->getLight();
-	_light->initEntity(this);
-
+	
 	_skybox = _game->getSkybox();
 	if (_skybox != nullptr) {
 		_skybox->_initBuffer();
 		_skybox->_initCubeMap();
 		_skybox->initEntity(this);
 	}
-
+	
+	_light = _game->getLight();
+	if (_light == nullptr)
+		std::cerr << "\033[0;33m:Warning:\033[0m There is no light in the "
+					 "loaded scene, you should definitely add one"
+				  << std::endl;
+	else
+		_light->initEntity(this);
+	
 	for (auto entity : _game->getEntities()) {
 		_allEntities.push_back(entity);
 		_allEntities.back()->initEntity(this);
 	}
-	_sceneState = LOAD_FINISHED;
+}
+
+bool GameEngine::_initScene(size_t newSceneIdx) {
+	if (!_game) return false;
+	_unloadScene();
+
+	// Add new entities
+	_sceneIdx = newSceneIdx;
+	// if (!_game->loadSceneByIndex(_sceneIdx)) return false;
+	_setSceneVariables();
 	return true;
 }
 
-void GameEngine::loadScene(size_t newSceneIdx, std::atomic_int *_sceneState, bool *_checkLoadSceneIsGood) {
-	_game->loadSceneByIndex(newSceneIdx, _sceneState, _checkLoadSceneIsGood);
-}
-
-void GameEngine::initLoadScene(void) {
-	
+void GameEngine::_unloadScene(void) {
 	// Clear prev entities
 	if (_allEntities.empty() != true) {
 		for (size_t idx = _allEntities.size() - 1; idx < _allEntities.size();
@@ -357,7 +353,6 @@ void GameEngine::initLoadScene(void) {
 			_allEntities.erase(_allEntities.begin() + idx);
 		}
 	}
-
 	if (_light != nullptr) {
 		delete _light;
 		_light = nullptr;
@@ -370,51 +365,58 @@ void GameEngine::initLoadScene(void) {
 		delete _skybox;
 		_skybox = nullptr;
 	}
+	_initialCollisionMap.clear();
+}
+
+void GameEngine::loadScene(size_t newSceneIdx, std::atomic_int *_sceneState, bool *_checkLoadSceneIsGood) {
+	_game->loadSceneByIndex(newSceneIdx, _sceneState, _checkLoadSceneIsGood);
+}
+
+void GameEngine::initLoadScene(void) {
+	_unloadScene();
 
 	// Add new entities
-	_game->initLoadScene(0);
-	_camera = _game->getCamera();
-	_camera->initEntity(this);
-	_camera->configGUI(_gameRenderer->getGUI());
-	_light = _game->getLight();
-	_light->initEntity(this);
+	_game->initLoadScene();
+	_setSceneVariables();
 }
 
 void GameEngine::moveEntities(void) {
 	const Collider *collider;
-	bool collisionDetected = false;
+	bool isShortcut = false;
 	std::vector<Entity *> collidedEntities = std::vector<Entity *>();
 	std::vector<Entity *> collidedTriggers = std::vector<Entity *>();
 	glm::vec3 futureMovement = glm::vec3();
-	glm::vec3 tmpFutureMovement = glm::vec3();
+	glm::vec3 shortcutMovement = glm::vec3();
 	LineInfo lineA;
 	LineInfo lineB;
-
 	size_t idx = 0;
+
 	size_t idxOfCollision = 0;
+	bool firstLoop = true;
+	bool hasCollided = true;
 	for (auto entity : _allEntities) {
 		if (!entity->getNeedToBeDestroyed()) {
 			collider = entity->getCollider();
 			collidedEntities.clear();
 			collidedTriggers.clear();
-			collisionDetected = false;
+			isShortcut = false;
+			firstLoop = true;
+			hasCollided = false;
 			futureMovement *= 0;
 
 			// Skip checks if entity doesnt have a collider
 			if (collider != nullptr) {
 				getPossibleCollisions(entity, collidedEntities,
 									  collidedTriggers, _allEntities);
+
 				// Init vars before first loop
 				if (entity->getTargetMovement().x != 0.0f ||
 					entity->getTargetMovement().z != 0.0f) {
 					futureMovement.x = entity->getTargetMovement().x;
 					futureMovement.z = entity->getTargetMovement().z;
-					bool firstLoop = true;
-					bool isShortcut = false;
 					while (collidedEntities.size() != 0) {
 						idxOfCollision = checkCollision(entity, futureMovement,
 														collidedEntities);
-
 						// Update entities to check collisions with
 						if (idxOfCollision != 0) {
 							collidedEntities.erase(
@@ -425,236 +427,85 @@ void GameEngine::moveEntities(void) {
 						// If some collisions are detected, try with a different
 						// movement
 						if (collidedEntities.size() != 0) {
-							// Safe break to avoid infinite loop
-							float absX = abs(futureMovement.x);
-							float absZ = abs(futureMovement.z);
-
-							// Special test that need to be done only on first
-							// loop
 							if (firstLoop) {
-								// Try moving indipendently one of the two axis
-								// (Only if its a two-axis move)
-								if (futureMovement.x != 0.0f &&
-									futureMovement.z != 0.0f) {
-									tmpFutureMovement.x = futureMovement.x;
-									tmpFutureMovement.z = 0.0f;
-									idxOfCollision = checkCollision(
-										entity, tmpFutureMovement,
-										collidedEntities);
-									if (idxOfCollision ==
-										collidedEntities.size()) {
-										isShortcut = true;
-										break;
-									}
-									tmpFutureMovement.x = 0.0f;
-									tmpFutureMovement.z = futureMovement.z;
-									idxOfCollision = checkCollision(
-										entity, tmpFutureMovement,
-										collidedEntities);
-									if (idxOfCollision ==
-										collidedEntities.size()) {
-										isShortcut = true;
-										break;
-									}
+								// Special test that need to be done only on
+								// first loop
+								if (tryShortcut(entity, futureMovement,
+												shortcutMovement,
+												collidedEntities)) {
+									isShortcut = true;
+									futureMovement = shortcutMovement;
+									break;
 								}
-
-								// Special cases for Circle, will be able to
-								// "circle around" obstacles more easily if more
-								// than half is outside collision
-								if (collider->shape == Collider::Circle) {
-									// Only try to move along the most important
-									// targetMovement
-									if (absX >= absZ) {
-										// Try slide under obstacle
-										float colliderZ = collidedEntities[0]
-															  ->getPosition()
-															  .z +
-														  collidedEntities[0]
-															  ->getCollider()
-															  ->height;
-										if (entity->getPosition().z >
-											colliderZ) {
-											tmpFutureMovement.z =
-												colliderZ -
-												(entity->getPosition().z -
-												 entity->getCollider()->height);
-											if (tmpFutureMovement.z >
-												(absX / 2)) {
-												tmpFutureMovement.z = absX / 2;
-											}
-											if (tmpFutureMovement.z < 0.0f)
-												tmpFutureMovement.z = EPSILON;
-											else if (tmpFutureMovement.z <
-													 EPSILON)
-												tmpFutureMovement.z += EPSILON;
-											// Move along X will be less than Z
-											// so that no collision will occur
-											tmpFutureMovement.x =
-												tmpFutureMovement.z * 0.5f;
-											if (futureMovement.x < 0)
-												tmpFutureMovement.x *= -1.0f;
-											idxOfCollision = checkCollision(
-												entity, tmpFutureMovement,
-												collidedEntities);
-											if (idxOfCollision ==
-												collidedEntities.size()) {
-												isShortcut = true;
-												break;
-											}
-										}
-										// Try slide over obstacle
-										colliderZ -= 2.0f * collidedEntities[0]
-																->getCollider()
-																->height;
-										if (entity->getPosition().z <
-											colliderZ) {
-											tmpFutureMovement.z =
-												(entity->getPosition().z +
-												 entity->getCollider()
-													 ->height) -
-												colliderZ;
-											if (tmpFutureMovement.z >
-												(absX / 2)) {
-												tmpFutureMovement.z = absX / 2;
-											}
-											if (tmpFutureMovement.z < 0.0f)
-												tmpFutureMovement.z = EPSILON;
-											else if (tmpFutureMovement.z <
-													 EPSILON)
-												tmpFutureMovement.z += EPSILON;
-											// Move along X will be less than Z
-											// so that no collision will occur
-											tmpFutureMovement.x =
-												tmpFutureMovement.z * 0.5f;
-											if (futureMovement.x < 0)
-												tmpFutureMovement.x *= -1.0f;
-											tmpFutureMovement.z *= -1;
-											idxOfCollision = checkCollision(
-												entity, tmpFutureMovement,
-												collidedEntities);
-											if (idxOfCollision ==
-												collidedEntities.size()) {
-												isShortcut = true;
-												break;
-											}
-										}
-									}
-									if (absZ >= absX) {
-										// Try slide right of obstacle
-										float colliderX = collidedEntities[0]
-															  ->getPosition()
-															  .x +
-														  collidedEntities[0]
-															  ->getCollider()
-															  ->width;
-										if (entity->getPosition().x >
-											colliderX) {
-											tmpFutureMovement.x =
-												colliderX -
-												(entity->getPosition().x -
-												 entity->getCollider()->width);
-											if (tmpFutureMovement.x >
-												(absZ / 2)) {
-												tmpFutureMovement.x = absZ / 2;
-											}
-											if (tmpFutureMovement.x < 0.0f)
-												tmpFutureMovement.x = EPSILON;
-											else if (tmpFutureMovement.x <
-													 EPSILON)
-												tmpFutureMovement.x += EPSILON;
-											// Move along Z will be less than X
-											// so that no collision will occur
-											tmpFutureMovement.z =
-												tmpFutureMovement.x * 0.5f;
-											if (futureMovement.z < 0)
-												tmpFutureMovement.z *= -1.0f;
-											idxOfCollision = checkCollision(
-												entity, tmpFutureMovement,
-												collidedEntities);
-											if (idxOfCollision ==
-												collidedEntities.size()) {
-												isShortcut = true;
-												break;
-											}
-										}
-										// Try slide over obstacle
-										colliderX -= 2.0f * collidedEntities[0]
-																->getCollider()
-																->width;
-										if (entity->getPosition().x <
-											colliderX) {
-											tmpFutureMovement.x =
-												(entity->getPosition().x +
-												 entity->getCollider()->width) -
-												colliderX;
-											if (tmpFutureMovement.x >
-												(absZ / 2)) {
-												tmpFutureMovement.x = absZ / 2;
-											}
-											if (tmpFutureMovement.x < 0.0f)
-												tmpFutureMovement.x = EPSILON;
-											else if (tmpFutureMovement.x <
-													 EPSILON)
-												tmpFutureMovement.x += EPSILON;
-											// Move along X will be less than Z
-											// so that no collision will occur
-											tmpFutureMovement.z =
-												tmpFutureMovement.x * 0.5f;
-											if (futureMovement.z < 0)
-												tmpFutureMovement.z *= -1.0f;
-											tmpFutureMovement.x *= -1;
-											idxOfCollision = checkCollision(
-												entity, tmpFutureMovement,
-												collidedEntities);
-											if (idxOfCollision ==
-												collidedEntities.size()) {
-												isShortcut = true;
-												break;
-											}
-										}
-									}
-								}
-
 								firstLoop = false;
 							}
 
+							// Loop again only for big movements
+							if (abs(futureMovement.x) <= 0.5f &&
+								abs(futureMovement.z) <= 0.5f) {
+								break;
+							}
 							// Slightly decrease futureMovement to see if
 							// smaller movement can be performed
 							futureMovement.x /= 2.0f;
 							futureMovement.z /= 2.0f;
-
-							if (absX <= EPSILON && absZ <= EPSILON) {
-								break;
-							}
 						}
-					}
-
-					if (isShortcut) {
-						futureMovement.x = tmpFutureMovement.x;
-						futureMovement.z = tmpFutureMovement.z;
-						collidedEntities.clear();
 					}
 				}
 			}
 
-			// TODO: trigger all triggers
+			// Collide with colliders (do not consider shortcut move yet)
+			while (!collidedEntities.empty() &&
+				   !entity->getNeedToBeDestroyed()) {
+				idx = checkCollision(entity, futureMovement, collidedEntities);
+				if (idx != collidedEntities.size()) {
+					hasCollided = true;
+					// Other entity will always be a collider
+					if (!collidedEntities[idx]->getNeedToBeDestroyed())
+						collidedEntities[idx]->onCollisionEnter(entity);
+					// Check if we are a trigger or a collider
+					if (!entity->getNeedToBeDestroyed()) {
+						if (collider->isTrigger)
+							entity->onTriggerEnter(collidedEntities[idx]);
+						else
+							entity->onCollisionEnter(collidedEntities[idx]);
+					}
+					// Clear entities
+					collidedEntities.erase(collidedEntities.begin(),
+										   collidedEntities.begin() + idx + 1);
+				} else {
+					collidedEntities.clear();
+				}
+			}
+			// Apply shortcut and clear collisions
+			if (isShortcut) {
+				hasCollided = false;
+				futureMovement = shortcutMovement;
+				collidedEntities.clear();
+			}
+			// Trigger all triggers
 			while (!collidedTriggers.empty() &&
 				   !entity->getNeedToBeDestroyed()) {
-				size_t triggerIdx =
-					checkCollision(entity, futureMovement, collidedTriggers);
-				if (triggerIdx != collidedTriggers.size()) {
-					collidedTriggers[triggerIdx]->onTriggerEnter(entity);
-					collidedTriggers.erase(
-						collidedTriggers.begin(),
-						collidedTriggers.begin() + triggerIdx + 1);
+				idx = checkCollision(entity, futureMovement, collidedTriggers);
+				if (idx != collidedTriggers.size()) {
+					// Other entity will always be a trigger
+					collidedTriggers[idx]->onTriggerEnter(entity);
+					// Check if we are a trigger or a collider
+					if (collider->isTrigger)
+						entity->onTriggerEnter(collidedTriggers[idx]);
+					else
+						entity->onCollisionEnter(collidedTriggers[idx]);
+					// Clear entities
+					collidedTriggers.erase(collidedTriggers.begin(),
+										   collidedTriggers.begin() + idx + 1);
 				} else
 					collidedTriggers.clear();
 			}
-			if (collidedEntities.empty() && !entity->getNeedToBeDestroyed()) {
+			if ((futureMovement.x != 0 || futureMovement.z != 0) &&
+				!hasCollided && !entity->getNeedToBeDestroyed()) {
 				entity->translate(futureMovement);
 			}
 		}
-		idx++;
 	}
 }
 void GameEngine::getPossibleCollisions(
@@ -1034,150 +885,165 @@ bool GameEngine::collisionCircleRectangle(const Collider *circleCollider,
 			EPSILON);
 }
 
-void GameEngine::buttonStateChanged(std::string buttonName, bool isPressed) {
-	if (keyboardMap.find(buttonName) == keyboardMap.end()) {
-		std::runtime_error("Unkown Mapping for '" + buttonName + "'!");
+bool GameEngine::tryShortcut(Entity *entity, glm::vec3 &futureMovement,
+							 glm::vec3 &shortcutMovement,
+							 std::vector<Entity *> &collidedEntities) {
+	size_t idxOfCollision;
+
+	float absX = abs(futureMovement.x);
+	float absZ = abs(futureMovement.z);
+	// Try moving indipendently one of the two axis
+	// (Only if its a two-axis move)
+	if (futureMovement.x != 0.0f && futureMovement.z != 0.0f) {
+		shortcutMovement.x = futureMovement.x;
+		shortcutMovement.z = 0.0f;
+		idxOfCollision =
+			checkCollision(entity, shortcutMovement, collidedEntities);
+		if (idxOfCollision == collidedEntities.size()) {
+			return true;
+		}
+		shortcutMovement.x = 0.0f;
+		shortcutMovement.z = futureMovement.z;
+		idxOfCollision =
+			checkCollision(entity, shortcutMovement, collidedEntities);
+		if (idxOfCollision == collidedEntities.size()) {
+			return true;
+		}
 	}
-	keyboardMap[buttonName].currFrame = isPressed;
+
+	// Special cases for Circle, will be able to
+	// "circle around" obstacles more easily if more
+	// than half is outside collision
+	if (entity->getCollider()->shape == Collider::Circle) {
+		// Only try to move along the most important
+		// targetMovement
+		if (absX >= absZ) {
+			// Try slide under obstacle
+			float colliderZ = collidedEntities[0]->getPosition().z +
+							  collidedEntities[0]->getCollider()->height;
+			if (entity->getPosition().z > colliderZ) {
+				shortcutMovement.z =
+					colliderZ -
+					(entity->getPosition().z - entity->getCollider()->height);
+				if (shortcutMovement.z > (absX / 2)) {
+					shortcutMovement.z = absX / 2;
+				}
+				if (shortcutMovement.z < 0.0f)
+					shortcutMovement.z = EPSILON;
+				else if (shortcutMovement.z < EPSILON)
+					shortcutMovement.z += EPSILON;
+				// Move along X will be less than Z
+				// so that no collision will occur
+				shortcutMovement.x = shortcutMovement.z * 0.5f;
+				if (futureMovement.x < 0) shortcutMovement.x *= -1.0f;
+				if (checkCollision(entity, shortcutMovement,
+								   collidedEntities) ==
+					collidedEntities.size()) {
+					return true;
+				}
+			}
+			// Try slide over obstacle
+			colliderZ -= 2.0f * collidedEntities[0]->getCollider()->height;
+			if (entity->getPosition().z < colliderZ) {
+				shortcutMovement.z =
+					(entity->getPosition().z + entity->getCollider()->height) -
+					colliderZ;
+				if (shortcutMovement.z > (absX / 2)) {
+					shortcutMovement.z = absX / 2;
+				}
+				if (shortcutMovement.z < 0.0f)
+					shortcutMovement.z = EPSILON;
+				else if (shortcutMovement.z < EPSILON)
+					shortcutMovement.z += EPSILON;
+				// Move along X will be less than Z
+				// so that no collision will occur
+				shortcutMovement.x = shortcutMovement.z * 0.5f;
+				if (futureMovement.x < 0) shortcutMovement.x *= -1.0f;
+				shortcutMovement.z *= -1;
+				idxOfCollision =
+					checkCollision(entity, shortcutMovement, collidedEntities);
+				if (idxOfCollision == collidedEntities.size()) {
+					return true;
+				}
+			}
+		}
+		if (absZ >= absX) {
+			// Try slide right of obstacle
+			float colliderX = collidedEntities[0]->getPosition().x +
+							  collidedEntities[0]->getCollider()->width;
+			if (entity->getPosition().x > colliderX) {
+				shortcutMovement.x = colliderX - (entity->getPosition().x -
+												  entity->getCollider()->width);
+				if (shortcutMovement.x > (absZ / 2)) {
+					shortcutMovement.x = absZ / 2;
+				}
+				if (shortcutMovement.x < 0.0f)
+					shortcutMovement.x = EPSILON;
+				else if (shortcutMovement.x < EPSILON)
+					shortcutMovement.x += EPSILON;
+				// Move along Z will be less than X
+				// so that no collision will occur
+				shortcutMovement.z = shortcutMovement.x * 0.5f;
+				if (futureMovement.z < 0) shortcutMovement.z *= -1.0f;
+				idxOfCollision =
+					checkCollision(entity, shortcutMovement, collidedEntities);
+				if (idxOfCollision == collidedEntities.size()) {
+					return true;
+				}
+			}
+			// Try slide over obstacle
+			colliderX -= 2.0f * collidedEntities[0]->getCollider()->width;
+			if (entity->getPosition().x < colliderX) {
+				shortcutMovement.x =
+					(entity->getPosition().x + entity->getCollider()->width) -
+					colliderX;
+				if (shortcutMovement.x > (absZ / 2)) {
+					shortcutMovement.x = absZ / 2;
+				}
+				if (shortcutMovement.x < 0.0f)
+					shortcutMovement.x = EPSILON;
+				else if (shortcutMovement.x < EPSILON)
+					shortcutMovement.x += EPSILON;
+				// Move along X will be less than Z
+				// so that no collision will occur
+				shortcutMovement.z = shortcutMovement.x * 0.5f;
+				if (futureMovement.z < 0) shortcutMovement.z *= -1.0f;
+				shortcutMovement.x *= -1;
+				idxOfCollision =
+					checkCollision(entity, shortcutMovement, collidedEntities);
+				if (idxOfCollision == collidedEntities.size()) {
+					return true;
+				}
+			}
+		}
+	}
+	return false;
 }
 
-bool GameEngine::isKeyPressed(std::string keyName) {
-	return keyboardMap[keyName].currFrame;
+void GameEngine::buttonStateChanged(int keyID, bool isPressed) {
+	if (keyboardMap.find(keyID) == keyboardMap.end()) {
+		KeyState keyState;
+		keyboardMap[keyID] = keyState;
+	}
+	keyboardMap[keyID].currFrame = isPressed;
 }
 
-bool GameEngine::isKeyJustPressed(std::string keyName) {
-	return keyboardMap[keyName].currFrame && !keyboardMap[keyName].prevFrame;
+bool GameEngine::isKeyPressed(int keyID) {
+	auto result = keyboardMap.find(keyID);
+	return result != keyboardMap.end() && result->second.currFrame;
 }
 
-static std::map<std::string, KeyState>
-generateKeyboardMap() {  // static here is "internal linkage"
-	KeyState keyState;
-	std::map<std::string, KeyState> map = std::map<std::string, KeyState>();
-
-	keyState.currFrame = false;
-	keyState.prevFrame = false;
-
-	map["UNKNOWN"] = keyState;
-	map["SPACE"] = keyState;
-	map["APOSTROPHE"] = keyState;
-	map["COMMA"] = keyState;
-	map["MINUS"] = keyState;
-	map["PERIOD"] = keyState;
-	map["SLASH"] = keyState;
-	map["0"] = keyState;
-	map["1"] = keyState;
-	map["2"] = keyState;
-	map["3"] = keyState;
-	map["4"] = keyState;
-	map["5"] = keyState;
-	map["6"] = keyState;
-	map["7"] = keyState;
-	map["8"] = keyState;
-	map["9"] = keyState;
-	map[";"] = keyState;
-	map["EQUAL"] = keyState;
-	map["A"] = keyState;
-	map["B"] = keyState;
-	map["C"] = keyState;
-	map["D"] = keyState;
-	map["E"] = keyState;
-	map["F"] = keyState;
-	map["G"] = keyState;
-	map["H"] = keyState;
-	map["I"] = keyState;
-	map["L"] = keyState;
-	map["K"] = keyState;
-	map["L"] = keyState;
-	map["M"] = keyState;
-	map["N"] = keyState;
-	map["O"] = keyState;
-	map["P"] = keyState;
-	map["Q"] = keyState;
-	map["R"] = keyState;
-	map["S"] = keyState;
-	map["T"] = keyState;
-	map["U"] = keyState;
-	map["V"] = keyState;
-	map["W"] = keyState;
-	map["X"] = keyState;
-	map["Y"] = keyState;
-	map["Z"] = keyState;
-	map["["] = keyState;
-	map["\\"] = keyState;
-	map["]"] = keyState;
-	map["`"] = keyState;
-	map["WORLD_1"] = keyState;
-	map["WORLD_2"] = keyState;
-	map["ESCAPE"] = keyState;
-	map["ENTER"] = keyState;
-	map["TAB"] = keyState;
-	map["BACKSPACE"] = keyState;
-	map["INSERT"] = keyState;
-	map["DELETE"] = keyState;
-	map["RIGHT"] = keyState;
-	map["LEFT"] = keyState;
-	map["DOWN"] = keyState;
-	map["UP"] = keyState;
-	map["PAGE_UP"] = keyState;
-	map["PAGE_DOWN"] = keyState;
-	map["HOME"] = keyState;
-	map["END"] = keyState;
-	map["CAPS_LOCK"] = keyState;
-	map["SCROLL_LOCK"] = keyState;
-	map["NUM_LOCK"] = keyState;
-	map["PRINT_SCREEN"] = keyState;
-	map["PAUSE"] = keyState;
-	map["F1"] = keyState;
-	map["F2"] = keyState;
-	map["F3"] = keyState;
-	map["F4"] = keyState;
-	map["F5"] = keyState;
-	map["F6"] = keyState;
-	map["F7"] = keyState;
-	map["F8"] = keyState;
-	map["F9"] = keyState;
-	map["F10"] = keyState;
-	map["F11"] = keyState;
-	map["F12"] = keyState;
-	map["F13"] = keyState;
-	map["F14"] = keyState;
-	map["F15"] = keyState;
-	map["F16"] = keyState;
-	map["F17"] = keyState;
-	map["F18"] = keyState;
-	map["F19"] = keyState;
-	map["F20"] = keyState;
-	map["F21"] = keyState;
-	map["F22"] = keyState;
-	map["F23"] = keyState;
-	map["F24"] = keyState;
-	map["F25"] = keyState;
-	map["KP_0"] = keyState;
-	map["KP_1"] = keyState;
-	map["KP_2"] = keyState;
-	map["KP_3"] = keyState;
-	map["KP_4"] = keyState;
-	map["KP_5"] = keyState;
-	map["KP_6"] = keyState;
-	map["KP_7"] = keyState;
-	map["KP_8"] = keyState;
-	map["KP_9"] = keyState;
-	map["KP_DECIMAL"] = keyState;
-	map["KP_DIVIDE"] = keyState;
-	map["KP_MULTIPLY"] = keyState;
-	map["KP_SUBTRACT"] = keyState;
-	map["KP_ADD"] = keyState;
-	map["KP_ENTER"] = keyState;
-	map["KP_EQUAL"] = keyState;
-	map["LEFT_SHIFT"] = keyState;
-	map["LEFT_CONTROL"] = keyState;
-	map["LEFT_ALT"] = keyState;
-	map["LEFT_SUPER"] = keyState;
-	map["RIGHT_SHIFT"] = keyState;
-	map["RIGHT_CONTROL"] = keyState;
-	map["RIGHT_ALT"] = keyState;
-	map["RIGHT_SUPER"] = keyState;
-	map["MENU"] = keyState;
-	return map;
+bool GameEngine::isKeyJustPressed(int keyID) {
+	auto result = keyboardMap.find(keyID);
+	return result != keyboardMap.end() && result->second.currFrame &&
+		   !result->second.prevFrame;
 }
-std::map<std::string, KeyState> GameEngine::keyboardMap = generateKeyboardMap();
+
+void GameEngine::playMusic(std::string musicName) {
+	_audioManager->playMusic(musicName);
+}
+void GameEngine::playSound(std::string soundName) {
+	_audioManager->playSound(soundName);
+}
+
+std::map<int, KeyState> GameEngine::keyboardMap = std::map<int, KeyState>();
