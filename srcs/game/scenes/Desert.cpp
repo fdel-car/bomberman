@@ -4,7 +4,7 @@
 Desert::Desert(glm::vec3 const &pos, glm::vec3 const &eulerAngles,
 			   Bomberman *bomberman)
 	:  // Camera(pos, eulerAngles),
-	  SceneTools(21, 21, pos, eulerAngles, bomberman, "Desert", "Credits"),
+	  SceneTools(37, 13, pos, eulerAngles, bomberman, "Desert", "Credits"),
 	  _timer(181),
 	  _cooldown(0.0f) {
 	configAI();
@@ -78,6 +78,7 @@ void Desert::update(void) {
 		_cooldown = 0.1f;
 		_startBuildingGrapheForPathFinding();
 		_refreshAI = true;
+		// printMapInfo();
 	}
 	_cooldown -= _gameEngine->getDeltaTime();
 }

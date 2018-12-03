@@ -43,7 +43,7 @@ void AEnemy::_runIn(SceneTools *cam, size_t distFromPlayer, bool putBomb) {
 	float x = this->getPosition().x + (static_cast<float>(mapWidth) / 2);
 	float z = this->getPosition().z + (static_cast<float>(mapHeight) / 2);
 	size_t bestDist = std::numeric_limits<std::size_t>::max();
-	size_t pos = static_cast<int>(z) * mapHeight + static_cast<int>(x);
+	size_t pos = static_cast<int>(z) * mapWidth + static_cast<int>(x);
 	if (cam->getGraphe().find(pos) != cam->getGraphe().end()) {
 		Node currentPos = *cam->getGraphe().at(pos);
 		if (putBomb && _bombCooldown <= 0.0f) {
@@ -73,7 +73,7 @@ void AEnemy::_runIn(SceneTools *cam, size_t distFromPlayer, bool putBomb) {
 			if (currentPos.prevNodesByDist[bestDist].size() == 0) break;
 			if (bestDist != std::numeric_limits<std::size_t>::max())
 				currentPos = *currentPos.prevNodesByDist[bestDist][0];
-			_way.push_back(currentPos.z * mapHeight + currentPos.x);
+			_way.push_back(currentPos.z * mapWidth + currentPos.x);
 		}
 	}
 }
@@ -85,8 +85,8 @@ void AEnemy::_runAway(SceneTools *cam, size_t distFromPlayer, bool putBomb) {
 	float z = this->getPosition().z + (static_cast<float>(mapHeight) / 2);
 	size_t bestDist = std::numeric_limits<std::size_t>::max();
 	size_t xPlayer = cam->getRunAwayPos() % mapWidth;
-	size_t zPlayer = cam->getRunAwayPos() / mapHeight;
-	size_t pos = static_cast<int>(z) * mapHeight + static_cast<int>(x);
+	size_t zPlayer = cam->getRunAwayPos() / mapWidth;
+	size_t pos = static_cast<int>(z) * mapWidth + static_cast<int>(x);
 	if (cam->getGraphe().find(pos) != cam->getGraphe().end()) {
 		Node currentPos = *cam->getGraphe().at(pos);
 		if (putBomb && _bombCooldown <= 0.0f)
@@ -114,9 +114,12 @@ void AEnemy::_runAway(SceneTools *cam, size_t distFromPlayer, bool putBomb) {
 				if (idx == 0) break;
 				currentPos = *currentPos.runAwayNodesByDist[bestDist][saveIdx];
 			}
-			_way.push_back(currentPos.z * mapHeight + currentPos.x);
+			_way.push_back(currentPos.z * mapWidth + currentPos.x);
 		}
 	}
+	// for (const auto &c : _way) {
+	// 	std::cout << c << std::endl;
+	// }
 }
 
 void AEnemy::randomMove(SceneTools *cam, float timer) {
@@ -129,43 +132,43 @@ void AEnemy::randomMove(SceneTools *cam, float timer) {
 		size_t z = this->getPosition().z + (static_cast<float>(mapHeight) / 2);
 		size_t pos;
 		if (x > 1) {
-			pos = z * mapHeight + (x - 1);
+			pos = z * mapWidth + (x - 1);
 			if (cam->getEntitiesInSquares()[pos].size() == 0) {
 				for (size_t tmpX = x - 1; tmpX > 0; tmpX--) {
-					pos = z * mapHeight + tmpX;
+					pos = z * mapWidth + tmpX;
 					_way.push_back(pos);
 				}
 			}
 		}
 		if (x < mapWidth - 1) {
-			pos = z * mapHeight + (x + 1);
+			pos = z * mapWidth + (x + 1);
 			if (cam->getEntitiesInSquares()[pos].size() == 0) {
 				if (_way.size() != 0 && std::rand() % 4 != 0) return;
 				_way.clear();
 				for (size_t tmpX = x + 1; tmpX < mapWidth - 1; tmpX++) {
-					pos = z * mapHeight + tmpX;
+					pos = z * mapWidth + tmpX;
 					_way.push_back(pos);
 				}
 			}
 		}
 		if (z > 1) {
-			pos = (z - 1) * mapHeight + x;
+			pos = (z - 1) * mapWidth + x;
 			if (cam->getEntitiesInSquares()[pos].size() == 0) {
 				if (_way.size() != 0 && std::rand() % 4 != 0) return;
 				_way.clear();
 				for (size_t tmpZ = z - 1; tmpZ > 0; tmpZ--) {
-					pos = tmpZ * mapHeight + x;
+					pos = tmpZ * mapWidth + x;
 					_way.push_back(pos);
 				}
 			}
 		}
 		if (z < mapHeight - 1) {
-			pos = (z + 1) * mapHeight + x;
+			pos = (z + 1) * mapWidth + x;
 			if (cam->getEntitiesInSquares()[pos].size() == 0) {
 				if (_way.size() != 0 && std::rand() % 4 != 0) return;
 				_way.clear();
 				for (size_t tmpZ = z + 1; tmpZ < mapHeight - 1; tmpZ++) {
-					pos = tmpZ * mapHeight + x;
+					pos = tmpZ * mapWidth + x;
 					_way.push_back(pos);
 				}
 			}
@@ -181,7 +184,7 @@ void AEnemy::walk(SceneTools *cam) {
 		float x = this->getPosition().x + (static_cast<float>(mapWidth) / 2);
 		float z = this->getPosition().z + (static_cast<float>(mapHeight) / 2);
 		float targetX = (static_cast<int>(_way[0]) % mapWidth) + 0.5f;
-		float targetZ = static_cast<int>(_way[0] / mapHeight) + 0.5f;
+		float targetZ = static_cast<int>(_way[0] / mapWidth) + 0.5f;
 		int xSign = 0;
 		int zSign = 0;
 		if (targetX - x < -0.05f)
