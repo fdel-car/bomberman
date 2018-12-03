@@ -78,6 +78,7 @@ void Volcano::update(void) {
 		_cooldown = 0.1f;
 		_startBuildingGrapheForPathFinding();
 		_refreshAI = true;
+		// printMapInfo();
 	}
 	_cooldown -= _gameEngine->getDeltaTime();
 }

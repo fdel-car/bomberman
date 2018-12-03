@@ -19,8 +19,8 @@ GLuint const &Skybox::getTexture(void) const { return _skyboxTexture; }
 void Skybox::update(void) {}
 
 void Skybox::_initSkyboxFaces(void) {
-	_faces.push_back(_assetsDir + "skyboxes/" + nameTextureDir + "/right.png");
 	_faces.push_back(_assetsDir + "skyboxes/" + nameTextureDir + "/left.png");
+	_faces.push_back(_assetsDir + "skyboxes/" + nameTextureDir + "/right.png");
 	_faces.push_back(_assetsDir + "skyboxes/" + nameTextureDir + "/top.png");
 	_faces.push_back(_assetsDir + "skyboxes/" + nameTextureDir + "/bottom.png");
 	_faces.push_back(_assetsDir + "skyboxes/" + nameTextureDir + "/front.png");
@@ -74,6 +74,7 @@ void Skybox::_initCubeMap(void) {
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 }
+<<<<<<< HEAD
 
 void Skybox::_initData(void) {
 	int nrChannels;
@@ -85,3 +86,5 @@ void Skybox::_initData(void) {
 					  << std::endl;
 	}
 }
+=======
+>>>>>>> dd9f5fc3e23fcbc5c333780413eae6facb5d30cc

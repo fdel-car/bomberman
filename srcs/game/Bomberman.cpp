@@ -14,7 +14,7 @@
 
 extern std::string _assetsDir;
 
-Bomberman::Bomberman(void) : AGame(11), _startLevelName("MainMenu") {
+Bomberman::Bomberman(void) : AGame(12), _startLevelName("MainMenu") {
 	// Set needed fonts
 	for (float size = 12.0f; size <= 48.0f; size += 1.0f)
 		_neededFonts.push_back(std::tuple<float, std::string, std::string>(
@@ -31,6 +31,8 @@ Bomberman::Bomberman(void) : AGame(11), _startLevelName("MainMenu") {
 	setLayerCollision(PlayerSpecialLayer, ExplosionLayer, false);
 	setLayerCollision(PlayerSpecialLayer, EnemyLayer, false);
 	setLayerCollision(PlayerSpecialLayer, EnemySpecialLayer, false);
+	setLayerCollision(PlayerSpecialLayer, EnemyBasicLayer, false);
+	setLayerCollision(PlayerSpecialLayer, EnemyRunAwayLayer, false);
 
 	setLayerCollision(EnemyRunAwayLayer, EnemyRunAwayLayer, false);
 	setLayerCollision(EnemyRunAwayLayer, EnemySpecialLayer, false);
@@ -38,6 +40,9 @@ Bomberman::Bomberman(void) : AGame(11), _startLevelName("MainMenu") {
 
 	setLayerCollision(EnemySpecialLayer, EnemySpecialLayer, false);
 	setLayerCollision(EnemySpecialLayer, ExplosionLayer, false);
+
+	setLayerCollision(EnemyBasicLayer, EnemyBasicLayer, false);
+	setLayerCollision(EnemyRunAwayLayer, EnemyBasicLayer, false);
 
 	setLayerCollision(PerkLayer, PerkLayer, false);
 	setLayerCollision(PerkLayer, BoxLayer, false);
@@ -151,21 +156,42 @@ void Bomberman::_forest(void) {
 	// size_t totalBoxes = 120;
 	// size_t avgPerks = 10;
 	// size_t perkProb = (avgPerks * 100) / totalBoxes;
-	_createMap(10, 10);
+	std::vector<std::tuple<int,int>> protectedCase;
+	protectedCase.push_back(std::tuple<int,int>(-9.0, -9.0));
+	protectedCase.push_back(std::tuple<int,int>(-8.0, -9.0));
+	protectedCase.push_back(std::tuple<int,int>(-9.0, -8.0));
+	protectedCase.push_back(std::tuple<int,int>(-7.0, -9.0));
+	protectedCase.push_back(std::tuple<int,int>(-9.0, -7.0));
+	_entities.push_back(new Box(glm::vec3(-7.0, 0, -9.0), _camera));
+	_entities.push_back(new Box(glm::vec3(-9.0, 0, -7.0), _camera));
+	_createMap(10, 10, protectedCase, 10, 15);
 }
 
 void Bomberman::_desert(void) {
-	_camera = new Desert(glm::vec3(-9.25, 20.0, 6.0),
+	_camera = new Desert(glm::vec3(-14, 20.0, 8.0),
 						 glm::vec3(-60.0, 0.0, 0.0), this);
 	_light = new Light(glm::vec2(-20.0, 8.0), glm::vec3(0.0f));
-	_entities.push_back(new Entity(glm::vec3(0.0f), glm::vec3(0.0f), nullptr,
-								   "Island", "Island", "Island"));
-	_entities.push_back(new Player(glm::vec3(-1.0, 0.0, -1.0), glm::vec3(0.0f),
+	// _entities.push_back(new Entity(glm::vec3(0.0f), glm::vec3(0.0f), nullptr,
+	// 							   "Island", "Island", "Island"));
+	_entities.push_back(new Player(glm::vec3(-17.0, 0.0, -5.0), glm::vec3(0.0f),
 								   _save, _camera));
 
+	std::vector<std::tuple<int,int>> protectedCase;
+	protectedCase.push_back(std::tuple<int,int>(-17.0, -5.0));
+	protectedCase.push_back(std::tuple<int,int>(-16.0, -5.0));
+	protectedCase.push_back(std::tuple<int,int>(-17.0, -4.0));
+	protectedCase.push_back(std::tuple<int,int>(-15.0, -5.0));
+	protectedCase.push_back(std::tuple<int,int>(-17.0, -3.0));
+	protectedCase.push_back(std::tuple<int,int>(17.0, 5.0));
+	_entities.push_back(new Box(glm::vec3(-15.0, 0, -5.0), _camera));
+	_entities.push_back(new Box(glm::vec3(-17.0, 0, -3.0), _camera));
+
+	_entities.push_back(
+		new EnemyRunAway(glm::vec3(-17.0, 0.0, 5.0), glm::vec3(0.0f), _camera));
+
 	// Portal to clear lvl
-	_entities.push_back(new Portal(glm::vec3(0, 0, -7), _camera));
-	// _createMap(18, 18);
+	// _entities.push_back(new Portal(glm::vec3(0, 0, -7), _camera));
+	_createMap(18, 6, protectedCase, 150, 200);
 }
 
 void Bomberman::_volcano(void) {
@@ -179,7 +205,11 @@ void Bomberman::_volcano(void) {
 
 	// Portal to clear lvl
 	_entities.push_back(new Portal(glm::vec3(-7, 0, 0), _camera));
-	_createMap(18, 18);
+	std::vector<std::tuple<int,int>> protectedCase;
+	protectedCase.push_back(std::tuple<int,int>(-17.0, -17.0));
+	protectedCase.push_back(std::tuple<int,int>(-16.0, -17.0));
+	protectedCase.push_back(std::tuple<int,int>(-17.0, -16.0));
+	_createMap(18, 18, protectedCase, 2, 13);
 }
 
 void Bomberman::_initScenes(void) {
@@ -194,7 +224,7 @@ void Bomberman::_initScenes(void) {
 	_scenesMap[_scenesNames.back()] = &Bomberman::_desert;
 }
 
-void Bomberman::_createMap(int width, int height) {
+void Bomberman::_createMap(int width, int height, std::vector<std::tuple<int,int>> &protectedCase, size_t boxRate, size_t monsterRate) {
 	for (int x = -width; x <= width; x++) {
 		for (int z = -height; z <= height; z++) {
 			if (abs(x) == width || abs(z) == height) {
@@ -212,10 +242,21 @@ void Bomberman::_createMap(int width, int height) {
 							   "Wall", "Wall", "Wall", _camera));
 				_entities.back()->scale(glm::vec3(1.0, 0.8, 1.0));
 			}
-			//  else if (x != -7 && z != -7 && x != 7 && z != 7 && x % 2 != 0 &&
-			//    z % 2 != 0) {
-			// _entities.push_back(new Box(glm::vec3(x, 0, z), _camera));
-			// }
+			else {
+				bool canPutBlocks = true;
+				for (const auto &t : protectedCase) {
+					if (std::get<1>(t) == z && std::get<0>(t) == x) {
+						canPutBlocks = false;
+					}
+				}
+				if (canPutBlocks && rand() % boxRate == 0) {
+					_entities.push_back(new Box(glm::vec3(x, 0, z), _camera));
+				}
+				else if (canPutBlocks && rand() % monsterRate == 0) {
+					_entities.push_back(new EnemyBasic(glm::vec3(x, 0.0, z), glm::vec3(0.0f), _camera));
+
+				}
+			}
 		}
 	}
 }

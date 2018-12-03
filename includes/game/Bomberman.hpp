@@ -15,6 +15,7 @@ enum LayerTag {
 	EnemyLayer,
 	EnemyRunAwayLayer,
 	EnemySpecialLayer,
+	EnemyBasicLayer,
 	BombLayer,
 	ExplosionLayer,
 	PerkLayer,
@@ -48,7 +49,7 @@ class Bomberman : public AGame {
 	// std::atomic_int loadState;
 
 	void _initScenes(void);
-	void _createMap(int width, int height);
+	void _createMap(int width, int height, std::vector<std::tuple<int,int>> &protectedCase, size_t spwanRate, size_t monsterRate);
 
 	void _mainMenu(void);
 	void _forest(void);
