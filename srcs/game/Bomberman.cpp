@@ -156,33 +156,33 @@ void Bomberman::_forest(void) {
 	// size_t totalBoxes = 120;
 	// size_t avgPerks = 10;
 	// size_t perkProb = (avgPerks * 100) / totalBoxes;
-	std::vector<std::tuple<int,int>> protectedCase;
-	protectedCase.push_back(std::tuple<int,int>(-9.0, -9.0));
-	protectedCase.push_back(std::tuple<int,int>(-8.0, -9.0));
-	protectedCase.push_back(std::tuple<int,int>(-9.0, -8.0));
-	protectedCase.push_back(std::tuple<int,int>(-7.0, -9.0));
-	protectedCase.push_back(std::tuple<int,int>(-9.0, -7.0));
+	std::vector<std::tuple<int, int>> protectedCase;
+	protectedCase.push_back(std::tuple<int, int>(-9.0, -9.0));
+	protectedCase.push_back(std::tuple<int, int>(-8.0, -9.0));
+	protectedCase.push_back(std::tuple<int, int>(-9.0, -8.0));
+	protectedCase.push_back(std::tuple<int, int>(-7.0, -9.0));
+	protectedCase.push_back(std::tuple<int, int>(-9.0, -7.0));
 	_entities.push_back(new Box(glm::vec3(-7.0, 0, -9.0), _camera));
 	_entities.push_back(new Box(glm::vec3(-9.0, 0, -7.0), _camera));
 	_createMap(10, 10, protectedCase, 10, 15);
 }
 
 void Bomberman::_desert(void) {
-	_camera = new Desert(glm::vec3(-14, 20.0, 8.0),
-						 glm::vec3(-60.0, 0.0, 0.0), this);
+	_camera =
+		new Desert(glm::vec3(-14, 20.0, 8.0), glm::vec3(-60.0, 0.0, 0.0), this);
 	_light = new Light(glm::vec2(-20.0, 8.0), glm::vec3(0.0f));
 	// _entities.push_back(new Entity(glm::vec3(0.0f), glm::vec3(0.0f), nullptr,
 	// 							   "Island", "Island", "Island"));
 	_entities.push_back(new Player(glm::vec3(-17.0, 0.0, -5.0), glm::vec3(0.0f),
 								   _save, _camera));
 
-	std::vector<std::tuple<int,int>> protectedCase;
-	protectedCase.push_back(std::tuple<int,int>(-17.0, -5.0));
-	protectedCase.push_back(std::tuple<int,int>(-16.0, -5.0));
-	protectedCase.push_back(std::tuple<int,int>(-17.0, -4.0));
-	protectedCase.push_back(std::tuple<int,int>(-15.0, -5.0));
-	protectedCase.push_back(std::tuple<int,int>(-17.0, -3.0));
-	protectedCase.push_back(std::tuple<int,int>(17.0, 5.0));
+	std::vector<std::tuple<int, int>> protectedCase;
+	protectedCase.push_back(std::tuple<int, int>(-17.0, -5.0));
+	protectedCase.push_back(std::tuple<int, int>(-16.0, -5.0));
+	protectedCase.push_back(std::tuple<int, int>(-17.0, -4.0));
+	protectedCase.push_back(std::tuple<int, int>(-15.0, -5.0));
+	protectedCase.push_back(std::tuple<int, int>(-17.0, -3.0));
+	protectedCase.push_back(std::tuple<int, int>(17.0, 5.0));
 	_entities.push_back(new Box(glm::vec3(-15.0, 0, -5.0), _camera));
 	_entities.push_back(new Box(glm::vec3(-17.0, 0, -3.0), _camera));
 
@@ -198,17 +198,17 @@ void Bomberman::_volcano(void) {
 	_camera = new Volcano(glm::vec3(-14.5, 20.0, -3.0),
 						  glm::vec3(-60.0, 0.0, 0.0), this);
 	_light = new Light(glm::vec2(-20.0, 8.0), glm::vec3(0.0f));
-	_entities.push_back(new Entity(glm::vec3(0.0f), glm::vec3(0.0f), nullptr,
-								   "Island", "Island", "Island"));
+	// _entities.push_back(new Entity(glm::vec3(0.0f), glm::vec3(0.0f), nullptr,
+	//    "Island", "Island", "Island"));
 	_entities.push_back(new Player(glm::vec3(-17.0, 0.0, -17.0),
 								   glm::vec3(0.0f), _save, _camera));
 
 	// Portal to clear lvl
 	_entities.push_back(new Portal(glm::vec3(-7, 0, 0), _camera));
-	std::vector<std::tuple<int,int>> protectedCase;
-	protectedCase.push_back(std::tuple<int,int>(-17.0, -17.0));
-	protectedCase.push_back(std::tuple<int,int>(-16.0, -17.0));
-	protectedCase.push_back(std::tuple<int,int>(-17.0, -16.0));
+	std::vector<std::tuple<int, int>> protectedCase;
+	protectedCase.push_back(std::tuple<int, int>(-17.0, -17.0));
+	protectedCase.push_back(std::tuple<int, int>(-16.0, -17.0));
+	protectedCase.push_back(std::tuple<int, int>(-17.0, -16.0));
 	_createMap(18, 18, protectedCase, 2, 13);
 }
 
@@ -224,7 +224,9 @@ void Bomberman::_initScenes(void) {
 	_scenesMap[_scenesNames.back()] = &Bomberman::_desert;
 }
 
-void Bomberman::_createMap(int width, int height, std::vector<std::tuple<int,int>> &protectedCase, size_t boxRate, size_t monsterRate) {
+void Bomberman::_createMap(int width, int height,
+						   std::vector<std::tuple<int, int>> &protectedCase,
+						   size_t boxRate, size_t monsterRate) {
 	for (int x = -width; x <= width; x++) {
 		for (int z = -height; z <= height; z++) {
 			if (abs(x) == width || abs(z) == height) {
@@ -241,8 +243,7 @@ void Bomberman::_createMap(int width, int height, std::vector<std::tuple<int,int
 											LayerTag::WallLayer, 0.5, 0.5),
 							   "Wall", "Wall", "Wall", _camera));
 				_entities.back()->scale(glm::vec3(1.0, 0.8, 1.0));
-			}
-			else {
+			} else {
 				bool canPutBlocks = true;
 				for (const auto &t : protectedCase) {
 					if (std::get<1>(t) == z && std::get<0>(t) == x) {
@@ -251,10 +252,9 @@ void Bomberman::_createMap(int width, int height, std::vector<std::tuple<int,int
 				}
 				if (canPutBlocks && rand() % boxRate == 0) {
 					_entities.push_back(new Box(glm::vec3(x, 0, z), _camera));
-				}
-				else if (canPutBlocks && rand() % monsterRate == 0) {
-					_entities.push_back(new EnemyBasic(glm::vec3(x, 0.0, z), glm::vec3(0.0f), _camera));
-
+				} else if (canPutBlocks && rand() % monsterRate == 0) {
+					_entities.push_back(new EnemyBasic(
+						glm::vec3(x, 0.0, z), glm::vec3(0.0f), _camera));
 				}
 			}
 		}
