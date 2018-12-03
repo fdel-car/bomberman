@@ -7,10 +7,7 @@ Skybox::Skybox(std::string str)
 			 "Skybox"),
 	  nameTextureDir(str) {
 	_initSkyboxFaces();
-	
-	std::cout << "Data loading:" << std::endl << std::endl;
 	_initData();
-	std::cout << std::endl <<  "Data finish loading" << std::endl << std::endl;
 }
 
 Skybox::~Skybox(void) {}
@@ -67,8 +64,8 @@ void Skybox::_initCubeMap(void) {
 	glBindTexture(GL_TEXTURE_CUBE_MAP, _skyboxTexture);
 
 	for (unsigned int i = 0; i < _faces.size(); i++) {
-		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, _width, 
-		_height, 0, GL_RGB, GL_UNSIGNED_BYTE, _datas[i]);
+		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, _width,
+					 _height, 0, GL_RGB, GL_UNSIGNED_BYTE, _datas[i]);
 	}
 
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -81,10 +78,10 @@ void Skybox::_initCubeMap(void) {
 void Skybox::_initData(void) {
 	int nrChannels;
 	for (unsigned int i = 0; i < _faces.size(); i++) {
-		_datas.push_back(stbi_load(_faces[i].c_str(), &_width, &_height, &nrChannels, 0));
-		std::cout << _faces[i] << std::endl;
+		_datas.push_back(
+			stbi_load(_faces[i].c_str(), &_width, &_height, &nrChannels, 0));
 		if (!_datas[i])
-			std::cout << "Cubemap texture failed to load at path: " << _faces[i] << std::endl;
+			std::cout << "Cubemap texture failed to load at path: " << _faces[i]
+					  << std::endl;
 	}
 }
-

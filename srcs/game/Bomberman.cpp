@@ -56,14 +56,15 @@ Bomberman::Bomberman(void) : AGame(11), _startLevelName("MainMenu") {
 
 	// Set map of scenes
 	_initScenes();
+	initLoadScene();
 }
 
 Bomberman::~Bomberman(void) {}
 
-
 std::string Bomberman::getStartLevelName(void) { return _startLevelName; }
 
-void Bomberman::loadSceneByIndex(int sceneIdx, std::atomic_int *_sceneState, bool *_checkLoadSceneIsGood) {
+void Bomberman::loadSceneByIndex(int sceneIdx, std::atomic_int *_sceneState,
+								 bool *_checkLoadSceneIsGood) {
 	unload();
 	if (sceneIdx < 0 || sceneIdx >= static_cast<int>(_scenesNames.size()))
 		*_checkLoadSceneIsGood = false;
@@ -75,14 +76,8 @@ void Bomberman::loadSceneByIndex(int sceneIdx, std::atomic_int *_sceneState, boo
 }
 
 void Bomberman::initLoadScene() {
-	unload();
-	int sceneIdx = getLoadingSceneIdx();
-	(this->*(_scenesMap[_scenesNames[sceneIdx]]))();
-}
-
-void Bomberman::_loadScene(void) {
-	_skybox = nullptr;
-	size_t firstPlayableLvlIdx = 2;
+	_loadingSkybox = nullptr;
+	size_t firstPlayableLvlIdx = 1;
 	size_t lastPlayableLvlIdx = _scenesNames.size() - 1;
 	size_t maxPlayableLvlIdx;
 	if (_save.level < firstPlayableLvlIdx) {
@@ -91,19 +86,19 @@ void Bomberman::_loadScene(void) {
 		maxPlayableLvlIdx = _save.level;
 		maxPlayableLvlIdx += (maxPlayableLvlIdx < lastPlayableLvlIdx) ? 2 : 1;
 	}
-	_camera = new MainMenu(
+	_loadingCamera = new MainMenu(
 		glm::vec3(0.0, 0.0, 10.0), glm::vec3(0.0f),
 		std::vector<std::string>(_scenesNames.begin() + firstPlayableLvlIdx,
 								 _scenesNames.begin() + maxPlayableLvlIdx),
-		this); // TODO: Create Class for Loading scene
-	_light = new Light(glm::vec2(-10.0, -10.0), glm::vec3(0.0f), 10.0f);
+		this);  // TODO: Create Class for Loading scene
+	_loadingLight = new Light(glm::vec2(-10.0, -10.0), glm::vec3(0.0f), 10.0f);
 }
 
 Save &Bomberman::getSave(void) { return _save; }
 
 void Bomberman::_mainMenu(void) {
 	_skybox = new Skybox("default");
-	size_t firstPlayableLvlIdx = 2;
+	size_t firstPlayableLvlIdx = 1;
 	size_t lastPlayableLvlIdx = _scenesNames.size() - 1;
 	size_t maxPlayableLvlIdx;
 	if (_save.level < firstPlayableLvlIdx) {
@@ -188,8 +183,6 @@ void Bomberman::_volcano(void) {
 }
 
 void Bomberman::_initScenes(void) {
-	_scenesNames.push_back("LoadScene");
-	_scenesMap[_scenesNames.back()] = &Bomberman::_loadScene;
 	_scenesNames.push_back(_startLevelName);
 	_scenesMap[_scenesNames.back()] = &Bomberman::_mainMenu;
 
