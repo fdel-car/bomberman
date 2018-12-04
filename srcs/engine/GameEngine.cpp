@@ -369,7 +369,8 @@ void GameEngine::_unloadScene(void) {
 
 void GameEngine::_loadScene(size_t newSceneIdx, std::atomic_int *_sceneState,
 							bool *_checkLoadSceneIsGood) {
-	_game->loadSceneByIndex(newSceneIdx, _sceneState, _checkLoadSceneIsGood);
+	_game->loadSceneByIndex(newSceneIdx, _audioManager, _sceneState,
+							_checkLoadSceneIsGood);
 }
 
 void GameEngine::_moveEntities(void) {

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "engine/AudioManager.hpp"
 #include "engine/Camera.hpp"
 #include "engine/Entity.hpp"
 #include "engine/Light.hpp"
@@ -12,7 +13,8 @@ class AGame {
 	AGame(size_t enumSize);
 	virtual ~AGame(void);
 
-	virtual void loadSceneByIndex(int sceneIdx, std::atomic_int *_sceneState,
+	virtual void loadSceneByIndex(int sceneIdx, AudioManager *audioManager,
+								  std::atomic_int *_sceneState,
 								  bool *_checkLoadSceneIsGood) = 0;
 	virtual void initLoadScene(void) = 0;
 	virtual size_t getWindowWidth() = 0;
@@ -32,12 +34,7 @@ class AGame {
 	Camera *getLoadingCamera() const;
 	Light *getLoadingLight() const;
 	Skybox *getLoadingSkybox() const;
-
 	std::vector<std::vector<bool>> const &getCollisionTable(void);
-	const std::vector<std::tuple<std::string, std::string>> &getNeeededMusic()
-		const;
-	const std::vector<std::tuple<std::string, std::string>> &getNeeededSounds()
-		const;
 
 	void unload(void);
 
@@ -55,8 +52,8 @@ class AGame {
 	Skybox *_loadingSkybox;
 
 	std::vector<std::tuple<float, std::string, std::string>> _neededFonts;
-	std::vector<std::tuple<std::string, std::string>> _neededMusic;
-	std::vector<std::tuple<std::string, std::string>> _neededSounds;
+	std::map<std::string, std::string> _neededMusic;
+	std::map<std::string, std::string> _neededSounds;
 	std::vector<std::vector<bool>> _collisionTable;
 
 	void setLayerCollision(int layer1, int layer2, bool doCollide);

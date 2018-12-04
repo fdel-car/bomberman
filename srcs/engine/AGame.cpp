@@ -9,8 +9,8 @@ AGame::AGame(size_t enumSize)
 	  _loadingCamera(nullptr),
 	  _loadingLight(nullptr),
 	  _loadingSkybox(nullptr),
-	  _neededMusic(std::vector<std::tuple<std::string, std::string>>()),
-	  _neededSounds(std::vector<std::tuple<std::string, std::string>>()) {
+	  _neededMusic(std::map<std::string, std::string>()),
+	  _neededSounds(std::map<std::string, std::string>()) {
 	_collisionTable = std::vector<std::vector<bool>>(enumSize);
 	for (auto &collisionTag : _collisionTable) {
 		collisionTag = std::vector<bool>(enumSize, true);
@@ -46,15 +46,6 @@ Light *AGame::getLoadingLight(void) const { return _loadingLight; }
 
 Skybox *AGame::getLoadingSkybox(void) const { return _loadingSkybox; }
 
-const std::vector<std::tuple<std::string, std::string>>
-	&AGame::getNeeededMusic() const {
-	return _neededMusic;
-}
-const std::vector<std::tuple<std::string, std::string>>
-	&AGame::getNeeededSounds() const {
-	return _neededSounds;
-}
-
 std::vector<std::vector<bool>> const &AGame::getCollisionTable(void) {
 	return _collisionTable;
 }
@@ -66,6 +57,8 @@ std::vector<std::tuple<float, std::string, std::string>>
 
 void AGame::unload(void) {
 	_entities.clear();
+	_neededMusic.clear();
+	_neededMusic.clear();
 
 	_light = nullptr;
 	_camera = nullptr;

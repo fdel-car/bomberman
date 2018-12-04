@@ -6,49 +6,69 @@ AudioManager::AudioManager(void)
 
 AudioManager::~AudioManager(void) {}
 
-void AudioManager::loadMusic(std::string filePath, std::string musicName) {
-	if (_musicsMap.find(musicName) == _musicsMap.end()) {
-		_musicsMap[musicName] = sf::SoundBuffer();
-		if (!_musicsMap[musicName].loadFromFile(filePath)) {
-			std::cerr << "\033[0;33m:Warning:\033[0m Could not load Music"
-					  << std::endl;
+void AudioManager::loadMusics(std::map<std::string, std::string> resources) {
+	// Remove old if no longer needed
+	std::string fileName;
+	std::vector<std::string> toDelete;
+	for (auto &elem : _musicsMap) {
+		fileName = std::get<0>(elem);
+		if (resources.find(fileName) == resources.end()) {
+			toDelete.push_back(fileName);
 		}
 	}
-}
-void AudioManager::loadSound(std::string filePath, std::string soundName) {
-	if (_soundsMap.find(soundName) == _soundsMap.end()) {
-		_soundsMap[soundName] = sf::SoundBuffer();
-		if (!_soundsMap[soundName].loadFromFile(filePath)) {
-			std::cerr << "\033[0;33m:Warning:\033[0m There is no light in the "
-						 "loaded scene, you should definitely add one"
-					  << std::endl;
-		}
+	for (auto name : toDelete) {
+		_musicsMap.erase(name);
 	}
-}
 
-void AudioManager::clearMusics(std::vector<std::string> musicNames) {
-	for (auto musicName : musicNames) {
-		if (_musicsMap.find(musicName) == _musicsMap.end()) {
-			_musicsMap.erase(musicName);
+	// Add new
+	for (auto resource : resources) {
+		if (_musicsMap.find(std::get<0>(resource)) == _musicsMap.end()) {
+			_musicsMap[std::get<0>(resource)] = sf::SoundBuffer();
+			if (!_musicsMap[std::get<0>(resource)].loadFromFile(
+					std::get<1>(resource))) {
+				std::cerr
+					<< "\033[0;33m:Warning:\033[0m Could not load Music at "
+					<< std::get<1>(resource) << std::endl;
+			}
 		}
 	}
 }
-void AudioManager::clearSounds(std::vector<std::string> soundNames) {
-	for (auto soundName : soundNames) {
-		if (_soundsMap.find(soundName) == _soundsMap.end()) {
-			_soundsMap.erase(soundName);
+void AudioManager::loadSounds(std::map<std::string, std::string> resources) {
+	// Remove old if no longer needed
+	std::string fileName;
+	std::vector<std::string> toDelete;
+	for (auto &elem : _soundsMap) {
+		fileName = std::get<0>(elem);
+		if (resources.find(fileName) == resources.end()) {
+			toDelete.push_back(fileName);
+		}
+	}
+	for (auto name : toDelete) {
+		_soundsMap.erase(name);
+	}
+
+	// Add new
+	for (auto resource : resources) {
+		if (_soundsMap.find(std::get<0>(resource)) == _soundsMap.end()) {
+			_soundsMap[std::get<0>(resource)] = sf::SoundBuffer();
+			if (!_soundsMap[std::get<0>(resource)].loadFromFile(
+					std::get<1>(resource))) {
+				std::cerr
+					<< "\033[0;33m:Warning:\033[0m Could not load Sound at "
+					<< std::get<1>(resource) << std::endl;
+			}
 		}
 	}
 }
 
 void AudioManager::playMusic(std::string musicName) {
-	if (_musicsMap.find(musicName) == _musicsMap.end()) {
+	if (_musicsMap.find(musicName) != _musicsMap.end()) {
 		_musicPlayer.setBuffer(_musicsMap[musicName]);
 		_musicPlayer.play();
 	}
 }
 void AudioManager::playSound(std::string soundName) {
-	if (_soundsMap.find(soundName) == _soundsMap.end()) {
+	if (_soundsMap.find(soundName) != _soundsMap.end()) {
 		_soundsPlayer.setBuffer(_soundsMap[soundName]);
 		_soundsPlayer.play();
 	}

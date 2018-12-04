@@ -533,12 +533,14 @@ void SceneTools::tellPlayerHp(size_t hp) {
 	_playerHp = hp;
 	if (_playerHp == 0) {
 		_showDeathScreen = true;
+		_gameEngine->playSound("Defeat");
 	}
 }
 
 void SceneTools::tellLevelSuccess() {
 	if (_playerHp != 0) {
 		_showVictoryScreen = true;
+		_gameEngine->playSound("Win");
 		// Save if it's first time we complete lvl
 		size_t levelIdx = _bomberman->getSceneIndexByName(_ownLvlName);
 		if (_save.level < levelIdx) {
