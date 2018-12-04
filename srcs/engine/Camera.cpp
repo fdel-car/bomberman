@@ -52,13 +52,7 @@ void Camera::configGUI(GUI *graphicUI) { (void)graphicUI; }
 void Camera::update(void) {
 	float deltaTime = _gameEngine->getDeltaTime();
 
-	if (!_isPause && _gameEngine->isKeyJustPressed(KEY_GRAVE_ACCENT)) {
-		_debugMode = !_debugMode;
-		// Avoid camera jump on first frame
-		_lastMousePos.x = _gameEngine->getGameRenderer()->getMousePos().x;
-		_lastMousePos.y = _gameEngine->getGameRenderer()->getMousePos().y;
-		_gameEngine->getGameRenderer()->switchCursorMode(_debugMode);
-	}
+	updateDebugMode();
 	if (!_debugMode) return;
 
 	if (_gameEngine->isKeyPressed(KEY_W))
@@ -87,6 +81,16 @@ void Camera::update(void) {
 	if (glm::epsilonNotEqual(0.0f, yOffset, EPSILON)) rotateX(yOffset);
 	if (glm::epsilonNotEqual(0.0f, xOffset, EPSILON)) rotateY(-xOffset);
 	_updateData();
+}
+
+void Camera::updateDebugMode(void) {
+	if (!_isPause && _gameEngine->isKeyJustPressed(KEY_GRAVE_ACCENT)) {
+		_debugMode = !_debugMode;
+		// Avoid camera jump on first frame
+		_lastMousePos.x = _gameEngine->getGameRenderer()->getMousePos().x;
+		_lastMousePos.y = _gameEngine->getGameRenderer()->getMousePos().y;
+		_gameEngine->getGameRenderer()->switchCursorMode(_debugMode);
+	}
 }
 
 void Camera::translate(glm::vec3 translation) {

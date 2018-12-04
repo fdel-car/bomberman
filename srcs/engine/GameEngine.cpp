@@ -1,6 +1,8 @@
 #include "engine/GameEngine.hpp"
 #include "engine/GameRenderer.hpp"
 
+// std::thread *_loadSceneThread = nullptr;
+
 GameEngine::LineInfo::LineInfo(void)
 	: m(0.0f),
 	  q(0.0f),
@@ -51,23 +53,23 @@ GameEngine::GameEngine(AGame *game)
 	_audioManager = new AudioManager();
 
 	// Force load of first scene
-	_sceneIdx = 0;
+	_sceneIdx = _game->getFirstSceneIdx();  // TODO: get first Scene
+
+	// Thread atomic Int
+	_sceneState = BACKGROUND_LOAD_NEEDED;
+	_checkLoadSceneIsGood = false;
 	_light = nullptr;
 	_camera = nullptr;
+	_skybox = nullptr;
 
-	_skybox = new Skybox("default");
-	_skybox->initEntity(this);
+	// Set LoadingScene variable
+	_setLoadingSceneVariables();
 }
 
 GameEngine::~GameEngine(void) {
-	for (size_t idx = _allEntities.size() - 1; idx < _allEntities.size();
-		 idx--) {
-		delete _allEntities[idx];
+	if (_sceneState != BACKGROUND_LOAD_STARTED) {
+		_unloadScene();
 	}
-	if (_light != nullptr) delete _light;
-	if (_skybox != nullptr) delete _skybox;
-	if (_camera != nullptr) delete _camera;
-	_allEntities.clear();
 	delete _audioManager;
 	delete _gameRenderer;
 }
@@ -84,13 +86,38 @@ void GameEngine::addNewEntity(Entity *entity) {
 }
 
 void GameEngine::run(void) {
-	// Init vars
-	_lastFrameTs = Clock::now();
+	if (_sceneState == BACKGROUND_LOAD_NEEDED) {
+		_sceneState = BACKGROUND_LOAD_STARTED;
+		_unloadScene();
+		_camera = _loadingCamera;
+		_light = _loadingLight;
+		_skybox = _loadingSkybox;
+		_allEntities = _loadingAllEntities;
 
-	if (!_initScene(_sceneIdx)) throw std::runtime_error("Cannot load scene!");
-	int newSceneIdx = -1;
+		// Init thread to load the scene we want
+		_checkLoadSceneIsGood = false;
+		_loadSceneThread =
+			new std::thread(&GameEngine::_loadScene, this, _sceneIdx,
+							&_sceneState, &_checkLoadSceneIsGood);
+	}
+
 	// Start game loop
+	int newSceneIdx = -1;
+	_lastFrameTs = Clock::now();
 	while (true) {
+		if (_sceneState == BACKGROUND_LOAD_FINISHED) {
+			_loadSceneThread->join();
+			delete _loadSceneThread;
+			_loadSceneThread = nullptr;
+
+			if (_checkLoadSceneIsGood == false)
+				throw std::runtime_error("Cannot load scene!");
+			if (!_initScene(_sceneIdx))
+				throw std::runtime_error("Cannot load scene " +
+										 std::to_string(_sceneIdx) + "!");
+			_sceneState = BACKGROUND_LOAD_NOT_NEEDED;
+			_lastFrameTs = Clock::now();
+		}
 		// Get delta time in order to synch entities positions
 		_frameTs = Clock::now();
 		_deltaTime = (std::chrono::duration_cast<std::chrono::microseconds>(
@@ -100,8 +127,9 @@ void GameEngine::run(void) {
 		_lastFrameTs = _frameTs;
 
 		// Update inputs
-		for (auto &key : keyboardMap)
+		for (auto &key : _keyboardMap)
 			key.second.prevFrame = key.second.currFrame;
+
 		_gameRenderer->getUserInput();
 
 		// Update game camera
@@ -110,6 +138,7 @@ void GameEngine::run(void) {
 		if (newSceneIdx != -1) break;
 		newSceneIdx = _game->getSceneIndexByName(_camera->getNewSceneName());
 		if (newSceneIdx != -1) break;
+
 		if (!_camera->isGameRunning()) break;
 
 		// Freeze everything else if camera tells so
@@ -137,8 +166,8 @@ void GameEngine::run(void) {
 						continue;
 					collidedEntities.clear();
 					initialCollisions.clear();
-					getPossibleCollisions(newEntity, collidedEntities,
-										  triggeredEntities, entitiesToTest);
+					_getPossibleCollisions(newEntity, collidedEntities,
+										   triggeredEntities, entitiesToTest);
 					// Possible collision that have been detected are sure to
 					// collide since newEntities do not have any targetMovement
 					// yet
@@ -160,7 +189,7 @@ void GameEngine::run(void) {
 			}
 
 			// Do movement (with collisions + trigger detection)
-			moveEntities();
+			_moveEntities();
 
 			// Delete game entities if needed
 			for (size_t idx = _allEntities.size() - 1;
@@ -198,10 +227,10 @@ void GameEngine::run(void) {
 					}
 					for (size_t idIdx = initialCollisions.second.size() - 1;
 						 idIdx < initialCollisions.second.size(); idIdx--) {
-						if (!doCollide(entityA->getCollider(),
-									   entityA->getPosition(),
-									   getEntityById(
-										   initialCollisions.second[idIdx]))) {
+						if (!_doCollide(entityA->getCollider(),
+										entityA->getPosition(),
+										getEntityById(
+											initialCollisions.second[idIdx]))) {
 							initialCollisions.second.erase(
 								initialCollisions.second.begin() + idIdx);
 						}
@@ -218,6 +247,7 @@ void GameEngine::run(void) {
 	}
 	if (newSceneIdx != -1) {
 		_sceneIdx = newSceneIdx;
+		_sceneState = BACKGROUND_LOAD_NEEDED;
 		run();
 	}
 }
@@ -244,13 +274,7 @@ Entity *GameEngine::getEntityById(size_t id) {
 // 	return foundElem;
 // }
 
-bool GameEngine::_initScene(size_t newSceneIdx) {
-	if (!_game) return false;
-	_unloadScene();
-
-	// Add new entities
-	_sceneIdx = newSceneIdx;
-	if (!_game->loadSceneByIndex(_sceneIdx)) return false;
+void GameEngine::_setSceneVariables(void) {
 	_camera = _game->getCamera();
 	if (_camera == nullptr)
 		throw std::runtime_error(
@@ -258,6 +282,14 @@ bool GameEngine::_initScene(size_t newSceneIdx) {
 			"scene.");
 	_camera->initEntity(this);
 	_camera->configGUI(_gameRenderer->getGUI());
+
+	_skybox = _game->getSkybox();
+	if (_skybox != nullptr) {
+		_skybox->_initBuffer();
+		_skybox->_initCubeMap();
+		_skybox->initEntity(this);
+	}
+
 	_light = _game->getLight();
 	if (_light == nullptr)
 		std::cerr << "\033[0;33m:Warning:\033[0m There is no light in the "
@@ -265,20 +297,60 @@ bool GameEngine::_initScene(size_t newSceneIdx) {
 				  << std::endl;
 	else
 		_light->initEntity(this);
+
 	for (auto entity : _game->getEntities()) {
 		_allEntities.push_back(entity);
 		_allEntities.back()->initEntity(this);
 	}
+}
+
+void GameEngine::_setLoadingSceneVariables(void) {
+	_loadingCamera = _game->getLoadingCamera();
+	if (_loadingCamera == nullptr)
+		throw std::runtime_error(
+			"\033[0;31m:Error:\033[0m No camera were created in the loaded "
+			"scene.");
+	_loadingCamera->initEntity(this);
+	_loadingCamera->configGUI(_gameRenderer->getGUI());
+
+	_loadingSkybox = _game->getLoadingSkybox();
+	if (_loadingSkybox != nullptr) {
+		_loadingSkybox->_initBuffer();
+		_loadingSkybox->_initCubeMap();
+		_loadingSkybox->initEntity(this);
+	}
+
+	_loadingLight = _game->getLoadingLight();
+	if (_loadingLight == nullptr)
+		std::cerr << "\033[0;33m:Warning:\033[0m There is no light in the "
+					 "loaded scene, you should definitely add one"
+				  << std::endl;
+	else
+		_loadingLight->initEntity(this);
+
+	for (auto entity : _game->getLoadingEntities()) {
+		_loadingAllEntities.push_back(entity);
+		_loadingAllEntities.back()->initEntity(this);
+	}
+}
+
+bool GameEngine::_initScene(size_t newSceneIdx) {
+	if (!_game) return false;
+	// Add new entities
+	_sceneIdx = newSceneIdx;
+	_setSceneVariables();
 	return true;
 }
 
 void GameEngine::_unloadScene(void) {
 	// Clear prev entities
-	for (size_t idx = _allEntities.size() - 1; idx < _allEntities.size();
-		 idx--) {
-		// TODO: add logic for entities that survive between scenes
-		delete _allEntities[idx];
-		_allEntities.erase(_allEntities.begin() + idx);
+	if (_allEntities.empty() != true) {
+		for (size_t idx = _allEntities.size() - 1; idx < _allEntities.size();
+			 idx--) {
+			// TODO: add logic for entities that survive between scenes
+			delete _allEntities[idx];
+			_allEntities.erase(_allEntities.begin() + idx);
+		}
 	}
 	if (_light != nullptr) {
 		delete _light;
@@ -288,10 +360,19 @@ void GameEngine::_unloadScene(void) {
 		delete _camera;
 		_camera = nullptr;
 	}
+	if (_skybox != nullptr) {
+		delete _skybox;
+		_skybox = nullptr;
+	}
 	_initialCollisionMap.clear();
 }
 
-void GameEngine::moveEntities(void) {
+void GameEngine::_loadScene(size_t newSceneIdx, std::atomic_int *_sceneState,
+							bool *_checkLoadSceneIsGood) {
+	_game->loadSceneByIndex(newSceneIdx, _sceneState, _checkLoadSceneIsGood);
+}
+
+void GameEngine::_moveEntities(void) {
 	const Collider *collider;
 	bool isShortcut = false;
 	std::vector<Entity *> collidedEntities = std::vector<Entity *>();
@@ -317,8 +398,8 @@ void GameEngine::moveEntities(void) {
 
 			// Skip checks if entity doesnt have a collider
 			if (collider != nullptr) {
-				getPossibleCollisions(entity, collidedEntities,
-									  collidedTriggers, _allEntities);
+				_getPossibleCollisions(entity, collidedEntities,
+									   collidedTriggers, _allEntities);
 
 				// Init vars before first loop
 				if (entity->getTargetMovement().x != 0.0f ||
@@ -326,8 +407,8 @@ void GameEngine::moveEntities(void) {
 					futureMovement.x = entity->getTargetMovement().x;
 					futureMovement.z = entity->getTargetMovement().z;
 					while (collidedEntities.size() != 0) {
-						idxOfCollision = checkCollision(entity, futureMovement,
-														collidedEntities);
+						idxOfCollision = _checkCollision(entity, futureMovement,
+														 collidedEntities);
 						// Update entities to check collisions with
 						if (idxOfCollision != 0) {
 							collidedEntities.erase(
@@ -341,9 +422,9 @@ void GameEngine::moveEntities(void) {
 							if (firstLoop) {
 								// Special test that need to be done only on
 								// first loop
-								if (tryShortcut(entity, futureMovement,
-												shortcutMovement,
-												collidedEntities)) {
+								if (_tryShortcut(entity, futureMovement,
+												 shortcutMovement,
+												 collidedEntities)) {
 									isShortcut = true;
 									futureMovement = shortcutMovement;
 									break;
@@ -368,7 +449,7 @@ void GameEngine::moveEntities(void) {
 			// Collide with colliders (do not consider shortcut move yet)
 			while (!collidedEntities.empty() &&
 				   !entity->getNeedToBeDestroyed()) {
-				idx = checkCollision(entity, futureMovement, collidedEntities);
+				idx = _checkCollision(entity, futureMovement, collidedEntities);
 				if (idx != collidedEntities.size()) {
 					hasCollided = true;
 					// Other entity will always be a collider
@@ -397,7 +478,7 @@ void GameEngine::moveEntities(void) {
 			// Trigger all triggers
 			while (!collidedTriggers.empty() &&
 				   !entity->getNeedToBeDestroyed()) {
-				idx = checkCollision(entity, futureMovement, collidedTriggers);
+				idx = _checkCollision(entity, futureMovement, collidedTriggers);
 				if (idx != collidedTriggers.size()) {
 					// Other entity will always be a trigger
 					collidedTriggers[idx]->onTriggerEnter(entity);
@@ -419,7 +500,7 @@ void GameEngine::moveEntities(void) {
 		}
 	}
 }
-void GameEngine::getPossibleCollisions(
+void GameEngine::_getPossibleCollisions(
 	Entity *entity, std::vector<Entity *> &possibleCollisions,
 	std::vector<Entity *> &possibleTriggers,
 	std::vector<Entity *> &entitiesToTest) {
@@ -471,8 +552,8 @@ void GameEngine::getPossibleCollisions(
 	}
 }
 
-size_t GameEngine::checkCollision(Entity *entity, glm::vec3 &futureMovement,
-								  std::vector<Entity *> &collidedEntities) {
+size_t GameEngine::_checkCollision(Entity *entity, glm::vec3 &futureMovement,
+								   std::vector<Entity *> &collidedEntities) {
 	if (collidedEntities.size() == 0) return 0;
 	// Init
 	glm::vec3 futurePos = glm::vec3();
@@ -480,7 +561,7 @@ size_t GameEngine::checkCollision(Entity *entity, glm::vec3 &futureMovement,
 	LineInfo lineB;
 
 	// 1) Find lines that inglobe movement
-	getMovementLines(entity, futureMovement, &lineA, &lineB);
+	_getMovementLines(entity, futureMovement, &lineA, &lineB);
 	// If lines are vertical, create Rectangle Collider only
 	// once
 	int layer1 = entity->getCollider()->layerTag;
@@ -502,11 +583,11 @@ size_t GameEngine::checkCollision(Entity *entity, glm::vec3 &futureMovement,
 		// 2) Check if final position collides with smth
 		// 3) Check if any other obj collides with lineA/lineB
 		if (!entityToTest->getNeedToBeDestroyed() &&
-			(doCollide(entity->getCollider(), futurePos, entityToTest) ||
+			(_doCollide(entity->getCollider(), futurePos, entityToTest) ||
 			 (lineA.isVertical &&
-			  doCollide(&moveCollider, centerPos, entityToTest)) ||
+			  _doCollide(&moveCollider, centerPos, entityToTest)) ||
 			 (!lineA.isVertical &&
-			  hasCollisionCourse(lineA, lineB, layer1, entityToTest)))) {
+			  _hasCollisionCourse(lineA, lineB, layer1, entityToTest)))) {
 			break;
 		}
 		idxToTest++;
@@ -515,8 +596,8 @@ size_t GameEngine::checkCollision(Entity *entity, glm::vec3 &futureMovement,
 	return idxToTest;
 }
 
-void GameEngine::getMovementLines(Entity *entity, glm::vec3 &targetMovement,
-								  LineInfo *lineA, LineInfo *lineB) {
+void GameEngine::_getMovementLines(Entity *entity, glm::vec3 &targetMovement,
+								   LineInfo *lineA, LineInfo *lineB) {
 	// Find points that will determine Lines
 	lineA->startX = entity->getPosition().x;
 	lineA->startZ = entity->getPosition().z;
@@ -595,11 +676,11 @@ void GameEngine::getMovementLines(Entity *entity, glm::vec3 &targetMovement,
 	lineB->endZ = lineB->startZ + targetMovement.z;
 }
 
-bool GameEngine::hasCollisionCourse(LineInfo &lineA, LineInfo &lineB,
-									int layerTag, Entity *entityB) {
+bool GameEngine::_hasCollisionCourse(LineInfo &lineA, LineInfo &lineB,
+									 int layerTag, Entity *entityB) {
 	// Check to avoid errors
 	if (lineA.isVertical || lineB.isVertical) {
-		// Easy case, we can use doCollide() since we have a "standard"
+		// Easy case, we can use _doCollide() since we have a "standard"
 		// rectangle
 		Collider testCollider(Collider::Rectangle, layerTag,
 							  abs(lineA.startX - lineB.startX) / 2,
@@ -608,7 +689,7 @@ bool GameEngine::hasCollisionCourse(LineInfo &lineA, LineInfo &lineB,
 		centerPos.x = (lineA.startX + lineB.startX) / 2;
 		centerPos.z = (lineA.startZ + lineA.endZ) / 2;
 		// return false;
-		return doCollide(&testCollider, centerPos, entityB);
+		return _doCollide(&testCollider, centerPos, entityB);
 	}
 
 	// Classic case
@@ -621,23 +702,23 @@ bool GameEngine::hasCollisionCourse(LineInfo &lineA, LineInfo &lineB,
 		float upZ = entityB->getPosition().z - colliderB->height;
 		float downZ = entityB->getPosition().z + colliderB->height;
 		LineInfo tmpLine(leftX, upZ, rightX, upZ);
-		if (isLineLineCollision(lineA, tmpLine) ||
-			isLineLineCollision(lineB, tmpLine)) {
+		if (_isLineLineCollision(lineA, tmpLine) ||
+			_isLineLineCollision(lineB, tmpLine)) {
 			return true;
 		}
 		tmpLine = LineInfo(leftX, downZ, rightX, downZ);
-		if (isLineLineCollision(lineA, tmpLine) ||
-			isLineLineCollision(lineB, tmpLine)) {
+		if (_isLineLineCollision(lineA, tmpLine) ||
+			_isLineLineCollision(lineB, tmpLine)) {
 			return true;
 		}
 		tmpLine = LineInfo(leftX, upZ, leftX, downZ);
-		if (isLineLineCollision(lineA, tmpLine) ||
-			isLineLineCollision(lineB, tmpLine)) {
+		if (_isLineLineCollision(lineA, tmpLine) ||
+			_isLineLineCollision(lineB, tmpLine)) {
 			return true;
 		}
 		tmpLine = LineInfo(rightX, upZ, rightX, downZ);
-		if (isLineLineCollision(lineA, tmpLine) ||
-			isLineLineCollision(lineB, tmpLine)) {
+		if (_isLineLineCollision(lineA, tmpLine) ||
+			_isLineLineCollision(lineB, tmpLine)) {
 			return true;
 		}
 	} else {
@@ -651,12 +732,12 @@ bool GameEngine::hasCollisionCourse(LineInfo &lineA, LineInfo &lineB,
 		float zCoeff = -(2.0f * entityB->getPosition().z);
 		float cCoeff = colliderB->width + pow(entityB->getPosition().x, 2) +
 					   pow(entityB->getPosition().z, 2);
-		if (isLineCircleCollision(lineA, xSquareCoeff, xCoeff, zSquareCoeff,
-								  zCoeff, cCoeff)) {
+		if (_isLineCircleCollision(lineA, xSquareCoeff, xCoeff, zSquareCoeff,
+								   zCoeff, cCoeff)) {
 			return true;
 		}
-		if (isLineCircleCollision(lineB, xSquareCoeff, xCoeff, zSquareCoeff,
-								  zCoeff, cCoeff)) {
+		if (_isLineCircleCollision(lineB, xSquareCoeff, xCoeff, zSquareCoeff,
+								   zCoeff, cCoeff)) {
 			return true;
 		}
 
@@ -666,7 +747,7 @@ bool GameEngine::hasCollisionCourse(LineInfo &lineA, LineInfo &lineB,
 	return false;
 }
 
-bool GameEngine::isLineLineCollision(LineInfo &lineA, LineInfo &lineB) {
+bool GameEngine::_isLineLineCollision(LineInfo &lineA, LineInfo &lineB) {
 	// Easy: If both line are vertical
 	if (lineA.isVertical && lineB.isVertical) {
 		return lineA.startX == lineB.startX;
@@ -695,9 +776,9 @@ bool GameEngine::isLineLineCollision(LineInfo &lineA, LineInfo &lineB) {
 	return false;
 }
 
-bool GameEngine::isLineCircleCollision(LineInfo &lineA, float &xSquareCoeff,
-									   float &xCoeff, float &zSquareCoeff,
-									   float &zCoeff, float &cCoeff) {
+bool GameEngine::_isLineCircleCollision(LineInfo &lineA, float &xSquareCoeff,
+										float &xCoeff, float &zSquareCoeff,
+										float &zCoeff, float &cCoeff) {
 	xSquareCoeff += zSquareCoeff * pow(lineA.m, 2);
 	xCoeff += zSquareCoeff * (2 * lineA.m * lineA.q);
 	cCoeff += zSquareCoeff * pow(lineA.q, 2);
@@ -726,8 +807,8 @@ bool GameEngine::isLineCircleCollision(LineInfo &lineA, float &xSquareCoeff,
 	}
 	return false;
 }
-bool GameEngine::doCollide(const Collider *colliderA, const glm::vec3 &posA,
-						   Entity *entityB) const {
+bool GameEngine::_doCollide(const Collider *colliderA, const glm::vec3 &posA,
+							Entity *entityB) const {
 	const Collider *colliderB = entityB->getCollider();
 	if (!colliderA || !colliderB) return false;
 	if (colliderA->shape == colliderB->shape) {
@@ -761,22 +842,21 @@ bool GameEngine::doCollide(const Collider *colliderA, const glm::vec3 &posA,
 	// Circle with rectangle
 	else if (colliderA->shape == Collider::Circle &&
 			 colliderB->shape == Collider::Rectangle) {
-		return collisionCircleRectangle(colliderA, posA, entityB->getCollider(),
-										entityB->getPosition());
+		return _collisionCircleRectangle(
+			colliderA, posA, entityB->getCollider(), entityB->getPosition());
 	}
 	// Rectangle with circle
 	else if (colliderB->shape == Collider::Circle &&
 			 colliderA->shape == Collider::Rectangle) {
-		return collisionCircleRectangle(
+		return _collisionCircleRectangle(
 			entityB->getCollider(), entityB->getPosition(), colliderA, posA);
 	}
 	return false;
 }
 
-bool GameEngine::collisionCircleRectangle(const Collider *circleCollider,
-										  const glm::vec3 &circlePos,
-										  const Collider *rectangleCollider,
-										  const glm::vec3 &rectanglePos) const {
+bool GameEngine::_collisionCircleRectangle(
+	const Collider *circleCollider, const glm::vec3 &circlePos,
+	const Collider *rectangleCollider, const glm::vec3 &rectanglePos) const {
 	float closestX = circlePos.x;
 	float closestZ = circlePos.z;
 	// Find closest X of rectangle shape to circle center
@@ -796,9 +876,9 @@ bool GameEngine::collisionCircleRectangle(const Collider *circleCollider,
 			EPSILON);
 }
 
-bool GameEngine::tryShortcut(Entity *entity, glm::vec3 &futureMovement,
-							 glm::vec3 &shortcutMovement,
-							 std::vector<Entity *> &collidedEntities) {
+bool GameEngine::_tryShortcut(Entity *entity, glm::vec3 &futureMovement,
+							  glm::vec3 &shortcutMovement,
+							  std::vector<Entity *> &collidedEntities) {
 	size_t idxOfCollision;
 
 	float absX = abs(futureMovement.x);
@@ -809,14 +889,14 @@ bool GameEngine::tryShortcut(Entity *entity, glm::vec3 &futureMovement,
 		shortcutMovement.x = futureMovement.x;
 		shortcutMovement.z = 0.0f;
 		idxOfCollision =
-			checkCollision(entity, shortcutMovement, collidedEntities);
+			_checkCollision(entity, shortcutMovement, collidedEntities);
 		if (idxOfCollision == collidedEntities.size()) {
 			return true;
 		}
 		shortcutMovement.x = 0.0f;
 		shortcutMovement.z = futureMovement.z;
 		idxOfCollision =
-			checkCollision(entity, shortcutMovement, collidedEntities);
+			_checkCollision(entity, shortcutMovement, collidedEntities);
 		if (idxOfCollision == collidedEntities.size()) {
 			return true;
 		}
@@ -847,8 +927,8 @@ bool GameEngine::tryShortcut(Entity *entity, glm::vec3 &futureMovement,
 				// so that no collision will occur
 				shortcutMovement.x = shortcutMovement.z * 0.5f;
 				if (futureMovement.x < 0) shortcutMovement.x *= -1.0f;
-				if (checkCollision(entity, shortcutMovement,
-								   collidedEntities) ==
+				if (_checkCollision(entity, shortcutMovement,
+									collidedEntities) ==
 					collidedEntities.size()) {
 					return true;
 				}
@@ -872,7 +952,7 @@ bool GameEngine::tryShortcut(Entity *entity, glm::vec3 &futureMovement,
 				if (futureMovement.x < 0) shortcutMovement.x *= -1.0f;
 				shortcutMovement.z *= -1;
 				idxOfCollision =
-					checkCollision(entity, shortcutMovement, collidedEntities);
+					_checkCollision(entity, shortcutMovement, collidedEntities);
 				if (idxOfCollision == collidedEntities.size()) {
 					return true;
 				}
@@ -897,7 +977,7 @@ bool GameEngine::tryShortcut(Entity *entity, glm::vec3 &futureMovement,
 				shortcutMovement.z = shortcutMovement.x * 0.5f;
 				if (futureMovement.z < 0) shortcutMovement.z *= -1.0f;
 				idxOfCollision =
-					checkCollision(entity, shortcutMovement, collidedEntities);
+					_checkCollision(entity, shortcutMovement, collidedEntities);
 				if (idxOfCollision == collidedEntities.size()) {
 					return true;
 				}
@@ -921,7 +1001,7 @@ bool GameEngine::tryShortcut(Entity *entity, glm::vec3 &futureMovement,
 				if (futureMovement.z < 0) shortcutMovement.z *= -1.0f;
 				shortcutMovement.x *= -1;
 				idxOfCollision =
-					checkCollision(entity, shortcutMovement, collidedEntities);
+					_checkCollision(entity, shortcutMovement, collidedEntities);
 				if (idxOfCollision == collidedEntities.size()) {
 					return true;
 				}
@@ -932,21 +1012,21 @@ bool GameEngine::tryShortcut(Entity *entity, glm::vec3 &futureMovement,
 }
 
 void GameEngine::buttonStateChanged(int keyID, bool isPressed) {
-	if (keyboardMap.find(keyID) == keyboardMap.end()) {
+	if (_keyboardMap.find(keyID) == _keyboardMap.end()) {
 		KeyState keyState;
-		keyboardMap[keyID] = keyState;
+		_keyboardMap[keyID] = keyState;
 	}
-	keyboardMap[keyID].currFrame = isPressed;
+	_keyboardMap[keyID].currFrame = isPressed;
 }
 
 bool GameEngine::isKeyPressed(int keyID) {
-	auto result = keyboardMap.find(keyID);
-	return result != keyboardMap.end() && result->second.currFrame;
+	auto result = _keyboardMap.find(keyID);
+	return result != _keyboardMap.end() && result->second.currFrame;
 }
 
 bool GameEngine::isKeyJustPressed(int keyID) {
-	auto result = keyboardMap.find(keyID);
-	return result != keyboardMap.end() && result->second.currFrame &&
+	auto result = _keyboardMap.find(keyID);
+	return result != _keyboardMap.end() && result->second.currFrame &&
 		   !result->second.prevFrame;
 }
 
@@ -957,4 +1037,4 @@ void GameEngine::playSound(std::string soundName) {
 	_audioManager->playSound(soundName);
 }
 
-std::map<int, KeyState> GameEngine::keyboardMap = std::map<int, KeyState>();
+std::map<int, KeyState> GameEngine::_keyboardMap = std::map<int, KeyState>();

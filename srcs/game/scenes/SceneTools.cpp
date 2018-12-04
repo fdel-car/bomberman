@@ -1,6 +1,8 @@
 #include "game/scenes/SceneTools.hpp"
 #include "engine/GameEngine.hpp"
+#include "engine/GameRenderer.hpp"
 #include "game/entities/Bomb.hpp"
+#include "game/entities/Damageable.hpp"
 #include "game/entities/Explosion.hpp"
 
 extern std::string _assetsDir;
@@ -41,6 +43,34 @@ SceneTools::~SceneTools(void) { _clearGraphe(); }
 
 bool SceneTools::isPause(void) const {
 	return _debugMode || _isPause || _showVictoryScreen || _showDeathScreen;
+}
+
+void SceneTools::updateDebugMode(void) {
+	if (!_isPause && _gameEngine->isKeyJustPressed(KEY_GRAVE_ACCENT)) {
+		_debugMode = !_debugMode;
+		if (_debugMode) {
+			// Save position and rotation
+			_positionPrevDebug = getPosition();
+			_eulerAnglesPrevDebug = getEulerAngles();
+		} else {
+			// Put back to position
+			// translate(_positionPrevDebug - getPosition());
+			// float xOffset = _eulerAnglesPrevDebug.x - getEulerAngles().x;
+
+			// float yOffset = _eulerAnglesPrevDebug.y - getEulerAngles().y;
+
+			// if (glm::epsilonNotEqual(0.0f, xOffset, EPSILON))
+			// rotateX(xOffset);
+
+			// if (glm::epsilonNotEqual(0.0f, yOffset, EPSILON))
+			// rotateY(yOffset);
+			// _updateData();
+		}
+		// Avoid camera jump on first frame
+		_lastMousePos.x = _gameEngine->getGameRenderer()->getMousePos().x;
+		_lastMousePos.y = _gameEngine->getGameRenderer()->getMousePos().y;
+		_gameEngine->getGameRenderer()->switchCursorMode(_debugMode);
+	}
 }
 
 void SceneTools::_displayDialogue(GUI *graphicUI, int *searchWord,
@@ -208,7 +238,8 @@ void SceneTools::_displayTimer(GUI *graphicUI, float *currentTime,
 		int tmpMinutes = *currentTime / 60;
 		std::string minutes = std::to_string(tmpMinutes);
 		int tmpSec = static_cast<int>(*currentTime) % 60;
-		std::string sec = tmpSec < 10 ? "0" + std::to_string(tmpSec) : std::to_string(tmpSec);
+		std::string sec =
+			tmpSec < 10 ? "0" + std::to_string(tmpSec) : std::to_string(tmpSec);
 		graphicUI->uiHeader((minutes + " : " + sec).c_str(), NK_TEXT_CENTERED,
 							50, "30_BOMBERMAN");
 	}
@@ -326,6 +357,7 @@ void SceneTools::_savePositions(Entity *entity) {
 
 	// Save Player position
 	if (entity->getTag().compare("Player") == 0) {
+		// std::cout << xCoord << " " << zCoord << std::endl;
 		size_t MIN_DISTANCE_FROM_WALL_TO_MOVE_CAM = 5;
 		int FOLLOW_CORRECTION = static_cast<int>(_mapHeight / 2) -
 								MIN_DISTANCE_FROM_WALL_TO_MOVE_CAM;  // 3
@@ -391,8 +423,10 @@ void SceneTools::_savePositions(Entity *entity) {
 }
 
 void SceneTools::printMapInfo(void) {
-	std::cout << "-------------------------------------------" << std::endl;
+	std::cout << "------------------------------------------- " << _mapWidth
+			  << " " << _mapHeight << std::endl;
 	size_t i = 0;
+	size_t j = 0;
 	for (const auto &info : _entitiesInSquares) {
 		if (i % _mapWidth != 0) std::cout << " ";
 		if (info.empty())
@@ -400,7 +434,11 @@ void SceneTools::printMapInfo(void) {
 		else
 			std::cout << info.size();
 		i++;
-		if (i % _mapHeight == 0) std::cout << std::endl;
+		j++;
+		if (j == _mapWidth) {
+			j = 0;
+			std::cout << std::endl;
+		}
 	}
 }
 
@@ -466,11 +504,17 @@ void SceneTools::_putExplosionsInDirection(size_t xCoord, size_t zCoord,
 		for (auto entity : _entitiesInSquares[zCoord * _mapWidth + xCoord]) {
 			if (entity.second->getTag().compare("Wall") == 0) {
 				canPutExplosion = false;
-				break;
-			} else if (entity.second->getTag().compare("Box") == 0 ||
-					   entity.second->getTag().compare("Bomb") == 0) {
+			} else if (entity.second->getTag().compare("Bomb") == 0) {
 				// Force stop when destroying first Box/Bomb
 				rangeIdx = range;
+			} else if (entity.second->getTag().compare("Box") == 0) {
+				rangeIdx = range;
+				canPutExplosion = false;
+				Damageable *damageable =
+					dynamic_cast<Damageable *>(entity.second);
+				if (damageable != nullptr) {
+					damageable->takeDamage();
+				}
 			}
 		}
 		if (canPutExplosion) {
@@ -535,7 +579,7 @@ void SceneTools::_startBuildingGrapheForPathFinding(void) {
 
 	// Get coord of the player
 	size_t x = _playerPos % _mapWidth;
-	size_t z = _playerPos / _mapHeight;
+	size_t z = _playerPos / _mapWidth;
 
 	// Create the first node who will be the target for the enemies with the
 	// player position
@@ -550,42 +594,40 @@ void SceneTools::_startBuildingGrapheForPathFinding(void) {
 			_runAwayPos = node.second->id;
 		}
 	}
-	// std::cout << _runAwayPos << std::endl;
-	_searchWay(false, _graphe[_runAwayPos], _runAwayPos);
+	// std::cout << _runAway << std::endl;
+	if (_runAwayPos != 0) _searchWay(false, _graphe[_runAwayPos], _runAwayPos);
 }
 
 void SceneTools::_searchWay(bool searchBestWay, Node *originNode,
 							size_t playerPos) {
 	size_t x = playerPos % _mapWidth;
-	size_t z = playerPos / _mapHeight;
+	size_t z = playerPos / _mapWidth;
 	size_t pos;
 	size_t dist = 0;
 	std::list<Node *> nodesByDepth;
 	nodesByDepth.push_back(originNode);
-
 	while (nodesByDepth.size() > 0) {
-		// _describeNode(nodesByDepth.front());
 		x = nodesByDepth.front()->x;
 		z = nodesByDepth.front()->z;
 		if (dist == nodesByDepth.front()->dist && searchBestWay) dist++;
 		if (dist == nodesByDepth.front()->runAwayDist && !searchBestWay) dist++;
 		if (x > 1) {
-			pos = z * _mapHeight + (x - 1);
+			pos = z * _mapWidth + (x - 1);
 			_buildNewNode(dist, x - 1, z, pos, nodesByDepth.front(),
 						  &nodesByDepth, searchBestWay);
 		}
 		if (x < _mapWidth - 1) {
-			pos = z * _mapHeight + (x + 1);
+			pos = z * _mapWidth + (x + 1);
 			_buildNewNode(dist, x + 1, z, pos, nodesByDepth.front(),
 						  &nodesByDepth, searchBestWay);
 		}
 		if (z > 1) {
-			pos = (z - 1) * _mapHeight + x;
+			pos = (z - 1) * _mapWidth + x;
 			_buildNewNode(dist, x, z - 1, pos, nodesByDepth.front(),
 						  &nodesByDepth, searchBestWay);
 		}
 		if (z < _mapHeight - 1) {
-			pos = (z + 1) * _mapHeight + x;
+			pos = (z + 1) * _mapWidth + x;
 			_buildNewNode(dist, x, z + 1, pos, nodesByDepth.front(),
 						  &nodesByDepth, searchBestWay);
 		}

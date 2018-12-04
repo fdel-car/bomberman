@@ -40,6 +40,7 @@ class GameRenderer {
 	int getHeight(void) const;
 	glm::vec2 getMousePos(void) const;
 	GUI *getGUI();
+	GLFWwindow *getWindow(void) const;
 
 	bool active;
 

@@ -1,9 +1,14 @@
 #include "engine/AGame.hpp"
 
 AGame::AGame(size_t enumSize)
-	: _camera(nullptr),
+	: _entities(std::vector<Entity *>()),
+	  _camera(nullptr),
 	  _light(nullptr),
-	  // _skybox(nullptr),
+	  _skybox(nullptr),
+	  _loadingEntities(std::vector<Entity *>()),
+	  _loadingCamera(nullptr),
+	  _loadingLight(nullptr),
+	  _loadingSkybox(nullptr),
 	  _neededMusic(std::vector<std::tuple<std::string, std::string>>()),
 	  _neededSounds(std::vector<std::tuple<std::string, std::string>>()) {
 	_collisionTable = std::vector<std::vector<bool>>(enumSize);
@@ -12,7 +17,16 @@ AGame::AGame(size_t enumSize)
 	}
 }
 
-AGame::~AGame(void) {}
+AGame::~AGame(void) {
+	for (size_t idx = _loadingEntities.size() - 1;
+		 idx < _loadingEntities.size(); idx--) {
+		delete _loadingEntities[idx];
+	}
+	if (_loadingLight != nullptr) delete _loadingLight;
+	if (_loadingSkybox != nullptr) delete _loadingSkybox;
+	if (_loadingCamera != nullptr) delete _loadingCamera;
+	_loadingEntities.clear();
+}
 
 std::vector<Entity *> const AGame::getEntities(void) const { return _entities; }
 
@@ -20,7 +34,17 @@ Camera *AGame::getCamera(void) const { return _camera; }
 
 Light *AGame::getLight(void) const { return _light; }
 
-// Skybox *AGame::getSkybox(void) const { return _skybox; }
+Skybox *AGame::getSkybox(void) const { return _skybox; }
+
+std::vector<Entity *> const AGame::getLoadingEntities(void) const {
+	return _loadingEntities;
+}
+
+Camera *AGame::getLoadingCamera(void) const { return _loadingCamera; }
+
+Light *AGame::getLoadingLight(void) const { return _loadingLight; }
+
+Skybox *AGame::getLoadingSkybox(void) const { return _loadingSkybox; }
 
 const std::vector<std::tuple<std::string, std::string>>
 	&AGame::getNeeededMusic() const {
@@ -45,6 +69,7 @@ void AGame::unload(void) {
 
 	_light = nullptr;
 	_camera = nullptr;
+	_skybox = nullptr;
 
 	// Reset counter for next scene
 	Entity::resetSpawnedEntities();

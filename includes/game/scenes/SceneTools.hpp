@@ -38,6 +38,7 @@ class SceneTools : public Camera {
 
 	virtual bool isPause(void) const;
 
+	virtual void updateDebugMode(void);
 	virtual void tellPosition(Entity *entity);
 	virtual void tellDestruction(Entity *entity);
 	virtual void configAI(void);
@@ -108,6 +109,8 @@ class SceneTools : public Camera {
 	std::vector<std::string> _tmpDecorForRunAway;
 	bool _refreshAI;
 	bool _firstPlayerPos;
+	glm::vec3 _positionPrevDebug;
+	glm::vec3 _eulerAnglesPrevDebug;
 	glm::vec3 _distanceFromPlayer;
 
    private:

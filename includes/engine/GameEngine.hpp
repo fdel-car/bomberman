@@ -9,6 +9,9 @@
 
 #define EPSILON 0.01f
 
+// For Threads
+#include <atomic>
+#include <thread>
 typedef std::chrono::high_resolution_clock Clock;
 
 struct KeyState {
@@ -65,7 +68,7 @@ class GameEngine {
 		float right;
 		RectanglePoints(Entity *entity, glm::vec3 movement = glm::vec3(0.0f));
 	};
-	static std::map<int, KeyState> keyboardMap;
+	static std::map<int, KeyState> _keyboardMap;
 
 	GameEngine(void);
 	GameEngine(GameEngine const &src);
@@ -74,30 +77,36 @@ class GameEngine {
 
 	bool _initScene(size_t newSceneIdx);
 	void _unloadScene(void);
-	void moveEntities(void);
-	void getPossibleCollisions(Entity *entity,
-							   std::vector<Entity *> &possibleCollisions,
-							   std::vector<Entity *> &possibleTriggers,
-							   std::vector<Entity *> &entitiesToTest);
-	size_t checkCollision(Entity *entity, glm::vec3 &futureMovement,
-						  std::vector<Entity *> &collidedEntities);
-	void getMovementLines(Entity *entity, glm::vec3 &targetMovement,
-						  LineInfo *lineA, LineInfo *lineB);
-	bool hasCollisionCourse(LineInfo &lineA, LineInfo &lineB, int layerTag,
-							Entity *entityB);
-	bool isLineLineCollision(LineInfo &lineA, LineInfo &lineB);
-	bool isLineCircleCollision(LineInfo &lineA, float &xSquareCoeff,
-							   float &xCoeff, float &zSquareCoeff,
-							   float &zCoeff, float &cCoeff);
-	bool doCollide(const Collider *colliderA, const glm::vec3 &posA,
-				   Entity *entityB) const;
-	bool collisionCircleRectangle(const Collider *circleCollider,
-								  const glm::vec3 &circlePos,
-								  const Collider *rectangleCollider,
-								  const glm::vec3 &rectanglePos) const;
-	bool tryShortcut(Entity *entity, glm::vec3 &futureMovement,
-					 glm::vec3 &shortcutMovement,
-					 std::vector<Entity *> &collidedEntities);
+	void _loadScene(
+		size_t newSceneIdx, std::atomic_int *_sceneState,
+		bool *_checkLoadSceneIsGood);  // function to call for background Thread
+
+	void _moveEntities(void);
+	void _getPossibleCollisions(Entity *entity,
+								std::vector<Entity *> &possibleCollisions,
+								std::vector<Entity *> &possibleTriggers,
+								std::vector<Entity *> &entitiesToTest);
+	size_t _checkCollision(Entity *entity, glm::vec3 &futureMovement,
+						   std::vector<Entity *> &collidedEntities);
+	void _getMovementLines(Entity *entity, glm::vec3 &targetMovement,
+						   LineInfo *lineA, LineInfo *lineB);
+	bool _hasCollisionCourse(LineInfo &lineA, LineInfo &lineB, int layerTag,
+							 Entity *entityB);
+	bool _isLineLineCollision(LineInfo &lineA, LineInfo &lineB);
+	bool _isLineCircleCollision(LineInfo &lineA, float &xSquareCoeff,
+								float &xCoeff, float &zSquareCoeff,
+								float &zCoeff, float &cCoeff);
+	bool _doCollide(const Collider *colliderA, const glm::vec3 &posA,
+					Entity *entityB) const;
+	bool _collisionCircleRectangle(const Collider *circleCollider,
+								   const glm::vec3 &circlePos,
+								   const Collider *rectangleCollider,
+								   const glm::vec3 &rectanglePos) const;
+	bool _tryShortcut(Entity *entity, glm::vec3 &futureMovement,
+					  glm::vec3 &shortcutMovement,
+					  std::vector<Entity *> &collidedEntities);
+	void _setSceneVariables(void);
+	void _setLoadingSceneVariables(void);
 
 	// Graphic libraries vars
 	GameRenderer *_gameRenderer;
@@ -106,9 +115,15 @@ class GameEngine {
 	double _deltaTime;
 	AudioManager *_audioManager;
 
+	// Thread
+	std::thread *_loadSceneThread;
+	std::atomic_int _sceneState;
+	Clock::time_point _timer;
+	bool _checkLoadSceneIsGood;
+
 	// Game model vars
 	bool _running;
-	bool restartRequest;
+	bool _restartRequest;
 
 	// Scene management vars
 	int _sceneIdx;
@@ -117,6 +132,12 @@ class GameEngine {
 	Light *_light;
 	Skybox *_skybox;
 	std::vector<Entity *> _allEntities;
+
+	Camera *_loadingCamera;
+	Light *_loadingLight;
+	Skybox *_loadingSkybox;
+	std::vector<Entity *> _loadingAllEntities;
+
 	std::vector<Entity *> _newEntities;
 	std::map<size_t, std::vector<size_t>> _initialCollisionMap;
 	std::vector<std::vector<bool>> const &_collisionTable;

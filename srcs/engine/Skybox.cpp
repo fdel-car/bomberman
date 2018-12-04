@@ -7,8 +7,7 @@ Skybox::Skybox(std::string str)
 			 "Skybox"),
 	  nameTextureDir(str) {
 	_initSkyboxFaces();
-	_initBuffer();
-	_initCubeMap();
+	_initData();
 }
 
 Skybox::~Skybox(void) {}
@@ -64,23 +63,25 @@ void Skybox::_initCubeMap(void) {
 	glGenTextures(1, &_skyboxTexture);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, _skyboxTexture);
 
-	int width, height, nrChannels;
 	for (unsigned int i = 0; i < _faces.size(); i++) {
-		unsigned char *data =
-			stbi_load(_faces[i].c_str(), &width, &height, &nrChannels, 0);
-		if (data) {
-			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, width,
-						 height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-			stbi_image_free(data);
-		} else {
-			std::cerr << "Cubemap texture failed to load at path: " << _faces[i]
-					  << "." << std::endl;
-			stbi_image_free(data);
-		}
+		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, _width,
+					 _height, 0, GL_RGB, GL_UNSIGNED_BYTE, _datas[i]);
 	}
+
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+}
+
+void Skybox::_initData(void) {
+	int nrChannels;
+	for (unsigned int i = 0; i < _faces.size(); i++) {
+		_datas.push_back(
+			stbi_load(_faces[i].c_str(), &_width, &_height, &nrChannels, 0));
+		if (!_datas[i])
+			std::cout << "Cubemap texture failed to load at path: " << _faces[i]
+					  << std::endl;
+	}
 }
