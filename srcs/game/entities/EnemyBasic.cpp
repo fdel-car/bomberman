@@ -4,7 +4,7 @@ EnemyBasic::EnemyBasic(glm::vec3 position, glm::vec3 eulerAngles,
 					   Entity *sceneManager)
 	: AEnemy(position, eulerAngles, "Basic", EnemyBasicLayer, true,
 			 sceneManager) {
-	_speed = 2.0f;
+	_speed = 1.0f;
 	scale(glm::vec3(0.8, 0.8, 0.8));
 }
 
@@ -16,6 +16,6 @@ void EnemyBasic::update(void) {
 		std::cerr << "[EnemyBasic] Update has failed." << std::endl;
 		return;
 	}
-	randomMove(cam, 1.0f);
+	randomMove(cam, 3.0f);
 	walk(cam);
 }

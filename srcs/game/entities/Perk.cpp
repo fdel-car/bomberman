@@ -56,11 +56,6 @@ Perk::Perk(glm::vec3 position, Entity *sceneManager)
 
 Perk::~Perk(void) {}
 
-void Perk::initEntity(GameEngine *gameEngine) {
-	Entity::initEntity(gameEngine);
-	gameEngine->playSound("portal_spawn");
-}
-
 void Perk::update(void) {
 	float deltaTime = _gameEngine->getDeltaTime();
 	_timer -= deltaTime;

@@ -4,7 +4,7 @@
 #include "game/entities/Perk.hpp"
 #include "game/scenes/SceneTools.hpp"
 
-Box::Box(glm::vec3 position, Entity *sceneManager, size_t perkProb,
+Box::Box(glm::vec3 position, Entity *sceneManager, int perkProb,
 		 Entity *toSpawn)
 	: Damageable(
 		  glm::vec3(position.x, position.y + 0.4f, position.z), glm::vec3(0.0f),

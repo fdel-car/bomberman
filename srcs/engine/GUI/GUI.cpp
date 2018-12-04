@@ -917,11 +917,11 @@ bool GUI::uiHover() {
 void GUI::uiHorizontalEditString(int widgetWidth, std::string leftText,
 								 nk_flags flags, char *fieldBuffer, int *len,
 								 int max, nk_plugin_filter filter) {
-	widgetWidth -= 100;
+	widgetWidth -= 70;
 	nk_layout_row_begin(&glfw.ctx, NK_STATIC, 30, 2);
 	nk_layout_row_push(&glfw.ctx, widgetWidth);
 	nk_label(&glfw.ctx, leftText.c_str(), NK_TEXT_LEFT);
-	nk_layout_row_push(&glfw.ctx, 50);
+	nk_layout_row_push(&glfw.ctx, 40);
 	uiEditString(flags, fieldBuffer, len, max, filter);
 	nk_layout_row_end(&glfw.ctx);
 }
