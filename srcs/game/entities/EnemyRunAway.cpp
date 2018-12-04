@@ -13,10 +13,10 @@ EnemyRunAway::~EnemyRunAway(void) {}
 void EnemyRunAway::update(void) {
 	SceneTools *cam = dynamic_cast<SceneTools *>(_sceneManager);
 	if (cam == nullptr) {
-		std::cerr << "Update as fail" << std::endl;
+		std::cerr << "[EnemyRunAway] Update has failed" << std::endl;
 		return;
 	}
 	// findBestWay(cam, 3, true, true);  // Run away and put bombs
-	findBestWay(cam, 0, true); // Just run away
+	findBestWay(cam, 0, true);  // Just run away
 	walk(cam);
 }

@@ -18,7 +18,7 @@ add_subdirectory(libs/SFML-2.5.1)
 set(ASSIMP_BUILD_TESTS OFF)
 add_subdirectory(libs/assimp-4.1.0)
 
-include_directories(scrs)
+include_directories("scrs")
 set(SRCS
   srcs/main.cpp
 
@@ -48,9 +48,7 @@ set(SRCS
   srcs/game/entities/Player.cpp
   srcs/game/entities/Bomb.cpp
   srcs/game/entities/AEnemy.cpp
-  srcs/game/entities/EnemyOFDT.cpp
   srcs/game/entities/EnemyBasic.cpp
-  srcs/game/entities/EnemyPutBomb.cpp
   srcs/game/entities/EnemyRunAway.cpp
   srcs/game/entities/Explosion.cpp
   srcs/game/entities/Box.cpp
@@ -95,9 +93,7 @@ set(HEADERS
   includes/game/entities/Player.hpp
   includes/game/entities/Bomb.hpp
   includes/game/entities/AEnemy.hpp
-  includes/game/entities/EnemyOFDT.hpp
   includes/game/entities/EnemyBasic.hpp
-  includes/game/entities/EnemyPutBomb.hpp
   includes/game/entities/EnemyRunAway.hpp
   includes/game/entities/Explosion.hpp
   includes/game/entities/Box.hpp

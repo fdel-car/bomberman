@@ -48,28 +48,27 @@ bool SceneTools::isPause(void) const {
 void SceneTools::updateDebugMode(void) {
 	if (!_isPause && _gameEngine->isKeyJustPressed(KEY_GRAVE_ACCENT)) {
 		_debugMode = !_debugMode;
+
 		if (_debugMode) {
 			// Save position and rotation
 			_positionPrevDebug = getPosition();
 			_eulerAnglesPrevDebug = getEulerAngles();
 		} else {
 			// Put back to position
-			// translate(_positionPrevDebug - getPosition());
-			// float xOffset = _eulerAnglesPrevDebug.x - getEulerAngles().x;
+			translate(_positionPrevDebug - getPosition());
+			float xOffset = _eulerAnglesPrevDebug.x - getEulerAngles().x;
+			float yOffset = _eulerAnglesPrevDebug.y - getEulerAngles().y;
 
-			// float yOffset = _eulerAnglesPrevDebug.y - getEulerAngles().y;
+			if (glm::epsilonNotEqual(0.0f, xOffset, EPSILON)) rotateX(xOffset);
+			if (glm::epsilonNotEqual(0.0f, yOffset, EPSILON)) rotateY(yOffset);
 
-			// if (glm::epsilonNotEqual(0.0f, xOffset, EPSILON))
-			// rotateX(xOffset);
-
-			// if (glm::epsilonNotEqual(0.0f, yOffset, EPSILON))
-			// rotateY(yOffset);
-			// _updateData();
+			_updateData();
 		}
 		// Avoid camera jump on first frame
 		_lastMousePos.x = _gameEngine->getGameRenderer()->getMousePos().x;
 		_lastMousePos.y = _gameEngine->getGameRenderer()->getMousePos().y;
 		_gameEngine->getGameRenderer()->switchCursorMode(_debugMode);
+		// TODO: Avoid camera jump if _lastMousePos is too weird.
 	}
 }
 

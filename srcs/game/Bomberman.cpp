@@ -1,8 +1,6 @@
 #include "game/Bomberman.hpp"
 #include "game/entities/Box.hpp"
 #include "game/entities/EnemyBasic.hpp"
-#include "game/entities/EnemyOFDT.hpp"
-#include "game/entities/EnemyPutBomb.hpp"
 #include "game/entities/EnemyRunAway.hpp"
 #include "game/entities/Perk.hpp"
 #include "game/entities/Player.hpp"
@@ -135,22 +133,6 @@ void Bomberman::_forest(void) {
 
 	// Portal to clear lvl
 	_entities.push_back(new Portal(glm::vec3(1.0, 0, 1.0), _camera));
-
-	// Enemies
-	// _entities.push_back(
-	// 	new EnemyOFDT(glm::vec3(7.0, 0.0, -7.0), glm::vec3(0.0f), _camera));
-	// _entities.push_back(
-	// 	new EnemyRunAway(glm::vec3(7.0, 0.0, 7.0), glm::vec3(0.0f), _camera));
-	// _entities.push_back(
-	// 	new EnemyOFDT(glm::vec3(-7.0, 0.0, 7.0), glm::vec3(0.0f), _camera));
-	// _entities.push_back(
-	// 	new EnemyPutBomb(glm::vec3(7.0, 0.0, -7.0), glm::vec3(0.0f), _camera));
-	// _entities.push_back(
-	// 	new EnemyRunAway(glm::vec3(-3.0, 0.0, 3.0), glm::vec3(0.0f), _camera));
-	// _entities.push_back(
-	// 	new EnemyBasic(glm::vec3(3.0, 0.0, -3.0), glm::vec3(0.0f), _camera));
-	// _entities.push_back(
-	// 	new EnemyBasic(glm::vec3(3.0, 0.0, 3.0), glm::vec3(0.0f), _camera));
 
 	// Walls/Boxes
 	// size_t totalBoxes = 120;

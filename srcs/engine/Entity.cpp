@@ -112,7 +112,7 @@ void Entity::rotate(float angle, glm::vec3 axis) {
 void Entity::rotateX(float angle) {
 	_rotationMatrix = glm::rotate(_rotationMatrix, glm::radians(angle),
 								  glm::vec3(1.0, 0.0, 0.0));
-	_eulerAngles.x += angle;
+	_eulerAngles.x = fmod(_eulerAngles.x + angle, 360.0f);
 	_updateModelMatrix();
 }
 
@@ -120,7 +120,7 @@ void Entity::rotateY(float angle) {
 	glm::mat4 tmp = glm::rotate(glm::mat4(1.0f), glm::radians(angle),
 								glm::normalize(glm::vec3(0.0, 1.0, 0.0)));
 	_rotationMatrix = tmp * _rotationMatrix;
-	_eulerAngles.y += angle;
+	_eulerAngles.y = fmod(_eulerAngles.y + angle, 360.0f);
 	_updateModelMatrix();
 }
 
