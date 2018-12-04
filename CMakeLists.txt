@@ -43,6 +43,7 @@ set(SRCS
   srcs/game/scenes/SceneTools.cpp
   srcs/game/scenes/MainMenu.cpp
   srcs/game/scenes/Forest.cpp
+  srcs/game/scenes/Load.cpp
   srcs/game/scenes/Volcano.cpp
   srcs/game/scenes/Desert.cpp
   srcs/game/entities/Player.cpp
@@ -88,6 +89,7 @@ set(HEADERS
   includes/game/Save.hpp
   includes/game/scenes/MainMenu.hpp
   includes/game/scenes/Forest.hpp
+  includes/game/scenes/Load.hpp
   includes/game/scenes/Volcano.hpp
   includes/game/scenes/Desert.hpp
   includes/game/entities/Player.hpp

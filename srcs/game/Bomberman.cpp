@@ -7,6 +7,7 @@
 #include "game/entities/Portal.hpp"
 #include "game/scenes/Desert.hpp"
 #include "game/scenes/Forest.hpp"
+#include "game/scenes/Load.hpp"
 #include "game/scenes/MainMenu.hpp"
 #include "game/scenes/Volcano.hpp"
 
@@ -82,21 +83,8 @@ void Bomberman::loadSceneByIndex(int sceneIdx, AudioManager *audioManager,
 }
 
 void Bomberman::initLoadScene() {
-	_loadingSkybox = nullptr;
-	size_t firstPlayableLvlIdx = 1;
-	size_t lastPlayableLvlIdx = _scenesNames.size() - 1;
-	size_t maxPlayableLvlIdx;
-	if (_save.level < firstPlayableLvlIdx) {
-		maxPlayableLvlIdx = firstPlayableLvlIdx + 1;
-	} else {
-		maxPlayableLvlIdx = _save.level;
-		maxPlayableLvlIdx += (maxPlayableLvlIdx < lastPlayableLvlIdx) ? 2 : 1;
-	}
-	_loadingCamera = new MainMenu(
-		glm::vec3(0.0, 0.0, 10.0), glm::vec3(0.0f),
-		std::vector<std::string>(_scenesNames.begin() + firstPlayableLvlIdx,
-								 _scenesNames.begin() + maxPlayableLvlIdx),
-		this);  // TODO: Create Class for Loading scene
+	_loadingCamera =
+		new Load(glm::vec3(-5.35, 20.0, 6.0), glm::vec3(-60.0, 0.0, 0.0), this);
 	_loadingLight = new Light(glm::vec2(-10.0, -10.0), glm::vec3(0.0f), 10.0f);
 }
 
