@@ -126,6 +126,7 @@ void AEnemy::randomMove(SceneTools *cam, float timer) {
 	_resetMoveCoolDown -= _gameEngine->getDeltaTime();
 	if (_resetMoveCoolDown <= 0.0f) {
 		_way.clear();
+		_resetMoveCoolDown = timer;
 		size_t mapWidth = cam->getMapWidth();
 		size_t mapHeight = cam->getMapHeight();
 		size_t x = this->getPosition().x + (static_cast<float>(mapWidth) / 2);
@@ -173,7 +174,6 @@ void AEnemy::randomMove(SceneTools *cam, float timer) {
 				}
 			}
 		}
-		_resetMoveCoolDown = timer;
 	}
 }
 

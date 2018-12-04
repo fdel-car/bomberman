@@ -17,7 +17,7 @@ Bomberman::Bomberman(void) : AGame(12), _startLevelName("MainMenu") {
 	// Set needed fonts
 	for (float size = 12.0f; size <= 48.0f; size += 1.0f)
 		_neededFonts.push_back(std::tuple<float, std::string, std::string>(
-			size, (_assetsDir + "GUI/fonts/BOMBERMAN.ttf"), "BOMBERMAN"));
+			size, (_assetsDir + "GUI/fonts/SLIDER.TTF"), "BOMBERMAN"));
 
 	// Set collision table
 	setLayerCollision(WallLayer, WallLayer, false);
@@ -166,12 +166,12 @@ void Bomberman::_desert(void) {
 	_entities.push_back(new Box(glm::vec3(-15.0, 0, -5.0), _camera));
 	_entities.push_back(new Box(glm::vec3(-17.0, 0, -3.0), _camera));
 
-	_entities.push_back(
-		new EnemyRunAway(glm::vec3(-17.0, 0.0, 5.0), glm::vec3(0.0f), _camera));
+	// _entities.push_back(
+	// 	new EnemyRunAway(glm::vec3(-17.0, 0.0, 5.0), glm::vec3(0.0f), _camera));
 
 	// Portal to clear lvl
 	// _entities.push_back(new Portal(glm::vec3(0, 0, -7), _camera));
-	_createMap(18, 6, protectedCase, 150, 200);
+	_createMap(18, 6, protectedCase, 15, 50);
 
 	_neededMusic["Forest"] =
 		_assetsDir +

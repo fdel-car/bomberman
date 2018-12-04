@@ -102,7 +102,6 @@ void Save::resetSettings(void) {
 	leftKey = KEY_A;
 	downKey = KEY_S;
 	rightKey = KEY_D;
-	level = 0;
 	isFullScreen = 0;
 	resolutionsIdx = 1;
 	musicVolume = 10;

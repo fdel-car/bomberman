@@ -22,9 +22,10 @@ MainMenu::~MainMenu(void) {}
 
 void MainMenu::configGUI(GUI *graphicUI) {
 	graphicUI->setAssetImages(_neededImages);
-	graphicUI->uiSetDefaultFont("18_BOMBERMAN");
+	graphicUI->uiSetDefaultFont("22_BOMBERMAN");
 	graphicUI->getDefaultStyle(THEME_RED, &defaultStyle);
 	defaultStyle[NK_COLOR_WINDOW] = nk_rgba(57, 67, 71, 0);
+	defaultStyle[NK_COLOR_TEXT] = nk_rgba(215, 215, 215, 255);
 	graphicUI->setStyle(defaultStyle);
 	activeStyle = defaultStyle;
 
@@ -58,7 +59,7 @@ void MainMenu::drawGUI(GUI *graphicUI) {
 		static int extraSizePlay = 0;
 		static bool isPlayButtonHover = false;
 		if (_btnHover(graphicUI, (WINDOW_W / 5), 60, (WINDOW_W / 5) * 2,
-					  (WINDOW_H / 5) * 2.7, 20, "_BOMBERMAN", &extraSizePlay,
+					  (WINDOW_H / 5) * 2.7, 30, "_BOMBERMAN", &extraSizePlay,
 					  10, &isPlayButtonHover, "Play"))
 			_newSceneName = _levelsName[_lvlIndex];
 
@@ -69,14 +70,14 @@ void MainMenu::drawGUI(GUI *graphicUI) {
 		static bool isSettingButtonHover = false;
 		if (_btnHover(graphicUI, (WINDOW_W / 5), 60,
 					  (WINDOW_W / 5) - ((WINDOW_W / 5) / 2), (WINDOW_H / 5) * 4,
-					  14, "_BOMBERMAN", &extraSizeSetting, 10,
+					  20, "_BOMBERMAN", &extraSizeSetting, 10,
 					  &isSettingButtonHover, "Settings", "settings"))
 			_changeSettings = true;
 
 		static int extraSizeCredits = 0;
 		static bool isCreditButtonHover = false;
 		if (_btnHover(graphicUI, (WINDOW_W / 5), 60, (WINDOW_W / 5) * 2,
-					  (WINDOW_H / 5) * 4, 14, "_BOMBERMAN", &extraSizeCredits,
+					  (WINDOW_H / 5) * 4, 20, "_BOMBERMAN", &extraSizeCredits,
 					  10, &isCreditButtonHover, "Credits"))
 			std::cout << "Hey hey, nothing happened. bad luck." << std::endl;
 
@@ -84,7 +85,7 @@ void MainMenu::drawGUI(GUI *graphicUI) {
 		static bool isExitButtonHover = false;
 		if (_btnHover(graphicUI, (WINDOW_W / 5), 60,
 					  (WINDOW_W / 5) * 4 - ((WINDOW_W / 5) / 2),
-					  (WINDOW_H / 5) * 4, 14, "_BOMBERMAN", &extraSizeExit, 10,
+					  (WINDOW_H / 5) * 4, 20, "_BOMBERMAN", &extraSizeExit, 10,
 					  &isExitButtonHover, "Exit"))
 			_isRunning = false;
 	} else
@@ -98,7 +99,7 @@ void MainMenu::_settings(GUI *graphicUI) {
 								nk_rect((WINDOW_W / 4), (WINDOW_H / 3) / 2,
 										WINDOW_W / 2, (WINDOW_H / 3) * 2),
 								NK_WINDOW_BORDER | NK_WINDOW_TITLE)) {
-		graphicUI->uiHeader("Options", NK_TEXT_CENTERED, 30, "24_BOMBERMAN");
+		graphicUI->uiHeader("Options", NK_TEXT_CENTERED, 30, "28_BOMBERMAN");
 
 		if (graphicUI->uiHorizontalSelection(
 				WINDOW_W / 2, "Window Resolution",
@@ -124,7 +125,7 @@ void MainMenu::_settings(GUI *graphicUI) {
 		// }
 
 		graphicUI->uiHeader("Keyboard Controls", NK_TEXT_CENTERED, 30,
-							"24_BOMBERMAN");
+							"28_BOMBERMAN");
 		graphicUI->uiHorizontalEditString(WINDOW_W / 2, "Move Up",
 										  NK_EDIT_FIELD, _upChoice, &len1, 2,
 										  nk_filter_default);
@@ -138,15 +139,16 @@ void MainMenu::_settings(GUI *graphicUI) {
 										  NK_EDIT_FIELD, _rightChoice, &len4, 2,
 										  nk_filter_default);
 
-		int btnWidth = (WINDOW_W / 6) - 15;
+		int btnWidth = (WINDOW_W / 6) - 11;
 		graphicUI->uiRowMultipleElem(true, 60, 3);
 		graphicUI->uiAddElemInRow(btnWidth);
 		if (graphicUI->uiButton(btnWidth, 50, 0, "Back", "", "", false))
 			_changeSettings = false;
 		graphicUI->uiAddElemInRow(btnWidth);
 		if (graphicUI->uiButton(btnWidth, 50, 0, "Default", "", "", false)) {
-			_save.initNewSave();
+			_save.resetSettings();
 			_updateVarsFromSave();
+			_save.doSave();
 			_changeSettings = false;
 		}
 		graphicUI->uiAddElemInRow(btnWidth);

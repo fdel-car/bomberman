@@ -109,17 +109,17 @@ bool SceneTools::_displayPauseMenu(GUI *graphicUI) {
 			nk_rect((WINDOW_W / 2) - (WINDOW_W / 8), (WINDOW_H / 3),
 					WINDOW_W / 4, WINDOW_H / 3),
 			NK_WINDOW_NO_SCROLLBAR | NK_WINDOW_BORDER | NK_WINDOW_TITLE)) {
-		if (graphicUI->uiButton(WINDOW_W / 4, (WINDOW_H / 9) - 8, 0, "Resume",
-								"", "14_BOMBERMAN")) {
+		if (graphicUI->uiButton(WINDOW_W / 4, (WINDOW_H / 9) - 9, 0, "Resume",
+								"", "20_BOMBERMAN")) {
 			res = false;
 		}
-		if (graphicUI->uiButton(WINDOW_W / 4, (WINDOW_H / 9) - 8, 0, "Restart",
-								"", "14_BOMBERMAN")) {
+		if (graphicUI->uiButton(WINDOW_W / 4, (WINDOW_H / 9) - 9, 0, "Restart",
+								"", "20_BOMBERMAN")) {
 			_newSceneName = _ownLvlName;
 			res = false;
 		}
-		if (graphicUI->uiButton(WINDOW_W / 4, (WINDOW_H / 9) - 8, 0, "Quit", "",
-								"14_BOMBERMAN")) {
+		if (graphicUI->uiButton(WINDOW_W / 4, (WINDOW_H / 9) - 9, 0, "Quit", "",
+								"20_BOMBERMAN")) {
 			_newSceneName = _startLvlName;
 			res = false;
 		}
@@ -175,17 +175,17 @@ void SceneTools::_displayVictoryScreen(GUI *graphicUI) {
 			nk_rect((WINDOW_W / 2) - (WINDOW_W / 8), (WINDOW_H / 3),
 					windowWidth, windowHeight),
 			NK_WINDOW_NO_SCROLLBAR | NK_WINDOW_BORDER | NK_WINDOW_TITLE)) {
-		rowHeight += 10;
+		rowHeight += 8;
 		if (graphicUI->uiButton(windowWidth, rowHeight, 0, "Next", "",
-								"14_BOMBERMAN")) {
+								"20_BOMBERMAN")) {
 			_newSceneName = _nextLvlName;
 		}
 		if (graphicUI->uiButton(windowWidth, rowHeight, 0, "Restart", "",
-								"14_BOMBERMAN")) {
+								"20_BOMBERMAN")) {
 			_newSceneName = _ownLvlName;
 		}
 		if (graphicUI->uiButton(windowWidth, rowHeight, 0, "Quit", "",
-								"14_BOMBERMAN")) {
+								"20_BOMBERMAN")) {
 			_newSceneName = _startLvlName;
 		}
 	}
@@ -212,13 +212,13 @@ void SceneTools::_displayDeathScreen(GUI *graphicUI) {
 		graphicUI->uiSetImage("sad_chopper");
 		graphicUI->uiRowMultipleElem(false);
 
-		rowHeight += 10;
+		rowHeight += 8;
 		if (graphicUI->uiButton(windowWidth, rowHeight, 0, "Restart", "",
-								"14_BOMBERMAN")) {
+								"20_BOMBERMAN")) {
 			_newSceneName = _ownLvlName;
 		}
 		if (graphicUI->uiButton(windowWidth, rowHeight, 0, "Quit", "",
-								"14_BOMBERMAN")) {
+								"20_BOMBERMAN")) {
 			_newSceneName = _startLvlName;
 		}
 	}
@@ -240,7 +240,7 @@ void SceneTools::_displayTimer(GUI *graphicUI, float *currentTime,
 		std::string sec =
 			tmpSec < 10 ? "0" + std::to_string(tmpSec) : std::to_string(tmpSec);
 		graphicUI->uiHeader((minutes + " : " + sec).c_str(), NK_TEXT_CENTERED,
-							50, "30_BOMBERMAN");
+							50, "35_BOMBERMAN");
 	}
 	graphicUI->uiEndBlock();
 	activeStyle = defaultStyle;
