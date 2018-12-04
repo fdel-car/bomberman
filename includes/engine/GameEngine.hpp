@@ -37,6 +37,10 @@ class GameEngine {
 	// std::vector<Entity *> getEntitiesWithLabel(std::string entityLabel);
 	void buttonStateChanged(int keyID, bool isPressed);
 
+	// Function to change key game settings
+	void updateMusicVolume(int newValue);
+	void updateSoundsVolume(int newValue);
+
 	// Functions needed by entities
 	bool isKeyPressed(int keyID);
 	bool isKeyJustPressed(int keyID);

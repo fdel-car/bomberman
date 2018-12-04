@@ -7,6 +7,7 @@ Desert::Desert(glm::vec3 const &pos, glm::vec3 const &eulerAngles,
 	  SceneTools(37, 13, pos, eulerAngles, bomberman, "Desert", "Credits"),
 	  _cooldown(0.0f) {
 	configAI();
+	_initSoundsForGameplay();
 	_startMusic = "";  // TODO
 }
 

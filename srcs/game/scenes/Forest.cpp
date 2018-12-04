@@ -10,6 +10,7 @@ Forest::Forest(glm::vec3 const &pos, glm::vec3 const &eulerAngles,
 	  _cooldown(0.0f) {
 	configAI();
 	_startMusic = _assetsDir + "Audio/Musics/Planet-Timbertree.wav";
+	_initSoundsForGameplay();
 }
 
 Forest::~Forest(void) {}

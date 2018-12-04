@@ -50,7 +50,8 @@ GameEngine::GameEngine(AGame *game)
 	// Create interface class
 	_gameRenderer = new GameRenderer(this, _game);
 	// Create audio manager
-	_audioManager = new AudioManager();
+	_audioManager = new AudioManager(_game->getStartingMusicVolume(),
+									 _game->getStartingSoundsVolume());
 	_game->setAudioManager(_audioManager);
 
 	// Force load of first scene
@@ -1010,6 +1011,13 @@ bool GameEngine::_tryShortcut(Entity *entity, glm::vec3 &futureMovement,
 		}
 	}
 	return false;
+}
+
+void GameEngine::updateMusicVolume(int newValue) {
+	_audioManager->updateMusicVolume(newValue);
+}
+void GameEngine::updateSoundsVolume(int newValue) {
+	_audioManager->updateSoundsVolume(newValue);
 }
 
 void GameEngine::buttonStateChanged(int keyID, bool isPressed) {

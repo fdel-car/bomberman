@@ -8,6 +8,7 @@ struct Save {
 	static const std::vector<std::tuple<std::string, size_t, size_t>>
 		RESOLUTIONS;
 	static const std::vector<std::tuple<std::string, bool>> FULL_SCREEN;
+	static const std::vector<std::tuple<std::string, int>> VOLUMES;
 
 	int upKey = KEY_W;
 	int leftKey = KEY_A;

@@ -7,6 +7,7 @@ Volcano::Volcano(glm::vec3 const &pos, glm::vec3 const &eulerAngles,
 	  SceneTools(37, 37, pos, eulerAngles, bomberman, "Volcano", "Desert"),
 	  _cooldown(0.0f) {
 	configAI();
+	_initSoundsForGameplay();
 	_startMusic = "";  // TODO
 }
 

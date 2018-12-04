@@ -34,7 +34,7 @@ struct Dialogue {
 	int lastWord;
 	int startStrIdx;
 	std::string name;
- 	std::string imgName;
+	std::string imgName;
 	std::string text;
 	bool isImgLeft;
 	size_t maxCharPerLine;
@@ -78,6 +78,8 @@ class SceneTools : public Camera {
 	bool const &getRefreshAI() const;
 
    protected:
+	void _initSoundsForGameplay(void);
+
 	void _displayDialogue(GUI *graphicUI, int *searchWord, int *lastWord,
 						  int *startStrIdx, std::string name,
 						  std::string imgName, std::string text, bool isImgLeft,
@@ -94,11 +96,14 @@ class SceneTools : public Camera {
 				   int *extraSizePlay, int maxSize, bool *isPlayButtonHover,
 				   std::string btnName, std::string btnImageHover = "",
 				   std::string btnImage = "");
-	bool _displayMultipleDialogue(GUI *graphicUI, std::vector<Dialogue> *dialogues);
+	bool _displayMultipleDialogue(GUI *graphicUI,
+								  std::vector<Dialogue> *dialogues);
 	Dialogue _builNewDialogue(int searchWord, int lastWord, int startStrIdx,
-			std::string name, std::string imgName, std::string text, bool isImgLeft,
-			size_t maxCharPerLine, int nbrOfLine, nk_flags textPosition, std::string fontText,
-			std::string fontTitle);
+							  std::string name, std::string imgName,
+							  std::string text, bool isImgLeft,
+							  size_t maxCharPerLine, int nbrOfLine,
+							  nk_flags textPosition, std::string fontText,
+							  std::string fontTitle);
 	void _savePositions(Entity *entity);
 
 	// Build graphe
@@ -139,7 +144,6 @@ class SceneTools : public Camera {
    private:
 	SceneTools(void);
 
-	void _initNeededSounds(void);
 	bool _putExplosionsInDirection(size_t xCoord, size_t zCoord, int xChange,
 								   int zChange, size_t range);
 

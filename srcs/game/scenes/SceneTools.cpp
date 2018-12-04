@@ -39,13 +39,12 @@ SceneTools::SceneTools(size_t mapWidth, size_t mapHeight, glm::vec3 const &pos,
 	_neededImages.push_back(std::tuple<std::string, std::string>(
 		(_assetsDir + "GUI/icons/sad_chopper.png"), "sad_chopper"));
 
-	_initNeededSounds();
 	// TODO: music when starting dialogues
 }
 
 SceneTools::~SceneTools(void) { _clearGraphe(); }
 
-void SceneTools::_initNeededSounds(void) {
+void SceneTools::_initSoundsForGameplay(void) {
 	// Explosion sounds
 	_neededSounds["explosion_1"] =
 		_assetsDir + "Audio/Sounds/Explosion/explosion_1.wav";
@@ -72,6 +71,11 @@ void SceneTools::_initNeededSounds(void) {
 		_assetsDir + "Audio/Sounds/Hero/winner_effect.wav";
 	_neededSounds["winner_voice"] =
 		_assetsDir + "Audio/Sounds/Hero/winner_voice.wav";
+
+	// Pause menu
+	_neededSounds["pause_start"] =
+		_assetsDir + "Audio/Sounds/Menu/pause_start.wav";
+	_neededSounds["pause_end"] = _assetsDir + "Audio/Sounds/Menu/pause_end.wav";
 
 	// Sounds that are not used in this class, but will not be loaded otherwise
 	_neededSounds["put_bomb_1"] =
@@ -100,9 +104,16 @@ void SceneTools::initEntity(GameEngine *gameEngine) {
 }
 
 void SceneTools::drawGUI(GUI *graphicUI) {
-	if (!_debugMode && (_pauseMenu || _gameEngine->isKeyPressed(KEY_ESCAPE))) {
+	if (!_debugMode &&
+		(_pauseMenu || _gameEngine->isKeyJustPressed(KEY_ESCAPE))) {
 		_pauseMenu = _displayPauseMenu(graphicUI);
 		_isPause = _pauseMenu;
+		if (_isPause && _gameEngine->isKeyJustPressed(KEY_ESCAPE)) {
+			_gameEngine->playSound("pause_start");
+
+		} else if (!_isPause) {
+			_gameEngine->playSound("pause_end");
+		}
 	}
 
 	if (_showPlayerHp) {
@@ -368,34 +379,43 @@ bool SceneTools::_btnHover(GUI *graphicUI, int rectWidth, int rectHeight,
 	return ret;
 }
 
-bool SceneTools::_displayMultipleDialogue(GUI *graphicUI, std::vector<Dialogue> *dialogues) {
+bool SceneTools::_displayMultipleDialogue(GUI *graphicUI,
+										  std::vector<Dialogue> *dialogues) {
 	if (!dialogues->empty()) {
-		if (dialogues->at(0).searchWord == static_cast<int>(dialogues->at(0).text.size())
-				&& _gameEngine->isKeyPressed(KEY_SPACE)) {
+		if (dialogues->at(0).searchWord ==
+				static_cast<int>(dialogues->at(0).text.size()) &&
+			_gameEngine->isKeyPressed(KEY_SPACE)) {
 			dialogues->erase(dialogues->begin());
 			if (!dialogues->empty())
-				_displayDialogue(graphicUI, &dialogues->at(0).searchWord, &dialogues->at(0).lastWord,
-					&dialogues->at(0).startStrIdx, dialogues->at(0).name, dialogues->at(0).imgName,
-					dialogues->at(0).text, dialogues->at(0).isImgLeft, dialogues->at(0).maxCharPerLine,
-					dialogues->at(0).nbrOfLine, dialogues->at(0).textPosition, dialogues->at(0).fontText,
+				_displayDialogue(
+					graphicUI, &dialogues->at(0).searchWord,
+					&dialogues->at(0).lastWord, &dialogues->at(0).startStrIdx,
+					dialogues->at(0).name, dialogues->at(0).imgName,
+					dialogues->at(0).text, dialogues->at(0).isImgLeft,
+					dialogues->at(0).maxCharPerLine, dialogues->at(0).nbrOfLine,
+					dialogues->at(0).textPosition, dialogues->at(0).fontText,
 					dialogues->at(0).fontTitle);
-		}
-		else
-			_displayDialogue(graphicUI, &dialogues->at(0).searchWord, &dialogues->at(0).lastWord,
-				&dialogues->at(0).startStrIdx, dialogues->at(0).name, dialogues->at(0).imgName,
-				dialogues->at(0).text, dialogues->at(0).isImgLeft, dialogues->at(0).maxCharPerLine,
-				dialogues->at(0).nbrOfLine, dialogues->at(0).textPosition, dialogues->at(0).fontText,
+		} else
+			_displayDialogue(
+				graphicUI, &dialogues->at(0).searchWord,
+				&dialogues->at(0).lastWord, &dialogues->at(0).startStrIdx,
+				dialogues->at(0).name, dialogues->at(0).imgName,
+				dialogues->at(0).text, dialogues->at(0).isImgLeft,
+				dialogues->at(0).maxCharPerLine, dialogues->at(0).nbrOfLine,
+				dialogues->at(0).textPosition, dialogues->at(0).fontText,
 				dialogues->at(0).fontTitle);
 		return true;
-	}
-	else
+	} else
 		return false;
 }
 
-Dialogue SceneTools::_builNewDialogue(int searchWord, int lastWord, int startStrIdx,
-		std::string name, std::string imgName, std::string text, bool isImgLeft,
-		size_t maxCharPerLine, int nbrOfLine, nk_flags textPosition, std::string fontText,
-		std::string fontTitle) {
+Dialogue SceneTools::_builNewDialogue(int searchWord, int lastWord,
+									  int startStrIdx, std::string name,
+									  std::string imgName, std::string text,
+									  bool isImgLeft, size_t maxCharPerLine,
+									  int nbrOfLine, nk_flags textPosition,
+									  std::string fontText,
+									  std::string fontTitle) {
 	Dialogue dialog;
 	dialog.searchWord = searchWord;
 	dialog.lastWord = lastWord;
@@ -410,7 +430,6 @@ Dialogue SceneTools::_builNewDialogue(int searchWord, int lastWord, int startStr
 	dialog.fontText = fontText;
 	dialog.fontTitle = fontTitle;
 	return dialog;
-
 }
 
 void SceneTools::tellPosition(Entity *entity) { _savePositions(entity); }

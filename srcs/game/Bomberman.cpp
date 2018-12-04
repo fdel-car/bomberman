@@ -67,6 +67,12 @@ Bomberman::~Bomberman(void) {}
 
 std::string Bomberman::getStartLevelName(void) { return _startLevelName; }
 
+int Bomberman::getStartingMusicVolume(void) const { return _save.musicVolume; }
+
+int Bomberman::getStartingSoundsVolume(void) const {
+	return _save.soundsVolume;
+}
+
 void Bomberman::loadSceneByIndex(int sceneIdx, std::atomic_int *_sceneState,
 								 bool *_checkLoadSceneIsGood) {
 	unload();
