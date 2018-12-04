@@ -9,6 +9,7 @@ class Perk : public Entity {
 	Perk(glm::vec3 position, Entity *sceneManager);
 	virtual ~Perk(void);
 
+	virtual void initEntity(GameEngine *gameEngine);
 	virtual void update(void);
 	virtual void onTriggerEnter(Entity *entity);
 

@@ -23,7 +23,9 @@ Entity::Entity(glm::vec3 position, glm::vec3 eulerAngles, Collider *collider,
 	  _sceneManager(sceneManager),
 	  _collider(collider),
 	  _isTmp(true),
-	  _targetMovement(glm::vec3()) {
+	  _targetMovement(glm::vec3()),
+	  _initSounds(std::vector<std::string>()),
+	  _destroySounds(std::vector<std::string>()) {
 	_translationMatrix = glm::mat4(1.0f);
 	_translationMatrix[3][0] = position.x;
 	_translationMatrix[3][1] = position.y;
@@ -44,6 +46,9 @@ Entity::~Entity(void) {
 		_sceneManager->tellDestruction(this);
 	}
 	if (_collider) delete _collider;
+	if (_destroySounds.size() != 0) {
+		_gameEngine->playSound(_destroySounds[rand() % _destroySounds.size()]);
+	}
 }
 
 void Entity::update(void) {}
@@ -85,6 +90,10 @@ glm::vec3 const &Entity::getTargetMovement(void) const {
 }
 
 bool Entity::getNeedToBeDestroyed(void) const { return _needToBeDestroyed; }
+
+std::map<std::string, std::string> Entity::getNeededSounds(void) const {
+	return _neededSounds;
+};
 
 void Entity::setColor(glm::vec3 const &color) { _color = color; }
 
@@ -137,6 +146,9 @@ void Entity::_updateModelMatrix(void) {
 void Entity::initEntity(GameEngine *gameEngine) {
 	_gameEngine = gameEngine;
 	_model = _gameEngine->getGameRenderer()->getModel(_modelName);
+	if (_initSounds.size() != 0) {
+		gameEngine->playSound(_initSounds[rand() % _initSounds.size()]);
+	}
 }
 
 std::ostream &operator<<(std::ostream &o, Entity const &entity) {

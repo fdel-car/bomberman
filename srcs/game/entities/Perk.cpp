@@ -4,6 +4,8 @@
 #include "game/entities/Player.hpp"
 #include "game/scenes/SceneTools.hpp"
 
+extern std::string _assetsDir;
+
 const float Perk::TIME_BETWEEN_ANIM = 3.0f;
 
 const std::vector<std::tuple<PerkType, size_t>> getPossiblePerks(void) {
@@ -46,9 +48,18 @@ Perk::Perk(glm::vec3 position, Entity *sceneManager)
 			randResult -= std::get<1>(perk);
 		}
 	}
+	_destroySounds.push_back("get_perk_1");
+	_destroySounds.push_back("get_perk_2");
+	_destroySounds.push_back("get_perk_3");
+	_destroySounds.push_back("get_perk_4");
 }
 
 Perk::~Perk(void) {}
+
+void Perk::initEntity(GameEngine *gameEngine) {
+	Entity::initEntity(gameEngine);
+	gameEngine->playSound("portal_spawn");
+}
 
 void Perk::update(void) {
 	float deltaTime = _gameEngine->getDeltaTime();

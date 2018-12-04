@@ -11,8 +11,10 @@ class Damageable : public Entity {
 	~Damageable(void);
 
 	virtual void update(void);
-	virtual void takeDamage(void);
-	virtual void onTakeDamage(void);
+	virtual void takeDamage(
+		std::vector<std::string> demagingSounds = std::vector<std::string>());
+	virtual void onTakeDamage(
+		std::vector<std::string> demagingSounds = std::vector<std::string>());
 	virtual void onDeath(void);
 
    protected:

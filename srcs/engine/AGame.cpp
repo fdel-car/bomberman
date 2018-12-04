@@ -8,9 +8,7 @@ AGame::AGame(size_t enumSize)
 	  _loadingEntities(std::vector<Entity *>()),
 	  _loadingCamera(nullptr),
 	  _loadingLight(nullptr),
-	  _loadingSkybox(nullptr),
-	  _neededMusic(std::map<std::string, std::string>()),
-	  _neededSounds(std::map<std::string, std::string>()) {
+	  _loadingSkybox(nullptr) {
 	_collisionTable = std::vector<std::vector<bool>>(enumSize);
 	for (auto &collisionTag : _collisionTable) {
 		collisionTag = std::vector<bool>(enumSize, true);
@@ -57,8 +55,6 @@ std::vector<std::tuple<float, std::string, std::string>>
 
 void AGame::unload(void) {
 	_entities.clear();
-	_neededMusic.clear();
-	_neededMusic.clear();
 
 	_light = nullptr;
 	_camera = nullptr;
@@ -85,4 +81,24 @@ void AGame::setLayerCollision(int layer1, int layer2, bool doCollide) {
 	}
 	_collisionTable[layer1][layer2] = doCollide;
 	_collisionTable[layer2][layer1] = doCollide;
+}
+
+void AGame::setAudioManager(AudioManager *audioManager) {
+	_audioManager = audioManager;
+}
+
+void AGame::loadSounds(void) {
+	std::map<std::string, std::string> neededSounds =
+		std::map<std::string, std::string>();
+	if (_camera != nullptr) {
+		neededSounds = _camera->getNeededSounds();
+	}
+
+	for (auto entity : _entities) {
+		for (auto sound : entity->getNeededSounds()) {
+			neededSounds[sound.first] = sound.second;
+		}
+	}
+
+	_audioManager->loadSounds(neededSounds);
 }

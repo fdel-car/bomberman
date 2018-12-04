@@ -11,7 +11,7 @@ class Player : public Damageable {
 	~Player(void);
 
 	virtual void update(void);
-	virtual void onTakeDamage(void);
+	virtual void onTakeDamage(std::vector<std::string> demagingSounds = std::vector<std::string>());
 	virtual void onDeath(void);
 	virtual void onCollisionEnter(Entity *entity);
 

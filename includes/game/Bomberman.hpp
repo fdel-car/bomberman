@@ -28,8 +28,7 @@ class Bomberman : public AGame {
    public:
 	Bomberman(void);
 	virtual ~Bomberman(void);
-	virtual void loadSceneByIndex(int sceneIdx, AudioManager *audioManager,
-								  std::atomic_int *_sceneState,
+	virtual void loadSceneByIndex(int sceneIdx, std::atomic_int *_sceneState,
 								  bool *_checkLoadSceneIsGood);
 	virtual void initLoadScene(void);
 	virtual size_t getWindowWidth();

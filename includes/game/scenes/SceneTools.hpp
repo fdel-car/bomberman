@@ -33,11 +33,13 @@ class SceneTools : public Camera {
    public:
 	SceneTools(size_t mapWidth, size_t mapHeight, glm::vec3 const &pos,
 			   glm::vec3 const &eulerAngles, Bomberman *bomberman,
-			   std::string ownLvlName = "", std::string nextLvlName = "");
+			   std::string ownLvlName = "", std::string nextLvlName = "",
+			   float timer = 180.0f);
 	virtual ~SceneTools(void);
 
+	virtual void initEntity(GameEngine *gameEngine);
+	virtual void drawGUI(GUI *graphicUI);
 	virtual bool isPause(void) const;
-
 	virtual void updateDebugMode(void);
 	virtual void tellPosition(Entity *entity);
 	virtual void tellDestruction(Entity *entity);
@@ -71,7 +73,7 @@ class SceneTools : public Camera {
 	void _displayPlayerHP(GUI *graphicUI, size_t hp);
 	void _displayVictoryScreen(GUI *graphicUI);
 	void _displayDeathScreen(GUI *graphicUI);
-	void _displayTimer(GUI *graphicUI, float *currentTime, bool isPause);
+	void _displayTimer(GUI *graphicUI, bool isPause);
 	bool _btnHover(GUI *graphicUI, int rectWidth, int rectHeight, int xRectPos,
 				   int yRectPos, int fontSize, std::string fontName,
 				   int *extraSizePlay, int maxSize, bool *isPlayButtonHover,
@@ -112,11 +114,13 @@ class SceneTools : public Camera {
 	glm::vec3 _positionPrevDebug;
 	glm::vec3 _eulerAnglesPrevDebug;
 	glm::vec3 _distanceFromPlayer;
+	std::string _startMusic;
 
    private:
 	SceneTools(void);
 
-	void _putExplosionsInDirection(size_t xCoord, size_t zCoord, int xChange,
+	void _initNeededSounds(void);
+	bool _putExplosionsInDirection(size_t xCoord, size_t zCoord, int xChange,
 								   int zChange, size_t range);
 
 	float _xOffset = static_cast<float>(_mapWidth) / 2;
@@ -124,4 +128,10 @@ class SceneTools : public Camera {
 	std::string _ownLvlName;
 	std::string _startLvlName;
 	std::string _nextLvlName;
+
+	float _timer;
+	bool _pauseMenu;
+
+	std::vector<std::string> _explosionSounds;
+	std::vector<std::string> _explosionWithBoxSounds;
 };

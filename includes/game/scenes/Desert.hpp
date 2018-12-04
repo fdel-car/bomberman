@@ -21,7 +21,5 @@ class Desert : public SceneTools {
 	Desert(Desert const &src);
 	Desert &operator=(Desert const &rhs);
 
-	float _timer;
 	float _cooldown;
-	bool _pauseMenu;
 };

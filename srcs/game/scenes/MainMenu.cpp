@@ -16,6 +16,7 @@ MainMenu::MainMenu(glm::vec3 const &pos, glm::vec3 const &eulerAngles,
 		(_assetsDir + "GUI/icons/settings.png"), "settings"));
 
 	_updateVarsFromSave();
+	_startMusic = _assetsDir + "Audio/Musics/MainMenu.wav";
 }
 
 MainMenu::~MainMenu(void) {}

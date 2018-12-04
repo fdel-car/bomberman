@@ -11,9 +11,8 @@ class AudioManager {
 	AudioManager(void);
 	~AudioManager(void);
 
-	void loadMusics(std::map<std::string, std::string> musics);
 	void loadSounds(std::map<std::string, std::string> sounds);
-	void playMusic(std::string musicName);
+	void playMusic(std::string musicPath);
 	void playSound(std::string soundName);
 
    private:
@@ -21,8 +20,7 @@ class AudioManager {
 
 	AudioManager &operator=(AudioManager const &rhs);
 
-	sf::Sound _musicPlayer;
-	sf::Sound _soundsPlayer;
-	std::map<std::string, sf::SoundBuffer> _musicsMap;
+	sf::Music _musicPlayer;
+	std::vector<sf::Sound> _soundPlayers;
 	std::map<std::string, sf::SoundBuffer> _soundsMap;
 };

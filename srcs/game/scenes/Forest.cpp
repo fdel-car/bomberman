@@ -1,13 +1,15 @@
 #include "game/scenes/Forest.hpp"
 #include "engine/GameEngine.hpp"
 
+extern std::string _assetsDir;
+
 Forest::Forest(glm::vec3 const &pos, glm::vec3 const &eulerAngles,
 			   Bomberman *bomberman)
 	:  // Camera(pos, eulerAngles),
 	  SceneTools(21, 21, pos, eulerAngles, bomberman, "Forest", "Volcano"),
-	  _timer(181),
 	  _cooldown(0.0f) {
 	configAI();
+	_startMusic = _assetsDir + "Audio/Musics/Planet-Timbertree.wav";
 }
 
 Forest::~Forest(void) {}
@@ -35,29 +37,10 @@ void Forest::configGUI(GUI *graphicUI) {
 	graphicUI->setStyle(defaultStyle);
 	activeStyle = defaultStyle;
 	_refreshAI = false;
-	_pauseMenu = false;
 }
 
 void Forest::drawGUI(GUI *graphicUI) {
-	if (!_debugMode && (_pauseMenu || _gameEngine->isKeyPressed(KEY_ESCAPE))) {
-		_pauseMenu = _displayPauseMenu(graphicUI);
-		_isPause = _pauseMenu;
-	}
-
-	if (_showPlayerHp) {
-		if (_showVictoryScreen) {
-			_displayVictoryScreen(graphicUI);
-		} else if (_showDeathScreen) {
-			_displayDeathScreen(graphicUI);
-		}
-		_displayPlayerHP(graphicUI, _playerHp);
-	}
-
-	if (!isPause() && !_showDeathScreen && !_showVictoryScreen)
-		_displayTimer(graphicUI, &_timer, false);
-	else
-		_displayTimer(graphicUI, &_timer, true);
-	if ((int)_timer == 0) _showDeathScreen = true;
+	SceneTools::drawGUI(graphicUI);
 	// static int searchWord = 0;
 	// static int lastWord = 0;
 	// static int startStrIdx = 0;

@@ -13,8 +13,7 @@ class AGame {
 	AGame(size_t enumSize);
 	virtual ~AGame(void);
 
-	virtual void loadSceneByIndex(int sceneIdx, AudioManager *audioManager,
-								  std::atomic_int *_sceneState,
+	virtual void loadSceneByIndex(int sceneIdx, std::atomic_int *_sceneState,
 								  bool *_checkLoadSceneIsGood) = 0;
 	virtual void initLoadScene(void) = 0;
 	virtual size_t getWindowWidth() = 0;
@@ -37,6 +36,7 @@ class AGame {
 	std::vector<std::vector<bool>> const &getCollisionTable(void);
 
 	void unload(void);
+	void setAudioManager(AudioManager *audioManager);
 
    protected:
 	std::vector<std::string> _scenesNames;
@@ -52,13 +52,14 @@ class AGame {
 	Skybox *_loadingSkybox;
 
 	std::vector<std::tuple<float, std::string, std::string>> _neededFonts;
-	std::map<std::string, std::string> _neededMusic;
-	std::map<std::string, std::string> _neededSounds;
 	std::vector<std::vector<bool>> _collisionTable;
 
 	void setLayerCollision(int layer1, int layer2, bool doCollide);
+	void loadSounds(void);
 
    private:
 	AGame(void);
 	virtual void _initScenes(void) = 0;
+
+	AudioManager *_audioManager;
 };

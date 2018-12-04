@@ -9,7 +9,8 @@ extern std::string _assetsDir;
 
 SceneTools::SceneTools(size_t mapWidth, size_t mapHeight, glm::vec3 const &pos,
 					   glm::vec3 const &eulerAngles, Bomberman *bomberman,
-					   std::string ownLvlName, std::string nextLvlName)
+					   std::string ownLvlName, std::string nextLvlName,
+					   float timer)
 	: Camera(pos, eulerAngles),
 	  _bomberman(bomberman),
 	  _save(bomberman->getSave()),
@@ -25,21 +26,106 @@ SceneTools::SceneTools(size_t mapWidth, size_t mapHeight, glm::vec3 const &pos,
 		  std::vector<std::map<size_t, Entity *>>(mapWidth * mapHeight)),
 	  _firstPlayerPos(true),
 	  _distanceFromPlayer(glm::vec3(0)),
+	  _startMusic(""),
 	  _xOffset(static_cast<float>(_mapWidth) / 2.0f),
 	  _zOffset(static_cast<float>(_mapHeight) / 2.0f),
 	  _ownLvlName(ownLvlName),
 	  _startLvlName(bomberman->getStartLevelName()),
-	  _nextLvlName(nextLvlName) {
+	  _nextLvlName(nextLvlName),
+	  _timer(timer),
+	  _pauseMenu(false) {
 	_neededImages.push_back(std::tuple<std::string, std::string>(
 		(_assetsDir + "GUI/icons/heart.png"), "heart"));
 	_neededImages.push_back(std::tuple<std::string, std::string>(
 		(_assetsDir + "GUI/icons/sad_chopper.png"), "sad_chopper"));
 
-	// _firstPlayerPos = false;
-	// _distanceFromPlayer = getPosition();
+	_initNeededSounds();
+	// TODO: music when starting dialogues
 }
 
 SceneTools::~SceneTools(void) { _clearGraphe(); }
+
+void SceneTools::_initNeededSounds(void) {
+	// Explosion sounds
+	_neededSounds["explosion_1"] =
+		_assetsDir + "Audio/Sounds/Explosion/explosion_1.wav";
+	_neededSounds["explosion_2"] =
+		_assetsDir + "Audio/Sounds/Explosion/explosion_2.wav";
+	_neededSounds["explosion_with_box_1"] =
+		_assetsDir + "Audio/Sounds/Explosion/explosion_with_box_1.wav";
+	_neededSounds["explosion_with_box_2"] =
+		_assetsDir + "Audio/Sounds/Explosion/explosion_with_box_2.wav";
+
+	_explosionSounds.push_back("explosion_1");
+	_explosionSounds.push_back("explosion_2");
+	_explosionWithBoxSounds.push_back("explosion_with_box_1");
+	_explosionWithBoxSounds.push_back("explosion_with_box_2");
+
+	// Time over
+	_neededSounds["time_over_effect"] =
+		_assetsDir + "Audio/Sounds/Hero/time_over_effect.wav";
+	_neededSounds["time_over_voice"] =
+		_assetsDir + "Audio/Sounds/Hero/time_over_voice.wav";
+
+	// Win
+	_neededSounds["winner_effect"] =
+		_assetsDir + "Audio/Sounds/Hero/winner_effect.wav";
+	_neededSounds["winner_voice"] =
+		_assetsDir + "Audio/Sounds/Hero/winner_voice.wav";
+
+	// Sounds that are not used in this class, but will not be loaded otherwise
+	_neededSounds["put_bomb_1"] =
+		_assetsDir + "Audio/Sounds/Bomb/put_bomb_1.wav";
+	_neededSounds["put_bomb_2"] =
+		_assetsDir + "Audio/Sounds/Bomb/put_bomb_2.wav";
+	_neededSounds["burn_player_1"] =
+		_assetsDir + "Audio/Sounds/Explosion/burn_player_1.wav";
+	_neededSounds["burn_player_2"] =
+		_assetsDir + "Audio/Sounds/Explosion/burn_player_2.wav";
+	_neededSounds["get_perk_1"] =
+		_assetsDir + "Audio/Sounds/Perk/get_perk_1.wav";
+	_neededSounds["get_perk_2"] =
+		_assetsDir + "Audio/Sounds/Perk/get_perk_2.wav";
+	_neededSounds["get_perk_3"] =
+		_assetsDir + "Audio/Sounds/Perk/get_perk_3.wav";
+	_neededSounds["get_perk_4"] =
+		_assetsDir + "Audio/Sounds/Perk/get_perk_4.wav";
+	_neededSounds["portal_spawn"] =
+		_assetsDir + "Audio/Sounds/Portal/portal_spawn.wav";
+}
+
+void SceneTools::initEntity(GameEngine *gameEngine) {
+	Camera::initEntity(gameEngine);
+	gameEngine->playMusic(_startMusic);
+}
+
+void SceneTools::drawGUI(GUI *graphicUI) {
+	if (!_debugMode && (_pauseMenu || _gameEngine->isKeyPressed(KEY_ESCAPE))) {
+		_pauseMenu = _displayPauseMenu(graphicUI);
+		_isPause = _pauseMenu;
+	}
+
+	if (_showPlayerHp) {
+		if (_showVictoryScreen) {
+			_displayVictoryScreen(graphicUI);
+		} else if (_showDeathScreen) {
+			_displayDeathScreen(graphicUI);
+		}
+		_displayPlayerHP(graphicUI, _playerHp);
+	}
+
+	bool timerCanChange = static_cast<int>(_timer) > 0;
+	if (!isPause() && !_showDeathScreen && !_showVictoryScreen)
+		_displayTimer(graphicUI, false);
+	else
+		_displayTimer(graphicUI, true);
+	if (timerCanChange && static_cast<int>(_timer) == 0) {
+		_gameEngine->playMusic("");
+		_gameEngine->playSound("time_over_effect");
+		_gameEngine->playSound("time_over_voice");
+		_showDeathScreen = true;
+	}
+}
 
 bool SceneTools::isPause(void) const {
 	return _debugMode || _isPause || _showVictoryScreen || _showDeathScreen;
@@ -225,18 +311,16 @@ void SceneTools::_displayDeathScreen(GUI *graphicUI) {
 	graphicUI->uiEndBlock();
 }
 
-void SceneTools::_displayTimer(GUI *graphicUI, float *currentTime,
-							   bool isPause) {
-	if (*currentTime > 0.0f && !isPause)
-		*currentTime -= _gameEngine->getDeltaTime();
+void SceneTools::_displayTimer(GUI *graphicUI, bool isPause) {
+	if (_timer > 0.0f && !isPause) _timer -= _gameEngine->getDeltaTime();
 	activeStyle[NK_COLOR_WINDOW] = nk_rgba(57, 67, 71, 150);
 	graphicUI->setStyle(activeStyle);
 	if (graphicUI->uiStartBlock("timer", "",
 								nk_rect(WINDOW_W / 7 * 3, 0, WINDOW_W / 7, 60),
 								NK_WINDOW_NO_SCROLLBAR | NK_COLOR_BORDER)) {
-		int tmpMinutes = *currentTime / 60;
+		int tmpMinutes = _timer / 60;
 		std::string minutes = std::to_string(tmpMinutes);
-		int tmpSec = static_cast<int>(*currentTime) % 60;
+		int tmpSec = static_cast<int>(_timer) % 60;
 		std::string sec =
 			tmpSec < 10 ? "0" + std::to_string(tmpSec) : std::to_string(tmpSec);
 		graphicUI->uiHeader((minutes + " : " + sec).c_str(), NK_TEXT_CENTERED,
@@ -478,19 +562,34 @@ void SceneTools::putExplosion(float xCenter, float zCenter, size_t range) {
 	_gameEngine->addNewEntity(new Explosion(
 		glm::vec3(xCoord - _xOffset + 0.5f, 0.0f, zCoord - _zOffset + 0.5f),
 		this));
+	bool hasDestroyedBox = false;
 	// Left
-	_putExplosionsInDirection(xCoord, zCoord, -1, 0, range);
+	hasDestroyedBox = _putExplosionsInDirection(xCoord, zCoord, -1, 0, range) ||
+					  hasDestroyedBox;
 	// Right
-	_putExplosionsInDirection(xCoord, zCoord, 1, 0, range);
+	hasDestroyedBox = _putExplosionsInDirection(xCoord, zCoord, 1, 0, range) ||
+					  hasDestroyedBox;
 	// Top
-	_putExplosionsInDirection(xCoord, zCoord, 0, -1, range);
+	hasDestroyedBox = _putExplosionsInDirection(xCoord, zCoord, 0, -1, range) ||
+					  hasDestroyedBox;
 	// Down
-	_putExplosionsInDirection(xCoord, zCoord, 0, 1, range);
+	hasDestroyedBox = _putExplosionsInDirection(xCoord, zCoord, 0, 1, range) ||
+					  hasDestroyedBox;
+
+	// Play random sound
+	if (hasDestroyedBox) {
+		int randIdx = rand() % _explosionWithBoxSounds.size();
+		_gameEngine->playSound(_explosionWithBoxSounds[randIdx]);
+	} else {
+		int randIdx = rand() % _explosionSounds.size();
+		_gameEngine->playSound(_explosionSounds[randIdx]);
+	}
 }
 
-void SceneTools::_putExplosionsInDirection(size_t xCoord, size_t zCoord,
+bool SceneTools::_putExplosionsInDirection(size_t xCoord, size_t zCoord,
 										   int xChange, int zChange,
 										   size_t range) {
+	bool hasDestroyedBox = false;
 	size_t rangeIdx = 0;
 	bool canPutExplosion;
 	while (rangeIdx < range) {
@@ -507,6 +606,7 @@ void SceneTools::_putExplosionsInDirection(size_t xCoord, size_t zCoord,
 				// Force stop when destroying first Box/Bomb
 				rangeIdx = range;
 			} else if (entity.second->getTag().compare("Box") == 0) {
+				hasDestroyedBox = true;
 				rangeIdx = range;
 				canPutExplosion = false;
 				Damageable *damageable =
@@ -525,6 +625,7 @@ void SceneTools::_putExplosionsInDirection(size_t xCoord, size_t zCoord,
 			break;
 		rangeIdx++;
 	}
+	return hasDestroyedBox;
 }
 
 void SceneTools::tellPlayerHp(size_t hp) {
@@ -533,14 +634,16 @@ void SceneTools::tellPlayerHp(size_t hp) {
 	_playerHp = hp;
 	if (_playerHp == 0) {
 		_showDeathScreen = true;
-		_gameEngine->playSound("Defeat");
+		_gameEngine->playMusic("");
 	}
 }
 
 void SceneTools::tellLevelSuccess() {
 	if (_playerHp != 0) {
 		_showVictoryScreen = true;
-		_gameEngine->playSound("Win");
+		_gameEngine->playMusic("");
+		_gameEngine->playSound("winner_effect");
+		_gameEngine->playSound("winner_voice");
 		// Save if it's first time we complete lvl
 		size_t levelIdx = _bomberman->getSceneIndexByName(_ownLvlName);
 		if (_save.level < levelIdx) {

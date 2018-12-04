@@ -21,7 +21,5 @@ class Forest : public SceneTools {
 	Forest(Forest const &src);
 	Forest &operator=(Forest const &rhs);
 
-	float _timer;
 	float _cooldown;
-	bool _pauseMenu;
 };

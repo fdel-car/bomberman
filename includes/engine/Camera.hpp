@@ -1,5 +1,6 @@
 #pragma once
 
+#include "engine/Engine.hpp"
 #include "engine/Entity.hpp"
 #include "engine/GUI/GUI.hpp"
 
@@ -16,14 +17,16 @@ class Camera : public Entity {
 		const;
 	bool isGameRunning(void) const;
 
+	// Redefinitions of Entity func
+	virtual void initEntity(GameEngine *gameEngine);
+	virtual void update(void);
+	virtual void translate(glm::vec3 translation);
+	// Camera specific virtual func
 	virtual bool isPause(void) const;
 	virtual void drawGUI(GUI *graphicUI);
-	virtual void update(void);
 	virtual void updateDebugMode(void);
 	virtual void configGUI(GUI *graphicUI);
-	virtual void translate(glm::vec3 translation);
 
-	void initEntity(GameEngine *gameEngine);
 	void mouseCallback(GLFWwindow *window, double xpos, double ypos);
 
    protected:

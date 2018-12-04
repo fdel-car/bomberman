@@ -3,6 +3,8 @@
 #include "game/Bomberman.hpp"
 #include "game/scenes/SceneTools.hpp"
 
+extern std::string _assetsDir;
+
 Bomb::Bomb(glm::vec3 position, float timer, size_t range, Entity *sceneManager)
 	: Damageable(
 		  glm::vec3(position.x, position.y + 0.3f, position.z), glm::vec3(0),
@@ -10,7 +12,14 @@ Bomb::Bomb(glm::vec3 position, float timer, size_t range, Entity *sceneManager)
 		  "Bomb", "Bomb", "Bomb", 1, BombLayer, BombLayer, 0.0f, sceneManager),
 	  _timer(timer),
 	  _range(range),
-	  _slideSpeed(0.0f) {}
+	  _slideSpeed(0.0f) {
+	_neededSounds["put_bomb_1"] =
+		_assetsDir + "Audio/Sounds/Bomb/put_bomb_1.wav";
+	_neededSounds["put_bomb_2"] =
+		_assetsDir + "Audio/Sounds/Bomb/put_bomb_2.wav";
+	_initSounds.push_back("put_bomb_1");
+	_initSounds.push_back("put_bomb_2");
+}
 
 Bomb::~Bomb(void) {}
 
