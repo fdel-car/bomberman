@@ -284,6 +284,51 @@ bool SceneTools::_btnHover(GUI *graphicUI, int rectWidth, int rectHeight,
 	return ret;
 }
 
+bool SceneTools::_displayMultipleDialogue(GUI *graphicUI, std::vector<Dialogue> *dialogues) {
+	if (!dialogues->empty()) {
+		if (dialogues->at(0).searchWord == static_cast<int>(dialogues->at(0).text.size())
+				&& _gameEngine->isKeyPressed(KEY_SPACE)) {
+			dialogues->erase(dialogues->begin());
+			if (!dialogues->empty())
+				_displayDialogue(graphicUI, &dialogues->at(0).searchWord, &dialogues->at(0).lastWord,
+					&dialogues->at(0).startStrIdx, dialogues->at(0).name, dialogues->at(0).imgName,
+					dialogues->at(0).text, dialogues->at(0).isImgLeft, dialogues->at(0).maxCharPerLine,
+					dialogues->at(0).nbrOfLine, dialogues->at(0).textPosition, dialogues->at(0).fontText,
+					dialogues->at(0).fontTitle);
+		}
+		else
+			_displayDialogue(graphicUI, &dialogues->at(0).searchWord, &dialogues->at(0).lastWord,
+				&dialogues->at(0).startStrIdx, dialogues->at(0).name, dialogues->at(0).imgName,
+				dialogues->at(0).text, dialogues->at(0).isImgLeft, dialogues->at(0).maxCharPerLine,
+				dialogues->at(0).nbrOfLine, dialogues->at(0).textPosition, dialogues->at(0).fontText,
+				dialogues->at(0).fontTitle);
+		return true;
+	}
+	else
+		return false;
+}
+
+Dialogue SceneTools::_builNewDialogue(int searchWord, int lastWord, int startStrIdx,
+		std::string name, std::string imgName, std::string text, bool isImgLeft,
+		size_t maxCharPerLine, int nbrOfLine, nk_flags textPosition, std::string fontText,
+		std::string fontTitle) {
+	Dialogue dialog;
+	dialog.searchWord = searchWord;
+	dialog.lastWord = lastWord;
+	dialog.startStrIdx = startStrIdx;
+	dialog.name = name;
+	dialog.imgName = imgName;
+	dialog.text = text;
+	dialog.isImgLeft = isImgLeft;
+	dialog.maxCharPerLine = maxCharPerLine;
+	dialog.nbrOfLine = nbrOfLine;
+	dialog.textPosition = textPosition;
+	dialog.fontText = fontText;
+	dialog.fontTitle = fontTitle;
+	return dialog;
+
+}
+
 void SceneTools::tellPosition(Entity *entity) { _savePositions(entity); }
 
 void SceneTools::tellDestruction(Entity *entity) {

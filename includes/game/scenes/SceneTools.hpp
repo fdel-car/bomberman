@@ -29,6 +29,21 @@ struct Node {
 	bool isAnEntity;
 };
 
+struct Dialogue {
+	int searchWord;
+	int lastWord;
+	int startStrIdx;
+	std::string name;
+ 	std::string imgName;
+	std::string text;
+	bool isImgLeft;
+	size_t maxCharPerLine;
+	int nbrOfLine;
+	nk_flags textPosition;
+	std::string fontText;
+	std::string fontTitle;
+};
+
 class SceneTools : public Camera {
    public:
 	SceneTools(size_t mapWidth, size_t mapHeight, glm::vec3 const &pos,
@@ -77,6 +92,11 @@ class SceneTools : public Camera {
 				   int *extraSizePlay, int maxSize, bool *isPlayButtonHover,
 				   std::string btnName, std::string btnImageHover = "",
 				   std::string btnImage = "");
+	bool _displayMultipleDialogue(GUI *graphicUI, std::vector<Dialogue> *dialogues);
+	Dialogue _builNewDialogue(int searchWord, int lastWord, int startStrIdx,
+			std::string name, std::string imgName, std::string text, bool isImgLeft,
+			size_t maxCharPerLine, int nbrOfLine, nk_flags textPosition, std::string fontText,
+			std::string fontTitle);
 	void _savePositions(Entity *entity);
 
 	// Build graphe

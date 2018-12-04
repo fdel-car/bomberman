@@ -21,6 +21,7 @@ class Forest : public SceneTools {
 	Forest(Forest const &src);
 	Forest &operator=(Forest const &rhs);
 
+	std::vector<Dialogue> _dialogues;
 	float _timer;
 	float _cooldown;
 	bool _pauseMenu;

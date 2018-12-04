@@ -36,6 +36,12 @@ void Forest::configGUI(GUI *graphicUI) {
 	activeStyle = defaultStyle;
 	_refreshAI = false;
 	_pauseMenu = false;
+	// std::string str =
+		// "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do ";
+	 // _dialogues.push_back(_builNewDialogue(0, 0, 0, "Bomberman", "heart", str,
+	 // 		false, 1000, 1000, NK_TEXT_LEFT, "12_BOMBERMAN", "22_BOMBERMAN"));
+	 // _dialogues.push_back(_builNewDialogue(0, 0, 0, "Bomberman", "heart", str,
+	 // 		true, 1000, 1000, NK_TEXT_LEFT, "12_BOMBERMAN", "22_BOMBERMAN"));
 }
 
 void Forest::drawGUI(GUI *graphicUI) {
@@ -58,15 +64,10 @@ void Forest::drawGUI(GUI *graphicUI) {
 	else
 		_displayTimer(graphicUI, &_timer, true);
 	if ((int)_timer == 0) _showDeathScreen = true;
-	// static int searchWord = 0;
-	// static int lastWord = 0;
-	// static int startStrIdx = 0;
-	// std::string str =
-	// 	"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do "
-	// 	"officia deserunt mollit anim id est laborum.";
-	// _displayDialogue(graphicUI, &searchWord, &lastWord, &startStrIdx,
-	// 				 "Bomberman", "heart", str, false, 1000, 1000, NK_TEXT_LEFT,
-	// 				 "12_BOMBERMAN", "18_BOMBERMAN");
+	_displayMultipleDialogue(graphicUI, &_dialogues);
+
+
+
 }
 
 void Forest::tellPosition(Entity *entity) { _savePositions(entity); }
