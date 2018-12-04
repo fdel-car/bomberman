@@ -42,7 +42,7 @@ class GameEngine {
 	bool isKeyJustPressed(int keyID);
 	float getDeltaTime();
 	void addNewEntity(Entity *entity);
-	void playMusic(std::string musicName);
+	void playMusic(std::string musicPath);
 	void playSound(std::string soundName);
 
    private:

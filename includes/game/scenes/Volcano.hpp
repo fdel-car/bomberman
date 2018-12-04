@@ -21,7 +21,5 @@ class Volcano : public SceneTools {
 	Volcano(Volcano const &src);
 	Volcano &operator=(Volcano const &rhs);
 
-	float _timer;
 	float _cooldown;
-	bool _pauseMenu;
 };

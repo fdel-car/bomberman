@@ -3,6 +3,8 @@
 #include "game/Bomberman.hpp"
 #include "game/entities/Player.hpp"
 
+extern std::string _assetsDir;
+
 AEnemy::AEnemy(glm::vec3 position, glm::vec3 eulerAngles, std::string name,
 			   LayerTag tag, bool doMeleeDmg, Entity *sceneManager,
 			   Entity *toSpawn)
@@ -14,7 +16,15 @@ AEnemy::AEnemy(glm::vec3 position, glm::vec3 eulerAngles, std::string name,
 	  _resetMoveCoolDown(0.0f),
 	  _doMeleeDmg(doMeleeDmg),
 	  _hasSpawned(false),
-	  _toSpawn(toSpawn) {}
+	  _toSpawn(toSpawn),
+	  _damagingSounds(std::vector<std::string>()) {
+	_neededSounds["damage_1"] = _assetsDir + "Audio/Sounds/Enemy/damage_1.wav";
+	_neededSounds["damage_2"] = _assetsDir + "Audio/Sounds/Enemy/damage_2.wav";
+	_neededSounds["damage_3"] = _assetsDir + "Audio/Sounds/Enemy/damage_3.wav";
+	_damagingSounds.push_back("damage_1");
+	_damagingSounds.push_back("damage_2");
+	_damagingSounds.push_back("damage_3");
+}
 
 AEnemy::~AEnemy(void) {
 	if (!_hasSpawned && _toSpawn != nullptr) {
@@ -217,7 +227,7 @@ void AEnemy::walk(SceneTools *cam) {
 void AEnemy::onCollisionEnter(Entity *entity) {
 	if (_doMeleeDmg) {
 		Player *player = dynamic_cast<Player *>(entity);
-		if (player != nullptr) player->takeDamage();
+		if (player != nullptr) player->takeDamage(_damagingSounds);
 	}
 }
 

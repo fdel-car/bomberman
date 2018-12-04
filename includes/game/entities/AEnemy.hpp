@@ -31,6 +31,7 @@ class AEnemy : public Damageable {
    private:
 	bool _hasSpawned;
 	Entity *_toSpawn;
+	std::vector<std::string> _damagingSounds;
 
 	void _runIn(SceneTools *cam, size_t distFromPlayer, bool putBomb);
 	void _runAway(SceneTools *cam, size_t distFromPlayer, bool putBomb);

@@ -51,6 +51,7 @@ GameEngine::GameEngine(AGame *game)
 	_gameRenderer = new GameRenderer(this, _game);
 	// Create audio manager
 	_audioManager = new AudioManager();
+	_game->setAudioManager(_audioManager);
 
 	// Force load of first scene
 	_sceneIdx = _game->getFirstSceneIdx();  // TODO: get first Scene
@@ -369,8 +370,7 @@ void GameEngine::_unloadScene(void) {
 
 void GameEngine::_loadScene(size_t newSceneIdx, std::atomic_int *_sceneState,
 							bool *_checkLoadSceneIsGood) {
-	_game->loadSceneByIndex(newSceneIdx, _audioManager, _sceneState,
-							_checkLoadSceneIsGood);
+	_game->loadSceneByIndex(newSceneIdx, _sceneState, _checkLoadSceneIsGood);
 }
 
 void GameEngine::_moveEntities(void) {
@@ -1031,8 +1031,8 @@ bool GameEngine::isKeyJustPressed(int keyID) {
 		   !result->second.prevFrame;
 }
 
-void GameEngine::playMusic(std::string musicName) {
-	_audioManager->playMusic(musicName);
+void GameEngine::playMusic(std::string musicPath) {
+	_audioManager->playMusic(musicPath);
 }
 void GameEngine::playSound(std::string soundName) {
 	_audioManager->playSound(soundName);

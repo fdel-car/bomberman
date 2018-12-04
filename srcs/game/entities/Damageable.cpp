@@ -27,9 +27,9 @@ void Damageable::update(void) {
 	}
 }
 
-void Damageable::takeDamage(void) {
+void Damageable::takeDamage(std::vector<std::string> demagingSounds) {
 	if (_alive && _timeDamaged <= 0.0f) {
-		onTakeDamage();
+		onTakeDamage(demagingSounds);
 		if (_hp == 0) {
 			_alive = false;
 			onDeath();
@@ -37,11 +37,15 @@ void Damageable::takeDamage(void) {
 	}
 }
 
-void Damageable::onTakeDamage(void) {
+void Damageable::onTakeDamage(std::vector<std::string> demagingSounds) {
 	if (_alive) {
 		_hp -= 1;
 		_timeDamaged = _damagedMaxTime;
 		_collider->layerTag = _damagedLayer;
+		if (demagingSounds.size() != 0) {
+			int randomIdx = rand() % demagingSounds.size();
+			_gameEngine->playSound(demagingSounds[randomIdx]);
+		}
 	}
 }
 

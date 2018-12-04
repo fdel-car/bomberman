@@ -67,8 +67,7 @@ Bomberman::~Bomberman(void) {}
 
 std::string Bomberman::getStartLevelName(void) { return _startLevelName; }
 
-void Bomberman::loadSceneByIndex(int sceneIdx, AudioManager *audioManager,
-								 std::atomic_int *_sceneState,
+void Bomberman::loadSceneByIndex(int sceneIdx, std::atomic_int *_sceneState,
 								 bool *_checkLoadSceneIsGood) {
 	unload();
 	if (sceneIdx < 0 || sceneIdx >= static_cast<int>(_scenesNames.size()))
@@ -76,9 +75,8 @@ void Bomberman::loadSceneByIndex(int sceneIdx, AudioManager *audioManager,
 	else {
 		(this->*(_scenesMap[_scenesNames[sceneIdx]]))();
 		*_checkLoadSceneIsGood = true;
+		AGame::loadSounds();
 	}
-	audioManager->loadMusics(_neededMusic);
-	audioManager->loadSounds(_neededSounds);
 	*_sceneState = BACKGROUND_LOAD_FINISHED;
 }
 
@@ -110,8 +108,6 @@ void Bomberman::_mainMenu(void) {
 	_entities.push_back(new Entity(glm::vec3(2.0, 0.5, -2.0), glm::vec3(0.0f),
 								   nullptr, "Bomb", "Bomb", "Bomb"));
 	_entities.back()->scale(glm::vec3(2.5f));
-
-	_neededMusic["MainMenu"] = _assetsDir + "Audio/Musics/MainMenu.wav";
 }
 
 void Bomberman::_forest(void) {
@@ -140,11 +136,6 @@ void Bomberman::_forest(void) {
 	_entities.push_back(new Box(glm::vec3(-7.0, 0, -9.0), _camera));
 	_entities.push_back(new Box(glm::vec3(-9.0, 0, -7.0), _camera));
 	_createMap(10, 10, protectedCase, 10, 15);
-
-	_neededMusic["Forest"] = _assetsDir + "Audio/Musics/Planet-Timbertree.wav";
-	_neededMusic["Dialogues"] = _assetsDir + "Audio/Musics/Dialogues.wav";
-	_neededSounds["Win"] = _assetsDir + "Audio/Sounds/Win.wav";
-	_neededSounds["Defeat"] = _assetsDir + "Audio/Sounds/Defeat.wav";
 }
 
 void Bomberman::_desert(void) {
@@ -172,14 +163,6 @@ void Bomberman::_desert(void) {
 	// Portal to clear lvl
 	// _entities.push_back(new Portal(glm::vec3(0, 0, -7), _camera));
 	_createMap(18, 6, protectedCase, 15, 50);
-
-	_neededMusic["Forest"] =
-		_assetsDir +
-		"Audio/Musics/Planet-Timbertree.wav";  // TODO: change music for this
-											   // level
-	_neededMusic["Dialogues"] = _assetsDir + "Audio/Musics/Dialogues.wav";
-	_neededSounds["Win"] = _assetsDir + "Audio/Sounds/Win.wav";
-	_neededSounds["Defeat"] = _assetsDir + "Audio/Sounds/Defeat.wav";
 }
 
 void Bomberman::_volcano(void) {
@@ -198,14 +181,6 @@ void Bomberman::_volcano(void) {
 	protectedCase.push_back(std::tuple<int, int>(-16.0, -17.0));
 	protectedCase.push_back(std::tuple<int, int>(-17.0, -16.0));
 	_createMap(18, 18, protectedCase, 2, 13);
-
-	_neededMusic["Forest"] =
-		_assetsDir +
-		"Audio/Musics/Planet-Timbertree.wav";  // TODO: change music for this
-											   // level
-	_neededMusic["Dialogues"] = _assetsDir + "Audio/Musics/Dialogues.wav";
-	_neededSounds["Win"] = _assetsDir + "Audio/Sounds/Win.wav";
-	_neededSounds["Defeat"] = _assetsDir + "Audio/Sounds/Defeat.wav";
 }
 
 void Bomberman::_initScenes(void) {

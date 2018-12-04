@@ -12,4 +12,5 @@ class Explosion : public Entity {
 
    private:
 	float _timer;
+	std::vector<std::string> _damagingSounds;
 };
