@@ -18,6 +18,17 @@ MainMenu::MainMenu(glm::vec3 const &pos, glm::vec3 const &eulerAngles,
 	_neededImages.push_back(std::tuple<std::string, std::string>(
 		(_assetsDir + "GUI/icons/settings.png"), "settings"));
 
+	_neededImages.push_back(std::tuple<std::string, std::string>(
+		(_assetsDir + "GUI/icons/vklaouseBomber.png"), "title1"));
+	// _neededImages.push_back(std::tuple<std::string, std::string>(
+	// 	(_assetsDir + "GUI/icons/vklaouseBomber2.png"), "title2"));
+	_neededImages.push_back(std::tuple<std::string, std::string>(
+		(_assetsDir + "GUI/icons/cmuttiBomber.png"), "title2"));
+	_neededImages.push_back(std::tuple<std::string, std::string>(
+		(_assetsDir + "GUI/icons/cmuttiBomber2.png"), "title3"));
+	// _neededImages.push_back(std::tuple<std::string, std::string>(
+	// 	(_assetsDir + "GUI/icons/vklaouseBomber3.png"), "title5"));
+
 	_updateVarsFromSave();
 
 	// Audio settings
@@ -71,7 +82,7 @@ void MainMenu::drawGUI(GUI *graphicUI) {
 			if (graphicUI->uiHorizontalSelection(
 					(_gameEngine->getGameRenderer()->getWidth() / 5), "",
 					_levelsName[_lvlIndex], &_lvlIndex,
-					_levelsName.size() - 1)) {
+					_levelsName.size() - 1, 30)) {
 				_gameEngine->playSound("lateral_select");
 			}
 		}
@@ -104,7 +115,7 @@ void MainMenu::drawGUI(GUI *graphicUI) {
 					((_gameEngine->getGameRenderer()->getWidth() / 5) / 2),
 				(_gameEngine->getGameRenderer()->getHeight() / 5) * 4, 20,
 				"_BOMBERMAN", &extraSizeSetting, 10, &isSettingButtonHover,
-				"Settings", "settings")) {
+				"Settings")) {
 			_changeSettings = true;
 			_gameEngine->playSound("open_settings");
 		}
@@ -144,58 +155,53 @@ void MainMenu::_settings(GUI *graphicUI) {
 					_gameEngine->getGameRenderer()->getWidth() / 2,
 					(_gameEngine->getGameRenderer()->getHeight() / 3) * 2),
 			NK_WINDOW_BORDER | NK_WINDOW_TITLE)) {
-		graphicUI->uiHeader("Options", NK_TEXT_CENTERED, 30, "28_BOMBERMAN");
-
+		int rowHeight = ((_gameEngine->getGameRenderer()->getHeight() / 3) * 2) / 15;
+		rowHeight = rowHeight < 30 ? 30 : rowHeight;
+		graphicUI->uiHeader("Options", NK_TEXT_CENTERED, rowHeight, "28_BOMBERMAN");
 		if (graphicUI->uiHorizontalSelection(
 				_gameEngine->getGameRenderer()->getWidth() / 2,
 				"Window Resolution",
 				std::get<0>(Save::RESOLUTIONS[_resolutionsIdx]),
-				&_resolutionsIdx, Save::RESOLUTIONS.size() - 1)) {
+				&_resolutionsIdx, Save::RESOLUTIONS.size() - 1, rowHeight)) {
 			_gameEngine->playSound("lateral_select");
 		}
 		if (graphicUI->uiHorizontalSelection(
 				_gameEngine->getGameRenderer()->getWidth() / 2, "Full Screen",
 				std::get<0>(Save::FULL_SCREEN[_isFullScreen]), &_isFullScreen,
-				Save::FULL_SCREEN.size() - 1)) {
+				Save::FULL_SCREEN.size() - 1, rowHeight)) {
 			_gameEngine->playSound("lateral_select");
 		}
 		if (graphicUI->uiHorizontalSelection(
 				_gameEngine->getGameRenderer()->getWidth() / 2, "Music Volume",
 				std::get<0>(Save::VOLUMES[_musicVolume]), &_musicVolume,
-				Save::VOLUMES.size() - 1)) {
+				Save::VOLUMES.size() - 1, rowHeight)) {
 			_gameEngine->updateMusicVolume(_musicVolume);
 			_gameEngine->playSound("lateral_select");
 		}
 		if (graphicUI->uiHorizontalSelection(
 				_gameEngine->getGameRenderer()->getWidth() / 2, "Sounds Volume",
 				std::get<0>(Save::VOLUMES[_soundsVolume]), &_soundsVolume,
-				Save::VOLUMES.size() - 1)) {
+				Save::VOLUMES.size() - 1, rowHeight)) {
 			_gameEngine->updateSoundsVolume(_soundsVolume);
 			_gameEngine->playSound("lateral_select");
 		}
-		// if
-		// (graphicUI->uiHorizontalSelection(_gameEngine->getGameRenderer()->getWidth()
-		// / 2, "Test5", _levelsName[_lvlIndex],
-		// &_lvlIndex, _levelsName.size()
-		// - 1)) {
-		// }
 
-		graphicUI->uiHeader("Keyboard Controls", NK_TEXT_CENTERED, 30,
+		graphicUI->uiHeader("Keyboard Controls", NK_TEXT_CENTERED, rowHeight,
 							"28_BOMBERMAN");
 		graphicUI->uiHorizontalEditString(
 			_gameEngine->getGameRenderer()->getWidth() / 2, "Move Up",
-			NK_EDIT_FIELD, _upChoice, &len1, 2, nk_filter_default);
+			NK_EDIT_FIELD, _upChoice, &len1, 2, nk_filter_default, rowHeight);
 		graphicUI->uiHorizontalEditString(
 			_gameEngine->getGameRenderer()->getWidth() / 2, "Move Left",
-			NK_EDIT_FIELD, _leftChoice, &len2, 2, nk_filter_default);
+			NK_EDIT_FIELD, _leftChoice, &len2, 2, nk_filter_default, rowHeight);
 		graphicUI->uiHorizontalEditString(
 			_gameEngine->getGameRenderer()->getWidth() / 2, "Move Down",
-			NK_EDIT_FIELD, _downChoice, &len3, 2, nk_filter_default);
+			NK_EDIT_FIELD, _downChoice, &len3, 2, nk_filter_default, rowHeight);
 		graphicUI->uiHorizontalEditString(
 			_gameEngine->getGameRenderer()->getWidth() / 2, "Move Right",
-			NK_EDIT_FIELD, _rightChoice, &len4, 2, nk_filter_default);
+			NK_EDIT_FIELD, _rightChoice, &len4, 2, nk_filter_default, rowHeight);
 
-		int btnWidth = (_gameEngine->getGameRenderer()->getWidth() / 6) - 11;
+		int btnWidth = (_gameEngine->getGameRenderer()->getWidth() / 6) - 12;
 		graphicUI->uiRowMultipleElem(true, 60, 3);
 		graphicUI->uiAddElemInRow(btnWidth);
 		if (graphicUI->uiButton(btnWidth, 50, 0, "Back", "", "", false)) {
@@ -235,25 +241,31 @@ void MainMenu::_settings(GUI *graphicUI) {
 }
 
 void MainMenu::_movingTitle(GUI *graphicUI) {
-	static int extraSizeTitle = 40;
+	static int extraSizeTitle = 0;
 	static bool titleIsGrowing = true;
 	if (_slowTitle) {
 		_slowTitle = !_slowTitle;
-		if (extraSizeTitle < 48 && titleIsGrowing)
-			extraSizeTitle++;
-		else if (extraSizeTitle > 38 && !titleIsGrowing)
-			extraSizeTitle--;
+		if (extraSizeTitle < 40 && titleIsGrowing)
+			extraSizeTitle += 2;
+		else if (extraSizeTitle > 0 && !titleIsGrowing)
+			extraSizeTitle -= 2;
 		else
 			titleIsGrowing = !titleIsGrowing;
 	} else
 		_slowTitle = !_slowTitle;
+	size_t x = (_gameEngine->getGameRenderer()->getWidth() / 4) - (extraSizeTitle / 2);
+	size_t y = (_gameEngine->getGameRenderer()->getHeight() / 15) - (extraSizeTitle / 4);
+	size_t width = (_gameEngine->getGameRenderer()->getWidth() / 2) + extraSizeTitle;
+	size_t height = (_gameEngine->getGameRenderer()->getHeight() / 4) +  (extraSizeTitle / 4);
 	if (graphicUI->uiStartBlock(
 			"Title", "",
-			nk_rect(0, (_gameEngine->getGameRenderer()->getHeight() / 5) * 1,
-					_gameEngine->getGameRenderer()->getWidth(), 50),
+			nk_rect(x, y, width + 20, height + 10),
 			NK_WINDOW_NO_SCROLLBAR)) {
-		graphicUI->uiHeader("Super Bomberman", NK_TEXT_CENTERED, 48,
-							std::to_string(extraSizeTitle) + "_BOMBERMAN");
+		graphicUI->uiRowMultipleElem(true, height);
+		graphicUI->uiAddElemInRow(width);
+		graphicUI->uiSetImage("title1");
+		graphicUI->uiRowMultipleElem(false);
+
 	}
 	graphicUI->uiEndBlock();
 }

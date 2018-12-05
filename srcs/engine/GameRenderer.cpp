@@ -44,16 +44,20 @@ GameRenderer::~GameRenderer(void) {
 void GameRenderer::_initWindow(void) {
 	if (_window) glfwDestroyWindow(_window);
 
-	_window =
-		glfwCreateWindow(_widthRequested, _heightRequested, "Bomberman", NULL,
-						 NULL);  // Size of screen will change
+	_monitor = glfwGetPrimaryMonitor();
+	_mode = glfwGetVideoMode(_monitor);
+	if (_isFullScreen) {
+		_widthRequested = _mode->width;
+		_heightRequested = _mode->height;
+	}
+	_window = glfwCreateWindow(_widthRequested, _heightRequested, "Bomberman",
+							   _isFullScreen ? _monitor : nullptr, nullptr);
 	if (!_window) {
 		glfwTerminate();
 		throw std::runtime_error("Failed to create windows GLFW");
 	}
-	const GLFWvidmode *mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-	glfwSetWindowPos(_window, (mode->width / 2) - (_widthRequested / 2),
-					 (mode->height / 2) - (_heightRequested / 2));
+	glfwSetWindowPos(_window, (_mode->width / 2) - (_widthRequested / 2),
+					 (_mode->height / 2) - (_heightRequested / 2));
 	glfwGetFramebufferSize(_window, &_width, &_height);
 	glfwMakeContextCurrent(_window);
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
@@ -245,11 +249,40 @@ void GameRenderer::setNewResolution(bool isFullScreen, int width, int height) {
 	if (isFullScreen == _isFullScreen && width == _widthRequested &&
 		height == _heightRequested)
 		return;
+
+	if (width > _mode->width) {
+		std::cerr
+			<< "\033[0;33m:Warning:\033[0m "
+			<< "Your screen doesn't support a resolution width bigger than "
+			<< _mode->width << " (" << width << " asked)" << std::endl;
+		width = _mode->width;
+	}
+	if (height > _mode->height) {
+		std::cerr
+			<< "\033[0;33m:Warning:\033[0m "
+			<< "Your screen doesn't support a resolution height bigger than "
+			<< _mode->height << " (" << height << " asked)" << std::endl;
+		height = _mode->height;
+	}
 	_isFullScreen = isFullScreen;
 	_widthRequested = width;
 	_heightRequested = height;
-	_initWindow();
-	// glfwGetFramebufferSize(_window, &_width, &_height);
+
+	if (_isFullScreen) {
+		_widthRequested = _mode->width;
+		_heightRequested = _mode->height;
+	}
+
+	glfwSetWindowMonitor(_window, _isFullScreen ? _monitor : nullptr,
+						 (_mode->width / 2) - (_widthRequested / 2),
+						 (_mode->height / 2) - (_heightRequested / 2),
+						 _widthRequested, _heightRequested, 60);
+	if (!_isFullScreen) {
+		// Glfw breaks constraints when it switches back from fullscreen to
+		// windowed
+		glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
+	}
+	glfwGetFramebufferSize(_window, &_width, &_height);
 }
 
 Model *GameRenderer::getModel(std::string modelName) const {
@@ -297,4 +330,4 @@ void GameRenderer::keyCallback(GLFWwindow *window, int key, int scancode,
 	(void)mods;
 }
 
-GameEngine *GameRenderer::_gameEngine = NULL;
+GameEngine *GameRenderer::_gameEngine = nullptr;
