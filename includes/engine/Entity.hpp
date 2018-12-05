@@ -38,6 +38,7 @@ class Entity {
 	virtual void onCollisionEnter(Entity *entity);
 	virtual void onTriggerEnter(Entity *entity);
 
+	void updateModel(void);
 	void setColor(glm::vec3 const &color);
 	void resetColor(void);
 	void scale(glm::vec3 scale);

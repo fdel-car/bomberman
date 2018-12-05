@@ -1020,6 +1020,9 @@ void GameEngine::_setNewResolution() {
 									_game->getWindowWidth(),
 									_game->getWindowHeight());
 	_camera->configGUI(_gameRenderer->getGUI());
+	for (auto entity : _allEntities) {
+		entity->updateModel();
+	}
 	_game->needResolutionChange = false;
 }
 

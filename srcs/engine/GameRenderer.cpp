@@ -132,13 +132,10 @@ void GameRenderer::_initShader(void) {
 }
 
 void GameRenderer::_initModels(void) {
-	// TODO: free models without crashing
-	// std::cout << "model Size: " << _models.size() << std::endl;
-	// for (auto model : _models) {
-	// 	std::cout << "modelName: " << model.first << std::endl;
-	// 	delete model.second;
-	// }
-	// _models.clear();
+	for (auto model : _models) {
+		delete model.second;
+	}
+	_models.clear();
 
 	_models["Sphere"] = new Model("models/sphere/sphere.dae");
 	_models["Wall"] = new Model("models/wall/wall.dae");
