@@ -39,10 +39,10 @@ GameEngine::RectanglePoints::RectanglePoints(Entity *entity,
 		top += movement.z;
 
 	// Make Rectangle a little bigger
-	top += -1.0f;
-	bot += 1.0f;
-	left += -1.0f;
-	right += 1.0f;
+	top += -0.5f;
+	bot += 0.5f;
+	left += -0.5f;
+	right += 0.5f;
 }
 
 GameEngine::GameEngine(AGame *game)

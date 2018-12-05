@@ -38,11 +38,26 @@ void Forest::configGUI(GUI *graphicUI) {
 	graphicUI->setStyle(defaultStyle);
 	activeStyle = defaultStyle;
 	_refreshAI = false;
+	if (false) {
+		std::string str =
+			"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do "
+			"officia deserunt mollit anim id est laborum.";
+
+		_dialogues.push_back(_builNewDialogue(0, 0, 0, "Bomberman", "heart", str, false, 1000, 1000, NK_TEXT_LEFT,
+						 "20_BOMBERMAN", "24_BOMBERMAN"));
+		_dialogues.push_back(_builNewDialogue(0, 0, 0, "Bomberman", "heart", str, true, 1000, 1000, NK_TEXT_LEFT,
+						 "20_BOMBERMAN", "24_BOMBERMAN"));
+	}
 }
 
 void Forest::drawGUI(GUI *graphicUI) {
-	SceneTools::drawGUI(graphicUI);
-	_displayMultipleDialogue(graphicUI, &_dialogues);
+	if (_dialogues.empty())
+		SceneTools::drawGUI(graphicUI);
+	else {
+		_isPause = true;
+		if (!_displayMultipleDialogue(graphicUI, &_dialogues))
+			_isPause = false;
+	}
 }
 
 void Forest::tellPosition(Entity *entity) { _savePositions(entity); }
@@ -55,7 +70,6 @@ void Forest::update(void) {
 		_cooldown = 0.1f;
 		_startBuildingGrapheForPathFinding();
 		_refreshAI = true;
-		// printMapInfo();
 	}
 	_cooldown -= _gameEngine->getDeltaTime();
 }

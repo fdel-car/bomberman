@@ -126,7 +126,7 @@ void SceneTools::drawGUI(GUI *graphicUI) {
 	}
 
 	bool timerCanChange = static_cast<int>(_timer) > 0;
-	if (!isPause() && !_showDeathScreen && !_showVictoryScreen)
+	if (!isPause())
 		_displayTimer(graphicUI, false);
 	else
 		_displayTimer(graphicUI, true);
@@ -185,16 +185,15 @@ void SceneTools::_displayDialogue(GUI *graphicUI, int *searchWord,
 	int nbrOfLineTmp =
 		(((_gameEngine->getGameRenderer()->getHeight() / 4) - 45) / 22) - 2;
 	nbrOfLine = nbrOfLine > nbrOfLineTmp ? nbrOfLineTmp : nbrOfLine;
-	if (_slowGUIAnimation) {
-		if (*searchWord < (int)str.size()) {
-			*searchWord += 1;
-			if (str[*searchWord] == ' ') *lastWord = *searchWord;
-		} else
-			*lastWord = *searchWord;
-		if (*lastWord - *startStrIdx >= (int)maxCharPerLine * (nbrOfLine - 1))
-			*startStrIdx += maxCharPerLine;
-	}
-	_slowGUIAnimation = !_slowGUIAnimation;
+	if (nbrOfLine > 2)
+		nbrOfLine -= 1;
+	if (*searchWord < (int)str.size()) {
+		*searchWord += 1;
+		if (str[*searchWord] == ' ') *lastWord = *searchWord;
+	} else
+		*lastWord = *searchWord;
+	if (*lastWord - *startStrIdx >= (int)maxCharPerLine * nbrOfLine)
+		*startStrIdx += maxCharPerLine;
 	std::string displayableStr =
 		str.substr(*startStrIdx, *lastWord - *startStrIdx);
 	graphicUI->uiDialogBox(name.c_str(), imgName, displayableStr.c_str(),
@@ -401,9 +400,7 @@ bool SceneTools::_btnHover(GUI *graphicUI, int rectWidth, int rectHeight,
 bool SceneTools::_displayMultipleDialogue(GUI *graphicUI,
 										  std::vector<Dialogue> *dialogues) {
 	if (!dialogues->empty()) {
-		if (dialogues->at(0).searchWord ==
-				static_cast<int>(dialogues->at(0).text.size()) &&
-			_gameEngine->isKeyPressed(KEY_SPACE)) {
+		if (_gameEngine->isKeyJustPressed(KEY_SPACE)) {
 			dialogues->erase(dialogues->begin());
 			if (!dialogues->empty())
 				_displayDialogue(
@@ -414,6 +411,8 @@ bool SceneTools::_displayMultipleDialogue(GUI *graphicUI,
 					dialogues->at(0).maxCharPerLine, dialogues->at(0).nbrOfLine,
 					dialogues->at(0).textPosition, dialogues->at(0).fontText,
 					dialogues->at(0).fontTitle);
+			if (dialogues->empty())
+				return false;
 		} else
 			_displayDialogue(
 				graphicUI, &dialogues->at(0).searchWord,

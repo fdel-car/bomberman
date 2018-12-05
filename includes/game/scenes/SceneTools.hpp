@@ -49,7 +49,7 @@ class SceneTools : public Camera {
 	SceneTools(size_t mapWidth, size_t mapHeight, glm::vec3 const &pos,
 			   glm::vec3 const &eulerAngles, Bomberman *bomberman,
 			   std::string ownLvlName = "", std::string nextLvlName = "",
-			   float timer = 180.0f);
+			   float timer = 181.0f);
 	virtual ~SceneTools(void);
 
 	virtual void initEntity(GameEngine *gameEngine);

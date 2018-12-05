@@ -140,7 +140,7 @@ void MainMenu::_settings(GUI *graphicUI) {
 	if (graphicUI->uiStartBlock(
 			"SettingMenu", "Settings",
 			nk_rect((_gameEngine->getGameRenderer()->getWidth() / 4),
-					(_gameEngine->getGameRenderer()->getHeight() / 3) / 2,
+					(_gameEngine->getGameRenderer()->getHeight() / 6),
 					_gameEngine->getGameRenderer()->getWidth() / 2,
 					(_gameEngine->getGameRenderer()->getHeight() / 3) * 2),
 			NK_WINDOW_BORDER | NK_WINDOW_TITLE)) {
