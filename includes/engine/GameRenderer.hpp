@@ -35,7 +35,7 @@ class GameRenderer final {
 	void switchCursorMode(bool debug) const;
 	void refreshWindow(std::vector<Entity *> &entities, Camera *camera,
 					   Light *light, Skybox *skybox);
-	void setNewResolution(bool isFullscreen, int width, int height);
+	void setNewResolution(bool isFullScreen, int width, int height);
 
 	Model *getModel(std::string modelName) const;
 	int getWidth(void) const;
@@ -57,7 +57,8 @@ class GameRenderer final {
 
 	GameRenderer &operator=(GameRenderer const &rhs);
 
-	void _initGUI(AGame *game);
+	void _initWindow(void);
+	void _initGUI(void);
 	bool _initDepthMap(void);
 	void _initShader(void);
 	void _initModels(void);
@@ -70,12 +71,15 @@ class GameRenderer final {
 
 	// General vars
 	GLFWwindow *_window;
+	AGame *_game;
 	bool _isFullScreen;
 	int _width;
 	int _height;
+	int _widthRequested;
+	int _heightRequested;
 
 	// Nuklear vars
-	GUI *graphicUI;
+	GUI *_graphicUI;
 
 	// Rendering vars
 	ShaderProgram *_shaderProgram;

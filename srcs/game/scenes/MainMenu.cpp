@@ -193,6 +193,9 @@ void MainMenu::_settings(GUI *graphicUI) {
 			_updateVarsFromSave();
 			_gameEngine->updateMusicVolume(_musicVolume);
 			_gameEngine->updateSoundsVolume(_soundsVolume);
+			_gameEngine->setNewResolution(_bomberman->isFullScreen(),
+										  _bomberman->getWindowWidth(),
+										  _bomberman->getWindowHeight());
 			_changeSettings = false;
 			_gameEngine->playSound("reset_default");
 		}
@@ -203,6 +206,9 @@ void MainMenu::_settings(GUI *graphicUI) {
 			_updateVarsFromSave();
 			_gameEngine->updateMusicVolume(_musicVolume);
 			_gameEngine->updateSoundsVolume(_soundsVolume);
+			_gameEngine->setNewResolution(_bomberman->isFullScreen(),
+										  _bomberman->getWindowWidth(),
+										  _bomberman->getWindowHeight());
 			_changeSettings = false;
 			_gameEngine->playSound("save");
 		}

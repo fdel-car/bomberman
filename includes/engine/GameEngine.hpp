@@ -38,6 +38,7 @@ class GameEngine {
 	void buttonStateChanged(int keyID, bool isPressed);
 
 	// Function to change key game settings
+	void setNewResolution(bool isFullScreen, int width, int height);
 	void updateMusicVolume(int newValue);
 	void updateSoundsVolume(int newValue);
 

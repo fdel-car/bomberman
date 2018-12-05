@@ -1013,6 +1013,10 @@ bool GameEngine::_tryShortcut(Entity *entity, glm::vec3 &futureMovement,
 	return false;
 }
 
+void GameEngine::setNewResolution(bool isFullScreen, int width, int height) {
+	_gameRenderer->setNewResolution(isFullScreen, width, height);
+}
+
 void GameEngine::updateMusicVolume(int newValue) {
 	_audioManager->updateMusicVolume(newValue);
 }
