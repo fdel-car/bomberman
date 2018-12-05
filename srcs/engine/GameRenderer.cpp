@@ -7,7 +7,8 @@
 extern std::string _srcsDir;
 // extern std::string _assetsDir;
 
-GameRenderer::GameRenderer(GameEngine *gameEngine, AGame *game) {
+GameRenderer::GameRenderer(GameEngine *gameEngine, AGame *game)
+	: _width(game->getWindowWidth()), _height(game->getWindowHeight()) {
 	_gameEngine = gameEngine;
 	glfwSetErrorCallback(errorCallback);
 	if (!glfwInit()) throw std::runtime_error("Failed to initialize GLFW");
@@ -20,20 +21,20 @@ GameRenderer::GameRenderer(GameEngine *gameEngine, AGame *game) {
 #endif
 	glfwWindowHint(GLFW_FOCUSED, GL_TRUE);
 	glfwWindowHint(GLFW_SAMPLES, 4);
-	_window = glfwCreateWindow(WINDOW_W, WINDOW_H, "Bomberman", NULL,
+	_window = glfwCreateWindow(_width, _height, "Bomberman", NULL,
 							   NULL);  // Size of screen will change
 	if (!_window) {
 		glfwTerminate();
 		throw std::runtime_error("Failed to create windows GLFW");
 	}
 	const GLFWvidmode *mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-	glfwSetWindowPos(_window, (mode->width / 2) - (WINDOW_W / 2),
-					 (mode->height / 2) - (WINDOW_H / 2));
-	glfwGetWindowSize(_window, &_width, &_height);
+	glfwSetWindowPos(_window, (mode->width / 2) - (_width / 2),
+					 (mode->height / 2) - (_height / 2));
+	glfwGetFramebufferSize(_window, &_width, &_height);
 	glfwMakeContextCurrent(_window);
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 		throw std::runtime_error("Failed to initialize GLAD");
-	glViewport(0, 0, WINDOW_W, WINDOW_H);
+	glViewport(0, 0, _width, _height);
 	glfwSetKeyCallback(_window, keyCallback);
 	glfwSetCursorPosCallback(_window, mouseCallback);
 
@@ -157,7 +158,7 @@ void GameRenderer::refreshWindow(std::vector<Entity *> &entities,
 	}
 
 	// Basic rendering OpenGL state
-	glViewport(0, 0, WINDOW_W, WINDOW_H);
+	glViewport(0, 0, _width, _height);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glUseProgram(_shaderProgram->getID());
 	_shaderProgram->setMat4("V", camera->getViewMatrix());
@@ -247,7 +248,7 @@ void GameRenderer::mouseCallback(GLFWwindow *window, double xPos, double yPos) {
 	(void)window;
 }
 
-glm::vec2 GameRenderer::_mousePos = glm::vec2(WINDOW_W / 2, WINDOW_H / 2);
+glm::vec2 GameRenderer::_mousePos = glm::vec2();
 
 glm::vec2 GameRenderer::getMousePos(void) const { return _mousePos; }
 

@@ -3,9 +3,9 @@
 #include "engine/Camera.hpp"
 #include "engine/Collider.hpp"
 #include "engine/Light.hpp"
-#include "engine/Skybox.hpp"
 #include "engine/Model.hpp"
 #include "engine/ShaderProgram.hpp"
+#include "engine/Skybox.hpp"
 
 #include "GUI/GUI.hpp"
 
@@ -45,12 +45,12 @@ class GameRenderer {
 	bool active;
 
    private:
-	GameRenderer(void);
 	static void keyCallback(GLFWwindow *window, int key, int scancode,
 							int action, int mods);
 	static void mouseCallback(GLFWwindow *window, double xpos, double ypos);
 	static void errorCallback(int error, const char *description);
 
+	GameRenderer(void);
 	GameRenderer(GameRenderer const &src);
 
 	GameRenderer &operator=(GameRenderer const &rhs);
@@ -64,12 +64,12 @@ class GameRenderer {
 	// void _initSkyboxFaces(void);
 
 	static GameEngine *_gameEngine;
+	static glm::vec2 _mousePos;
 
 	// General vars
 	GLFWwindow *_window;
-	int _width = 0;
-	int _height = 0;
-	static glm::vec2 _mousePos;
+	int _width;
+	int _height;
 
 	// Nuklear vars
 	GUI *graphicUI;
