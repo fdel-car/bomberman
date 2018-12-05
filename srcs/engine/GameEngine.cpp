@@ -24,10 +24,10 @@ GameEngine::LineInfo::LineInfo(float startX, float startZ, float endX,
 
 GameEngine::RectanglePoints::RectanglePoints(Entity *entity,
 											 glm::vec3 movement) {
-	top = entity->getPosition().z - entity->getCollider()->height - EPSILON;
-	bot = entity->getPosition().z + entity->getCollider()->height + EPSILON;
-	left = entity->getPosition().x - entity->getCollider()->width - EPSILON;
-	right = entity->getPosition().x + entity->getCollider()->width + EPSILON;
+	top = entity->getPosition().z - entity->getCollider()->height;
+	bot = entity->getPosition().z + entity->getCollider()->height;
+	left = entity->getPosition().x - entity->getCollider()->width;
+	right = entity->getPosition().x + entity->getCollider()->width;
 
 	if (movement.x > 0.0f)
 		right += movement.x;
@@ -37,6 +37,12 @@ GameEngine::RectanglePoints::RectanglePoints(Entity *entity,
 		bot += movement.z;
 	else if (movement.z < 0.0f)
 		top += movement.z;
+
+	// Make Rectangle a little bigger
+	top += -1.0f;
+	bot += 1.0f;
+	left += -1.0f;
+	right += 1.0f;
 }
 
 GameEngine::GameEngine(AGame *game)
@@ -379,6 +385,7 @@ void GameEngine::_loadScene(size_t newSceneIdx, std::atomic_int *_sceneState,
 void GameEngine::_moveEntities(void) {
 	const Collider *collider;
 	bool isShortcut = false;
+	std::vector<Entity *> collidedEntitiesBck = std::vector<Entity *>();
 	std::vector<Entity *> collidedEntities = std::vector<Entity *>();
 	std::vector<Entity *> collidedTriggers = std::vector<Entity *>();
 	glm::vec3 futureMovement = glm::vec3();
@@ -393,6 +400,7 @@ void GameEngine::_moveEntities(void) {
 	for (auto entity : _allEntities) {
 		if (!entity->getNeedToBeDestroyed()) {
 			collider = entity->getCollider();
+			collidedEntitiesBck.clear();
 			collidedEntities.clear();
 			collidedTriggers.clear();
 			isShortcut = false;
@@ -404,6 +412,7 @@ void GameEngine::_moveEntities(void) {
 			if (collider != nullptr) {
 				_getPossibleCollisions(entity, collidedEntities,
 									   collidedTriggers, _allEntities);
+				collidedEntitiesBck = collidedEntities;
 
 				// Init vars before first loop
 				if (entity->getTargetMovement().x != 0.0f ||
@@ -428,7 +437,7 @@ void GameEngine::_moveEntities(void) {
 								// first loop
 								if (_tryShortcut(entity, futureMovement,
 												 shortcutMovement,
-												 collidedEntities)) {
+												 collidedEntitiesBck)) {
 									isShortcut = true;
 									futureMovement = shortcutMovement;
 									break;
