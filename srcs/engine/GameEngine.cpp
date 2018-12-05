@@ -61,7 +61,7 @@ GameEngine::GameEngine(AGame *game)
 	_game->setAudioManager(_audioManager);
 
 	// Force load of first scene
-	_sceneIdx = _game->getFirstSceneIdx();  // TODO: get first Scene
+	_sceneIdx = _game->getFirstSceneIdx();
 
 	// Thread atomic Int
 	_sceneState = BACKGROUND_LOAD_NEEDED;
