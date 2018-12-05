@@ -77,6 +77,8 @@ class GameRenderer final {
 	int _height;
 	int _widthRequested;
 	int _heightRequested;
+	GLFWmonitor *_monitor;
+	const GLFWvidmode *_mode;
 
 	// Nuklear vars
 	GUI *_graphicUI;
