@@ -5,7 +5,7 @@
 #include <assimp/Importer.hpp>
 #include "engine/Mesh.hpp"
 
-class Model {
+class Model final {
    public:
 	Model(std::string const &modelPath);
 	virtual ~Model(void);

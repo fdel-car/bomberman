@@ -1,13 +1,26 @@
 #include "engine/AudioManager.hpp"
 
-AudioManager::AudioManager(void)
-	: _soundPlayers(std::vector<sf::Sound>()),
+AudioManager::AudioManager(int musicVolume, int soundsVolume)
+	: _musicVolume(musicVolume),
+	  _soundsVolume(soundsVolume),
+	  _soundPlayers(std::vector<sf::Sound>()),
 	  _soundsMap(std::map<std::string, sf::SoundBuffer>()) {
 	_musicPlayer.setLoop(true);
-	_musicPlayer.setVolume(50);
+	_musicPlayer.setVolume(_musicVolume);
 }
 
 AudioManager::~AudioManager(void) {}
+
+void AudioManager::updateMusicVolume(int newValue) {
+	_musicVolume = newValue;
+	_musicPlayer.setVolume(_musicVolume * 0.5f);
+}
+void AudioManager::updateSoundsVolume(int newValue) {
+	_soundsVolume = newValue;
+	for (auto player : _soundPlayers) {
+		player.setVolume(_soundsVolume * 100.0f);
+	}
+}
 
 void AudioManager::loadSounds(std::map<std::string, std::string> resources) {
 	// Stop all sounds
@@ -46,6 +59,7 @@ void AudioManager::playMusic(std::string musicPath) {
 	}
 
 	if (_musicPlayer.openFromFile(musicPath)) {
+		_musicPlayer.setVolume(_musicVolume);
 		_musicPlayer.play();
 	} else {
 		std::cerr << "\033[0;33m:Warning:\033[0m Could not load Music at "
@@ -67,7 +81,7 @@ void AudioManager::playSound(std::string soundName) {
 		// SFML limit: cannot have more than 256 music/sound players
 		if (_soundPlayers.size() < 254) {
 			_soundPlayers.push_back(sf::Sound());
-			_soundPlayers.back().setVolume(100);
+			_soundPlayers.back().setVolume(_soundsVolume);
 			_soundPlayers.back().setBuffer(_soundsMap[soundName]);
 			_soundPlayers.back().play();
 		} else {

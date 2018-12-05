@@ -39,13 +39,12 @@ SceneTools::SceneTools(size_t mapWidth, size_t mapHeight, glm::vec3 const &pos,
 	_neededImages.push_back(std::tuple<std::string, std::string>(
 		(_assetsDir + "GUI/icons/sad_chopper.png"), "sad_chopper"));
 
-	_initNeededSounds();
 	// TODO: music when starting dialogues
 }
 
 SceneTools::~SceneTools(void) { _clearGraphe(); }
 
-void SceneTools::_initNeededSounds(void) {
+void SceneTools::_initSoundsForGameplay(void) {
 	// Explosion sounds
 	_neededSounds["explosion_1"] =
 		_assetsDir + "Audio/Sounds/Explosion/explosion_1.wav";
@@ -72,6 +71,11 @@ void SceneTools::_initNeededSounds(void) {
 		_assetsDir + "Audio/Sounds/Hero/winner_effect.wav";
 	_neededSounds["winner_voice"] =
 		_assetsDir + "Audio/Sounds/Hero/winner_voice.wav";
+
+	// Pause menu
+	_neededSounds["pause_start"] =
+		_assetsDir + "Audio/Sounds/Menu/pause_start.wav";
+	_neededSounds["pause_end"] = _assetsDir + "Audio/Sounds/Menu/pause_end.wav";
 
 	// Sounds that are not used in this class, but will not be loaded otherwise
 	_neededSounds["put_bomb_1"] =
@@ -100,9 +104,16 @@ void SceneTools::initEntity(GameEngine *gameEngine) {
 }
 
 void SceneTools::drawGUI(GUI *graphicUI) {
-	if (!_debugMode && (_pauseMenu || _gameEngine->isKeyPressed(KEY_ESCAPE))) {
+	if (!_debugMode &&
+		(_pauseMenu || _gameEngine->isKeyJustPressed(KEY_ESCAPE))) {
 		_pauseMenu = _displayPauseMenu(graphicUI);
 		_isPause = _pauseMenu;
+		if (_isPause && _gameEngine->isKeyJustPressed(KEY_ESCAPE)) {
+			_gameEngine->playSound("pause_start");
+
+		} else if (!_isPause) {
+			_gameEngine->playSound("pause_end");
+		}
 	}
 
 	if (_showPlayerHp) {
@@ -165,11 +176,14 @@ void SceneTools::_displayDialogue(GUI *graphicUI, int *searchWord,
 								  size_t maxCharPerLine, int nbrOfLine,
 								  nk_flags textPosition, std::string fontText,
 								  std::string fontTitle) {
-	size_t maxCPL =
-		((WINDOW_W / 4) * 3 - (((WINDOW_H / 4) - 45) - (WINDOW_W / 4)) - 40) /
-		8.5;
+	size_t maxCPL = ((_gameEngine->getGameRenderer()->getWidth() / 4) * 3 -
+					 (((_gameEngine->getGameRenderer()->getHeight() / 4) - 45) -
+					  (_gameEngine->getGameRenderer()->getWidth() / 4)) -
+					 40) /
+					8.5;
 	maxCharPerLine = maxCharPerLine > maxCPL ? maxCPL : maxCharPerLine;
-	int nbrOfLineTmp = (((WINDOW_H / 4) - 45) / 22) - 2;
+	int nbrOfLineTmp =
+		(((_gameEngine->getGameRenderer()->getHeight() / 4) - 45) / 22) - 2;
 	nbrOfLine = nbrOfLine > nbrOfLineTmp ? nbrOfLineTmp : nbrOfLine;
 	if (_slowGUIAnimation) {
 		if (*searchWord < (int)str.size()) {
@@ -192,20 +206,29 @@ bool SceneTools::_displayPauseMenu(GUI *graphicUI) {
 	bool res = true;
 	if (graphicUI->uiStartBlock(
 			"PauseMenu", "Pause",
-			nk_rect((WINDOW_W / 2) - (WINDOW_W / 8), (WINDOW_H / 3),
-					WINDOW_W / 4, WINDOW_H / 3),
+			nk_rect((_gameEngine->getGameRenderer()->getWidth() / 2) -
+						(_gameEngine->getGameRenderer()->getWidth() / 8),
+					(_gameEngine->getGameRenderer()->getHeight() / 3),
+					_gameEngine->getGameRenderer()->getWidth() / 4,
+					_gameEngine->getGameRenderer()->getHeight() / 3),
 			NK_WINDOW_NO_SCROLLBAR | NK_WINDOW_BORDER | NK_WINDOW_TITLE)) {
-		if (graphicUI->uiButton(WINDOW_W / 4, (WINDOW_H / 9) - 9, 0, "Resume",
-								"", "20_BOMBERMAN")) {
+		if (graphicUI->uiButton(
+				_gameEngine->getGameRenderer()->getWidth() / 4,
+				(_gameEngine->getGameRenderer()->getHeight() / 9) - 9, 0,
+				"Resume", "", "20_BOMBERMAN")) {
 			res = false;
 		}
-		if (graphicUI->uiButton(WINDOW_W / 4, (WINDOW_H / 9) - 9, 0, "Restart",
-								"", "20_BOMBERMAN")) {
+		if (graphicUI->uiButton(
+				_gameEngine->getGameRenderer()->getWidth() / 4,
+				(_gameEngine->getGameRenderer()->getHeight() / 9) - 9, 0,
+				"Restart", "", "20_BOMBERMAN")) {
 			_newSceneName = _ownLvlName;
 			res = false;
 		}
-		if (graphicUI->uiButton(WINDOW_W / 4, (WINDOW_H / 9) - 9, 0, "Quit", "",
-								"20_BOMBERMAN")) {
+		if (graphicUI->uiButton(
+				_gameEngine->getGameRenderer()->getWidth() / 4,
+				(_gameEngine->getGameRenderer()->getHeight() / 9) - 9, 0,
+				"Quit", "", "20_BOMBERMAN")) {
 			_newSceneName = _startLvlName;
 			res = false;
 		}
@@ -215,7 +238,8 @@ bool SceneTools::_displayPauseMenu(GUI *graphicUI) {
 }
 
 void SceneTools::_displayPlayerHP(GUI *graphicUI, size_t hp) {
-	int rowHeight = std::min(WINDOW_H / 12, 50);
+	int rowHeight =
+		std::min(_gameEngine->getGameRenderer()->getHeight() / 12, 50);
 	int rowWidth = _playerMaxHp * rowHeight;
 	int windowWidth = rowWidth + 26;
 	int windowHeight = rowHeight + 10;
@@ -248,8 +272,8 @@ void SceneTools::_displayPlayerHP(GUI *graphicUI, size_t hp) {
 }
 
 void SceneTools::_displayVictoryScreen(GUI *graphicUI) {
-	int windowWidth = WINDOW_W / 4;
-	int windowHeight = WINDOW_H / 3;
+	int windowWidth = _gameEngine->getGameRenderer()->getWidth() / 4;
+	int windowHeight = _gameEngine->getGameRenderer()->getHeight() / 3;
 	int rowHeight = (windowHeight / 3) - 17;
 	// int rowWidth = windowWidth - 10;
 	// int blockXPadding = 8;
@@ -258,7 +282,9 @@ void SceneTools::_displayVictoryScreen(GUI *graphicUI) {
 	// return;
 	if (graphicUI->uiStartBlock(
 			"VictoryScreen", "Victory !",
-			nk_rect((WINDOW_W / 2) - (WINDOW_W / 8), (WINDOW_H / 3),
+			nk_rect((_gameEngine->getGameRenderer()->getWidth() / 2) -
+						(_gameEngine->getGameRenderer()->getWidth() / 8),
+					(_gameEngine->getGameRenderer()->getHeight() / 3),
 					windowWidth, windowHeight),
 			NK_WINDOW_NO_SCROLLBAR | NK_WINDOW_BORDER | NK_WINDOW_TITLE)) {
 		rowHeight += 8;
@@ -279,8 +305,8 @@ void SceneTools::_displayVictoryScreen(GUI *graphicUI) {
 }
 
 void SceneTools::_displayDeathScreen(GUI *graphicUI) {
-	int windowWidth = WINDOW_W / 4;
-	int windowHeight = WINDOW_H / 3;
+	int windowWidth = _gameEngine->getGameRenderer()->getWidth() / 4;
+	int windowHeight = _gameEngine->getGameRenderer()->getHeight() / 3;
 	int rowHeight = (windowHeight / 3) - 17;
 	int rowWidth = windowWidth - 10;
 	// int blockXPadding = 8;
@@ -289,7 +315,9 @@ void SceneTools::_displayDeathScreen(GUI *graphicUI) {
 	// return;
 	if (graphicUI->uiStartBlock(
 			"DeathScreen", "Defeat !",
-			nk_rect((WINDOW_W / 2) - (WINDOW_W / 8), (WINDOW_H / 3),
+			nk_rect((_gameEngine->getGameRenderer()->getWidth() / 2) -
+						(_gameEngine->getGameRenderer()->getWidth() / 8),
+					(_gameEngine->getGameRenderer()->getHeight() / 3),
 					windowWidth, windowHeight),
 			NK_WINDOW_NO_SCROLLBAR | NK_WINDOW_BORDER | NK_WINDOW_TITLE)) {
 		graphicUI->uiRowMultipleElem(true, rowHeight, 1);
@@ -315,9 +343,11 @@ void SceneTools::_displayTimer(GUI *graphicUI, bool isPause) {
 	if (_timer > 0.0f && !isPause) _timer -= _gameEngine->getDeltaTime();
 	activeStyle[NK_COLOR_WINDOW] = nk_rgba(57, 67, 71, 150);
 	graphicUI->setStyle(activeStyle);
-	if (graphicUI->uiStartBlock("timer", "",
-								nk_rect(WINDOW_W / 7 * 3, 0, WINDOW_W / 7, 60),
-								NK_WINDOW_NO_SCROLLBAR | NK_COLOR_BORDER)) {
+	if (graphicUI->uiStartBlock(
+			"timer", "",
+			nk_rect(_gameEngine->getGameRenderer()->getWidth() / 7 * 3, 0,
+					_gameEngine->getGameRenderer()->getWidth() / 7, 60),
+			NK_WINDOW_NO_SCROLLBAR | NK_COLOR_BORDER)) {
 		int tmpMinutes = _timer / 60;
 		std::string minutes = std::to_string(tmpMinutes);
 		int tmpSec = static_cast<int>(_timer) % 60;
@@ -366,6 +396,59 @@ bool SceneTools::_btnHover(GUI *graphicUI, int rectWidth, int rectHeight,
 	}
 	graphicUI->uiEndBlock();
 	return ret;
+}
+
+bool SceneTools::_displayMultipleDialogue(GUI *graphicUI,
+										  std::vector<Dialogue> *dialogues) {
+	if (!dialogues->empty()) {
+		if (dialogues->at(0).searchWord ==
+				static_cast<int>(dialogues->at(0).text.size()) &&
+			_gameEngine->isKeyPressed(KEY_SPACE)) {
+			dialogues->erase(dialogues->begin());
+			if (!dialogues->empty())
+				_displayDialogue(
+					graphicUI, &dialogues->at(0).searchWord,
+					&dialogues->at(0).lastWord, &dialogues->at(0).startStrIdx,
+					dialogues->at(0).name, dialogues->at(0).imgName,
+					dialogues->at(0).text, dialogues->at(0).isImgLeft,
+					dialogues->at(0).maxCharPerLine, dialogues->at(0).nbrOfLine,
+					dialogues->at(0).textPosition, dialogues->at(0).fontText,
+					dialogues->at(0).fontTitle);
+		} else
+			_displayDialogue(
+				graphicUI, &dialogues->at(0).searchWord,
+				&dialogues->at(0).lastWord, &dialogues->at(0).startStrIdx,
+				dialogues->at(0).name, dialogues->at(0).imgName,
+				dialogues->at(0).text, dialogues->at(0).isImgLeft,
+				dialogues->at(0).maxCharPerLine, dialogues->at(0).nbrOfLine,
+				dialogues->at(0).textPosition, dialogues->at(0).fontText,
+				dialogues->at(0).fontTitle);
+		return true;
+	} else
+		return false;
+}
+
+Dialogue SceneTools::_builNewDialogue(int searchWord, int lastWord,
+									  int startStrIdx, std::string name,
+									  std::string imgName, std::string text,
+									  bool isImgLeft, size_t maxCharPerLine,
+									  int nbrOfLine, nk_flags textPosition,
+									  std::string fontText,
+									  std::string fontTitle) {
+	Dialogue dialog;
+	dialog.searchWord = searchWord;
+	dialog.lastWord = lastWord;
+	dialog.startStrIdx = startStrIdx;
+	dialog.name = name;
+	dialog.imgName = imgName;
+	dialog.text = text;
+	dialog.isImgLeft = isImgLeft;
+	dialog.maxCharPerLine = maxCharPerLine;
+	dialog.nbrOfLine = nbrOfLine;
+	dialog.textPosition = textPosition;
+	dialog.fontText = fontText;
+	dialog.fontTitle = fontTitle;
+	return dialog;
 }
 
 void SceneTools::tellPosition(Entity *entity) { _savePositions(entity); }

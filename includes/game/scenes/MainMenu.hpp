@@ -12,6 +12,8 @@ class MainMenu : public SceneTools {
 	virtual void configGUI(GUI *graphicUI);
 
    private:
+	static bool FIRST_LOAD;
+
 	MainMenu(void);
 	MainMenu(MainMenu const &src);
 	MainMenu &operator=(MainMenu const &rhs);

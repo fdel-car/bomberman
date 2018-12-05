@@ -37,6 +37,8 @@ class Bomberman : public AGame {
 	virtual std::string getStartLevelName(void);
 	virtual int getLoadingSceneIdx(void) const;
 	virtual int getFirstSceneIdx(void) const;
+	virtual int getStartingMusicVolume(void) const;
+	virtual int getStartingSoundsVolume(void) const;
 
 	Save &getSave(void);
 

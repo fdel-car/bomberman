@@ -73,6 +73,10 @@ int AGame::getSceneIndexByName(std::string sceneName) const {
 	return -1;
 }
 
+int AGame::getStartingMusicVolume(void) const { return 5; }
+
+int AGame::getStartingSoundsVolume(void) const { return 10; }
+
 void AGame::setLayerCollision(int layer1, int layer2, bool doCollide) {
 	if ((size_t)layer1 >= _collisionTable.size() ||
 		(size_t)layer2 >= _collisionTable.size()) {

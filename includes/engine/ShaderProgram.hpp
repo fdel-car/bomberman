@@ -2,7 +2,7 @@
 
 #include "engine/Engine.hpp"
 
-class ShaderProgram {
+class ShaderProgram final {
    public:
 	ShaderProgram(std::string const& vertexPath,
 				  std::string const& fragmentPath);

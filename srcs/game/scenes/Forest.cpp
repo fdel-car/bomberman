@@ -10,6 +10,7 @@ Forest::Forest(glm::vec3 const &pos, glm::vec3 const &eulerAngles,
 	  _cooldown(0.0f) {
 	configAI();
 	_startMusic = _assetsDir + "Audio/Musics/Planet-Timbertree.wav";
+	_initSoundsForGameplay();
 }
 
 Forest::~Forest(void) {}
@@ -41,15 +42,7 @@ void Forest::configGUI(GUI *graphicUI) {
 
 void Forest::drawGUI(GUI *graphicUI) {
 	SceneTools::drawGUI(graphicUI);
-	// static int searchWord = 0;
-	// static int lastWord = 0;
-	// static int startStrIdx = 0;
-	// std::string str =
-	// 	"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do "
-	// 	"officia deserunt mollit anim id est laborum.";
-	// _displayDialogue(graphicUI, &searchWord, &lastWord, &startStrIdx,
-	// 				 "Bomberman", "heart", str, false, 1000, 1000, NK_TEXT_LEFT,
-	// 				 "12_BOMBERMAN", "18_BOMBERMAN");
+	_displayMultipleDialogue(graphicUI, &_dialogues);
 }
 
 void Forest::tellPosition(Entity *entity) { _savePositions(entity); }

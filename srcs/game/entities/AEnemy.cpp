@@ -9,7 +9,7 @@ AEnemy::AEnemy(glm::vec3 position, glm::vec3 eulerAngles, std::string name,
 			   LayerTag tag, bool doMeleeDmg, Entity *sceneManager,
 			   Entity *toSpawn)
 	: Damageable(glm::vec3(position.x, position.y + 0.4f, position.z),
-				 eulerAngles, new Collider(Collider::Circle, tag, 0.45f, 0.45f),
+				 eulerAngles, new Collider(Collider::Circle, tag, 0.4f, 0.4f),
 				 "Sphere", name, "Enemy", 1, tag, EnemySpecialLayer, 2.0f,
 				 sceneManager),
 	  _bombCooldown(0.0f),
@@ -18,6 +18,8 @@ AEnemy::AEnemy(glm::vec3 position, glm::vec3 eulerAngles, std::string name,
 	  _hasSpawned(false),
 	  _toSpawn(toSpawn),
 	  _damagingSounds(std::vector<std::string>()) {
+	scale(glm::vec3(0.8, 0.8, 0.8));
+
 	_neededSounds["damage_1"] = _assetsDir + "Audio/Sounds/Enemy/damage_1.wav";
 	_neededSounds["damage_2"] = _assetsDir + "Audio/Sounds/Enemy/damage_2.wav";
 	_neededSounds["damage_3"] = _assetsDir + "Audio/Sounds/Enemy/damage_3.wav";

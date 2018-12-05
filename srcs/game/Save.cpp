@@ -52,6 +52,25 @@ const std::vector<std::tuple<std::string, bool>> getFullScreen() {
 const std::vector<std::tuple<std::string, bool>> Save::FULL_SCREEN =
 	getFullScreen();
 
+const std::vector<std::tuple<std::string, int>> getVolumeOptions() {
+	std::vector<std::tuple<std::string, int>> res =
+		std::vector<std::tuple<std::string, int>>();
+	res.push_back(std::make_tuple("0", 0));
+	res.push_back(std::make_tuple("1", 1));
+	res.push_back(std::make_tuple("2", 2));
+	res.push_back(std::make_tuple("3", 3));
+	res.push_back(std::make_tuple("4", 4));
+	res.push_back(std::make_tuple("5", 5));
+	res.push_back(std::make_tuple("6", 6));
+	res.push_back(std::make_tuple("7", 7));
+	res.push_back(std::make_tuple("8", 8));
+	res.push_back(std::make_tuple("9", 9));
+	res.push_back(std::make_tuple("10", 10));
+	return res;
+}
+const std::vector<std::tuple<std::string, int>> Save::VOLUMES =
+	getVolumeOptions();
+
 Save::Save(void) {
 	savePath = __FILE__;
 	savePath.erase(savePath.begin() + savePath.rfind("/Save.cpp") + 1,
@@ -104,7 +123,7 @@ void Save::resetSettings(void) {
 	rightKey = KEY_D;
 	isFullScreen = 0;
 	resolutionsIdx = 1;
-	musicVolume = 10;
+	musicVolume = 5;
 	soundsVolume = 10;
 }
 
@@ -122,8 +141,6 @@ bool Save::areValuesGood(void) {
 		return false;
 	if (isFullScreen > 1) return false;
 	if (resolutionsIdx >= RESOLUTIONS.size()) return false;
-	if (musicVolume == 0 || musicVolume > 10 || soundsVolume == 0 ||
-		soundsVolume > 10)
-		return false;
+	if (musicVolume > 10 || soundsVolume > 10) return false;
 	return true;
 }

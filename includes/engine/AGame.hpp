@@ -22,6 +22,8 @@ class AGame {
 	virtual int getSceneIndexByName(std::string sceneName) const;
 	virtual int getLoadingSceneIdx(void) const = 0;
 	virtual int getFirstSceneIdx(void) const = 0;
+	virtual int getStartingMusicVolume(void) const;
+	virtual int getStartingSoundsVolume(void) const;
 
 	std::vector<std::tuple<float, std::string, std::string>> &getNeededFont();
 	std::vector<Entity *> const getEntities() const;
@@ -37,6 +39,9 @@ class AGame {
 
 	void unload(void);
 	void setAudioManager(AudioManager *audioManager);
+
+	bool needResolutionChange;  // Public since lots of entities will need to
+								// both get and set value
 
    protected:
 	std::vector<std::string> _scenesNames;

@@ -3,7 +3,7 @@
 
 #include "engine/Engine.hpp"
 
-struct Collider {
+struct Collider final {
    public:
 	enum Shape { Rectangle = 0, Circle };
 	Collider(void);
