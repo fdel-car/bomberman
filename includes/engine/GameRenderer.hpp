@@ -26,7 +26,7 @@ class Entity;
 
 class AGame;
 
-class GameRenderer {
+class GameRenderer final {
    public:
 	GameRenderer(GameEngine *gameEngine, AGame *game);
 	~GameRenderer(void);
@@ -35,6 +35,8 @@ class GameRenderer {
 	void switchCursorMode(bool debug) const;
 	void refreshWindow(std::vector<Entity *> &entities, Camera *camera,
 					   Light *light, Skybox *skybox);
+	void setNewResolution(bool isFullscreen, int width, int height);
+
 	Model *getModel(std::string modelName) const;
 	int getWidth(void) const;
 	int getHeight(void) const;
@@ -68,6 +70,7 @@ class GameRenderer {
 
 	// General vars
 	GLFWwindow *_window;
+	bool _isFullScreen;
 	int _width;
 	int _height;
 

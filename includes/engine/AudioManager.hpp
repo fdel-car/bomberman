@@ -6,7 +6,7 @@
 #include <tuple>
 #include <vector>
 
-class AudioManager {
+class AudioManager final {
    public:
 	AudioManager(int musicVolume, int soundsVolume);
 	~AudioManager(void);

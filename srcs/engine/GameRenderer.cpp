@@ -8,7 +8,9 @@ extern std::string _srcsDir;
 // extern std::string _assetsDir;
 
 GameRenderer::GameRenderer(GameEngine *gameEngine, AGame *game)
-	: _width(game->getWindowWidth()), _height(game->getWindowHeight()) {
+	: _isFullScreen(game->isFullScreen()),
+	  _width(game->getWindowWidth()),
+	  _height(game->getWindowHeight()) {
 	_gameEngine = gameEngine;
 	glfwSetErrorCallback(errorCallback);
 	if (!glfwInit()) throw std::runtime_error("Failed to initialize GLFW");
@@ -215,6 +217,12 @@ void GameRenderer::refreshWindow(std::vector<Entity *> &entities,
 
 	// Put everything to screen
 	glfwSwapBuffers(_window);
+}
+
+void GameRenderer::setNewResolution(bool isFullscreen, int width, int height) {
+	_isFullScreen = isFullscreen;
+	_width = width;
+	_height = height;
 }
 
 Model *GameRenderer::getModel(std::string modelName) const {

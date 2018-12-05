@@ -11,7 +11,7 @@ struct Material {
 	float shininess;
 };
 
-class Mesh {
+class Mesh final {
    public:
 	Mesh(std::vector<Vertex> const &vertices, Material const &material,
 		 GLuint diffuseTexture);
