@@ -246,6 +246,8 @@ void GameEngine::run(void) {
 			}
 		}
 		_gameRenderer->refreshWindow(_allEntities, _camera, _light, _skybox);
+
+		if (_game->needResolutionChange) _setNewResolution();
 	}
 	if (newSceneIdx != -1) {
 		_sceneIdx = newSceneIdx;
@@ -1013,8 +1015,12 @@ bool GameEngine::_tryShortcut(Entity *entity, glm::vec3 &futureMovement,
 	return false;
 }
 
-void GameEngine::setNewResolution(bool isFullScreen, int width, int height) {
-	_gameRenderer->setNewResolution(isFullScreen, width, height);
+void GameEngine::_setNewResolution() {
+	_gameRenderer->setNewResolution(_game->isFullScreen(),
+									_game->getWindowWidth(),
+									_game->getWindowHeight());
+	_camera->configGUI(_gameRenderer->getGUI());
+	_game->needResolutionChange = false;
 }
 
 void GameEngine::updateMusicVolume(int newValue) {

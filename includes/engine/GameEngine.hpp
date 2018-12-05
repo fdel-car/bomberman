@@ -38,7 +38,6 @@ class GameEngine {
 	void buttonStateChanged(int keyID, bool isPressed);
 
 	// Function to change key game settings
-	void setNewResolution(bool isFullScreen, int width, int height);
 	void updateMusicVolume(int newValue);
 	void updateSoundsVolume(int newValue);
 
@@ -112,6 +111,7 @@ class GameEngine {
 					  std::vector<Entity *> &collidedEntities);
 	void _setSceneVariables(void);
 	void _setLoadingSceneVariables(void);
+	void _setNewResolution();
 
 	// Graphic libraries vars
 	GameRenderer *_gameRenderer;

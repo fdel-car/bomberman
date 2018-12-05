@@ -8,12 +8,14 @@
 
 #include "engine/GUI/GUI.hpp"
 
+#include "engine/GameRenderer.hpp"
+
 struct nk GUI::glfw = nk();
 
-GUI::GUI(GLFWwindow *window,
+GUI::GUI(GameRenderer *gameRenderer, GLFWwindow *window,
 		 std::vector<std::tuple<float, std::string, std::string>> vFontPath,
 		 std::vector<std::tuple<std::string, std::string>> vImagePath)
-	: _media(new media()) {
+	: _gameRenderer(gameRenderer), _media(new media()) {
 	GUI::glfw.atlas = new nk_font_atlas();
 	_nkInit(window);
 	_nkFontStashBegin();
@@ -831,10 +833,12 @@ void GUI::uiDialogBox(const char *name, std::string imgName, const char *text,
 					  nk_flags textPosition, std::string fontText,
 					  std::string fontTitle) {
 	struct nk_rect rect =
-		nk_rect(0, (WINDOW_H / 4) * 3, WINDOW_W, WINDOW_H / 4);
-	int imgWidth = (WINDOW_H / 4) - 40;
-	int dialogBoxHeight = (WINDOW_H / 4) - 45;
-	int textWidth = (WINDOW_W / 4) * 3 - (imgWidth - (WINDOW_W / 4)) - 40;
+		nk_rect(0, (_gameRenderer->getHeight() / 4) * 3,
+				_gameRenderer->getWidth(), _gameRenderer->getHeight() / 4);
+	int imgWidth = (_gameRenderer->getHeight() / 4) - 40;
+	int dialogBoxHeight = (_gameRenderer->getHeight() / 4) - 45;
+	int textWidth = (_gameRenderer->getWidth() / 4) * 3 -
+					(imgWidth - (_gameRenderer->getWidth() / 4)) - 40;
 	if (uiStartBlock("dialog", name, rect, 0)) {
 		uiHeader(name, NK_TEXT_CENTERED, 20, fontTitle);
 		uiApplyDefaultFont();

@@ -40,6 +40,9 @@ class AGame {
 	void unload(void);
 	void setAudioManager(AudioManager *audioManager);
 
+	bool needResolutionChange;  // Public since lots of entities will need to
+								// both get and set value
+
    protected:
 	std::vector<std::string> _scenesNames;
 	int _sceneIdx;

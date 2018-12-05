@@ -58,9 +58,11 @@ struct nk {
 	struct nk_vec2 double_click_pos;
 };
 
+class GameRenderer;
+
 class GUI {
    public:
-	GUI(GLFWwindow *window,
+	GUI(GameRenderer *gameRenderer, GLFWwindow *window,
 		std::vector<std::tuple<float, std::string, std::string>> vFontPath =
 			std::vector<std::tuple<float, std::string, std::string>>(),
 		std::vector<std::tuple<std::string, std::string>> vImagePath =
@@ -119,6 +121,8 @@ class GUI {
 	void uiAddElemOffset(int offset);
 
    private:
+	GameRenderer *_gameRenderer;
+
 	GUI();
 	GUI(GUI const &src);
 	GUI &operator=(GUI const &rhs);

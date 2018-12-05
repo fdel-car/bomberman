@@ -72,7 +72,7 @@ void GameRenderer::_initGUI() {
 	std::vector<std::tuple<float, std::string, std::string>> vFontPath =
 		_game->getNeededFont();
 	if (_graphicUI) delete _graphicUI;
-	_graphicUI = new GUI(_window, vFontPath);
+	_graphicUI = new GUI(this, _window, vFontPath);
 }
 
 bool GameRenderer::_initDepthMap(void) {
@@ -132,6 +132,7 @@ void GameRenderer::_initShader(void) {
 }
 
 void GameRenderer::_initModels(void) {
+	// TODO: free models without crashing
 	// std::cout << "model Size: " << _models.size() << std::endl;
 	// for (auto model : _models) {
 	// 	std::cout << "modelName: " << model.first << std::endl;
@@ -243,12 +244,10 @@ void GameRenderer::refreshWindow(std::vector<Entity *> &entities,
 }
 
 void GameRenderer::setNewResolution(bool isFullScreen, int width, int height) {
-	std::cout << "Changing res func" << std::endl;
 	if (width < 0 || height < 0) return;
 	if (isFullScreen == _isFullScreen && width == _widthRequested &&
 		height == _heightRequested)
 		return;
-	std::cout << "Actually Changing res" << std::endl;
 	_isFullScreen = isFullScreen;
 	_widthRequested = width;
 	_heightRequested = height;
@@ -266,9 +265,9 @@ Model *GameRenderer::getModel(std::string modelName) const {
 
 GUI *GameRenderer::getGUI() { return _graphicUI; }
 
-int GameRenderer::getWidth(void) const { return _width; }
+int GameRenderer::getWidth(void) const { return _widthRequested; }
 
-int GameRenderer::getHeight(void) const { return _height; }
+int GameRenderer::getHeight(void) const { return _heightRequested; }
 
 GLFWwindow *GameRenderer::getWindow(void) const { return _window; }
 
