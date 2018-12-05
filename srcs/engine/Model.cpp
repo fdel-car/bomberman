@@ -50,6 +50,12 @@ Mesh *Model::_processMesh(aiMesh *mesh, const aiScene *scene,
 		vertices.push_back(vertex);
 	}
 
+	for (unsigned int i = 0; i < mesh->mNumFaces; i++) {
+		aiFace face = mesh->mFaces[i];
+		for (unsigned int j = 0; j < face.mNumIndices; j++)
+			indices.push_back(face.mIndices[j]);
+	}
+
 	// Set default material
 	material.diffuseColor = glm::vec3(0.64f);
 	material.ambientColor = glm::vec3(0.64f);

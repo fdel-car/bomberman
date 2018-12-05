@@ -121,6 +121,7 @@ void GameRenderer::_initModels(void) {
 	// _models["Enemy"] = new Model("enemy");
 	// _models["Box"] = new Model("box");
 	_models["Island"] = new Model("models/island/island.obj");
+	_models["Player"] = new Model("models/player/player.dae");
 }
 
 void GameRenderer::getUserInput(void) { glfwPollEvents(); }
