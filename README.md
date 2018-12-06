@@ -3,6 +3,7 @@
 
 # Objective
 Create our own game engine in C++ and create a Bomberman-like game which uses the engine.
+(You can find an in-depth Readme of the engine in the "srcs" folder)
 
 ### In-Game screenshots
 
