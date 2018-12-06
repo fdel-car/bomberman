@@ -1,5 +1,5 @@
 #include "engine/Model.hpp"
-#include "engine/Joint.hpp"
+// #include "engine/Joint.hpp"
 
 extern std::string _assetsDir;
 
@@ -89,16 +89,17 @@ Mesh *Model::_processMesh(aiMesh *mesh, const aiScene *scene,
 			_loadDiffuseTexture(&diffuseTexture, assimpMat, material);
 	}
 
-	(void)transform;
-
 	for (unsigned int i = 0; i < mesh->mNumVertices; i++) {
 		Vertex vertex;
-		glm::vec3 position = glm::vec3(
-			mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z);
+		glm::vec3 position =
+			glm::mat3(transform) * glm::vec3(mesh->mVertices[i].x,
+											 mesh->mVertices[i].y,
+											 mesh->mVertices[i].z);
 		vertex.position.x = position.x;
 		vertex.position.y = position.y;
 		vertex.position.z = position.z;
-		glm::vec3 normal = glm::vec3(mesh->mNormals[i].x, mesh->mNormals[i].y,
+		glm::vec3 normal = glm::mat3(transform) *
+						   glm::vec3(mesh->mNormals[i].x, mesh->mNormals[i].y,
 									 mesh->mNormals[i].z);
 		vertex.normal.x = normal.x;
 		vertex.normal.y = normal.y;
