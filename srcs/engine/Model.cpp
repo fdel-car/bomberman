@@ -91,16 +91,15 @@ Mesh *Model::_processMesh(aiMesh *mesh, const aiScene *scene,
 
 	for (unsigned int i = 0; i < mesh->mNumVertices; i++) {
 		Vertex vertex;
-		glm::vec3 position =
-			glm::mat3(transform) * glm::vec3(mesh->mVertices[i].x,
-											 mesh->mVertices[i].y,
-											 mesh->mVertices[i].z);
+		glm::vec4 position =
+			transform * glm::vec4(mesh->mVertices[i].x, mesh->mVertices[i].y,
+								  mesh->mVertices[i].z, 1.0f);
 		vertex.position.x = position.x;
 		vertex.position.y = position.y;
 		vertex.position.z = position.z;
-		glm::vec3 normal = glm::mat3(transform) *
-						   glm::vec3(mesh->mNormals[i].x, mesh->mNormals[i].y,
-									 mesh->mNormals[i].z);
+		glm::vec4 normal =
+			transform * glm::vec4(mesh->mNormals[i].x, mesh->mNormals[i].y,
+								  mesh->mNormals[i].z, 1.0f);
 		vertex.normal.x = normal.x;
 		vertex.normal.y = normal.y;
 		vertex.normal.z = normal.z;
