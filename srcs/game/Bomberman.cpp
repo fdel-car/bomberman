@@ -248,10 +248,6 @@ size_t Bomberman::getWindowHeight() {
 	return std::get<2>(Save::RESOLUTIONS[_save.resolutionsIdx]);
 }
 
-int Bomberman::getLoadingSceneIdx(void) const {
-	return getSceneIndexByName("LoadScene");
-}
-
 int Bomberman::getFirstSceneIdx(void) const {
 	return getSceneIndexByName(_startLevelName);
 }

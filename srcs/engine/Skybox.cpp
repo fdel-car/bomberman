@@ -20,8 +20,6 @@ GLuint const &Skybox::getVAO(void) const { return _skyboxVAO; }
 
 GLuint const &Skybox::getTexture(void) const { return _skyboxTexture; }
 
-void Skybox::update(void) {}
-
 void Skybox::_initSkyboxFaces(void) {
 	_faces.push_back(_assetsDir + "skyboxes/" + nameTextureDir + "/left.png");
 	_faces.push_back(_assetsDir + "skyboxes/" + nameTextureDir + "/right.png");

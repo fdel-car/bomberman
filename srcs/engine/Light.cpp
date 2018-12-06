@@ -10,8 +10,8 @@ Light::Light(glm::vec2 const &lightPos, glm::vec3 const &lightTarget,
 								 // them when needed
 	_localOrientation = false;
 	_projection = glm::ortho<float>(
-		-40.0f, 40.0f, -40.0f, 40.0f, 0.1f,
-		100.0f);  // TODO: Replace raw values with dynamic ones if needed
+		-25.0f, 25.0f, -25.0f, 25.0f, 5.0f,
+		50.0f);  // TODO: Replace raw values with dynamic ones if needed
 
 	glm::vec3 tmp = (_target - getPosition());
 
