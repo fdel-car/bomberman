@@ -34,18 +34,18 @@ float shadowCalculation(vec4 fragPosLightSpace) {
     for(int x = -1; x <= 1; ++x) {
         for(int y = -1; y <= 1; ++y) {
             float pcfDepth = texture(shadowMap, projCoords.xy + vec2(x, y) * texelSize).r; 
-            shadow += currentDepth > pcfDepth ? 1.0 : 0.0;        
+            shadow += currentDepth > pcfDepth ? 1.0f : 0.0f;        
         }    
     }
-    shadow /= 10.0;
-    // if (projCoords.z > 1.0)
-        // shadow = 0.0;
+    shadow /= 10.0f;
+    // if (projCoords.z > 1.0f)
+        // shadow = 0.0f;s
     return shadow;
 }
 
 void main() {
     // Ambient
-    float ambientStrength = 0.2f;
+    float ambientStrength = 0.25f;
     vec3 ambient = ambientStrength * material.ambientColor * lightColor;
 
     // Difuse

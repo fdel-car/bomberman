@@ -166,5 +166,7 @@ std::string toString(const T& val) {
 struct Vertex {
 	glm::vec3 position;
 	glm::vec3 normal;
-	glm::vec2 texCoords;
+	glm::vec2 texCoords = glm::vec2(0.0f);
+	glm::ivec4 jointIds = glm::ivec4(-1);
+	glm::vec4 weights = glm::vec4(0.0f);
 };

@@ -23,6 +23,9 @@ class Model final {
 
 	void _processNode(aiNode *node, const aiScene *scene, glm::mat4 transform);
 	Mesh *_processMesh(aiMesh *mesh, const aiScene *scene, glm::mat4 transform);
+	// aiNode *_findNode(aiNode *node, const char *name);
+	void _loadDiffuseTexture(GLuint *diffuseTexture, aiMaterial *assimpMat,
+							 Material &material);
 	static glm::mat4 toGlmMat4(const aiMatrix4x4 &src);
 
 	Model &operator=(Model const &rhs);
