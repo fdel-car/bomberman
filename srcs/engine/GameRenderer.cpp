@@ -144,9 +144,9 @@ void GameRenderer::_initModels(void) {
 	_models["Sphere"] = new Model("models/sphere/sphere.dae");
 	_models["Wall"] = new Model("models/wall/wall.dae");
 	// _models["Light"] = new Model("light");
-	// _models["Player"] = new Model("player");
+	_models["Player"] = new Model("models/player/model.dae");
 	_models["Bomb"] = new Model("models/bomb/bomb.dae");
-	// _models["Enemy"] = new Model("enemy");
+	_models["Enemy"] = new Model("models/zombie/zombie.dae");
 	// _models["Box"] = new Model("box");
 	_models["Island"] = new Model("models/island/island.obj");
 }

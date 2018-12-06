@@ -125,6 +125,7 @@ void Bomberman::_forest(void) {
 								   "Island", "Island", "Island"));
 	_entities.push_back(new Player(glm::vec3(-9.0, 0.0, -9.0), glm::vec3(0.0f),
 								   _save, _camera));
+	_entities.back()->scale(glm::vec3(0.5f));
 
 	// Portal to clear lvl
 	_entities.push_back(new Portal(glm::vec3(1.0, 0, 1.0), _camera));
@@ -232,6 +233,7 @@ void Bomberman::_createMap(int width, int height,
 				} else if (canPutBlocks && rand() % monsterRate == 0) {
 					_entities.push_back(new EnemyBasic(
 						glm::vec3(x, 0.0, z), glm::vec3(0.0f), _camera));
+					_entities.back()->scale(glm::vec3(0.5f));
 				}
 			}
 		}

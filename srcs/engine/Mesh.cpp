@@ -37,6 +37,16 @@ void Mesh::_setupBuffers(std::vector<Vertex> const &vertices) {
 						  (void *)offsetof(Vertex, texCoords));
 	glEnableVertexAttribArray(2);
 
+	// Joint ids
+	glVertexAttribIPointer(3, 4, GL_INT, sizeof(Vertex),
+						   (void *)offsetof(Vertex, jointIds));
+	glEnableVertexAttribArray(3);
+
+	// Weights
+	glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+						  (void *)offsetof(Vertex, weights));
+	glEnableVertexAttribArray(4);
+
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 }
