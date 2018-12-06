@@ -31,6 +31,7 @@ set(SRCS
   srcs/engine/GameEngine.cpp
   srcs/engine/GameRenderer.cpp
   srcs/engine/ShaderProgram.cpp
+  srcs/engine/Joint.cpp
   srcs/engine/Camera.cpp
   srcs/engine/Light.cpp
   srcs/engine/Model.cpp
@@ -78,6 +79,7 @@ set(HEADERS
   includes/engine/GameEngine.hpp
   includes/engine/GameRenderer.hpp
   includes/engine/ShaderProgram.hpp
+  includes/engine/Joint.hpp
   includes/engine/Camera.hpp
   includes/engine/Light.hpp
   includes/engine/Model.hpp

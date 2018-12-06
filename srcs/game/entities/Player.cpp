@@ -10,7 +10,7 @@ Player::Player(glm::vec3 position, glm::vec3 eulerAngles, Save &save,
 	: Damageable(
 		  glm::vec3(position.x, position.y + 0.4f, position.z), eulerAngles,
 		  new Collider(Collider::Circle, LayerTag::PlayerLayer, 0.4f, 0.4f),
-		  "Sphere", "Player", "Player", 3, PlayerLayer, PlayerSpecialLayer,
+		  "Player", "Player", "Player", 3, PlayerLayer, PlayerSpecialLayer,
 		  2.0f, sceneManager),
 	  _save(save),
 	  _speed(6.0f),
@@ -21,7 +21,7 @@ Player::Player(glm::vec3 position, glm::vec3 eulerAngles, Save &save,
 	  _bombTimers(std::vector<float>()),
 	  _cam(dynamic_cast<SceneTools *>(_sceneManager)) {
 	scale(glm::vec3(0.8, 0.8, 0.8));
-	setColor(glm::vec3(0.2, 0.2, 0.8));
+	// setColor(glm::vec3(0.2, 0.2, 0.8));
 	if (_cam != nullptr) {
 		_cam->tellPlayerHp(_hp);
 	}

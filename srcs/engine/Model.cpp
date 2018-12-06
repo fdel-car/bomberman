@@ -108,6 +108,23 @@ Mesh *Model::_processMesh(aiMesh *mesh, const aiScene *scene,
 										 mesh->mTextureCoords[0][i].y);
 		vertices.push_back(vertex);
 	}
+
+	if (mesh->HasBones()) {
+		for (unsigned int i = 0; i < mesh->mNumBones; i++) {
+			aiBone *assimpBone = mesh->mBones[i];
+			for (unsigned int j = 0; j < assimpBone->mNumWeights; j++) {
+				aiVertexWeight weight = assimpBone->mWeights[j];
+				for (int k = 0; k < 4; k++) {
+					if (vertices[weight.mVertexId].jointIds[k] == -1) {
+						vertices[weight.mVertexId].jointIds[k] = i;
+						vertices[weight.mVertexId].weights[k] = weight.mWeight;
+						break;
+					}
+				}
+			}
+		}
+	}
+
 	return new Mesh(vertices, material, diffuseTexture);
 }
 
