@@ -143,6 +143,12 @@ void GameRenderer::_initModels(void) {
 
 	_models["Sphere"] = new Model("models/sphere/sphere.dae");
 	_models["Wall"] = new Model("models/wall/wall.dae");
+	_models["Meteor"] = new Model("models/meteorite/YoshiBoxBreakPlanet.dae");
+	_models["DestructibleMeteor"] = new Model("models/destructibleMeteorite/Hole Planet.obj");
+	_models["HolePlanet"] = new Model("models/holePlanet/holeplanet.dae");
+
+
+
 	// _models["Light"] = new Model("light");
 	// _models["Player"] = new Model("player");
 	_models["Bomb"] = new Model("models/bomb/bomb.dae");

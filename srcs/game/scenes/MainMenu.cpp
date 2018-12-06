@@ -17,17 +17,8 @@ MainMenu::MainMenu(glm::vec3 const &pos, glm::vec3 const &eulerAngles,
 		(_assetsDir + "GUI/icons/leftAngleBracket.png"), "leftAngleBracket"));
 	_neededImages.push_back(std::tuple<std::string, std::string>(
 		(_assetsDir + "GUI/icons/settings.png"), "settings"));
-
 	_neededImages.push_back(std::tuple<std::string, std::string>(
-		(_assetsDir + "GUI/icons/vklaouseBomber.png"), "title1"));
-	// _neededImages.push_back(std::tuple<std::string, std::string>(
-	// 	(_assetsDir + "GUI/icons/vklaouseBomber2.png"), "title2"));
-	_neededImages.push_back(std::tuple<std::string, std::string>(
-		(_assetsDir + "GUI/icons/cmuttiBomber.png"), "title2"));
-	_neededImages.push_back(std::tuple<std::string, std::string>(
-		(_assetsDir + "GUI/icons/cmuttiBomber2.png"), "title3"));
-	// _neededImages.push_back(std::tuple<std::string, std::string>(
-	// 	(_assetsDir + "GUI/icons/vklaouseBomber3.png"), "title5"));
+		(_assetsDir + "GUI/icons/MainMenuTitle.png"), "title"));
 
 	_updateVarsFromSave();
 
@@ -128,8 +119,9 @@ void MainMenu::drawGUI(GUI *graphicUI) {
 					  (_gameEngine->getGameRenderer()->getHeight() / 5) * 4, 20,
 					  "_BOMBERMAN", &extraSizeCredits, 10, &isCreditButtonHover,
 					  "Credits")) {
-			std::cout << "Hey hey, nothing happened. bad luck." << std::endl;
+			// std::cout << "Hey hey, nothing happened. bad luck." << std::endl;
 			_gameEngine->playSound("select");
+			_newSceneName = "Credits";
 		}
 
 		static int extraSizeExit = 0;
@@ -263,7 +255,7 @@ void MainMenu::_movingTitle(GUI *graphicUI) {
 			NK_WINDOW_NO_SCROLLBAR)) {
 		graphicUI->uiRowMultipleElem(true, height);
 		graphicUI->uiAddElemInRow(width);
-		graphicUI->uiSetImage("title1");
+		graphicUI->uiSetImage("title");
 		graphicUI->uiRowMultipleElem(false);
 
 	}

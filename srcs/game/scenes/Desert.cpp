@@ -4,7 +4,7 @@
 Desert::Desert(glm::vec3 const &pos, glm::vec3 const &eulerAngles,
 			   Bomberman *bomberman)
 	:  // Camera(pos, eulerAngles),
-	  SceneTools(37, 13, pos, eulerAngles, bomberman, "Desert", "Credits"),
+	  SceneTools(41, 9, pos, eulerAngles, bomberman, "Desert", "Credits"),
 	  _cooldown(0.0f) {
 	configAI();
 	_initSoundsForGameplay();

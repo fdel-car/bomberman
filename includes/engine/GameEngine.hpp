@@ -21,7 +21,7 @@ struct KeyState {
 
 class GameRenderer;
 
-class GameEngine {
+class GameEngine final {
    public:
 	GameEngine(AGame *game);
 	~GameEngine(void);

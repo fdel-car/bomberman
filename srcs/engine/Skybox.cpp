@@ -10,7 +10,11 @@ Skybox::Skybox(std::string str)
 	_initData();
 }
 
-Skybox::~Skybox(void) {}
+Skybox::~Skybox(void) {
+	for (auto data : _datas) {
+		delete data;
+	}
+}
 
 GLuint const &Skybox::getVAO(void) const { return _skyboxVAO; }
 
