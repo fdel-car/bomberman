@@ -73,6 +73,10 @@ const Collider *Entity::getCollider(void) const { return _collider; }
 
 const Model *Entity::getModel(void) const { return _model; }
 
+void Entity::updateModel(void) {
+	_model = _gameEngine->getGameRenderer()->getModel(_modelName);
+}
+
 bool Entity::getTmpState(void) const { return _isTmp; }
 
 size_t const &Entity::getId(void) const { return _id; }
@@ -145,7 +149,7 @@ void Entity::_updateModelMatrix(void) {
 
 void Entity::initEntity(GameEngine *gameEngine) {
 	_gameEngine = gameEngine;
-	_model = _gameEngine->getGameRenderer()->getModel(_modelName);
+	updateModel();
 	if (_initSounds.size() != 0) {
 		gameEngine->playSound(_initSounds[rand() % _initSounds.size()]);
 	}

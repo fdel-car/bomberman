@@ -10,13 +10,15 @@ Skybox::Skybox(std::string str)
 	_initData();
 }
 
-Skybox::~Skybox(void) {}
+Skybox::~Skybox(void) {
+	for (auto data : _datas) {
+		delete data;
+	}
+}
 
 GLuint const &Skybox::getVAO(void) const { return _skyboxVAO; }
 
 GLuint const &Skybox::getTexture(void) const { return _skyboxTexture; }
-
-void Skybox::update(void) {}
 
 void Skybox::_initSkyboxFaces(void) {
 	_faces.push_back(_assetsDir + "skyboxes/" + nameTextureDir + "/left.png");

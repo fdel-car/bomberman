@@ -8,9 +8,11 @@ extern std::string _srcsDir;
 // extern std::string _assetsDir;
 
 GameRenderer::GameRenderer(GameEngine *gameEngine, AGame *game)
-	: _isFullScreen(game->isFullScreen()),
-	  _width(game->getWindowWidth()),
-	  _height(game->getWindowHeight()) {
+	: _game(game),
+	  _isFullScreen(game->isFullScreen()),
+	  _widthRequested(game->getWindowWidth()),
+	  _heightRequested(game->getWindowHeight()),
+	  _models(std::map<std::string, Model *>()) {
 	_gameEngine = gameEngine;
 	glfwSetErrorCallback(errorCallback);
 	if (!glfwInit()) throw std::runtime_error("Failed to initialize GLFW");
@@ -23,15 +25,39 @@ GameRenderer::GameRenderer(GameEngine *gameEngine, AGame *game)
 #endif
 	glfwWindowHint(GLFW_FOCUSED, GL_TRUE);
 	glfwWindowHint(GLFW_SAMPLES, 4);
-	_window = glfwCreateWindow(_width, _height, "Bomberman", NULL,
-							   NULL);  // Size of screen will change
+
+	_initWindow();
+}
+
+GameRenderer::~GameRenderer(void) {
+	if (_graphicUI) delete _graphicUI;
+	for (auto model : _models) delete model.second;
+	_models.clear();
+	if (_shaderProgram) delete _shaderProgram;
+	if (_shadowShaderProgram) delete _shadowShaderProgram;
+	if (_skyboxShaderProgram) delete _skyboxShaderProgram;
+	if (_window) glfwDestroyWindow(_window);
+	glfwTerminate();
+	return;
+}
+
+void GameRenderer::_initWindow(void) {
+	if (_window) glfwDestroyWindow(_window);
+
+	_monitor = glfwGetPrimaryMonitor();
+	_mode = glfwGetVideoMode(_monitor);
+	if (_isFullScreen) {
+		_widthRequested = _mode->width;
+		_heightRequested = _mode->height;
+	}
+	_window = glfwCreateWindow(_widthRequested, _heightRequested, "Bomberman",
+							   _isFullScreen ? _monitor : nullptr, nullptr);
 	if (!_window) {
 		glfwTerminate();
 		throw std::runtime_error("Failed to create windows GLFW");
 	}
-	const GLFWvidmode *mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-	glfwSetWindowPos(_window, (mode->width / 2) - (_width / 2),
-					 (mode->height / 2) - (_height / 2));
+	glfwSetWindowPos(_window, (_mode->width / 2) - (_widthRequested / 2),
+					 (_mode->height / 2) - (_heightRequested / 2));
 	glfwGetFramebufferSize(_window, &_width, &_height);
 	glfwMakeContextCurrent(_window);
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
@@ -40,26 +66,17 @@ GameRenderer::GameRenderer(GameEngine *gameEngine, AGame *game)
 	glfwSetKeyCallback(_window, keyCallback);
 	glfwSetCursorPosCallback(_window, mouseCallback);
 
-	_initGUI(game);
+	_initGUI();
 	_initModels();
 	_initDepthMap();  // TODO Check if the Framebuffer was create correctly
 	_initShader();
 }
 
-GameRenderer::~GameRenderer(void) {
-	delete graphicUI;
-	for (auto model : _models) delete model.second;
-	delete _shaderProgram;
-	_models.clear();
-	if (_window) glfwDestroyWindow(_window);
-	glfwTerminate();
-	return;
-}
-
-void GameRenderer::_initGUI(AGame *game) {
+void GameRenderer::_initGUI() {
 	std::vector<std::tuple<float, std::string, std::string>> vFontPath =
-		game->getNeededFont();
-	graphicUI = new GUI(_window, vFontPath);
+		_game->getNeededFont();
+	if (_graphicUI) delete _graphicUI;
+	_graphicUI = new GUI(this, _window, vFontPath);
 }
 
 bool GameRenderer::_initDepthMap(void) {
@@ -95,6 +112,9 @@ bool GameRenderer::_initDepthMap(void) {
 }
 
 void GameRenderer::_initShader(void) {
+	if (_shaderProgram) delete _shaderProgram;
+	if (_shadowShaderProgram) delete _shadowShaderProgram;
+	if (_skyboxShaderProgram) delete _skyboxShaderProgram;
 	_shaderProgram = new ShaderProgram(_srcsDir + "engine/shaders/4.1.vs",
 									   _srcsDir + "engine/shaders/4.1.fs");
 	_shadowShaderProgram =
@@ -116,6 +136,11 @@ void GameRenderer::_initShader(void) {
 }
 
 void GameRenderer::_initModels(void) {
+	for (auto model : _models) {
+		delete model.second;
+	}
+	_models.clear();
+
 	_models["Sphere"] = new Model("models/sphere/sphere.dae");
 	_models["Wall"] = new Model("models/wall/wall.dae");
 	// _models["Light"] = new Model("light");
@@ -211,18 +236,53 @@ void GameRenderer::refreshWindow(std::vector<Entity *> &entities,
 	glDisable(GL_DEPTH_TEST);
 	glDisable(GL_CULL_FACE);
 
-	graphicUI->nkNewFrame();
-	camera->drawGUI(graphicUI);
-	graphicUI->nkRender();
+	_graphicUI->nkNewFrame();
+	camera->drawGUI(_graphicUI);
+	_graphicUI->nkRender();
 
 	// Put everything to screen
 	glfwSwapBuffers(_window);
 }
 
-void GameRenderer::setNewResolution(bool isFullscreen, int width, int height) {
-	_isFullScreen = isFullscreen;
-	_width = width;
-	_height = height;
+void GameRenderer::setNewResolution(bool isFullScreen, int width, int height) {
+	if (width < 0 || height < 0) return;
+	if (isFullScreen == _isFullScreen && width == _widthRequested &&
+		height == _heightRequested)
+		return;
+
+	if (width > _mode->width) {
+		std::cerr
+			<< "\033[0;33m:Warning:\033[0m "
+			<< "Your screen doesn't support a resolution width bigger than "
+			<< _mode->width << " (" << width << " asked)" << std::endl;
+		width = _mode->width;
+	}
+	if (height > _mode->height) {
+		std::cerr
+			<< "\033[0;33m:Warning:\033[0m "
+			<< "Your screen doesn't support a resolution height bigger than "
+			<< _mode->height << " (" << height << " asked)" << std::endl;
+		height = _mode->height;
+	}
+	_isFullScreen = isFullScreen;
+	_widthRequested = width;
+	_heightRequested = height;
+
+	if (_isFullScreen) {
+		_widthRequested = _mode->width;
+		_heightRequested = _mode->height;
+	}
+
+	glfwSetWindowMonitor(_window, _isFullScreen ? _monitor : nullptr,
+						 (_mode->width / 2) - (_widthRequested / 2),
+						 (_mode->height / 2) - (_heightRequested / 2),
+						 _widthRequested, _heightRequested, 60);
+	if (!_isFullScreen) {
+		// Glfw breaks constraints when it switches back from fullscreen to
+		// windowed
+		glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
+	}
+	glfwGetFramebufferSize(_window, &_width, &_height);
 }
 
 Model *GameRenderer::getModel(std::string modelName) const {
@@ -233,11 +293,11 @@ Model *GameRenderer::getModel(std::string modelName) const {
 	return nullptr;
 }
 
-GUI *GameRenderer::getGUI() { return graphicUI; }
+GUI *GameRenderer::getGUI() { return _graphicUI; }
 
-int GameRenderer::getWidth(void) const { return _width; }
+int GameRenderer::getWidth(void) const { return _widthRequested; }
 
-int GameRenderer::getHeight(void) const { return _height; }
+int GameRenderer::getHeight(void) const { return _heightRequested; }
 
 GLFWwindow *GameRenderer::getWindow(void) const { return _window; }
 
@@ -270,4 +330,4 @@ void GameRenderer::keyCallback(GLFWwindow *window, int key, int scancode,
 	(void)mods;
 }
 
-GameEngine *GameRenderer::_gameEngine = NULL;
+GameEngine *GameRenderer::_gameEngine = nullptr;

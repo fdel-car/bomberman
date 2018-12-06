@@ -5,32 +5,30 @@
 class Skybox : public Entity {
    public:
 	// Skybox(glm::vec3 const &pos, glm::vec3 const &SkyboxDir);
-    Skybox(std::string);
+	Skybox(std::string);
 	virtual ~Skybox(void);
 
-	virtual void update(void);
-
-    GLuint const &getVAO(void) const;
-    GLuint const &getTexture(void) const;
+	GLuint const &getVAO(void) const;
+	GLuint const &getTexture(void) const;
 
 	void _initCubeMap(void);
-    void _initBuffer(void);
-    
+	void _initBuffer(void);
+
    private:
-    Skybox(void);
+	Skybox(void);
 	Skybox(Skybox const &src);
 
 	Skybox &operator=(Skybox const &rhs);
 
-    void _initSkyboxFaces(void);
-    void _initData(void);
+	void _initSkyboxFaces(void);
+	void _initData(void);
 
-    std::vector<std::string> _faces;
-    std::vector<unsigned char *> _datas;
-    int _width;
-    int _height;
-    std::string nameTextureDir;
-    GLuint _skyboxVAO;
+	std::vector<std::string> _faces;
+	std::vector<unsigned char *> _datas;
+	int _width;
+	int _height;
+	std::string nameTextureDir;
+	GLuint _skyboxVAO;
 	GLuint _skyboxVBO;
-	GLuint	_skyboxTexture;
+	GLuint _skyboxTexture;
 };

@@ -5,7 +5,6 @@ EnemyBasic::EnemyBasic(glm::vec3 position, glm::vec3 eulerAngles,
 	: AEnemy(position, eulerAngles, "Basic", EnemyBasicLayer, true,
 			 sceneManager) {
 	_speed = 1.0f;
-	scale(glm::vec3(0.8, 0.8, 0.8));
 }
 
 EnemyBasic::~EnemyBasic(void) {}

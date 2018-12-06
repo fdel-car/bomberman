@@ -5,7 +5,6 @@ EnemyRunAway::EnemyRunAway(glm::vec3 position, glm::vec3 eulerAngles,
 	: AEnemy(position, eulerAngles, "RunAway", EnemyRunAwayLayer, false,
 			 gameManager, toSpawn) {
 	_speed = 4.0f;
-	scale(glm::vec3(0.8, 0.8, 0.8));
 }
 
 EnemyRunAway::~EnemyRunAway(void) {}

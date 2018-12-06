@@ -21,7 +21,7 @@ struct KeyState {
 
 class GameRenderer;
 
-class GameEngine {
+class GameEngine final {
    public:
 	GameEngine(AGame *game);
 	~GameEngine(void);
@@ -107,10 +107,11 @@ class GameEngine {
 								   const Collider *rectangleCollider,
 								   const glm::vec3 &rectanglePos) const;
 	bool _tryShortcut(Entity *entity, glm::vec3 &futureMovement,
-					  glm::vec3 &shortcutMovement,
-					  std::vector<Entity *> &collidedEntities);
+					  glm::vec3 &shortcutMovement, Entity *toAvoid,
+					  std::vector<Entity *> &possibleCollisionEntities);
 	void _setSceneVariables(void);
 	void _setLoadingSceneVariables(void);
+	void _setNewResolution();
 
 	// Graphic libraries vars
 	GameRenderer *_gameRenderer;

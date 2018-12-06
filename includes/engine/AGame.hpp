@@ -20,7 +20,6 @@ class AGame {
 	virtual size_t getWindowHeight() = 0;
 	virtual bool isFullScreen() = 0;
 	virtual int getSceneIndexByName(std::string sceneName) const;
-	virtual int getLoadingSceneIdx(void) const = 0;
 	virtual int getFirstSceneIdx(void) const = 0;
 	virtual int getStartingMusicVolume(void) const;
 	virtual int getStartingSoundsVolume(void) const;
@@ -39,6 +38,9 @@ class AGame {
 
 	void unload(void);
 	void setAudioManager(AudioManager *audioManager);
+
+	bool needResolutionChange;  // Public since lots of entities will need to
+								// both get and set value
 
    protected:
 	std::vector<std::string> _scenesNames;
