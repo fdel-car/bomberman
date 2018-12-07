@@ -212,14 +212,16 @@ void Bomberman::_createMap(int width, int height,
 							   new Collider(Collider::Rectangle,
 											LayerTag::WallLayer, 0.45, 0.45),
 							   "Wall", "Wall", "Wall", _camera));
-				_entities.back()->scale(glm::vec3(0.9, 1.0, 0.9));
+				// _entities.back()->scale(glm::vec3(0.9, 1.0, 0.9));
+				_entities.back()->scale(glm::vec3(0.045, 0.05, 0.045));
 			} else if (x % 2 == 0 && z % 2 == 0) {
 				_entities.push_back(
 					new Entity(glm::vec3(x, 0.4, z), glm::vec3(0.0f),
 							   new Collider(Collider::Rectangle,
 											LayerTag::WallLayer, 0.5, 0.5),
 							   "Wall", "Wall", "Wall", _camera));
-				_entities.back()->scale(glm::vec3(1.0, 0.8, 1.0));
+				// _entities.back()->scale(glm::vec3(1.0, 0.8, 1.0));
+				_entities.back()->scale(glm::vec3(0.05, 0.04, 0.05));
 			} else {
 				bool canPutBlocks = true;
 				for (const auto &t : protectedCase) {

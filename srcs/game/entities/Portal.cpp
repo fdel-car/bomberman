@@ -7,13 +7,14 @@
 extern std::string _assetsDir;
 
 Portal::Portal(glm::vec3 position, Entity *sceneManager)
-	: Entity(glm::vec3(position.x, position.y + 0.3f, position.z), glm::vec3(0),
-			 new Collider(Collider::Circle, LayerTag::PortalLayer, 0.1f, 0.1f,
+	: Entity(glm::vec3(position.x, position.y, position.z), glm::vec3(0),
+			 new Collider(Collider::Circle, LayerTag::PortalLayer, 0.15f, 0.15f,
 						  true),
-			 "Wall", "Portal", "Portal", sceneManager),
+			 "Portal", "Portal", "Portal", sceneManager),
 	  _hasTriggered(false) {
-	scale(glm::vec3(0.3, 2.4, 0.3));
 	_initSounds.push_back("portal_spawn");
+	scale(glm::vec3(0.015));
+	rotateX(180);
 }
 
 Portal::~Portal(void) {}
