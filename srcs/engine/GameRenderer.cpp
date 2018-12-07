@@ -170,7 +170,10 @@ void GameRenderer::refreshWindow(std::vector<Entity *> &entities,
 
 	for (auto entity : entities) {
 		Model *model = entity->getModel();
-		if (model->isRigged()) model->updateBoneTransforms();
+		// update animation
+		if (model->isRigged()) {
+			model->updateBoneTransforms();
+		}
 	}
 
 	if (light != nullptr) {

@@ -16,6 +16,7 @@ Model::Model(std::string const &modelPath)
 		return;
 	}
 	_processNode(scene->mRootNode, scene, glm::mat4(1.0f));
+	if (scene->HasAnimations()) _processAnimation(scene->mAnimations);
 	if (_joints.size() > 0) _rigged = true;
 	_buildSkeletonHierarchy(scene->mRootNode);
 }
@@ -34,7 +35,15 @@ void Model::_buildSkeletonHierarchy(aiNode *rootNode) {
 }
 
 void Model::updateBoneTransforms(void) {
-	for (auto joint : _joints) joint->updateFinalTransform();
+	for (auto joint : _joints) {
+		for (auto animation : _jointAnimation) {
+			if (animation->getName().compare(joint->name) == 0) {
+				// TODO: update joint transform with the animation
+			}
+		}
+
+		joint->updateFinalTransform();
+	}
 }
 
 void Model::_loadDiffuseTexture(GLuint *diffuseTexture, aiMaterial *assimpMat,
@@ -174,6 +183,14 @@ void Model::_processNode(aiNode *node, const aiScene *scene,
 	}
 }
 
+void Model::_processAnimation(aiAnimation **animations) {
+	animation = animations[0];
+	for (unsigned int i = 0; i < animation->mNumChannels; i++) {
+		// This will contain the Pos, rot, scale of the given bone
+		_jointAnimation.push_back(new Animation(animation->mChannels[i]));
+	}
+}
+
 void Model::draw(ShaderProgram const &shaderProgram, glm::vec3 const &color) {
 	shaderProgram.setBool("rigged", _rigged);
 	if (_rigged) {
@@ -190,6 +207,10 @@ void Model::draw(ShaderProgram const &shaderProgram, glm::vec3 const &color) {
 std::vector<Mesh *> const Model::getMeshes(void) const { return _meshes; }
 
 bool Model::isRigged(void) const { return _rigged; }
+
+glm::vec3 Model::toGlmvec3(const aiVector3D src) {
+	return (glm::vec3(src.x, src.y, src.z));
+}
 
 glm::mat4 Model::toGlmMat4(const aiMatrix4x4 &src) {
 	glm::mat4 dest;

@@ -36,6 +36,7 @@ set(SRCS
   srcs/engine/Light.cpp
   srcs/engine/Model.cpp
   srcs/engine/Mesh.cpp
+  srcs/engine/Animation.cpp
   srcs/engine/Skybox.cpp
   srcs/engine/GUI/GUI.cpp
 
@@ -83,6 +84,7 @@ set(HEADERS
   includes/engine/Camera.hpp
   includes/engine/Light.hpp
   includes/engine/Model.hpp
+  includes/engine/Animation.hpp
   includes/engine/Mesh.hpp
   includes/engine/Skybox.hpp
   includes/engine/GUI/GUI.hpp
