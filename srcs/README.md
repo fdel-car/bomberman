@@ -35,17 +35,51 @@ The order of rendering is as follow:
 - The Skybox is then added.
 - Finally, the GUI object is given to the Camera in order to add any gui.
 
-
 The GameRenderer other roles are to tell the GameEngine if there are some user inputs (both from keyboard and mouse) and to adapt the window resolution to the requested one.
 
 # The GUI class
+The GUI class is a wrapper for the Nuklear library and will enable the end user to create all the GUI/HUD related stuff (if he overrides the "drawGUI()" function in his Camera object).
+
+The most called functions will surely be "uiStartBlock()" and "uiEndBlock()" since they are the mandatory start and end functions to add even the most basic UI element. Between them you can then call functions like "uiText()" that will add a text to the current block.
+
+Another useful GUI function is "setStyle()", which needs to be called if you want to change the different colors of your theme.
 
 # The AudioManager class
+The AudioManager is nothing more than what its name implies: it handles everything that is audio related using the SFML Audio library. It's usage is quite straightforward to, with functions like "playMusic()" or "updateSoundsVolume()" you will have the complete control of which audio source you are playing and how the output will be like.
+
+The only thing that you will need to know it's that you can only play one music at the time, while for sounds you are capped at 254 simultaneous outputs.
 
 # The Entity class
+The Entity class is the cornerstone for each object of your game, therefore having a full comprehension on how you can change its attributes and use its functions is fundamental.
+
+#### Constructing and Initializing
+First of all you need to know that there is a clear difference between when an instance is created (with "new Entity(..)") and when the instance is retrieved and loaded by the GameEngine (the "initEntity()" function will then be called). The first will happen when the scene is loaded in a side thread while the second one will be called right before the first update is called on it.
+
+After the entity has been initialized by the engine, it will have a pointer on the GameEngine object and you will have the possibility to use it at any time to call functions such as "entity->addNewEntity()".
+
+#### Moving
+The second most important point is that a Entity child has no direct acces to its 3D position. In order to move your entity you will have to set the "targetMovement" attribute to something different than the identity vector. The GameEngine will then move your entity of the desired amount in the given direction, handling the collisions with all others entities and triggering "onCollisionEnter()" and "onTriggerEnter()" if a Collider has been set.
+
+#### Scene Manager
+When instantiating any entity you may give as a parameter a pointer over another entity (usually the Camera) and it will be stored in the "_sceneManager" attribute. This will enable your levels to have a reference object to which every other entity will report to every time they move or they die.
+
+#### How to destroy
+This bring us to the "_needToBeDestroyed" attribute, which is a boolean checked by the GameEngine at every frame and will tell whether the current entity is to be destroyed or not.
+
+# The Collider class
+As you may have guessed, an Entity can have a Collider attached to it. Colliders are used by the GameEngine to know if an Entity can perform the requested movement or if it's not possible due to a physical collision.
+
+Beware that you can set a different "layerTag" attribute for each entity and, in your AGame instance, you will be able to define which layer collides with which. You can also change the layer of an entity at any moment during runtime, thus creating interesting changes in your gameplay.
 
 # The Camera class
+The Camera class is a mandatory Entity for each level of your game since the GameRenderer will use its position and rotation to draw what is visible and what is not. Moreover it's also needed if you want to draw any UI.
+
+Even the GameEngine uses the Camera in a unique way: it's this instance that will tell if the game is still running, or whether we have to update the other entities or if we need to load a different level.
 
 # The Light class
+The Light class is another mandatory Entity, but it's role is way more simple than the Camera. For instance, it's only used by the GameRenderer to know the direction of the main light and it's color.
 
 # The Skybox class
+A Skybox object is a child of the Entity class and it's quite easy to setup and, except if you need to define a special behaviour, you will never need to inherit from it.
+
+To load your own skybox just give as a parameter the name of the folder containing your skybox ".png" files, just check that their names are "top", "bottom", "left", "right", "front" and "back".
