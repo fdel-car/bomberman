@@ -111,12 +111,18 @@ void Bomberman::_mainMenu(void) {
 								 _scenesNames.begin() + maxPlayableLvlIdx),
 		this);
 	_light = new Light(glm::vec2(-10.0, -10.0), glm::vec3(0.0f), 10.0f);
+<<<<<<< HEAD
 	// _entities.push_back(new Entity(glm::vec3(2.0, 0.5, -2.0),
 	// glm::vec3(0.0f),
 	//    nullptr, "Bomb", "Bomb", "Bomb"));
 	_entities.push_back(new Entity(glm::vec3(2.0, 0.0, 0.0), glm::vec3(0.0f),
 								   nullptr, "Player", "Player", "Player"));
 	_entities.back()->scale(glm::vec3(0.2f));
+=======
+	_entities.push_back(new Entity(glm::vec3(2.0, 0.5, -2.0), glm::vec3(0.0f),
+								   nullptr, "Simple", "Bomb", "Bomb"));
+	_entities.back()->scale(glm::vec3(2.5f));
+>>>>>>> 77dc204a49008272687ea06162cca7c10311fba2
 }
 
 void Bomberman::_forest(void) {

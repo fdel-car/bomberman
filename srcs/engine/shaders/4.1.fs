@@ -6,9 +6,6 @@ in vec3 _fragPos;
 in vec2 _texCoords;
 in vec4 _fragPosLightSpace;
 
-in vec4 _weights;
-in vec4 _ids;
-
 uniform vec3 lightDir;
 uniform vec3 viewPos;
 uniform vec3 lightColor;
@@ -77,5 +74,4 @@ void main() {
     vec3 result = (ambient + (1.0 - shadow) * (diffuse + specular));
 
     fragColor = vec4(result , 1.0f);
-    // fragColor = vec4(_weights.xyz, 1.0f);
 }

@@ -1,5 +1,4 @@
 #include "engine/Model.hpp"
-// #include "engine/Joint.hpp"
 
 extern std::string _assetsDir;
 
@@ -17,20 +16,26 @@ Model::Model(std::string const &modelPath)
 		return;
 	}
 	_processNode(scene->mRootNode, scene, glm::mat4(1.0f));
+	if (_joints.size() > 0) _rigged = true;
+	_buildSkeletonHierarchy(scene->mRootNode);
 }
 
 Model::~Model(void) {
 	for (auto mesh : _meshes) delete mesh;
 }
 
-// aiNode *Model::_findNode(aiNode *node, const char *name) {
-// 	if (!strcmp(name, node->mName.data)) return node;
-// 	for (unsigned int i = 0; i < node->mNumChildren; i++) {
-// 		aiNode *found = _findNode(node->mChildren[i], name);
-// 		if (found) return found;
-// 	}
-// 	return nullptr;
-// }
+void Model::_buildSkeletonHierarchy(aiNode *rootNode) {
+	for (auto joint : _joints) {
+		aiNode *node = _findNodeByName(joint->name, rootNode);
+		joint->localTransform = toGlmMat4(node->mTransformation);
+		Joint *parent = findJointByName(node->mParent->mName.C_Str());
+		joint->parent = parent;
+	}
+}
+
+void Model::updateBoneTransforms(void) {
+	for (auto joint : _joints) joint->updateFinalTransform();
+}
 
 void Model::_loadDiffuseTexture(GLuint *diffuseTexture, aiMaterial *assimpMat,
 								Material &material) {
@@ -89,7 +94,8 @@ Mesh *Model::_processMesh(aiMesh *mesh, const aiScene *scene,
 			_loadDiffuseTexture(&diffuseTexture, assimpMat, material);
 	}
 
-	for (unsigned int i = 0; i < mesh->mNumVertices; i++) {
+	if (mesh->HasBones()) transform = glm::mat4(1.0f);
+	for (size_t i = 0; i < mesh->mNumVertices; i++) {
 		Vertex vertex;
 		glm::vec4 position =
 			transform * glm::vec4(mesh->mVertices[i].x, mesh->mVertices[i].y,
@@ -99,7 +105,7 @@ Mesh *Model::_processMesh(aiMesh *mesh, const aiScene *scene,
 		vertex.position.z = position.z;
 		glm::vec4 normal =
 			transform * glm::vec4(mesh->mNormals[i].x, mesh->mNormals[i].y,
-								  mesh->mNormals[i].z, 1.0f);
+								  mesh->mNormals[i].z, 0.0f);
 		vertex.normal.x = normal.x;
 		vertex.normal.y = normal.y;
 		vertex.normal.z = normal.z;
@@ -110,13 +116,25 @@ Mesh *Model::_processMesh(aiMesh *mesh, const aiScene *scene,
 	}
 
 	if (mesh->HasBones()) {
-		for (unsigned int i = 0; i < mesh->mNumBones; i++) {
+		for (size_t i = 0; i < mesh->mNumBones; i++) {
+			int jointID = _jointIndex;
 			aiBone *assimpBone = mesh->mBones[i];
-			for (unsigned int j = 0; j < assimpBone->mNumWeights; j++) {
+			Joint *joint = findJointByName(assimpBone->mName.C_Str());
+
+			if (!joint) {
+				_joints.push_back(new Joint(
+					assimpBone->mName.C_Str(),
+					toGlmMat4(assimpBone->mOffsetMatrix), _jointIndex++));
+			} else {
+				jointID = joint->index;
+			}
+
+			for (size_t j = 0; j < assimpBone->mNumWeights; j++) {
 				aiVertexWeight weight = assimpBone->mWeights[j];
-				for (int k = 0; k < 4; k++) {
+				for (size_t k = 0; k < 4;
+					 k++) {  // 4 is the number of possible bones per vertex
 					if (vertices[weight.mVertexId].jointIds[k] == -1) {
-						vertices[weight.mVertexId].jointIds[k] = i;
+						vertices[weight.mVertexId].jointIds[k] = jointID;
 						vertices[weight.mVertexId].weights[k] = weight.mWeight;
 						break;
 					}
@@ -128,11 +146,26 @@ Mesh *Model::_processMesh(aiMesh *mesh, const aiScene *scene,
 	return new Mesh(vertices, material, diffuseTexture);
 }
 
+aiNode *Model::_findNodeByName(std::string const &name, aiNode *node) {
+	if (name.compare(node->mName.C_Str()) == 0) return node;
+	for (size_t i = 0; i < node->mNumChildren; i++) {
+		aiNode *found = _findNodeByName(name, node->mChildren[i]);
+		if (found) return found;
+	}
+	return nullptr;
+}
+
+Joint *Model::findJointByName(std::string const &name) {
+	for (auto joint : _joints)
+		if (joint->name.compare(name) == 0) return joint;
+	return nullptr;
+}
+
 void Model::_processNode(aiNode *node, const aiScene *scene,
 						 glm::mat4 transform) {
 	transform *= toGlmMat4(node->mTransformation);
 
-	for (unsigned int i = 0; i < node->mNumMeshes; i++) {
+	for (size_t i = 0; i < node->mNumMeshes; i++) {
 		aiMesh *mesh = scene->mMeshes[node->mMeshes[i]];
 		_meshes.push_back(_processMesh(mesh, scene, transform));
 	}
@@ -141,12 +174,22 @@ void Model::_processNode(aiNode *node, const aiScene *scene,
 	}
 }
 
-void Model::draw(ShaderProgram const &shaderProgram,
-				 glm::vec3 const &color) const {
+void Model::draw(ShaderProgram const &shaderProgram, glm::vec3 const &color) {
+	shaderProgram.setBool("rigged", _rigged);
+	if (_rigged) {
+		for (size_t i = 0; i < 32; i++) {
+			shaderProgram.setMat4("boneTransforms[" + std::to_string(i) + "]",
+								  _joints.size() > i
+									  ? _joints[i]->finalTransform
+									  : glm::mat4(1.0f));
+		}
+	}
 	for (const auto mesh : _meshes) mesh->draw(shaderProgram, color);
 }
 
 std::vector<Mesh *> const Model::getMeshes(void) const { return _meshes; }
+
+bool Model::isRigged(void) const { return _rigged; }
 
 glm::mat4 Model::toGlmMat4(const aiMatrix4x4 &src) {
 	glm::mat4 dest;
