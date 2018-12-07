@@ -128,7 +128,7 @@ class GUI {
 	GUI &operator=(GUI const &rhs);
 
 	/*
-	** Contain all fonts && images/icons
+	** Contain all fonts && images/Icons
 	*/
 
 	struct media *_media;

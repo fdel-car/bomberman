@@ -48,7 +48,7 @@ void Desert::drawGUI(GUI *graphicUI) {
 	// 	"officia deserunt mollit anim id est laborum.";
 	// _displayDialogue(graphicUI, &searchWord, &lastWord, &startStrIdx,
 	// 				 "Bomberman", "heart", str, false, 1000, 1000, NK_TEXT_LEFT,
-	// 				 "12_BOMBERMAN", "18_BOMBERMAN");
+	// 				 "12_slider", "18_slider");
 }
 
 void Desert::tellPosition(Entity *entity) { _savePositions(entity); }

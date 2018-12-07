@@ -12,9 +12,8 @@ Portal::Portal(glm::vec3 position, Entity *sceneManager)
 						  true),
 			 "Portal", "Portal", "Portal", sceneManager),
 	  _hasTriggered(false) {
+	translate(glm::vec3(0.0, 0.0, 0.06));
 	_initSounds.push_back("portal_spawn");
-	scale(glm::vec3(0.015));
-	rotateX(180);
 }
 
 Portal::~Portal(void) {}

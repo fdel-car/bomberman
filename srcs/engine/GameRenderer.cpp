@@ -141,19 +141,13 @@ void GameRenderer::_initModels(void) {
 	}
 	_models.clear();
 
-	_models["Sphere"] = new Model("models/sphere/sphere.dae");
-	_models["Wall"] = new Model("models/wall/wall.dae");
-	// _models["Light"] = new Model("light");
-	// _models["Player"] = new Model("player");
-	_models["Bomb"] = new Model("models/bomb/bomb.dae");
-	// _models["Enemy"] = new Model("enemy");
-	// _models["Box"] = new Model("box");
-	_models["Island"] = new Model("models/island/island.obj");
-
-	_models["Wall"] = new Model("models/green_wall/mis_obj_reproblock_SD.obj");
-	_models["Box"] = new Model("models/box/DolPowderbox.obj");
-	_models["Portal"] = new Model("models/portal/portal.dae");
-	_models["Player"] = new Model("models/hero/hero.dae");
+	_models["Sphere"] = new Model("Models/Sphere/sphere.dae");
+	_models["Bomb"] = new Model("Models/Bomb/bomb.obj");
+	_models["Island"] = new Model("Models/Island/island.obj");
+	_models["Wall"] = new Model("Models/Wall/wall.obj");
+	_models["Box"] = new Model("Models/Box/box.obj");
+	_models["Portal"] = new Model("Models/Portal/portal.obj");
+	_models["Player"] = new Model("Models/Hero/hero.dae");
 }
 
 void GameRenderer::getUserInput(void) { glfwPollEvents(); }
