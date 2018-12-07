@@ -144,8 +144,9 @@ void GameRenderer::_initModels(void) {
 	_models["Sphere"] = new Model("models/sphere/sphere.dae");
 	_models["Wall"] = new Model("models/wall/wall.dae");
 	// _models["Light"] = new Model("light");
-	_models["Player"] = new Model("models/player/model.dae");
+	_models["Simple"] = new Model("models/simple.dae");
 	_models["Bomb"] = new Model("models/bomb/bomb.dae");
+	_models["Player"] = new Model("models/player/model.dae");
 	_models["Enemy"] = new Model("models/zombie/zombie.dae");
 	// _models["Box"] = new Model("box");
 	_models["Island"] = new Model("models/island/island.obj");
@@ -165,6 +166,11 @@ void GameRenderer::refreshWindow(std::vector<Entity *> &entities,
 	glEnable(GL_MULTISAMPLE);
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	for (auto entity : entities) {
+		Model *model = entity->getModel();
+		if (model->isRigged()) model->updateBoneTransforms();
+	}
 
 	if (light != nullptr) {
 		_lightSpaceMatrix =

@@ -10,23 +10,29 @@ out vec3 _fragPos;
 out vec2 _texCoords;
 out vec4 _fragPosLightSpace;
 
-out vec4 _weights;
-out vec4 _ids;
-
 uniform mat4 M;
 uniform mat4 V;
 uniform mat4 P;
 uniform mat4 lightSpaceMatrix;
+uniform mat4 boneTransforms[32];
+uniform bool rigged;
 
 void main()
 {
-    gl_Position = P * V * M * vec4(position, 1.0f);
+    if (rigged) {
+        mat4 jointTransform = boneTransforms[jointIds[0]] * weights[0];
+            jointTransform += boneTransforms[jointIds[1]] * weights[1];
+            jointTransform += boneTransforms[jointIds[2]] * weights[2];
+            jointTransform += boneTransforms[jointIds[3]] * weights[3];
+        gl_Position = P * V * M * jointTransform * vec4(position, 1.0f);
+        _normal = normalize(M * jointTransform * vec4(normal, 0.0f)).xyz;
+        _fragPos = vec3(M * jointTransform * vec4(position, 1.0f));
+    } else {
+        gl_Position = P * V * M * vec4(position, 1.0f);
+        _normal = normalize(M * vec4(normal, 0.0f)).xyz;
+        _fragPos = vec3(M * vec4(position, 1.0f));
+    }
     // Look up transpose(inverse(M)), this works now but it won't always do
-    _normal = normalize(M * vec4(normal, 0.0f)).xyz;
-    _fragPos = vec3(M * vec4(position, 1.0f));
     _texCoords = texCoords;
     _fragPosLightSpace = lightSpaceMatrix * vec4(_fragPos, 1.0f);
-
-    _ids = jointIds;
-    _weights = weights;
 }

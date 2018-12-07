@@ -20,7 +20,7 @@ class Entity {
 	const glm::vec3 &getPosition(void) const;
 	const glm::mat4 &getModelMatrix(void) const;
 	const Collider *getCollider(void) const;
-	const Model *getModel(void) const;
+	Model *getModel(void) const;
 	bool getTmpState(void) const;
 	glm::vec3 const &getEulerAngles(void) const;
 	size_t const &getId(void) const;

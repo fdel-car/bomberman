@@ -71,7 +71,7 @@ const glm::mat4 &Entity::getModelMatrix(void) const { return _modelMatrix; }
 
 const Collider *Entity::getCollider(void) const { return _collider; }
 
-const Model *Entity::getModel(void) const { return _model; }
+Model *Entity::getModel(void) const { return _model; }
 
 void Entity::updateModel(void) {
 	_model = _gameEngine->getGameRenderer()->getModel(_modelName);

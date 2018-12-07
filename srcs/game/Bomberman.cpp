@@ -112,7 +112,7 @@ void Bomberman::_mainMenu(void) {
 		this);
 	_light = new Light(glm::vec2(-10.0, -10.0), glm::vec3(0.0f), 10.0f);
 	_entities.push_back(new Entity(glm::vec3(2.0, 0.5, -2.0), glm::vec3(0.0f),
-								   nullptr, "Bomb", "Bomb", "Bomb"));
+								   nullptr, "Simple", "Bomb", "Bomb"));
 	_entities.back()->scale(glm::vec3(2.5f));
 }
 

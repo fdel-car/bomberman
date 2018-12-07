@@ -3,6 +3,7 @@
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
 #include <assimp/Importer.hpp>
+#include "engine/Joint.hpp"
 #include "engine/Mesh.hpp"
 
 class Model final {
@@ -12,21 +13,29 @@ class Model final {
 
 	std::vector<Mesh *> const getMeshes(void) const;
 	void draw(ShaderProgram const &shaderProgram,
-			  glm::vec3 const &color = glm::vec3(-1.0f)) const;
+			  glm::vec3 const &color = glm::vec3(-1.0f));
+	Joint *findJointByName(std::string const &name);
+	void updateBoneTransforms(void);
+	bool isRigged(void) const;
 
    private:
 	std::vector<Mesh *> _meshes;
 	std::string const _directory;
 
+	std::vector<Joint *> _joints;
+	unsigned int _jointIndex = 0;
+	bool _rigged = false;
+
 	Model(void);
 	Model(Model const &src);
 
+	aiNode *_findNodeByName(std::string const &name, aiNode *node);
 	void _processNode(aiNode *node, const aiScene *scene, glm::mat4 transform);
 	Mesh *_processMesh(aiMesh *mesh, const aiScene *scene, glm::mat4 transform);
-	// aiNode *_findNode(aiNode *node, const char *name);
 	void _loadDiffuseTexture(GLuint *diffuseTexture, aiMaterial *assimpMat,
 							 Material &material);
 	static glm::mat4 toGlmMat4(const aiMatrix4x4 &src);
+	void _buildSkeletonHierarchy(aiNode *rootNode);
 
 	Model &operator=(Model const &rhs);
 };
