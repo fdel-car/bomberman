@@ -154,6 +154,11 @@ void GameRenderer::_initModels(void) {
 	_models["Box"] = new Model("models/box/DolPowderbox.obj");
 	_models["Portal"] = new Model("models/portal/portal.dae");
 	_models["Player"] = new Model("models/hero/hero.dae");
+	_models["KickPerk"] = new Model("models/perks/kick/kick.obj");
+	_models["DamagePerk"] = new Model("models/perks/damage/damage.obj");
+	_models["MaxBombPerk"] = new Model("models/perks/maxBomb/maxBomb.obj");
+	_models["RangePerk"] = new Model("models/perks/range/range.obj");
+	_models["SpeedPerk"] = new Model("models/perks/speed/speed.obj");
 }
 
 void GameRenderer::getUserInput(void) { glfwPollEvents(); }

@@ -14,8 +14,10 @@ class Perk : public Entity {
 
    private:
 	static const float TIME_BETWEEN_ANIM;
-	static const std::vector<std::tuple<PerkType, size_t>> POSSIBLE_PERKS;
+	static const std::vector<std::tuple<PerkType, size_t, std::string>>
+		POSSIBLE_PERKS;
 	static const size_t TOTAL_PERK_PROBABILITY;
+	static const std::vector<std::string> damagingSounds;
 
 	PerkType _perkType;
 	float _timer;

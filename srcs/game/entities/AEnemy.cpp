@@ -22,10 +22,8 @@ AEnemy::AEnemy(glm::vec3 position, glm::vec3 eulerAngles, std::string name,
 
 	_neededSounds["damage_1"] = _assetsDir + "Audio/Sounds/Enemy/damage_1.wav";
 	_neededSounds["damage_2"] = _assetsDir + "Audio/Sounds/Enemy/damage_2.wav";
-	_neededSounds["damage_3"] = _assetsDir + "Audio/Sounds/Enemy/damage_3.wav";
 	_damagingSounds.push_back("damage_1");
 	_damagingSounds.push_back("damage_2");
-	_damagingSounds.push_back("damage_3");
 }
 
 AEnemy::~AEnemy(void) {
