@@ -153,6 +153,7 @@ void GameRenderer::_initModels(void) {
 	_models["Wall"] = new Model("models/green_wall/mis_obj_reproblock_SD.obj");
 	_models["Box"] = new Model("models/box/DolPowderbox.obj");
 	_models["Portal"] = new Model("models/portal/portal.dae");
+	_models["Player"] = new Model("models/hero/hero.dae");
 }
 
 void GameRenderer::getUserInput(void) { glfwPollEvents(); }
