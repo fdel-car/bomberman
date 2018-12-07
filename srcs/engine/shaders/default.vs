@@ -9,13 +9,12 @@ out vec2 _texCoords;
 out vec4 _fragPosLightSpace;
 
 uniform mat4 M;
-uniform mat4 V;
-uniform mat4 P;
+uniform mat4 VP;
 uniform mat4 lightSpaceMatrix;
 
 void main()
 {
-    gl_Position = P * V * M * vec4(position, 1.0f);
+    gl_Position = VP * M * vec4(position, 1.0f);
     // Look up transpose(inverse(M)), this works now but it won't always do
     _normal = normalize(M * vec4(normal, 0.0f)).xyz;
     _fragPos = vec3(M * vec4(position, 1.0f));

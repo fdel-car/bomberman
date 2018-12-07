@@ -94,6 +94,7 @@ void SceneTools::_initSoundsForGameplay(void) {
 		_assetsDir + "Audio/Sounds/Perk/get_perk_3.wav";
 	_neededSounds["get_perk_4"] =
 		_assetsDir + "Audio/Sounds/Perk/get_perk_4.wav";
+	_neededSounds["bad_perk"] = _assetsDir + "Audio/Sounds/Perk/bad_perk.wav";
 	_neededSounds["portal_spawn"] =
 		_assetsDir + "Audio/Sounds/Portal/portal_spawn.wav";
 }
