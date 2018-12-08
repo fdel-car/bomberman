@@ -53,7 +53,11 @@ class Bomberman : public AGame {
 	void _initScenes(void);
 	void _createMap(int width, int height,
 					std::vector<std::tuple<int, int>> &protectedCase,
-					size_t spwanRate, size_t monsterRate);
+					size_t spwanRate, size_t monsterRate,
+					std::vector<std::string> border,
+					std::vector<std::string> undestrutibleBlock,
+					std::vector<std::string> destrutibleBlock,
+					std::vector<std::string> enemies);
 
 	void _mainMenu(void);
 	void _forest(void);
