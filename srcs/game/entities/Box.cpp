@@ -9,12 +9,16 @@ Box::Box(glm::vec3 position, Entity *sceneManager, int perkProb,
 	: Damageable(
 		  glm::vec3(position.x, position.y, position.z), glm::vec3(0.0f),
 		  new Collider(Collider::Rectangle, LayerTag::BoxLayer, 0.45f, 0.45f),
+		  // "DestructibleMeteor", "Box", "Box", 1, BoxLayer, WallLayer, 1.0f, sceneManager),
 		  "Box", "Box", "Box", 1, BoxLayer, WallLayer, 1.0f, sceneManager),
 	  _onFire(false),
 	  _hasSpawned(false),
 	  _timer(1.0f),
 	  _perkProb(perkProb),
 	  _toSpawn(toSpawn) {
+  	// scale(glm::vec3(0.9, 0.8, 0.9));
+	// scale(glm::vec3(0.0005));
+	// setColor(glm::vec3(0.55, 0.3, 0.1));
 	rotateY(180);
 }
 

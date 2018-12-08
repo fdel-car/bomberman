@@ -4,7 +4,7 @@
 Desert::Desert(glm::vec3 const &pos, glm::vec3 const &eulerAngles,
 			   Bomberman *bomberman)
 	:  // Camera(pos, eulerAngles),
-	  SceneTools(37, 13, pos, eulerAngles, bomberman, "Desert", "Credits"),
+	  SceneTools(41, 9, pos, eulerAngles, bomberman, "Desert", "Credits"),
 	  _cooldown(0.0f) {
 	configAI();
 	_initSoundsForGameplay();
@@ -24,6 +24,7 @@ void Desert::configAI(void) {
 	_tmpDecor.push_back("Bomb");
 	_tmpDecor.push_back("Box");
 
+	_tmpDecorForRunAway.push_back("Player");
 	_tmpDecorForRunAway.push_back("Explosion");
 	_tmpDecorForRunAway.push_back("Bomb");
 	_tmpDecorForRunAway.push_back("Box");
@@ -40,15 +41,6 @@ void Desert::configGUI(GUI *graphicUI) {
 
 void Desert::drawGUI(GUI *graphicUI) {
 	SceneTools::drawGUI(graphicUI);
-	// static int searchWord = 0;
-	// static int lastWord = 0;
-	// static int startStrIdx = 0;
-	// std::string str =
-	// 	"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do "
-	// 	"officia deserunt mollit anim id est laborum.";
-	// _displayDialogue(graphicUI, &searchWord, &lastWord, &startStrIdx,
-	// 				 "Bomberman", "heart", str, false, 1000, 1000, NK_TEXT_LEFT,
-	// 				 "12_slider", "18_slider");
 }
 
 void Desert::tellPosition(Entity *entity) { _savePositions(entity); }
@@ -57,7 +49,7 @@ void Desert::update(void) {
 	Camera::update();
 	_refreshAI = false;
 	if (_cooldown <= 0.0f) {
-		_cooldown = 0.1f;
+		_cooldown = 0.2f;
 		_startBuildingGrapheForPathFinding();
 		_refreshAI = true;
 		// printMapInfo();

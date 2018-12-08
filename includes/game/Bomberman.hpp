@@ -60,4 +60,5 @@ class Bomberman : public AGame {
 	void _loadScene(void);
 	void _volcano(void);
 	void _desert(void);
+	void _credits(void);
 };

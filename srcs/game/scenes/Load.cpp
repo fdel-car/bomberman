@@ -42,3 +42,11 @@ void Load::drawGUI(GUI *graphicUI) {
 	}
 	graphicUI->uiEndBlock();
 }
+
+void Load::configGUI(GUI *graphicUI) {
+	graphicUI->uiSetDefaultFont("22_BOMBERMAN");
+	defaultStyle[NK_COLOR_WINDOW] = nk_rgba(57, 67, 71, 0);
+	defaultStyle[NK_COLOR_TEXT] = nk_rgba(215, 215, 215, 255);
+	graphicUI->setStyle(defaultStyle);
+	activeStyle = defaultStyle;
+}

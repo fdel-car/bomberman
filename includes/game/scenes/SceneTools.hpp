@@ -8,11 +8,13 @@
 
 struct Node {
    public:
-	Node();
+	Node(void);
 	Node(Node *prev, size_t dist, size_t x, size_t z, size_t id);
-	~Node();
+	~Node(void);
 
+	void newNode(Node *prev, size_t dist, size_t x, size_t z, size_t id);
 	void updateNode(Node *old, size_t dist, bool saveInPrevious);
+	void clear(void);
 	// previous nodes by distance from the target
 	std::map<size_t, std::vector<Node *>> prevNodesByDist;
 	// next nodes by distance from the target
@@ -25,7 +27,6 @@ struct Node {
 	size_t x;
 	size_t z;
 	size_t id;
-	bool isFatal;
 	bool isAnEntity;
 };
 
@@ -49,7 +50,7 @@ class SceneTools : public Camera {
 	SceneTools(size_t mapWidth, size_t mapHeight, glm::vec3 const &pos,
 			   glm::vec3 const &eulerAngles, Bomberman *bomberman,
 			   std::string ownLvlName = "", std::string nextLvlName = "",
-			   float timer = 180.0f);
+			   float timer = 181.0f);
 	virtual ~SceneTools(void);
 
 	virtual void initEntity(GameEngine *gameEngine);
@@ -150,6 +151,7 @@ class SceneTools : public Camera {
 
 	float _xOffset = static_cast<float>(_mapWidth) / 2;
 	float _zOffset = static_cast<float>(_mapHeight) / 2;
+	std::vector<Node *> nodePool;
 	std::string _ownLvlName;
 	std::string _startLvlName;
 	std::string _nextLvlName;
