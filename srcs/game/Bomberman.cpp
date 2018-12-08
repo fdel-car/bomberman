@@ -141,25 +141,23 @@ void Bomberman::_forest(void) {
 	protectedCase.push_back(std::tuple<int, int>(-7.0, -9.0));
 	protectedCase.push_back(std::tuple<int, int>(-9.0, -7.0));
 	protectedCase.push_back(std::tuple<int, int>(9.0, 9.0));
-	_entities.push_back(
-		new Box(glm::vec3(-7.0, 0, -9.0), _camera, "Box"));
-	_entities.push_back(
-		new Box(glm::vec3(-9.0, 0, -7.0), _camera, "Box"));
+	_entities.push_back(new Box(glm::vec3(-7.0, 0, -9.0), _camera, "Box"));
+	_entities.push_back(new Box(glm::vec3(-9.0, 0, -7.0), _camera, "Box"));
 
 	_entities.push_back(new EnemyRunAway(glm::vec3(9.0, 0.0, 9.0),
 										 glm::vec3(0.0f), "Fuzzy", _camera));
 
 	std::vector<std::string> border;
 	border.push_back("Wall");
-	std::vector<std::string> undestrutibleBlock;
-	undestrutibleBlock.push_back("Wall");
-	std::vector<std::string> destrutibleBlock;
-	destrutibleBlock.push_back("Box");
+	std::vector<std::string> undestructibleBlock;
+	undestructibleBlock.push_back("Wall");
+	std::vector<std::string> destructibleBlock;
+	destructibleBlock.push_back("Box");
 	std::vector<std::string> enemies;
 	enemies.push_back("Fuzzy");
 
-	_createMap(10, 10, protectedCase, 10, 1000, border, undestrutibleBlock,
-				destrutibleBlock, enemies);
+	_createMap(10, 10, protectedCase, 10, 1000, border, undestructibleBlock,
+			   destructibleBlock, enemies);
 }
 
 void Bomberman::_volcano(void) {
@@ -182,17 +180,17 @@ void Bomberman::_volcano(void) {
 
 	std::vector<std::string> border;
 	border.push_back("Wall");
-	std::vector<std::string> undestrutibleBlock;
-	undestrutibleBlock.push_back("Wall");
-	undestrutibleBlock.push_back("Meteor");
-	std::vector<std::string> destrutibleBlock;
-	destrutibleBlock.push_back("Box");
-	destrutibleBlock.push_back("DestructibleMeteor");
+	std::vector<std::string> undestructibleBlock;
+	undestructibleBlock.push_back("Wall");
+	undestructibleBlock.push_back("Meteor");
+	std::vector<std::string> destructibleBlock;
+	destructibleBlock.push_back("Box");
+	destructibleBlock.push_back("DestructibleMeteor");
 	std::vector<std::string> enemies;
 	enemies.push_back("Fuzzy");
 
-	_createMap(18, 18, protectedCase, 2, 13, border, undestrutibleBlock,
-				destrutibleBlock, enemies);
+	_createMap(18, 18, protectedCase, 2, 13, border, undestructibleBlock,
+			   destructibleBlock, enemies);
 }
 
 void Bomberman::_desert(void) {
@@ -228,14 +226,14 @@ void Bomberman::_desert(void) {
 
 	std::vector<std::string> border;
 	border.push_back("Meteor");
-	std::vector<std::string> undestrutibleBlock;
-	undestrutibleBlock.push_back("Meteor");
-	std::vector<std::string> destrutibleBlock;
-	destrutibleBlock.push_back("DestructibleMeteor");
+	std::vector<std::string> undestructibleBlock;
+	undestructibleBlock.push_back("Meteor");
+	std::vector<std::string> destructibleBlock;
+	destructibleBlock.push_back("DestructibleMeteor");
 	std::vector<std::string> enemies;
 	enemies.push_back("Fuzzy");
-	_createMap(20, 4, protectedCase, 10, 20, border, undestrutibleBlock,
-				destrutibleBlock, enemies);
+	_createMap(20, 4, protectedCase, 10, 20, border, undestructibleBlock,
+			   destructibleBlock, enemies);
 }
 
 void Bomberman::_credits(void) {
@@ -282,8 +280,8 @@ void Bomberman::_createMap(int width, int height,
 						   std::vector<std::tuple<int, int>> &protectedCase,
 						   size_t boxRate, size_t monsterRate,
 						   std::vector<std::string> border,
-						   std::vector<std::string> undestrutibleBlock,
-						   std::vector<std::string> destrutibleBlock,
+						   std::vector<std::string> undestructibleBlock,
+						   std::vector<std::string> destructibleBlock,
 						   std::vector<std::string> enemies) {
 	for (int x = -width; x <= width; x++) {
 		for (int z = -height; z <= height; z++) {
@@ -294,11 +292,11 @@ void Bomberman::_createMap(int width, int height,
 								 0.45),
 					border[rand() % border.size()], "Wall", "Wall", _camera));
 			} else if (x % 2 == 0 && z % 2 == 0) {
-				_entities.push_back(
-					new Entity(glm::vec3(x, 0.0, z), glm::vec3(0.0f),
-					new Collider(Collider::Rectangle,
-						LayerTag::WallLayer, 0.5, 0.5),
-					undestrutibleBlock[rand() % undestrutibleBlock.size()],
+				_entities.push_back(new Entity(
+					glm::vec3(x, 0.0, z), glm::vec3(0.0f),
+					new Collider(Collider::Rectangle, LayerTag::WallLayer, 0.5,
+								 0.5),
+					undestructibleBlock[rand() % undestructibleBlock.size()],
 					"Wall", "Wall", _camera));
 
 			} else {
@@ -309,14 +307,13 @@ void Bomberman::_createMap(int width, int height,
 					}
 				}
 				if (canPutBlocks && rand() % boxRate == 0) {
-					_entities.push_back(new Box(glm::vec3(x, 0, z), _camera,
-						destrutibleBlock[rand() % destrutibleBlock.size()]));
+					_entities.push_back(new Box(
+						glm::vec3(x, 0, z), _camera,
+						destructibleBlock[rand() % destructibleBlock.size()]));
 				} else if (canPutBlocks && rand() % monsterRate == 0) {
-					_entities.push_back(new EnemyBasic(glm::vec3(x, 0.0, z),
-											   glm::vec3(0.0f),
-											   enemies[rand() % enemies.size()],
-											   _camera));
-					_entities.back()->scale(glm::vec3(0.4));
+					_entities.push_back(new EnemyBasic(
+						glm::vec3(x, 0.0, z), glm::vec3(0.0f),
+						enemies[rand() % enemies.size()], _camera));
 				}
 			}
 		}
