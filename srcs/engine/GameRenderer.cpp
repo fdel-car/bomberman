@@ -115,8 +115,8 @@ void GameRenderer::_initShader(void) {
 	if (_shaderProgram) delete _shaderProgram;
 	if (_shadowShaderProgram) delete _shadowShaderProgram;
 	if (_skyboxShaderProgram) delete _skyboxShaderProgram;
-	_shaderProgram = new ShaderProgram(_srcsDir + "engine/shaders/4.1.vs",
-									   _srcsDir + "engine/shaders/4.1.fs");
+	_shaderProgram = new ShaderProgram(_srcsDir + "engine/shaders/default.vs",
+									   _srcsDir + "engine/shaders/default.fs");
 	_shadowShaderProgram =
 		new ShaderProgram(_srcsDir + "engine/shaders/depthMap.vs",
 						  _srcsDir + "engine/shaders/depthMap.fs");
@@ -141,20 +141,21 @@ void GameRenderer::_initModels(void) {
 	}
 	_models.clear();
 
-	_models["Sphere"] = new Model("models/sphere/sphere.dae");
-	_models["Wall"] = new Model("models/wall/wall.dae");
+	_models["Sphere"] = new Model("Models/Sphere/sphere.dae");
+	_models["Bomb"] = new Model("Models/Bomb/bomb.obj");
+	_models["Island"] = new Model("Models/Island/island.obj");
+	_models["Wall"] = new Model("Models/Wall/wall.obj");
+	_models["Box"] = new Model("Models/Box/box.obj");
+	_models["Portal"] = new Model("Models/Portal/portal.obj");
+	_models["Player"] = new Model("Models/Hero/hero.dae");
+	_models["KickPerk"] = new Model("models/Perks/Kick/kick.obj");
+	_models["DamagePerk"] = new Model("models/Perks/Damage/damage.obj");
+	_models["MaxBombPerk"] = new Model("models/Perks/MaxBomb/maxBomb.obj");
+	_models["RangePerk"] = new Model("models/Perks/Range/range.obj");
+	_models["SpeedPerk"] = new Model("models/Perks/Speed/speed.obj");
 	_models["Meteor"] = new Model("models/meteorite/YoshiBoxBreakPlanet.dae");
 	_models["DestructibleMeteor"] = new Model("models/destructibleMeteorite/Hole Planet.obj");
 	_models["HolePlanet"] = new Model("models/holePlanet/holeplanet.dae");
-
-
-
-	// _models["Light"] = new Model("light");
-	// _models["Player"] = new Model("player");
-	_models["Bomb"] = new Model("models/bomb/bomb.dae");
-	// _models["Enemy"] = new Model("enemy");
-	// _models["Box"] = new Model("box");
-	_models["Island"] = new Model("models/island/island.obj");
 }
 
 void GameRenderer::getUserInput(void) { glfwPollEvents(); }
@@ -172,46 +173,38 @@ void GameRenderer::refreshWindow(std::vector<Entity *> &entities,
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	if (light != nullptr) {
-		_lightSpaceMatrix =
-			light->getProjectionMatrix() * light->getViewMatrix();
-		// Shadow map
-		glUseProgram(_shadowShaderProgram->getID());
-		glViewport(0, 0, SHADOW_W, SHADOW_H);
-		glBindFramebuffer(GL_FRAMEBUFFER, _depthMapFBO);
-		glClear(GL_DEPTH_BUFFER_BIT);
-		_shadowShaderProgram->setMat4("lightSpaceMatrix", _lightSpaceMatrix);
-		glCullFace(GL_FRONT);
-		for (auto entity : entities) {
-			_shadowShaderProgram->setMat4("M", entity->getModelMatrix());
-			entity->getModel()->draw(*_shadowShaderProgram);
-		}
-		glCullFace(GL_BACK);
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	_lightSpaceMatrix = light->getProjectionMatrix() * light->getViewMatrix();
+	// Shadow map
+	glUseProgram(_shadowShaderProgram->getID());
+	glViewport(0, 0, SHADOW_W, SHADOW_H);
+	glBindFramebuffer(GL_FRAMEBUFFER, _depthMapFBO);
+	glClear(GL_DEPTH_BUFFER_BIT);
+	_shadowShaderProgram->setMat4("lightSpaceMatrix", _lightSpaceMatrix);
+	glCullFace(GL_FRONT);
+	for (auto entity : entities) {
+		_shadowShaderProgram->setMat4("M", entity->getModelMatrix());
+		Model const *model = entity->getModel();
+		if (model) model->draw(*_shadowShaderProgram);
 	}
+	glCullFace(GL_BACK);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	// Basic rendering OpenGL state
 	glViewport(0, 0, _width, _height);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glUseProgram(_shaderProgram->getID());
-	_shaderProgram->setMat4("V", camera->getViewMatrix());
-	_shaderProgram->setMat4("P", camera->getProjectionMatrix());
+	_shaderProgram->setMat4(
+		"VP", camera->getProjectionMatrix() * camera->getViewMatrix());
 	_shaderProgram->setVec3("viewPos", camera->getPosition());
-	if (light == nullptr) {
-		_shaderProgram->setVec3("lightDir",
-								glm::normalize(glm::vec3(0.5, -0.5, -0.5)));
-		_shaderProgram->setVec3("lightColor", glm::vec3(1.0f));
-		_shaderProgram->setMat4("lightSpaceMatrix", glm::mat4(1.0f));
-	} else {
-		_shaderProgram->setVec3("lightDir", light->getDir());
-		_shaderProgram->setVec3("lightColor", light->getColor());
-		_shaderProgram->setMat4("lightSpaceMatrix", _lightSpaceMatrix);
-	}
+	_shaderProgram->setVec3("lightDir", light->getDir());
+	_shaderProgram->setVec3("lightColor", light->getColor());
+	_shaderProgram->setMat4("lightSpaceMatrix", _lightSpaceMatrix);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, _depthMap);
 	for (auto entity : entities) {
 		_shaderProgram->setMat4("M", entity->getModelMatrix());
-		entity->getModel()->draw(*_shaderProgram, entity->getColor());
+		Model const *model = entity->getModel();
+		if (model) model->draw(*_shaderProgram, entity->getColor());
 	}
 
 	if (skybox != nullptr) {

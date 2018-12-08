@@ -18,7 +18,7 @@ Bomberman::Bomberman(void) : AGame(12), _startLevelName("MainMenu") {
 	// Set needed fonts
 	for (float size = 12.0f; size <= 48.0f; size += 1.0f)
 		_neededFonts.push_back(std::tuple<float, std::string, std::string>(
-			size, (_assetsDir + "GUI/fonts/SLIDER.TTF"), "BOMBERMAN"));
+			size, (_assetsDir + "GUI/Fonts/slider.ttf"), "slider"));
 
 	// Set collision table
 	setLayerCollision(WallLayer, WallLayer, false);
@@ -96,7 +96,7 @@ void Bomberman::initLoadScene() {
 Save &Bomberman::getSave(void) { return _save; }
 
 void Bomberman::_mainMenu(void) {
-	_skybox = new Skybox("default");
+	_skybox = new Skybox("Default");
 	size_t firstPlayableLvlIdx = 1;
 	size_t lastPlayableLvlIdx = _scenesNames.size() - 2;
 	size_t maxPlayableLvlIdx;
@@ -118,7 +118,7 @@ void Bomberman::_mainMenu(void) {
 }
 
 void Bomberman::_forest(void) {
-	_skybox = new Skybox("default");
+	_skybox = new Skybox("Default");
 	_camera = new Forest(glm::vec3(-5.35, 20.0, 6.0),
 						 glm::vec3(-60.0, 0.0, 0.0), this);
 	_light = new Light(glm::vec2(-20.0, 8.0), glm::vec3(0.0f));
@@ -249,11 +249,13 @@ void Bomberman::_createMap(int width, int height,
 		for (int z = -height; z <= height; z++) {
 			if (abs(x) == width || abs(z) == height) {
 				_entities.push_back(
-					new Entity(glm::vec3(x, 0.5, z), glm::vec3(0.0f),
+					new Entity(glm::vec3(x, 0.0, z), glm::vec3(0.0f),
 							   new Collider(Collider::Rectangle,
 											LayerTag::WallLayer, 0.45, 0.45),
-							   "Meteor", "Wall", "Wall", _camera));
-				_entities.back()->scale(glm::vec3(0.0006));
+				// 			   "Meteor", "Wall", "Wall", _camera));
+				// _entities.back()->scale(glm::vec3(0.0006));
+				"Wall", "Wall", "Wall", _camera));
+				
 				// _entities.back()->scale(glm::vec3(0.9, 0.1, 0.9));
 
 			} else if (x % 2 == 0 && z % 2 == 0) {
@@ -264,7 +266,7 @@ void Bomberman::_createMap(int width, int height,
 				// 			   "Wall", "Wall", "Wall", _camera));
 				// _entities.back()->scale(glm::vec3(1.0, 0.8, 1.0));
 				_entities.push_back(
-					new Entity(glm::vec3(x, 0.4, z), glm::vec3(0.0f),
+					new Entity(glm::vec3(x, 0.0, z), glm::vec3(0.0f),
 							   new Collider(Collider::Rectangle,
 											LayerTag::WallLayer, 0.5, 0.5),
 							   "Meteor", "Wall", "Wall", _camera));
@@ -299,10 +301,6 @@ size_t Bomberman::getWindowWidth() {
 }
 size_t Bomberman::getWindowHeight() {
 	return std::get<2>(Save::RESOLUTIONS[_save.resolutionsIdx]);
-}
-
-int Bomberman::getLoadingSceneIdx(void) const {
-	return getSceneIndexByName("LoadScene");
 }
 
 int Bomberman::getFirstSceneIdx(void) const {

@@ -61,7 +61,7 @@ GameEngine::GameEngine(AGame *game)
 	_game->setAudioManager(_audioManager);
 
 	// Force load of first scene
-	_sceneIdx = _game->getFirstSceneIdx();  // TODO: get first Scene
+	_sceneIdx = _game->getFirstSceneIdx();
 
 	// Thread atomic Int
 	_sceneState = BACKGROUND_LOAD_NEEDED;
@@ -151,7 +151,7 @@ void GameEngine::run(void) {
 
 		// Freeze everything else if camera tells so
 		if (!_camera->isPause()) {
-			_light->update();
+			if (_light) _light->update();
 			// Update game entities states
 			for (auto entity : _allEntities) {
 				entity->update();
@@ -301,12 +301,14 @@ void GameEngine::_setSceneVariables(void) {
 	}
 
 	_light = _game->getLight();
-	if (_light == nullptr)
+	if (_light == nullptr) {
 		std::cerr << "\033[0;33m:Warning:\033[0m There is no light in the "
-					 "loaded scene, you should definitely add one"
+					 "loaded scene, a default one was generated but you should "
+					 "definitely add one"
 				  << std::endl;
-	else
-		_light->initEntity(this);
+		_light = new Light(glm::vec2(-10.0, 10.0), glm::vec3(0.0f));
+	}
+	_light->initEntity(this);
 
 	for (auto entity : _game->getEntities()) {
 		_allEntities.push_back(entity);

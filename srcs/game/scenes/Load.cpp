@@ -37,7 +37,7 @@ void Load::drawGUI(GUI *graphicUI) {
 		for (int i = 0; i < nbrOfPoint; i++) {
 			text += " .";
 		}
-		graphicUI->uiHeader(text.c_str(), NK_TEXT_LEFT, 48, "35_BOMBERMAN");
+		graphicUI->uiHeader(text.c_str(), NK_TEXT_LEFT, 48, "35_slider");
 		graphicUI->setStyle(activeStyle);
 	}
 	graphicUI->uiEndBlock();

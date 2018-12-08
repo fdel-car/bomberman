@@ -15,12 +15,14 @@ class Light : public Entity {
 	glm::mat4 const &getProjectionMatrix(void) const;
 	glm::mat4 const &getViewMatrix(void) const;
 
+   protected:
+	glm::vec3 _target;
+	glm::vec3 _color;
+
    private:
 	float _step;
 	float _total;
 
-	glm::vec3 _target;
-	glm::vec3 _color;
 	glm::vec3 _dir;
 	glm::vec3 _rotationAxis;
 	glm::mat4 _projection;

@@ -1,4 +1,5 @@
 #include "engine/Model.hpp"
+// #include "engine/Joint.hpp"
 
 extern std::string _assetsDir;
 
@@ -7,7 +8,8 @@ Model::Model(std::string const &modelPath)
 	  _directory(modelPath.substr(0, modelPath.find_last_of('/'))) {
 	Assimp::Importer importer;
 	const aiScene *scene = importer.ReadFile(
-		_assetsDir + modelPath, aiProcess_Triangulate | aiProcess_GenNormals);
+		_assetsDir + modelPath, aiProcess_Triangulate | aiProcess_GenNormals |
+									aiProcess_LimitBoneWeights);
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE ||
 		!scene->mRootNode) {
 		std::cerr << "\033[0;31m:Error:Assimp:\033[0m "
@@ -21,12 +23,71 @@ Model::~Model(void) {
 	for (auto mesh : _meshes) delete mesh;
 }
 
+// aiNode *Model::_findNode(aiNode *node, const char *name) {
+// 	if (!strcmp(name, node->mName.data)) return node;
+// 	for (unsigned int i = 0; i < node->mNumChildren; i++) {
+// 		aiNode *found = _findNode(node->mChildren[i], name);
+// 		if (found) return found;
+// 	}
+// 	return nullptr;
+// }
+
+void Model::_loadDiffuseTexture(GLuint *diffuseTexture, aiMaterial *assimpMat,
+								Material &material) {
+	aiString str;
+	assimpMat->GetTexture(aiTextureType_DIFFUSE, 0, &str);
+	glGenTextures(1, diffuseTexture);
+	glBindTexture(GL_TEXTURE_2D, *diffuseTexture);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	int x, y, n;
+	std::string textureName = _assetsDir + _directory + '/' + str.C_Str();
+	stbi_set_flip_vertically_on_load(true);
+	unsigned char *data = stbi_load((textureName).c_str(), &x, &y, &n, 0);
+	if (data) {
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, x, y, 0, GL_RGBA,
+					 GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+		material.hasDiffuseTexture = true;
+	} else {
+		std::cerr << "\033[0;33m:Warning:\033[0m "
+				  << "Failed to load texture file: " + textureName << std::endl;
+		*diffuseTexture = -1;
+	}
+	stbi_set_flip_vertically_on_load(false);
+	stbi_image_free(data);
+}
+
 Mesh *Model::_processMesh(aiMesh *mesh, const aiScene *scene,
 						  glm::mat4 transform) {
 	std::vector<Vertex> vertices;
-	std::vector<unsigned int> indices;
+	// std::vector<unsigned int> indices;
 	GLuint diffuseTexture = -1;
 	Material material;
+
+	if (mesh->mMaterialIndex < scene->mNumMaterials) {
+		aiColor3D color;
+		aiMaterial *assimpMat = scene->mMaterials[mesh->mMaterialIndex];
+		assimpMat->Get(AI_MATKEY_COLOR_AMBIENT, color);
+		material.ambientColor.x = color.r;
+		material.ambientColor.y = color.g;
+		material.ambientColor.z = color.b;
+		assimpMat->Get(AI_MATKEY_COLOR_DIFFUSE, color);
+		material.diffuseColor.x = color.r;
+		material.diffuseColor.y = color.g;
+		material.diffuseColor.z = color.b;
+		assimpMat->Get(AI_MATKEY_COLOR_SPECULAR, color);
+		material.specularColor.x = color.r;
+		material.specularColor.y = color.g;
+		material.specularColor.z = color.b;
+		assimpMat->Get(AI_MATKEY_SHININESS, material.shininess);
+		// Load only one texture per mesh
+		if (assimpMat->GetTextureCount(aiTextureType_DIFFUSE) > 0)
+			_loadDiffuseTexture(&diffuseTexture, assimpMat, material);
+	}
 
 	for (unsigned int i = 0; i < mesh->mNumVertices; i++) {
 		Vertex vertex;
@@ -45,67 +106,7 @@ Mesh *Model::_processMesh(aiMesh *mesh, const aiScene *scene,
 		if (mesh->mTextureCoords[0])
 			vertex.texCoords = glm::vec2(mesh->mTextureCoords[0][i].x,
 										 mesh->mTextureCoords[0][i].y);
-		else
-			vertex.texCoords = glm::vec2(0.0f, 0.0f);
 		vertices.push_back(vertex);
-	}
-
-	// Set default material
-	material.diffuseColor = glm::vec3(0.64f);
-	material.ambientColor = glm::vec3(0.64f);
-	material.specularColor = glm::vec3(0.64f);
-	material.hasDiffuseTexture = false;
-	material.shininess = 64;
-
-	if (mesh->mMaterialIndex < scene->mNumMaterials) {
-		aiColor3D color;
-		aiMaterial *mat = scene->mMaterials[mesh->mMaterialIndex];
-
-		mat->Get(AI_MATKEY_COLOR_AMBIENT, color);
-		material.ambientColor.x = color.r;
-		material.ambientColor.y = color.g;
-		material.ambientColor.z = color.b;
-		mat->Get(AI_MATKEY_COLOR_DIFFUSE, color);
-		material.diffuseColor.x = color.r;
-		material.diffuseColor.y = color.g;
-		material.diffuseColor.z = color.b;
-		mat->Get(AI_MATKEY_COLOR_SPECULAR, color);
-		material.specularColor.x = color.r;
-		material.specularColor.y = color.g;
-		material.specularColor.z = color.b;
-
-		mat->Get(AI_MATKEY_SHININESS, material.shininess);
-
-		if (mat->GetTextureCount(aiTextureType_DIFFUSE) > 0) {
-			aiString str;
-			mat->GetTexture(aiTextureType_DIFFUSE, 0, &str);
-			glGenTextures(1, &diffuseTexture);
-			glBindTexture(GL_TEXTURE_2D, diffuseTexture);
-
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-			int x, y, n;
-			std::string textureName =
-				_assetsDir + _directory + '/' + str.C_Str();
-			stbi_set_flip_vertically_on_load(true);
-			unsigned char *data =
-				stbi_load((textureName).c_str(), &x, &y, &n, 0);
-			if (data) {
-				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, x, y, 0, GL_RGBA,
-							 GL_UNSIGNED_BYTE, data);
-				glGenerateMipmap(GL_TEXTURE_2D);
-				material.hasDiffuseTexture = true;
-			} else {
-				std::cerr << "\033[0;33m:Warning:\033[0m "
-						  << "Failed to load texture file: " + textureName
-						  << std::endl;
-				diffuseTexture = -1;
-			}
-			stbi_set_flip_vertically_on_load(false);
-			stbi_image_free(data);
-		}
 	}
 	return new Mesh(vertices, material, diffuseTexture);
 }

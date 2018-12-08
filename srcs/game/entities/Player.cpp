@@ -8,9 +8,9 @@ extern std::string _assetsDir;
 Player::Player(glm::vec3 position, glm::vec3 eulerAngles, Save &save,
 			   Entity *sceneManager)
 	: Damageable(
-		  glm::vec3(position.x, position.y + 0.45f, position.z), eulerAngles,
-		  new Collider(Collider::Circle, LayerTag::PlayerLayer, 0.45f, 0.45f),
-		  "Sphere", "Player", "Player", 3, PlayerLayer, PlayerSpecialLayer,
+		  glm::vec3(position.x, position.y, position.z), eulerAngles,
+		  new Collider(Collider::Circle, LayerTag::PlayerLayer, 0.4f, 0.4f),
+		  "Player", "Player", "Player", 3, PlayerLayer, PlayerSpecialLayer,
 		  2.0f, sceneManager),
 	  _save(save),
 	  _speed(6.0f),
@@ -20,8 +20,8 @@ Player::Player(glm::vec3 position, glm::vec3 eulerAngles, Save &save,
 	  _bombKick(false),
 	  _bombTimers(std::vector<float>()),
 	  _cam(dynamic_cast<SceneTools *>(_sceneManager)) {
-	scale(glm::vec3(0.9, 0.9, 0.9));
-	setColor(glm::vec3(0.2, 0.2, 0.8));
+	// scale(glm::vec3(0.8, 0.8, 0.8));
+	rotateX(90);
 	if (_cam != nullptr) {
 		_cam->tellPlayerHp(_hp);
 	}

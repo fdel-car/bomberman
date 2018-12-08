@@ -1,6 +1,6 @@
 #version 410 core
 
-#define BIAS 0.1
+#define BIAS 0.0025
 
 void main()
 {             

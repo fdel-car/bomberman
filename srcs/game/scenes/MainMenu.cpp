@@ -12,9 +12,9 @@ MainMenu::MainMenu(glm::vec3 const &pos, glm::vec3 const &eulerAngles,
 				 bomberman->getStartLevelName()),
 	  _levelsName(levelsName) {
 	_neededImages.push_back(std::tuple<std::string, std::string>(
-		(_assetsDir + "GUI/icons/rightAngleBracket.png"), "rightAngleBracket"));
+		(_assetsDir + "GUI/Icons/rightAngleBracket.png"), "rightAngleBracket"));
 	_neededImages.push_back(std::tuple<std::string, std::string>(
-		(_assetsDir + "GUI/icons/leftAngleBracket.png"), "leftAngleBracket"));
+		(_assetsDir + "GUI/Icons/leftAngleBracket.png"), "leftAngleBracket"));
 	_neededImages.push_back(std::tuple<std::string, std::string>(
 		(_assetsDir + "GUI/icons/settings.png"), "settings"));
 	_neededImages.push_back(std::tuple<std::string, std::string>(
@@ -43,7 +43,7 @@ MainMenu::~MainMenu(void) {}
 
 void MainMenu::configGUI(GUI *graphicUI) {
 	graphicUI->setAssetImages(_neededImages);
-	graphicUI->uiSetDefaultFont("22_BOMBERMAN");
+	graphicUI->uiSetDefaultFont("22_slider");
 	graphicUI->getDefaultStyle(THEME_RED, &defaultStyle);
 	defaultStyle[NK_COLOR_WINDOW] = nk_rgba(57, 67, 71, 0);
 	defaultStyle[NK_COLOR_TEXT] = nk_rgba(215, 215, 215, 255);
@@ -90,7 +90,7 @@ void MainMenu::drawGUI(GUI *graphicUI) {
 				graphicUI, (_gameEngine->getGameRenderer()->getWidth() / 5), 60,
 				(_gameEngine->getGameRenderer()->getWidth() / 5) * 2,
 				(_gameEngine->getGameRenderer()->getHeight() / 5) * 2.7, 30,
-				"_BOMBERMAN", &extraSizePlay, 10, &isPlayButtonHover, "Play")) {
+				"_slider", &extraSizePlay, 10, &isPlayButtonHover, "Play")) {
 			_newSceneName = _levelsName[_lvlIndex];
 			_gameEngine->playSound("select");
 		}
@@ -105,8 +105,8 @@ void MainMenu::drawGUI(GUI *graphicUI) {
 				(_gameEngine->getGameRenderer()->getWidth() / 5) -
 					((_gameEngine->getGameRenderer()->getWidth() / 5) / 2),
 				(_gameEngine->getGameRenderer()->getHeight() / 5) * 4, 20,
-				"_BOMBERMAN", &extraSizeSetting, 10, &isSettingButtonHover,
-				"Settings")) {
+				"_slider", &extraSizeSetting, 10, &isSettingButtonHover,
+				"Settings", "settings")) {
 			_changeSettings = true;
 			_gameEngine->playSound("open_settings");
 		}
@@ -117,7 +117,7 @@ void MainMenu::drawGUI(GUI *graphicUI) {
 					  (_gameEngine->getGameRenderer()->getWidth() / 5), 60,
 					  (_gameEngine->getGameRenderer()->getWidth() / 5) * 2,
 					  (_gameEngine->getGameRenderer()->getHeight() / 5) * 4, 20,
-					  "_BOMBERMAN", &extraSizeCredits, 10, &isCreditButtonHover,
+					  "_slider", &extraSizeCredits, 10, &isCreditButtonHover,
 					  "Credits")) {
 			// std::cout << "Hey hey, nothing happened. bad luck." << std::endl;
 			_gameEngine->playSound("select");
@@ -131,7 +131,7 @@ void MainMenu::drawGUI(GUI *graphicUI) {
 				(_gameEngine->getGameRenderer()->getWidth() / 5) * 4 -
 					((_gameEngine->getGameRenderer()->getWidth() / 5) / 2),
 				(_gameEngine->getGameRenderer()->getHeight() / 5) * 4, 20,
-				"_BOMBERMAN", &extraSizeExit, 10, &isExitButtonHover, "Exit"))
+				"_slider", &extraSizeExit, 10, &isExitButtonHover, "Exit"))
 			_isRunning = false;
 	} else
 		_settings(graphicUI);
@@ -149,7 +149,8 @@ void MainMenu::_settings(GUI *graphicUI) {
 			NK_WINDOW_BORDER | NK_WINDOW_TITLE)) {
 		int rowHeight = ((_gameEngine->getGameRenderer()->getHeight() / 3) * 2) / 15;
 		rowHeight = rowHeight < 30 ? 30 : rowHeight;
-		graphicUI->uiHeader("Options", NK_TEXT_CENTERED, rowHeight, "28_BOMBERMAN");
+		graphicUI->uiHeader("Options", NK_TEXT_CENTERED, 30, "28_slider");
+
 		if (graphicUI->uiHorizontalSelection(
 				_gameEngine->getGameRenderer()->getWidth() / 2,
 				"Window Resolution",
@@ -177,9 +178,8 @@ void MainMenu::_settings(GUI *graphicUI) {
 			_gameEngine->updateSoundsVolume(_soundsVolume);
 			_gameEngine->playSound("lateral_select");
 		}
-
-		graphicUI->uiHeader("Keyboard Controls", NK_TEXT_CENTERED, rowHeight,
-							"28_BOMBERMAN");
+		graphicUI->uiHeader("Keyboard Controls", NK_TEXT_CENTERED, 30,
+							"28_slider");
 		graphicUI->uiHorizontalEditString(
 			_gameEngine->getGameRenderer()->getWidth() / 2, "Move Up",
 			NK_EDIT_FIELD, _upChoice, &len1, 2, nk_filter_default, rowHeight);
@@ -257,7 +257,6 @@ void MainMenu::_movingTitle(GUI *graphicUI) {
 		graphicUI->uiAddElemInRow(width);
 		graphicUI->uiSetImage("title");
 		graphicUI->uiRowMultipleElem(false);
-
 	}
 	graphicUI->uiEndBlock();
 }

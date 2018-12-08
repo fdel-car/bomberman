@@ -35,9 +35,9 @@ SceneTools::SceneTools(size_t mapWidth, size_t mapHeight, glm::vec3 const &pos,
 	  _timer(timer),
 	  _pauseMenu(false) {
 	_neededImages.push_back(std::tuple<std::string, std::string>(
-		(_assetsDir + "GUI/icons/heart.png"), "heart"));
+		(_assetsDir + "GUI/Icons/heart.png"), "heart"));
 	_neededImages.push_back(std::tuple<std::string, std::string>(
-		(_assetsDir + "GUI/icons/sad_chopper.png"), "sad_chopper"));
+		(_assetsDir + "GUI/Icons/sad_chopper.png"), "sad_chopper"));
 
 	// TODO: music when starting dialogues
 }
@@ -103,6 +103,7 @@ void SceneTools::_initSoundsForGameplay(void) {
 		_assetsDir + "Audio/Sounds/Perk/get_perk_3.wav";
 	_neededSounds["get_perk_4"] =
 		_assetsDir + "Audio/Sounds/Perk/get_perk_4.wav";
+	_neededSounds["bad_perk"] = _assetsDir + "Audio/Sounds/Perk/bad_perk.wav";
 	_neededSounds["portal_spawn"] =
 		_assetsDir + "Audio/Sounds/Portal/portal_spawn.wav";
 }
@@ -223,20 +224,20 @@ bool SceneTools::_displayPauseMenu(GUI *graphicUI) {
 		if (graphicUI->uiButton(
 				_gameEngine->getGameRenderer()->getWidth() / 4,
 				(_gameEngine->getGameRenderer()->getHeight() / 9) - 9, 0,
-				"Resume", "", "20_BOMBERMAN")) {
+				"Resume", "", "20_slider")) {
 			res = false;
 		}
 		if (graphicUI->uiButton(
 				_gameEngine->getGameRenderer()->getWidth() / 4,
 				(_gameEngine->getGameRenderer()->getHeight() / 9) - 9, 0,
-				"Restart", "", "20_BOMBERMAN")) {
+				"Restart", "", "20_slider")) {
 			_newSceneName = _ownLvlName;
 			res = false;
 		}
 		if (graphicUI->uiButton(
 				_gameEngine->getGameRenderer()->getWidth() / 4,
 				(_gameEngine->getGameRenderer()->getHeight() / 9) - 9, 0,
-				"Quit", "", "20_BOMBERMAN")) {
+				"Quit", "", "20_slider")) {
 			_newSceneName = _startLvlName;
 			res = false;
 		}
@@ -297,15 +298,15 @@ void SceneTools::_displayVictoryScreen(GUI *graphicUI) {
 			NK_WINDOW_NO_SCROLLBAR | NK_WINDOW_BORDER | NK_WINDOW_TITLE)) {
 		rowHeight += 8;
 		if (graphicUI->uiButton(windowWidth, rowHeight, 0, "Next", "",
-								"20_BOMBERMAN")) {
+								"20_slider")) {
 			_newSceneName = _nextLvlName;
 		}
 		if (graphicUI->uiButton(windowWidth, rowHeight, 0, "Restart", "",
-								"20_BOMBERMAN")) {
+								"20_slider")) {
 			_newSceneName = _ownLvlName;
 		}
 		if (graphicUI->uiButton(windowWidth, rowHeight, 0, "Quit", "",
-								"20_BOMBERMAN")) {
+								"20_slider")) {
 			_newSceneName = _startLvlName;
 		}
 	}
@@ -332,11 +333,11 @@ void SceneTools::_displayDeathScreen(GUI *graphicUI) {
 
 		rowHeight += 8;
 		if (graphicUI->uiButton(windowWidth, rowHeight, 0, "Restart", "",
-								"20_BOMBERMAN")) {
+								"20_slider")) {
 			_newSceneName = _ownLvlName;
 		}
 		if (graphicUI->uiButton(windowWidth, rowHeight, 0, "Quit", "",
-								"20_BOMBERMAN")) {
+								"20_slider")) {
 			_newSceneName = _startLvlName;
 		}
 	}
@@ -358,7 +359,7 @@ void SceneTools::_displayTimer(GUI *graphicUI, bool isPause) {
 		std::string sec =
 			tmpSec < 10 ? "0" + std::to_string(tmpSec) : std::to_string(tmpSec);
 		graphicUI->uiHeader((minutes + " : " + sec).c_str(), NK_TEXT_CENTERED,
-							50, "35_BOMBERMAN");
+							50, "35_slider");
 	}
 	graphicUI->uiEndBlock();
 	activeStyle = defaultStyle;
