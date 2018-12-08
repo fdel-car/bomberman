@@ -20,9 +20,9 @@ void Forest::configAI(void) {
 
 	_tmpDecor.push_back("Explosion");
 	_tmpDecor.push_back("OFDT");
-	_tmpDecor.push_back("RunAway");
+	_tmpDecor.push_back("EnemyRunAway");
 	_tmpDecor.push_back("EPB");
-	_tmpDecor.push_back("Basic");
+	_tmpDecor.push_back("EnemyBasic");
 	_tmpDecor.push_back("Bomb");
 	_tmpDecor.push_back("Box");
 

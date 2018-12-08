@@ -84,28 +84,22 @@ void Perk::onTriggerEnter(Entity *entity) {
 	if (player != nullptr) {
 		switch (_perkType) {
 			case SpeedBoost:
-				std::cout << "SpeedBoost Perk" << std::endl;
 				player->gotSpeedBoost(0.3f);
 				break;
 			case BombRange:
-				std::cout << "BombRange Perk" << std::endl;
 				player->gotBombRangeBoost(1);
 				break;
 			case MaxBomb:
-				std::cout << "MaxBomb Perk" << std::endl;
 				player->gotMaxBombBoost(1);
 				break;
 			case Damage:
-				std::cout << "Damage Perk" << std::endl;
 				player->takeDamage(damagingSounds);
 				_destroySounds.clear();
 				break;
 			case KickBomb:
-				std::cout << "KickBomb Perk" << std::endl;
 				player->gotBombKickBoost(true);
 				break;
 			default:
-				std::cout << "No Perk" << std::endl;
 				break;
 		}
 		_needToBeDestroyed = true;

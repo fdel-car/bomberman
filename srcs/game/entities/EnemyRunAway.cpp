@@ -2,7 +2,7 @@
 
 EnemyRunAway::EnemyRunAway(glm::vec3 position, glm::vec3 eulerAngles, std::string modelName,
 						   Entity *gameManager, Entity *toSpawn)
-	: AEnemy(position, eulerAngles, "RunAway", EnemyRunAwayLayer, true,
+	: AEnemy(position, eulerAngles, "EnemyRunAway", EnemyRunAwayLayer, true,
 			 gameManager, modelName, toSpawn) {
 	_speed = 4.0f;
 }
