@@ -140,9 +140,14 @@ void Bomberman::_forest(void) {
 	protectedCase.push_back(std::tuple<int, int>(-9.0, -8.0));
 	protectedCase.push_back(std::tuple<int, int>(-7.0, -9.0));
 	protectedCase.push_back(std::tuple<int, int>(-9.0, -7.0));
+	protectedCase.push_back(std::tuple<int, int>(9.0, 9.0));
 	_entities.push_back(new Box(glm::vec3(-7.0, 0, -9.0), _camera));
 	_entities.push_back(new Box(glm::vec3(-9.0, 0, -7.0), _camera));
-	_createMap(10, 10, protectedCase, 10, 15);
+
+	_entities.push_back(
+		new EnemyRunAway(glm::vec3(9.0, 0.0, 9.0), glm::vec3(0.0f), _camera));
+
+	_createMap(10, 10, protectedCase, 10, 1000);
 }
 
 void Bomberman::_volcano(void) {
@@ -190,8 +195,8 @@ void Bomberman::_desert(void) {
 	_entities.push_back(new Box(glm::vec3(-17.0, 0, -3.0), _camera));
 	_entities.push_back(new Box(glm::vec3(-19.0, 0, -1.0), _camera));
 
-	_entities.push_back(
-		new EnemyRunAway(glm::vec3(17.0, 0.0, 1.0), glm::vec3(0.0f), _camera));
+	// _entities.push_back(
+	// 	new EnemyRunAway(glm::vec3(17.0, 0.0, 1.0), glm::vec3(0.0f), _camera));
 
 	// Portal to clear lvl
 	_entities.push_back(new Portal(glm::vec3(19, 0, 3), _camera));

@@ -88,6 +88,8 @@ void AEnemy::_runIn(SceneTools *cam, size_t distFromPlayer, bool putBomb) {
 			_way.push_back(currentPos.z * mapWidth + currentPos.x);
 		}
 	}
+	else
+		randomMove(cam, 3.0f);
 }
 
 void AEnemy::_runAway(SceneTools *cam, size_t distFromPlayer, bool putBomb) {
@@ -116,22 +118,23 @@ void AEnemy::_runAway(SceneTools *cam, size_t distFromPlayer, bool putBomb) {
 				size_t playerDist = 0;
 				size_t idx = 0;
 				size_t saveIdx = 0;
+				bool findWay = false;
 				for (const auto &v : currentPos.runAwayNodesByDist[bestDist]) {
+					findWay = true;
 					if (v->dist > playerDist) {
 						playerDist = v->dist;
 						saveIdx = idx;
 					}
 					idx++;
 				}
-				if (idx == 0) break;
+				if (!findWay) break;
 				currentPos = *currentPos.runAwayNodesByDist[bestDist][saveIdx];
 			}
 			_way.push_back(currentPos.z * mapWidth + currentPos.x);
 		}
 	}
-	// for (const auto &c : _way) {
-	// 	std::cout << c << std::endl;
-	// }
+	else
+		randomMove(cam, 3.0f);
 }
 
 void AEnemy::randomMove(SceneTools *cam, float timer) {

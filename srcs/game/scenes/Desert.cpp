@@ -24,6 +24,7 @@ void Desert::configAI(void) {
 	_tmpDecor.push_back("Bomb");
 	_tmpDecor.push_back("Box");
 
+	_tmpDecorForRunAway.push_back("Player");
 	_tmpDecorForRunAway.push_back("Explosion");
 	_tmpDecorForRunAway.push_back("Bomb");
 	_tmpDecorForRunAway.push_back("Box");
@@ -48,7 +49,7 @@ void Desert::update(void) {
 	Camera::update();
 	_refreshAI = false;
 	if (_cooldown <= 0.0f) {
-		_cooldown = 0.1f;
+		_cooldown = 0.2f;
 		_startBuildingGrapheForPathFinding();
 		_refreshAI = true;
 		// printMapInfo();

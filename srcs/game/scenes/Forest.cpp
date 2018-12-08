@@ -26,6 +26,7 @@ void Forest::configAI(void) {
 	_tmpDecor.push_back("Bomb");
 	_tmpDecor.push_back("Box");
 
+	_tmpDecorForRunAway.push_back("Player");
 	_tmpDecorForRunAway.push_back("Explosion");
 	_tmpDecorForRunAway.push_back("Bomb");
 	_tmpDecorForRunAway.push_back("Box");
