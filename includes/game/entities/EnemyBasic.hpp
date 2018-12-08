@@ -5,7 +5,7 @@
 
 class EnemyBasic : public AEnemy {
    public:
-	EnemyBasic(glm::vec3 position, glm::vec3 eulerAngles,
+	EnemyBasic(glm::vec3 position, glm::vec3 eulerAngles, std::string modelName,
 			  Entity *gameManager = nullptr);
 	~EnemyBasic(void);
 

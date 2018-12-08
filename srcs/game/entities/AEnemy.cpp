@@ -6,11 +6,11 @@
 extern std::string _assetsDir;
 
 AEnemy::AEnemy(glm::vec3 position, glm::vec3 eulerAngles, std::string name,
-			   LayerTag tag, bool doMeleeDmg, Entity *sceneManager,
+			   LayerTag tag, bool doMeleeDmg, Entity *sceneManager, std::string modelName,
 			   Entity *toSpawn)
 	: Damageable(glm::vec3(position.x, position.y + 0.4f, position.z),
 				 eulerAngles, new Collider(Collider::Circle, tag, 0.4f, 0.4f),
-				 "Sphere", name, "Enemy", 1, tag, EnemySpecialLayer, 2.0f,
+				 modelName, name, "Enemy", 1, tag, EnemySpecialLayer, 2.0f,
 				 sceneManager),
 	  _bombCooldown(0.0f),
 	  _resetMoveCoolDown(0.0f),

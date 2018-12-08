@@ -141,11 +141,11 @@ void Bomberman::_forest(void) {
 	protectedCase.push_back(std::tuple<int, int>(-7.0, -9.0));
 	protectedCase.push_back(std::tuple<int, int>(-9.0, -7.0));
 	protectedCase.push_back(std::tuple<int, int>(9.0, 9.0));
-	_entities.push_back(new Box(glm::vec3(-7.0, 0, -9.0), _camera));
-	_entities.push_back(new Box(glm::vec3(-9.0, 0, -7.0), _camera));
+	_entities.push_back(new Box(glm::vec3(-7.0, 0, -9.0), _camera, "DestructibleMeteor"));
+	_entities.push_back(new Box(glm::vec3(-9.0, 0, -7.0), _camera, "DestructibleMeteor"));
 
 	_entities.push_back(
-		new EnemyRunAway(glm::vec3(9.0, 0.0, 9.0), glm::vec3(0.0f), _camera));
+		new EnemyRunAway(glm::vec3(9.0, 0.0, 9.0), glm::vec3(0.0f), "Fuzzy", _camera));
 
 	_createMap(10, 10, protectedCase, 10, 1000);
 }
@@ -192,8 +192,8 @@ void Bomberman::_desert(void) {
 	protectedCase.push_back(std::tuple<int, int>(17.0, 1.0));
 	protectedCase.push_back(std::tuple<int, int>(19.0, 3.0));
 
-	_entities.push_back(new Box(glm::vec3(-17.0, 0, -3.0), _camera));
-	_entities.push_back(new Box(glm::vec3(-19.0, 0, -1.0), _camera));
+	_entities.push_back(new Box(glm::vec3(-17.0, 0, -3.0), _camera, "DestructibleMeteor"));
+	_entities.push_back(new Box(glm::vec3(-19.0, 0, -1.0), _camera, "DestructibleMeteor"));
 
 	// _entities.push_back(
 	// 	new EnemyRunAway(glm::vec3(17.0, 0.0, 1.0), glm::vec3(0.0f), _camera));
@@ -255,7 +255,7 @@ void Bomberman::_createMap(int width, int height,
 				// 			   "Meteor", "Wall", "Wall", _camera));
 				// _entities.back()->scale(glm::vec3(0.0006));
 				"Wall", "Wall", "Wall", _camera));
-				
+
 				// _entities.back()->scale(glm::vec3(0.9, 0.1, 0.9));
 
 			} else if (x % 2 == 0 && z % 2 == 0) {
@@ -286,10 +286,12 @@ void Bomberman::_createMap(int width, int height,
 					// 			   new Collider(Collider::Rectangle, LayerTag::BoxLayer, 0.45f, 0.45f),
 					// 			   "DestructibleMeteor", "Box", "Box", _camera));
 					// _entities.back()->scale(glm::vec3(0.0005));
-					_entities.push_back(new Box(glm::vec3(x, 0, z), _camera));
+					_entities.push_back(new Box(glm::vec3(x, 0, z), _camera, "DestructibleMeteor"));
 				} else if (canPutBlocks && rand() % monsterRate == 0) {
 					_entities.push_back(new EnemyBasic(
-						glm::vec3(x, 0.0, z), glm::vec3(0.0f), _camera));
+						glm::vec3(x, 0.0, z), glm::vec3(0.0f), "Fuzzy", _camera));
+					_entities.back()->scale(glm::vec3(0.4));
+
 				}
 			}
 		}

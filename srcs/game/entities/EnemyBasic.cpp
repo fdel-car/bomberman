@@ -1,9 +1,9 @@
 #include "game/entities/EnemyBasic.hpp"
 
-EnemyBasic::EnemyBasic(glm::vec3 position, glm::vec3 eulerAngles,
+EnemyBasic::EnemyBasic(glm::vec3 position, glm::vec3 eulerAngles, std::string modelName,
 					   Entity *sceneManager)
 	: AEnemy(position, eulerAngles, "Basic", EnemyBasicLayer, true,
-			 sceneManager) {
+			 sceneManager, modelName) {
 	_speed = 1.0f;
 }
 

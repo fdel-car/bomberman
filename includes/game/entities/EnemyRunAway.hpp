@@ -5,7 +5,7 @@
 
 class EnemyRunAway : public AEnemy {
    public:
-	EnemyRunAway(glm::vec3 position, glm::vec3 eulerAngles,
+	EnemyRunAway(glm::vec3 position, glm::vec3 eulerAngles, std::string modelName,
 				 Entity *gameManager = nullptr, Entity *toSpawn = nullptr);
 	~EnemyRunAway(void);
 
