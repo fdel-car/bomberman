@@ -16,9 +16,7 @@ Box::Box(glm::vec3 position, Entity *sceneManager, std::string modelName,
 	  _hasSpawned(false),
 	  _timer(1.0f),
 	  _perkProb(perkProb),
-	  _toSpawn(toSpawn) {
-	rotateY(180);
-}
+	  _toSpawn(toSpawn) {}
 
 Box::~Box(void) {
 	if (!_hasSpawned && _toSpawn != nullptr) {

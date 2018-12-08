@@ -160,8 +160,13 @@ void GameRenderer::_initModels(void) {
 	_models["HolePlanet"] = new Model("models/holePlanet/holeplanet.dae");
 
 	_models["Fuzzy"] = new Model("models/Fuzzy/fuzzy.obj");
+	_models["Diglett"] = new Model("models/Diglett/diglett.obj");
 	_models["RedGhost"] = new Model("models/RedGhost/redGhost.obj");
 	_models["EnemyBomber"] = new Model("models/EnemyBomber/enemyBomber.obj");
+	_models["DomeFossil"] =
+		new Model("models/Fossils/DomeFossil/domeFossil.obj");
+	_models["HelixFossil"] =
+		new Model("models/Fossils/HelixFossil/helixFossil.obj");
 }
 
 void GameRenderer::getUserInput(void) { glfwPollEvents(); }
