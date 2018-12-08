@@ -2,7 +2,7 @@
 
 EnemyBasic::EnemyBasic(glm::vec3 position, glm::vec3 eulerAngles,
 					   Entity *sceneManager)
-	: AEnemy(position, eulerAngles, "Basic", EnemyBasicLayer, true,
+	: AEnemy(position, eulerAngles, "EnemyBasic", EnemyBasicLayer, true,
 			 sceneManager) {
 	_speed = 1.0f;
 }

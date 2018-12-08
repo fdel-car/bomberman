@@ -648,17 +648,13 @@ void SceneTools::putExplosion(float xCenter, float zCenter, size_t range) {
 		this));
 	bool hasDestroyedBox = false;
 	// Left
-	hasDestroyedBox = _putExplosionsInDirection(xCoord, zCoord, -1, 0, range) ||
-					  hasDestroyedBox;
+	_putExplosionsInDirection(xCoord, zCoord, -1, 0, range, hasDestroyedBox);
 	// Right
-	hasDestroyedBox = _putExplosionsInDirection(xCoord, zCoord, 1, 0, range) ||
-					  hasDestroyedBox;
+	_putExplosionsInDirection(xCoord, zCoord, 1, 0, range, hasDestroyedBox);
 	// Top
-	hasDestroyedBox = _putExplosionsInDirection(xCoord, zCoord, 0, -1, range) ||
-					  hasDestroyedBox;
+	_putExplosionsInDirection(xCoord, zCoord, 0, -1, range, hasDestroyedBox);
 	// Down
-	hasDestroyedBox = _putExplosionsInDirection(xCoord, zCoord, 0, 1, range) ||
-					  hasDestroyedBox;
+	_putExplosionsInDirection(xCoord, zCoord, 0, 1, range, hasDestroyedBox);
 
 	// Play random sound
 	if (hasDestroyedBox) {
@@ -670,28 +666,25 @@ void SceneTools::putExplosion(float xCenter, float zCenter, size_t range) {
 	}
 }
 
-bool SceneTools::_putExplosionsInDirection(size_t xCoord, size_t zCoord,
+void SceneTools::_putExplosionsInDirection(size_t xCoord, size_t zCoord,
 										   int xChange, int zChange,
-										   size_t range) {
-	bool hasDestroyedBox = false;
+										   size_t range,
+										   bool &hasDestroyedBox) {
 	size_t rangeIdx = 0;
 	bool canPutExplosion;
 	while (rangeIdx < range) {
 		xCoord += xChange;
 		zCoord += zChange;
-		if (xCoord < 1 || xCoord >= _mapWidth || zCoord < 1 ||
-			zCoord >= _mapHeight)
+		if (xCoord == 0 || xCoord >= _mapWidth || zCoord < 1 ||
+			zCoord >= _mapHeight) {
 			break;
+		}
 		canPutExplosion = true;
 		for (auto entity : _entitiesInSquares[zCoord * _mapWidth + xCoord]) {
 			if (entity.second->getTag().compare("Wall") == 0) {
 				canPutExplosion = false;
-			} else if (entity.second->getTag().compare("Bomb") == 0) {
-				// Force stop when destroying first Box/Bomb
-				rangeIdx = range;
 			} else if (entity.second->getTag().compare("Box") == 0) {
 				hasDestroyedBox = true;
-				rangeIdx = range;
 				canPutExplosion = false;
 				Damageable *damageable =
 					dynamic_cast<Damageable *>(entity.second);
@@ -709,7 +702,6 @@ bool SceneTools::_putExplosionsInDirection(size_t xCoord, size_t zCoord,
 			break;
 		rangeIdx++;
 	}
-	return hasDestroyedBox;
 }
 
 void SceneTools::tellPlayerHp(size_t hp) {

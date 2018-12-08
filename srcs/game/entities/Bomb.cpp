@@ -8,7 +8,7 @@ extern std::string _assetsDir;
 Bomb::Bomb(glm::vec3 position, float timer, size_t range, Entity *sceneManager)
 	: Damageable(
 		  glm::vec3(position.x, position.y + 0.3f, position.z), glm::vec3(0),
-		  new Collider(Collider::Rectangle, LayerTag::BombLayer, 0.45f, 0.45f),
+		  new Collider(Collider::Rectangle, LayerTag::BombLayer, 0.4f, 0.4f),
 		  "Bomb", "Bomb", "Bomb", 1, BombLayer, BombLayer, 0.0f, sceneManager),
 	  _timer(timer),
 	  _range(range),
