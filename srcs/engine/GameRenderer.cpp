@@ -153,12 +153,13 @@ void GameRenderer::_initModels(void) {
 	_models["MaxBombPerk"] = new Model("models/Perks/MaxBomb/maxBomb.obj");
 	_models["RangePerk"] = new Model("models/Perks/Range/range.obj");
 	_models["SpeedPerk"] = new Model("models/Perks/Speed/speed.obj");
-	_models["Meteor"] = new Model("models/meteorite/YoshiBoxBreakPlanet.dae");
-	_models["DestructibleMeteor"] = new Model("models/destructibleMeteorite/Hole Planet.obj");
+	_models["Meteor"] = new Model("models/meteorite/meteorite.obj");
+	_models["BigMeteor"] = new Model("models/bigMeteor/bigMeteor.obj");
+	_models["DestructibleMeteor"] =
+		new Model("models/destructibleMeteorite/destructibleMeteorite.obj");
 	_models["HolePlanet"] = new Model("models/holePlanet/holeplanet.dae");
 
 	_models["Fuzzy"] = new Model("models/Fuzzy/Fuzzy.dae");
-
 }
 
 void GameRenderer::getUserInput(void) { glfwPollEvents(); }

@@ -5,12 +5,12 @@
 #include "game/entities/Perk.hpp"
 #include "game/entities/Player.hpp"
 #include "game/entities/Portal.hpp"
+#include "game/scenes/Credits.hpp"
 #include "game/scenes/Desert.hpp"
 #include "game/scenes/Forest.hpp"
 #include "game/scenes/Load.hpp"
 #include "game/scenes/MainMenu.hpp"
 #include "game/scenes/Volcano.hpp"
-#include "game/scenes/Credits.hpp"
 
 extern std::string _assetsDir;
 
@@ -141,11 +141,13 @@ void Bomberman::_forest(void) {
 	protectedCase.push_back(std::tuple<int, int>(-7.0, -9.0));
 	protectedCase.push_back(std::tuple<int, int>(-9.0, -7.0));
 	protectedCase.push_back(std::tuple<int, int>(9.0, 9.0));
-	_entities.push_back(new Box(glm::vec3(-7.0, 0, -9.0), _camera, "DestructibleMeteor"));
-	_entities.push_back(new Box(glm::vec3(-9.0, 0, -7.0), _camera, "DestructibleMeteor"));
-
 	_entities.push_back(
-		new EnemyRunAway(glm::vec3(9.0, 0.0, 9.0), glm::vec3(0.0f), "Fuzzy", _camera));
+		new Box(glm::vec3(-7.0, 0, -9.0), _camera, "DestructibleMeteor"));
+	_entities.push_back(
+		new Box(glm::vec3(-9.0, 0, -7.0), _camera, "DestructibleMeteor"));
+
+	_entities.push_back(new EnemyRunAway(glm::vec3(9.0, 0.0, 9.0),
+										 glm::vec3(0.0f), "Fuzzy", _camera));
 
 	_createMap(10, 10, protectedCase, 10, 1000);
 }
@@ -172,15 +174,14 @@ void Bomberman::_volcano(void) {
 
 void Bomberman::_desert(void) {
 	_skybox = new Skybox("space2");
-	_camera =
-		new Desert(glm::vec3(-16, 20.0, 11.0), glm::vec3(-60.0, 0.0, 0.0), this);
+	_camera = new Desert(glm::vec3(-16, 20.0, 11.0), glm::vec3(-60.0, 0.0, 0.0),
+						 this);
 	_light = new Light(glm::vec2(-20.0, 8.0), glm::vec3(0.0f));
-	_entities.push_back(
-		new Entity(glm::vec3(0, 0.4, 0), glm::vec3(0.0f),
-				   new Collider(Collider::Rectangle,
-								LayerTag::WallLayer, 0.5, 0.5),
-				   "DestructibleMeteor", "Wall", "Wall", _camera));
-	_entities.back()->scale(glm::vec3(0.03));
+	_entities.push_back(new Entity(
+		glm::vec3(0), glm::vec3(0.0f),
+		new Collider(Collider::Rectangle, LayerTag::WallLayer, 0.5, 0.5),
+		"BigMeteor", "Wall", "Wall", _camera));
+	// _entities.back()->scale(glm::vec3(300));
 	_entities.push_back(new Player(glm::vec3(-19.0, 0.0, -3.0), glm::vec3(0.0f),
 								   _save, _camera));
 	std::vector<std::tuple<int, int>> protectedCase;
@@ -192,8 +193,10 @@ void Bomberman::_desert(void) {
 	protectedCase.push_back(std::tuple<int, int>(17.0, 1.0));
 	protectedCase.push_back(std::tuple<int, int>(19.0, 3.0));
 
-	_entities.push_back(new Box(glm::vec3(-17.0, 0, -3.0), _camera, "DestructibleMeteor"));
-	_entities.push_back(new Box(glm::vec3(-19.0, 0, -1.0), _camera, "DestructibleMeteor"));
+	_entities.push_back(
+		new Box(glm::vec3(-17.0, 0, -3.0), _camera, "DestructibleMeteor"));
+	_entities.push_back(
+		new Box(glm::vec3(-19.0, 0, -1.0), _camera, "DestructibleMeteor"));
 
 	// _entities.push_back(
 	// 	new EnemyRunAway(glm::vec3(17.0, 0.0, 1.0), glm::vec3(0.0f), _camera));
@@ -214,7 +217,8 @@ void Bomberman::_credits(void) {
 	// _camera = new Volcano(glm::vec3(-14.5, 20.0, -3.0),
 	// 					  glm::vec3(-60.0, 0.0, 0.0), this);
 	// _light = new Light(glm::vec2(-20.0, 8.0), glm::vec3(0.0f));
-	// // _entities.push_back(new Entity(glm::vec3(0.0f), glm::vec3(0.0f), nullptr,
+	// // _entities.push_back(new Entity(glm::vec3(0.0f), glm::vec3(0.0f),
+	// nullptr,
 	// //    "Island", "Island", "Island"));
 	// _entities.push_back(new Player(glm::vec3(-17.0, 0.0, -17.0),
 	// 							   glm::vec3(0.0f), _save, _camera));
@@ -248,13 +252,13 @@ void Bomberman::_createMap(int width, int height,
 	for (int x = -width; x <= width; x++) {
 		for (int z = -height; z <= height; z++) {
 			if (abs(x) == width || abs(z) == height) {
-				_entities.push_back(
-					new Entity(glm::vec3(x, 0.0, z), glm::vec3(0.0f),
-							   new Collider(Collider::Rectangle,
-											LayerTag::WallLayer, 0.45, 0.45),
-				// 			   "Meteor", "Wall", "Wall", _camera));
-				// _entities.back()->scale(glm::vec3(0.0006));
-				"Wall", "Wall", "Wall", _camera));
+				_entities.push_back(new Entity(
+					glm::vec3(x, 0.0, z), glm::vec3(0.0f),
+					new Collider(Collider::Rectangle, LayerTag::WallLayer, 0.45,
+								 0.45),
+					// 			   "Meteor", "Wall", "Wall", _camera));
+					// _entities.back()->scale(glm::vec3(0.0006));
+					"Wall", "Wall", "Wall", _camera));
 
 				// _entities.back()->scale(glm::vec3(0.9, 0.1, 0.9));
 
@@ -270,7 +274,6 @@ void Bomberman::_createMap(int width, int height,
 							   new Collider(Collider::Rectangle,
 											LayerTag::WallLayer, 0.5, 0.5),
 							   "Meteor", "Wall", "Wall", _camera));
-				_entities.back()->scale(glm::vec3(0.0006));
 				// _entities.back()->scale(glm::vec3(1.0, 0.8, 1.0));
 
 			} else {
@@ -283,15 +286,17 @@ void Bomberman::_createMap(int width, int height,
 				if (canPutBlocks && rand() % boxRate == 0) {
 					// _entities.push_back(
 					// 	new Entity(glm::vec3(x, 0.4f, z), glm::vec3(0.0f),
-					// 			   new Collider(Collider::Rectangle, LayerTag::BoxLayer, 0.45f, 0.45f),
-					// 			   "DestructibleMeteor", "Box", "Box", _camera));
+					// 			   new Collider(Collider::Rectangle,
+					// LayerTag::BoxLayer, 0.45f, 0.45f),
+					// "DestructibleMeteor", "Box", "Box", _camera));
 					// _entities.back()->scale(glm::vec3(0.0005));
-					_entities.push_back(new Box(glm::vec3(x, 0, z), _camera, "DestructibleMeteor"));
+					_entities.push_back(new Box(glm::vec3(x, 0, z), _camera,
+												"DestructibleMeteor"));
 				} else if (canPutBlocks && rand() % monsterRate == 0) {
-					_entities.push_back(new EnemyBasic(
-						glm::vec3(x, 0.0, z), glm::vec3(0.0f), "Fuzzy", _camera));
+					_entities.push_back(new EnemyBasic(glm::vec3(x, 0.0, z),
+													   glm::vec3(0.0f), "Fuzzy",
+													   _camera));
 					_entities.back()->scale(glm::vec3(0.4));
-
 				}
 			}
 		}
