@@ -17,9 +17,6 @@ Box::Box(glm::vec3 position, Entity *sceneManager, std::string modelName,
 	  _timer(1.0f),
 	  _perkProb(perkProb),
 	  _toSpawn(toSpawn) {
-	// scale(glm::vec3(0.9, 0.8, 0.9));
-	// scale(glm::vec3(0.0005));
-	// setColor(glm::vec3(0.55, 0.3, 0.1));
 	rotateY(180);
 }
 

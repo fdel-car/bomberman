@@ -6,12 +6,11 @@
 extern std::string _assetsDir;
 
 AEnemy::AEnemy(glm::vec3 position, glm::vec3 eulerAngles, std::string name,
-			   LayerTag tag, bool doMeleeDmg, Entity *sceneManager, std::string modelName,
-			   Entity *toSpawn)
-	: Damageable(glm::vec3(position.x, position.y + 0.4f, position.z),
-				 eulerAngles, new Collider(Collider::Circle, tag, 0.4f, 0.4f),
-				 modelName, name, "Enemy", 1, tag, EnemySpecialLayer, 2.0f,
-				 sceneManager),
+			   LayerTag tag, bool doMeleeDmg, Entity *sceneManager,
+			   std::string modelName, Entity *toSpawn)
+	: Damageable(glm::vec3(position.x, position.y, position.z), eulerAngles,
+				 new Collider(Collider::Circle, tag, 0.4f, 0.4f), modelName,
+				 name, "Enemy", 1, tag, EnemySpecialLayer, 2.0f, sceneManager),
 	  _bombCooldown(0.0f),
 	  _resetMoveCoolDown(0.0f),
 	  _doMeleeDmg(doMeleeDmg),
@@ -85,8 +84,7 @@ void AEnemy::_runIn(SceneTools *cam, size_t distFromPlayer, bool putBomb) {
 				currentPos = *currentPos.prevNodesByDist[bestDist][0];
 			_way.push_back(currentPos.z * mapWidth + currentPos.x);
 		}
-	}
-	else
+	} else
 		randomMove(cam, 3.0f);
 }
 
@@ -130,8 +128,7 @@ void AEnemy::_runAway(SceneTools *cam, size_t distFromPlayer, bool putBomb) {
 			}
 			_way.push_back(currentPos.z * mapWidth + currentPos.x);
 		}
-	}
-	else
+	} else
 		randomMove(cam, 3.0f);
 }
 

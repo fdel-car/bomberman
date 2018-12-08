@@ -159,7 +159,9 @@ void GameRenderer::_initModels(void) {
 		new Model("models/destructibleMeteorite/destructibleMeteorite.obj");
 	_models["HolePlanet"] = new Model("models/holePlanet/holeplanet.dae");
 
-	_models["Fuzzy"] = new Model("models/Fuzzy/Fuzzy.dae");
+	_models["Fuzzy"] = new Model("models/Fuzzy/fuzzy.obj");
+	_models["RedGhost"] = new Model("models/RedGhost/redGhost.obj");
+	_models["EnemyBomber"] = new Model("models/EnemyBomber/enemyBomber.obj");
 }
 
 void GameRenderer::getUserInput(void) { glfwPollEvents(); }

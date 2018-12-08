@@ -181,7 +181,6 @@ void Bomberman::_desert(void) {
 		glm::vec3(0), glm::vec3(0.0f),
 		new Collider(Collider::Rectangle, LayerTag::WallLayer, 0.5, 0.5),
 		"BigMeteor", "Wall", "Wall", _camera));
-	// _entities.back()->scale(glm::vec3(300));
 	_entities.push_back(new Player(glm::vec3(-19.0, 0.0, -3.0), glm::vec3(0.0f),
 								   _save, _camera));
 	std::vector<std::tuple<int, int>> protectedCase;
