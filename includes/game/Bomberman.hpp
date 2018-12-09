@@ -61,7 +61,7 @@ class Bomberman : public AGame {
 
 	void _mainMenu(void);
 	void _forest(void);
-	void _pokemonWorld(void);
+	void _pokemon(void);
 	void _loadScene(void);
 	void _volcano(void);
 	void _desert(void);

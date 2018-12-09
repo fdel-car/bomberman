@@ -144,6 +144,7 @@ void GameRenderer::_initModels(void) {
 	_models["Sphere"] = new Model("Models/Sphere/sphere.dae");
 	_models["Bomb"] = new Model("Models/Bomb/bomb.obj");
 	_models["Island"] = new Model("Models/Island/island.obj");
+	_models["Stadium"] = new Model("Models/Stadium/stadium.obj");
 	_models["Wall"] = new Model("Models/Wall/wall.obj");
 	_models["Box"] = new Model("Models/Box/box.obj");
 	_models["Portal"] = new Model("Models/Portal/portal.obj");
@@ -159,8 +160,12 @@ void GameRenderer::_initModels(void) {
 		new Model("models/destructibleMeteorite/destructibleMeteorite.obj");
 	_models["HolePlanet"] = new Model("models/holePlanet/holeplanet.dae");
 
+	_models["StrengthBoulder"] =
+		new Model("models/StrengthBoulder/strengthBoulder.obj");
 	_models["Fuzzy"] = new Model("models/Fuzzy/fuzzy.obj");
 	_models["Diglett"] = new Model("models/Diglett/diglett.obj");
+	_models["Lapras"] = new Model("models/Lapras/lapras.obj");
+	_models["Groudon"] = new Model("models/Groudon/groudon.obj");
 	_models["RedGhost"] = new Model("models/RedGhost/redGhost.obj");
 	_models["EnemyBomber"] = new Model("models/EnemyBomber/enemyBomber.obj");
 	_models["DomeFossil"] =
