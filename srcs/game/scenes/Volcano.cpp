@@ -4,7 +4,7 @@
 Volcano::Volcano(glm::vec3 const &pos, glm::vec3 const &eulerAngles,
 				 Bomberman *bomberman)
 	:  // Camera(pos, eulerAngles),
-	  SceneTools(37, 37, pos, eulerAngles, bomberman, "Volcano", "Desert"),
+	  SceneTools(41, 9, pos, eulerAngles, bomberman, "Volcano", "Desert"),
 	  _cooldown(0.0f) {
 	configAI();
 	_initSoundsForGameplay();

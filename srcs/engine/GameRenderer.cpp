@@ -167,6 +167,9 @@ void GameRenderer::_initModels(void) {
 		new Model("models/Fossils/DomeFossil/domeFossil.obj");
 	_models["HelixFossil"] =
 		new Model("models/Fossils/HelixFossil/helixFossil.obj");
+	_models["WarpPipe"] = new Model("models/WarpPipe/WarpPipe.obj");
+	_models["WarpPipeCorner"] = new Model("models/WarpPipeCorner/WarpPipeCorner.obj");
+
 }
 
 void GameRenderer::getUserInput(void) { glfwPollEvents(); }
