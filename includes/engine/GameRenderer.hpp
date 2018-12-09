@@ -59,7 +59,7 @@ class GameRenderer final {
 	static glm::vec2 _mousePos;
 
 	// General vars
-	GLFWwindow *_window;
+	GLFWwindow *_window = nullptr;
 	AGame *_game;
 	bool _isFullScreen;
 	int _width;

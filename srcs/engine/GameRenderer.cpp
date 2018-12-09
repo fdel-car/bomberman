@@ -149,29 +149,28 @@ void GameRenderer::_initModels(void) {
 	_models["Box"] = new Model("Models/Box/box.obj");
 	_models["Portal"] = new Model("Models/Portal/portal.obj");
 	_models["Player"] = new Model("Models/Hero/hero.dae");
-	_models["KickPerk"] = new Model("models/Perks/Kick/kick.obj");
-	_models["DamagePerk"] = new Model("models/Perks/Damage/damage.obj");
-	_models["MaxBombPerk"] = new Model("models/Perks/MaxBomb/maxBomb.obj");
-	_models["RangePerk"] = new Model("models/Perks/Range/range.obj");
-	_models["SpeedPerk"] = new Model("models/Perks/Speed/speed.obj");
-	_models["Meteor"] = new Model("models/meteorite/meteorite.obj");
-	_models["BigMeteor"] = new Model("models/bigMeteor/bigMeteor.obj");
+	_models["KickPerk"] = new Model("Models/Perks/Kick/kick.obj");
+	_models["DamagePerk"] = new Model("Models/Perks/Damage/damage.obj");
+	_models["MaxBombPerk"] = new Model("Models/Perks/MaxBomb/maxBomb.obj");
+	_models["RangePerk"] = new Model("Models/Perks/Range/range.obj");
+	_models["SpeedPerk"] = new Model("Models/Perks/Speed/speed.obj");
+	_models["Meteor"] = new Model("Models/Meteorite/meteorite.obj");
+	_models["BigMeteor"] = new Model("Models/BigMeteor/bigMeteor.obj");
 	_models["DestructibleMeteor"] =
-		new Model("models/destructibleMeteorite/destructibleMeteorite.obj");
-	_models["HolePlanet"] = new Model("models/holePlanet/holeplanet.dae");
-
+		new Model("Models/DestructibleMeteorite/destructibleMeteorite.obj");
+	_models["HolePlanet"] = new Model("Models/HolePlanet/holePlanet.dae");
 	_models["StrengthBoulder"] =
-		new Model("models/StrengthBoulder/strengthBoulder.obj");
-	_models["Fuzzy"] = new Model("models/Fuzzy/fuzzy.obj");
-	_models["Diglett"] = new Model("models/Diglett/diglett.obj");
-	_models["Lapras"] = new Model("models/Lapras/lapras.obj");
-	_models["Groudon"] = new Model("models/Groudon/groudon.obj");
-	_models["RedGhost"] = new Model("models/RedGhost/redGhost.obj");
-	_models["EnemyBomber"] = new Model("models/EnemyBomber/enemyBomber.obj");
+		new Model("Models/StrengthBoulder/strengthBoulder.obj");
+	_models["Fuzzy"] = new Model("Models/Fuzzy/fuzzy.obj");
+	_models["Diglett"] = new Model("Models/Diglett/diglett.obj");
+	_models["Lapras"] = new Model("Models/Lapras/lapras.obj");
+	_models["Groudon"] = new Model("Models/Groudon/groudon.obj");
+	_models["RedGhost"] = new Model("Models/RedGhost/redGhost.obj");
+	_models["EnemyBomber"] = new Model("Models/EnemyBomber/enemyBomber.obj");
 	_models["DomeFossil"] =
-		new Model("models/Fossils/DomeFossil/domeFossil.obj");
+		new Model("Models/Fossils/DomeFossil/domeFossil.obj");
 	_models["HelixFossil"] =
-		new Model("models/Fossils/HelixFossil/helixFossil.obj");
+		new Model("Models/Fossils/HelixFossil/helixFossil.obj");
 }
 
 void GameRenderer::getUserInput(void) { glfwPollEvents(); }
@@ -260,7 +259,7 @@ void GameRenderer::refreshWindow(std::vector<Entity *> &entities,
 }
 
 void GameRenderer::setNewResolution(bool isFullScreen, int width, int height) {
-	if (width < 0 || height < 0) return;
+	if (width <= 0 || height <= 0) return;
 	if (isFullScreen == _isFullScreen && width == _widthRequested &&
 		height == _heightRequested)
 		return;

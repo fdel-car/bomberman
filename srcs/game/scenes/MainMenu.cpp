@@ -16,9 +16,9 @@ MainMenu::MainMenu(glm::vec3 const &pos, glm::vec3 const &eulerAngles,
 	_neededImages.push_back(std::tuple<std::string, std::string>(
 		(_assetsDir + "GUI/Icons/leftAngleBracket.png"), "leftAngleBracket"));
 	_neededImages.push_back(std::tuple<std::string, std::string>(
-		(_assetsDir + "GUI/icons/settings.png"), "settings"));
+		(_assetsDir + "GUI/Icons/settings.png"), "settings"));
 	_neededImages.push_back(std::tuple<std::string, std::string>(
-		(_assetsDir + "GUI/icons/MainMenuTitle.png"), "title"));
+		(_assetsDir + "GUI/Icons/MainMenuTitle.png"), "title"));
 
 	_updateVarsFromSave();
 
@@ -72,8 +72,8 @@ void MainMenu::drawGUI(GUI *graphicUI) {
 				NK_WINDOW_NO_SCROLLBAR)) {
 			if (graphicUI->uiHorizontalSelection(
 					(_gameEngine->getGameRenderer()->getWidth() / 5), "",
-					_levelsName[_lvlIndex], &_lvlIndex,
-					_levelsName.size() - 1, 30)) {
+					_levelsName[_lvlIndex], &_lvlIndex, _levelsName.size() - 1,
+					30)) {
 				_gameEngine->playSound("lateral_select");
 			}
 		}
@@ -147,7 +147,8 @@ void MainMenu::_settings(GUI *graphicUI) {
 					_gameEngine->getGameRenderer()->getWidth() / 2,
 					(_gameEngine->getGameRenderer()->getHeight() / 3) * 2),
 			NK_WINDOW_BORDER | NK_WINDOW_TITLE)) {
-		int rowHeight = ((_gameEngine->getGameRenderer()->getHeight() / 3) * 2) / 15;
+		int rowHeight =
+			((_gameEngine->getGameRenderer()->getHeight() / 3) * 2) / 15;
 		rowHeight = rowHeight < 30 ? 30 : rowHeight;
 		graphicUI->uiHeader("Options", NK_TEXT_CENTERED, 30, "28_slider");
 
@@ -191,7 +192,8 @@ void MainMenu::_settings(GUI *graphicUI) {
 			NK_EDIT_FIELD, _downChoice, &len3, 2, nk_filter_default, rowHeight);
 		graphicUI->uiHorizontalEditString(
 			_gameEngine->getGameRenderer()->getWidth() / 2, "Move Right",
-			NK_EDIT_FIELD, _rightChoice, &len4, 2, nk_filter_default, rowHeight);
+			NK_EDIT_FIELD, _rightChoice, &len4, 2, nk_filter_default,
+			rowHeight);
 
 		int btnWidth = (_gameEngine->getGameRenderer()->getWidth() / 6) - 12;
 		graphicUI->uiRowMultipleElem(true, 60, 3);
@@ -245,14 +247,17 @@ void MainMenu::_movingTitle(GUI *graphicUI) {
 			titleIsGrowing = !titleIsGrowing;
 	} else
 		_slowTitle = !_slowTitle;
-	size_t x = (_gameEngine->getGameRenderer()->getWidth() / 4) - (extraSizeTitle / 2);
-	size_t y = (_gameEngine->getGameRenderer()->getHeight() / 15) - (extraSizeTitle / 4);
-	size_t width = (_gameEngine->getGameRenderer()->getWidth() / 2) + extraSizeTitle;
-	size_t height = (_gameEngine->getGameRenderer()->getHeight() / 4) +  (extraSizeTitle / 4);
-	if (graphicUI->uiStartBlock(
-			"Title", "",
-			nk_rect(x, y, width + 20, height + 10),
-			NK_WINDOW_NO_SCROLLBAR)) {
+	size_t x =
+		(_gameEngine->getGameRenderer()->getWidth() / 4) - (extraSizeTitle / 2);
+	size_t y = (_gameEngine->getGameRenderer()->getHeight() / 15) -
+			   (extraSizeTitle / 4);
+	size_t width =
+		(_gameEngine->getGameRenderer()->getWidth() / 2) + extraSizeTitle;
+	size_t height = (_gameEngine->getGameRenderer()->getHeight() / 4) +
+					(extraSizeTitle / 4);
+	if (graphicUI->uiStartBlock("Title", "",
+								nk_rect(x, y, width + 20, height + 10),
+								NK_WINDOW_NO_SCROLLBAR)) {
 		graphicUI->uiRowMultipleElem(true, height);
 		graphicUI->uiAddElemInRow(width);
 		graphicUI->uiSetImage("title");
