@@ -12,14 +12,14 @@ const std::vector<std::tuple<PerkType, size_t, std::string>> getPossiblePerks(
 	void) {
 	std::vector<std::tuple<PerkType, size_t, std::string>> vPerk;
 	vPerk.push_back(std::make_tuple<PerkType, size_t, std::string>(
-		SpeedBoost, 1, "SpeedPerk"));
+		SpeedBoost, 3, "SpeedPerk"));
 	vPerk.push_back(std::make_tuple<PerkType, size_t, std::string>(
-		BombRange, 1, "RangePerk"));
+		BombRange, 2, "RangePerk"));
 	vPerk.push_back(std::make_tuple<PerkType, size_t, std::string>(
-		MaxBomb, 1, "MaxBombPerk"));
+		MaxBomb, 2, "MaxBombPerk"));
 	vPerk.push_back(std::make_tuple<PerkType, size_t, std::string>(
 		Damage, 1, "DamagePerk"));
-	vPerk.push_back(std::make_tuple<PerkType, size_t, std::string>(KickBomb, 1,
+	vPerk.push_back(std::make_tuple<PerkType, size_t, std::string>(KickBomb, 2,
 																   "KickPerk"));
 	return vPerk;
 }
