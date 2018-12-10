@@ -5,6 +5,7 @@
 #include "engine/Entity.hpp"
 #include "engine/Light.hpp"
 #include "engine/Skybox.hpp"
+#include "engine/GUI/GUI.hpp"
 
 #include <atomic>
 

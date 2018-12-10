@@ -18,9 +18,9 @@ void Volcano::configAI(void) {
 
 	_tmpDecor.push_back("Explosion");
 	_tmpDecor.push_back("OFDT");
-	_tmpDecor.push_back("RunAway");
+	_tmpDecor.push_back("EnemyRunAway");
 	_tmpDecor.push_back("EPB");
-	_tmpDecor.push_back("Basic");
+	_tmpDecor.push_back("EnemyBasic");
 	_tmpDecor.push_back("Bomb");
 	_tmpDecor.push_back("Box");
 
@@ -48,7 +48,7 @@ void Volcano::drawGUI(GUI *graphicUI) {
 	// 	"officia deserunt mollit anim id est laborum.";
 	// _displayDialogue(graphicUI, &searchWord, &lastWord, &startStrIdx,
 	// 				 "Bomberman", "heart", str, false, 1000, 1000, NK_TEXT_LEFT,
-	// 				 "12_BOMBERMAN", "18_BOMBERMAN");
+	// 				 "12_slider", "18_slider");
 }
 
 void Volcano::tellPosition(Entity *entity) { _savePositions(entity); }

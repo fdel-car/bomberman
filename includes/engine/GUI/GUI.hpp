@@ -108,13 +108,13 @@ class GUI {
 					 nk_flags textPosition = NK_TEXT_LEFT,
 					 std::string fontText = "", std::string fontTitle = "");
 	bool uiHorizontalSelection(int widgetWidth, std::string leftText,
-							   std::string rightText, int *choice, int maxSize);
+							   std::string rightText, int *choice, int maxSize, int height);
 	bool uiHover();
 	void uiEditString(nk_flags flags, char *fieldBuffer, int *len, int max,
 					  nk_plugin_filter filter);
 	void uiHorizontalEditString(int widgetWidth, std::string leftText,
 								nk_flags flags, char *fieldBuffer, int *len,
-								int max, nk_plugin_filter filter);
+								int max, nk_plugin_filter filter, int height);
 	void uiRowMultipleElem(bool isStart, int height = 30, int nbrOfElem = 1,
 						   nk_layout_format flags = NK_STATIC);
 	void uiAddElemInRow(int width);
@@ -128,7 +128,7 @@ class GUI {
 	GUI &operator=(GUI const &rhs);
 
 	/*
-	** Contain all fonts && images/icons
+	** Contain all fonts && images/Icons
 	*/
 
 	struct media *_media;

@@ -37,8 +37,16 @@ void Load::drawGUI(GUI *graphicUI) {
 		for (int i = 0; i < nbrOfPoint; i++) {
 			text += " .";
 		}
-		graphicUI->uiHeader(text.c_str(), NK_TEXT_LEFT, 48, "35_BOMBERMAN");
+		graphicUI->uiHeader(text.c_str(), NK_TEXT_LEFT, 48, "35_slider");
 		graphicUI->setStyle(activeStyle);
 	}
 	graphicUI->uiEndBlock();
+}
+
+void Load::configGUI(GUI *graphicUI) {
+	graphicUI->uiSetDefaultFont("22_BOMBERMAN");
+	defaultStyle[NK_COLOR_WINDOW] = nk_rgba(57, 67, 71, 0);
+	defaultStyle[NK_COLOR_TEXT] = nk_rgba(215, 215, 215, 255);
+	graphicUI->setStyle(defaultStyle);
+	activeStyle = defaultStyle;
 }

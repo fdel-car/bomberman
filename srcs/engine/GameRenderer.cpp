@@ -115,8 +115,8 @@ void GameRenderer::_initShader(void) {
 	if (_shaderProgram) delete _shaderProgram;
 	if (_shadowShaderProgram) delete _shadowShaderProgram;
 	if (_skyboxShaderProgram) delete _skyboxShaderProgram;
-	_shaderProgram = new ShaderProgram(_srcsDir + "engine/shaders/4.1.vs",
-									   _srcsDir + "engine/shaders/4.1.fs");
+	_shaderProgram = new ShaderProgram(_srcsDir + "engine/shaders/default.vs",
+									   _srcsDir + "engine/shaders/default.fs");
 	_shadowShaderProgram =
 		new ShaderProgram(_srcsDir + "engine/shaders/depthMap.vs",
 						  _srcsDir + "engine/shaders/depthMap.fs");
@@ -141,14 +141,38 @@ void GameRenderer::_initModels(void) {
 	}
 	_models.clear();
 
-	_models["Sphere"] = new Model("models/sphere/sphere.dae");
-	_models["Wall"] = new Model("models/wall/wall.dae");
-	// _models["Light"] = new Model("light");
+	_models["Sphere"] = new Model("Models/Sphere/sphere.dae");
+	_models["Bomb"] = new Model("Models/Bomb/bomb.obj");
+	_models["Island"] = new Model("Models/Island/island.obj");
+	_models["Stadium"] = new Model("Models/Stadium/stadium.obj");
+	_models["Wall"] = new Model("Models/Wall/wall.obj");
+	_models["Box"] = new Model("Models/Box/box.obj");
+	_models["Portal"] = new Model("Models/Portal/portal.obj");
+	_models["Player"] = new Model("Models/model.dae");
+	_models["KickPerk"] = new Model("Models/Perks/Kick/kick.obj");
+	_models["DamagePerk"] = new Model("Models/Perks/Damage/damage.obj");
+	_models["MaxBombPerk"] = new Model("Models/Perks/MaxBomb/maxBomb.obj");
+	_models["RangePerk"] = new Model("Models/Perks/Range/range.obj");
+	_models["SpeedPerk"] = new Model("Models/Perks/Speed/speed.obj");
+	_models["Meteor"] = new Model("Models/Meteorite/meteorite.obj");
+	_models["BigMeteor"] = new Model("Models/BigMeteor/bigMeteor.obj");
+	_models["DestructibleMeteor"] =
+		new Model("Models/DestructibleMeteorite/destructibleMeteorite.obj");
+	_models["HolePlanet"] = new Model("Models/HolePlanet/holePlanet.dae");
+	_models["StrengthBoulder"] =
+		new Model("Models/StrengthBoulder/strengthBoulder.obj");
+	_models["OakTree"] = new Model("Models/OakTree/oakTree.obj");
+	_models["Fuzzy"] = new Model("Models/Fuzzy/fuzzy.obj");
+	_models["Diglett"] = new Model("Models/Diglett/diglett.obj");
+	_models["Lapras"] = new Model("Models/Lapras/lapras.obj");
+	_models["Groudon"] = new Model("Models/Groudon/groudon.obj");
+	_models["RedGhost"] = new Model("Models/RedGhost/redGhost.obj");
+	_models["EnemyBomber"] = new Model("Models/EnemyBomber/enemyBomber.obj");
+	_models["DomeFossil"] =
+		new Model("Models/Fossils/DomeFossil/domeFossil.obj");
+	_models["HelixFossil"] =
+		new Model("Models/Fossils/HelixFossil/helixFossil.obj");
 	_models["Simple"] = new Model("models/simple.dae");
-	_models["Bomb"] = new Model("models/bomb/bomb.dae");
-	_models["Player"] = new Model("models/model.dae");
-	// _models["Box"] = new Model("box");
-	_models["Island"] = new Model("models/island/island.obj");
 }
 
 void GameRenderer::getUserInput(void) { glfwPollEvents(); }
@@ -168,49 +192,42 @@ void GameRenderer::refreshWindow(std::vector<Entity *> &entities,
 
 	for (auto entity : entities) {
 		Model *model = entity->getModel();
-		if (model->isRigged()) model->updateBoneTransforms();
+		if (model && model->isRigged()) model->updateBoneTransforms();
 	}
 
-	if (light != nullptr) {
-		_lightSpaceMatrix =
-			light->getProjectionMatrix() * light->getViewMatrix();
-		// Shadow map
-		glUseProgram(_shadowShaderProgram->getID());
-		glViewport(0, 0, SHADOW_W, SHADOW_H);
-		glBindFramebuffer(GL_FRAMEBUFFER, _depthMapFBO);
-		glClear(GL_DEPTH_BUFFER_BIT);
-		_shadowShaderProgram->setMat4("lightSpaceMatrix", _lightSpaceMatrix);
-		glCullFace(GL_FRONT);
-		for (auto entity : entities) {
-			_shadowShaderProgram->setMat4("M", entity->getModelMatrix());
-			entity->getModel()->draw(*_shadowShaderProgram);
-		}
-		glCullFace(GL_BACK);
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	_lightSpaceMatrix = light->getProjectionMatrix() * light->getViewMatrix();
+	// Shadow map
+	glUseProgram(_shadowShaderProgram->getID());
+	glViewport(0, 0, SHADOW_W, SHADOW_H);
+	glBindFramebuffer(GL_FRAMEBUFFER, _depthMapFBO);
+	glClear(GL_DEPTH_BUFFER_BIT);
+	_shadowShaderProgram->setMat4("lightSpaceMatrix", _lightSpaceMatrix);
+	glCullFace(GL_FRONT);
+	for (auto entity : entities) {
+		_shadowShaderProgram->setMat4("M", entity->getModelMatrix());
+		Model *model = entity->getModel();
+		if (model) model->draw(*_shadowShaderProgram);
 	}
+	glCullFace(GL_BACK);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	// Basic rendering OpenGL state
 	glViewport(0, 0, _width, _height);
+	glDisable(GL_CULL_FACE);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glUseProgram(_shaderProgram->getID());
-	_shaderProgram->setMat4("V", camera->getViewMatrix());
-	_shaderProgram->setMat4("P", camera->getProjectionMatrix());
+	_shaderProgram->setMat4(
+		"VP", camera->getProjectionMatrix() * camera->getViewMatrix());
 	_shaderProgram->setVec3("viewPos", camera->getPosition());
-	if (light == nullptr) {
-		_shaderProgram->setVec3("lightDir",
-								glm::normalize(glm::vec3(0.5, -0.5, -0.5)));
-		_shaderProgram->setVec3("lightColor", glm::vec3(1.0f));
-		_shaderProgram->setMat4("lightSpaceMatrix", glm::mat4(1.0f));
-	} else {
-		_shaderProgram->setVec3("lightDir", light->getDir());
-		_shaderProgram->setVec3("lightColor", light->getColor());
-		_shaderProgram->setMat4("lightSpaceMatrix", _lightSpaceMatrix);
-	}
+	_shaderProgram->setVec3("lightDir", light->getDir());
+	_shaderProgram->setVec3("lightColor", light->getColor());
+	_shaderProgram->setMat4("lightSpaceMatrix", _lightSpaceMatrix);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, _depthMap);
 	for (auto entity : entities) {
 		_shaderProgram->setMat4("M", entity->getModelMatrix());
-		entity->getModel()->draw(*_shaderProgram, entity->getColor());
+		Model *model = entity->getModel();
+		if (model) model->draw(*_shaderProgram, entity->getColor());
 	}
 
 	if (skybox != nullptr) {
@@ -239,7 +256,6 @@ void GameRenderer::refreshWindow(std::vector<Entity *> &entities,
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	glDisable(GL_MULTISAMPLE);
 	glDisable(GL_DEPTH_TEST);
-	glDisable(GL_CULL_FACE);
 
 	_graphicUI->nkNewFrame();
 	camera->drawGUI(_graphicUI);
@@ -250,7 +266,7 @@ void GameRenderer::refreshWindow(std::vector<Entity *> &entities,
 }
 
 void GameRenderer::setNewResolution(bool isFullScreen, int width, int height) {
-	if (width < 0 || height < 0) return;
+	if (width <= 0 || height <= 0) return;
 	if (isFullScreen == _isFullScreen && width == _widthRequested &&
 		height == _heightRequested)
 		return;

@@ -8,14 +8,14 @@ extern std::string _assetsDir;
 Player::Player(glm::vec3 position, glm::vec3 eulerAngles, Save &save,
 			   Entity *sceneManager)
 	: Damageable(
-		  glm::vec3(position.x, position.y + 0.4f, position.z), eulerAngles,
+		  glm::vec3(position.x, position.y - 0.05f, position.z), eulerAngles,
 		  new Collider(Collider::Circle, LayerTag::PlayerLayer, 0.4f, 0.4f),
 		  "Player", "Player", "Player", 3, PlayerLayer, PlayerSpecialLayer,
 		  2.0f, sceneManager),
 	  _save(save),
 	  _speed(6.0f),
 	  _maxBombs(3),
-	  _bombCooldown(3.0f),
+	  _bombCooldown(2.5f),
 	  _bombRange(2),
 	  _bombKick(false),
 	  _bombTimers(std::vector<float>()),

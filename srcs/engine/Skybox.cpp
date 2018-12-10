@@ -21,12 +21,12 @@ GLuint const &Skybox::getVAO(void) const { return _skyboxVAO; }
 GLuint const &Skybox::getTexture(void) const { return _skyboxTexture; }
 
 void Skybox::_initSkyboxFaces(void) {
-	_faces.push_back(_assetsDir + "skyboxes/" + nameTextureDir + "/left.png");
-	_faces.push_back(_assetsDir + "skyboxes/" + nameTextureDir + "/right.png");
-	_faces.push_back(_assetsDir + "skyboxes/" + nameTextureDir + "/top.png");
-	_faces.push_back(_assetsDir + "skyboxes/" + nameTextureDir + "/bottom.png");
-	_faces.push_back(_assetsDir + "skyboxes/" + nameTextureDir + "/front.png");
-	_faces.push_back(_assetsDir + "skyboxes/" + nameTextureDir + "/back.png");
+	_faces.push_back(_assetsDir + "Skyboxes/" + nameTextureDir + "/left.png");
+	_faces.push_back(_assetsDir + "Skyboxes/" + nameTextureDir + "/right.png");
+	_faces.push_back(_assetsDir + "Skyboxes/" + nameTextureDir + "/top.png");
+	_faces.push_back(_assetsDir + "Skyboxes/" + nameTextureDir + "/bottom.png");
+	_faces.push_back(_assetsDir + "Skyboxes/" + nameTextureDir + "/front.png");
+	_faces.push_back(_assetsDir + "Skyboxes/" + nameTextureDir + "/back.png");
 }
 
 void Skybox::_initBuffer(void) {

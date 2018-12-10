@@ -882,13 +882,13 @@ void GUI::uiDialogBox(const char *name, std::string imgName, const char *text,
 
 bool GUI::uiHorizontalSelection(int widgetWidth, std::string leftText,
 								std::string rightText, int *choice,
-								int maxSize) {
+								int maxSize, int height) {
 	bool tmp = false;
-	widgetWidth -= 100;
-	nk_layout_row_begin(&glfw.ctx, NK_STATIC, 30, 4);
+	widgetWidth -= (40 + height * 2);
+	nk_layout_row_begin(&glfw.ctx, NK_STATIC, height, 4);
 	if (leftText.size() != 0) nk_layout_row_push(&glfw.ctx, widgetWidth / 2);
 	nk_label(&glfw.ctx, leftText.c_str(), NK_TEXT_LEFT);
-	nk_layout_row_push(&glfw.ctx, 30);
+	nk_layout_row_push(&glfw.ctx, height);
 	if (_media->myImages.find("leftAngleBracket") != _media->myImages.end()) {
 		if (nk_button_image(&glfw.ctx,
 							_media->myImages.at("leftAngleBracket"))) {
@@ -901,7 +901,7 @@ bool GUI::uiHorizontalSelection(int widgetWidth, std::string leftText,
 	else
 		nk_layout_row_push(&glfw.ctx, widgetWidth);
 	nk_label(&glfw.ctx, rightText.c_str(), NK_TEXT_CENTERED);
-	nk_layout_row_push(&glfw.ctx, 30);
+	nk_layout_row_push(&glfw.ctx, height);
 	if (_media->myImages.find("rightAngleBracket") != _media->myImages.end()) {
 		if (nk_button_image(&glfw.ctx,
 							_media->myImages.at("rightAngleBracket"))) {
@@ -920,9 +920,9 @@ bool GUI::uiHover() {
 
 void GUI::uiHorizontalEditString(int widgetWidth, std::string leftText,
 								 nk_flags flags, char *fieldBuffer, int *len,
-								 int max, nk_plugin_filter filter) {
+								 int max, nk_plugin_filter filter, int height) {
 	widgetWidth -= 70;
-	nk_layout_row_begin(&glfw.ctx, NK_STATIC, 30, 2);
+	nk_layout_row_begin(&glfw.ctx, NK_STATIC, height, 2);
 	nk_layout_row_push(&glfw.ctx, widgetWidth);
 	nk_label(&glfw.ctx, leftText.c_str(), NK_TEXT_LEFT);
 	nk_layout_row_push(&glfw.ctx, 40);

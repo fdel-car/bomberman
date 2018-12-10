@@ -39,10 +39,10 @@ GameEngine::RectanglePoints::RectanglePoints(Entity *entity,
 		top += movement.z;
 
 	// Make Rectangle a little bigger
-	top += -1.0f;
-	bot += 1.0f;
-	left += -1.0f;
-	right += 1.0f;
+	top += -EPSILON;
+	bot += EPSILON;
+	left += -EPSILON;
+	right += EPSILON;
 }
 
 GameEngine::GameEngine(AGame *game)
@@ -151,7 +151,7 @@ void GameEngine::run(void) {
 
 		// Freeze everything else if camera tells so
 		if (!_camera->isPause()) {
-			_light->update();
+			if (_light) _light->update();
 			// Update game entities states
 			for (auto entity : _allEntities) {
 				entity->update();
@@ -181,14 +181,19 @@ void GameEngine::run(void) {
 					// yet
 					if (!collidedEntities.empty()) {
 						for (auto collidedEntity : collidedEntities) {
-							initialCollisions.push_back(
-								collidedEntity->getId());
-							// Add for other entity too
-							_initialCollisionMap[collidedEntity->getId()]
-								.push_back(newEntity->getId());
+							if (_doCollide(newEntity->getCollider(),
+										   newEntity->getPosition(),
+										   collidedEntity)) {
+								initialCollisions.push_back(
+									collidedEntity->getId());
+								// Add for other entity too
+								_initialCollisionMap[collidedEntity->getId()]
+									.push_back(newEntity->getId());
+							}
 						}
-						_initialCollisionMap[newEntity->getId()] =
-							initialCollisions;
+						if (!initialCollisions.empty())
+							_initialCollisionMap[newEntity->getId()] =
+								initialCollisions;
 					}
 				}
 				_allEntities.insert(_allEntities.end(), _newEntities.begin(),
@@ -301,12 +306,14 @@ void GameEngine::_setSceneVariables(void) {
 	}
 
 	_light = _game->getLight();
-	if (_light == nullptr)
+	if (_light == nullptr) {
 		std::cerr << "\033[0;33m:Warning:\033[0m There is no light in the "
-					 "loaded scene, you should definitely add one"
+					 "loaded scene, a default one was generated but you should "
+					 "definitely add one"
 				  << std::endl;
-	else
-		_light->initEntity(this);
+		_light = new Light(glm::vec2(-10.0, 10.0), glm::vec3(0.0f));
+	}
+	_light->initEntity(this);
 
 	for (auto entity : _game->getEntities()) {
 		_allEntities.push_back(entity);
@@ -353,6 +360,13 @@ bool GameEngine::_initScene(size_t newSceneIdx) {
 }
 
 void GameEngine::_unloadScene(void) {
+	// Clear not added entities
+	if (_newEntities.empty() != true) {
+		for (size_t idx = 0; idx < _newEntities.size(); idx++) {
+			delete _newEntities[idx];
+		}
+		_newEntities.clear();
+	}
 	// Clear prev entities
 	if (_allEntities.empty() != true) {
 		for (size_t idx = _allEntities.size() - 1; idx < _allEntities.size();
@@ -408,123 +422,130 @@ void GameEngine::_moveEntities(void) {
 			firstLoop = true;
 			hasCollided = false;
 			shortcutEntity = nullptr;
-			futureMovement *= 0;
+			futureMovement = entity->getTargetMovement();
+
+			if (futureMovement.x == 0.0f && futureMovement.z == 0.0f &&
+				(collider == nullptr || !collider->isTrigger))
+				continue;
 
 			// Skip checks if entity doesnt have a collider
 			if (collider != nullptr) {
+				// Init vars before first loop
 				_getPossibleCollisions(entity, collidedEntities,
 									   collidedTriggers, _allEntities);
 				collidedEntitiesBck = collidedEntities;
+				futureMovement.x = entity->getTargetMovement().x;
+				futureMovement.z = entity->getTargetMovement().z;
 
-				// Init vars before first loop
-				if (entity->getTargetMovement().x != 0.0f ||
-					entity->getTargetMovement().z != 0.0f) {
-					futureMovement.x = entity->getTargetMovement().x;
-					futureMovement.z = entity->getTargetMovement().z;
-					while (collidedEntities.size() != 0) {
-						idxOfCollision = _checkCollision(entity, futureMovement,
-														 collidedEntities);
-						// Update entities to check collisions with
-						if (idxOfCollision != 0) {
-							collidedEntities.erase(
-								collidedEntities.begin(),
-								collidedEntities.begin() + idxOfCollision);
-						}
+				// Apply shorter and shorter movement until no collision is
+				// detected
+				while (collidedEntities.size() != 0) {
+					idxOfCollision = _checkCollision(entity, futureMovement,
+													 collidedEntities);
+					// Update entities to check collisions with
+					if (idxOfCollision != 0) {
+						collidedEntities.erase(
+							collidedEntities.begin(),
+							collidedEntities.begin() + idxOfCollision);
+					}
 
-						// If some collisions are detected, try with a different
-						// movement
-						if (collidedEntities.size() != 0) {
-							if (firstLoop) {
-								// Special test that need to be done only on
-								// first loop
-								if (_tryShortcut(entity, futureMovement,
-												 shortcutMovement,
-												 collidedEntities[0],
-												 collidedEntitiesBck)) {
-									shortcutEntity = collidedEntities[0];
-									isShortcut = true;
-									futureMovement = shortcutMovement;
-									break;
-								}
-								firstLoop = false;
-							}
-
-							// Loop again only for big movements
-							if (abs(futureMovement.x) <= 0.5f &&
-								abs(futureMovement.z) <= 0.5f) {
+					// If some collisions are detected, try with a different
+					// movement
+					if (collidedEntities.size() != 0) {
+						if (firstLoop) {
+							// Special test that need to be done only on
+							// first loop
+							if (_tryShortcut(
+									entity, futureMovement, shortcutMovement,
+									collidedEntities[0], collidedEntitiesBck)) {
+								shortcutEntity = collidedEntities[0];
+								isShortcut = true;
+								futureMovement = shortcutMovement;
 								break;
 							}
-							// Slightly decrease futureMovement to see if
-							// smaller movement can be performed
-							futureMovement.x /= 2.0f;
-							futureMovement.z /= 2.0f;
+							firstLoop = false;
 						}
+
+						// Loop again only for big movements
+						if (abs(futureMovement.x) <= 0.5f &&
+							abs(futureMovement.z) <= 0.5f) {
+							break;
+						}
+						// Slightly decrease futureMovement to see if
+						// smaller movement can be performed
+						futureMovement.x /= 2.0f;
+						futureMovement.z /= 2.0f;
 					}
 				}
-			}
 
-			// Collide with colliders (do not consider shortcut move yet)
-			while (!collidedEntitiesBck.empty() &&
-				   !entity->getNeedToBeDestroyed()) {
-				idx = _checkCollision(entity, futureMovement,
-									  collidedEntitiesBck);
-				if (idx != collidedEntitiesBck.size()) {
-					hasCollided = true;
+				// Collide with colliders (do not consider shortcut move yet)
+				while (!collidedEntitiesBck.empty() &&
+					   !entity->getNeedToBeDestroyed()) {
+					idx = _checkCollision(entity, futureMovement,
+										  collidedEntitiesBck);
+					if (idx != collidedEntitiesBck.size()) {
+						hasCollided = true;
+						// Other entity will always be a collider
+						if (!collidedEntitiesBck[idx]->getNeedToBeDestroyed())
+							collidedEntitiesBck[idx]->onCollisionEnter(entity);
+						// Check if we are a trigger or a collider
+						if (!entity->getNeedToBeDestroyed()) {
+							if (collider->isTrigger)
+								entity->onTriggerEnter(
+									collidedEntitiesBck[idx]);
+							else
+								entity->onCollisionEnter(
+									collidedEntitiesBck[idx]);
+						}
+						// Clear entities
+						collidedEntitiesBck.erase(
+							collidedEntitiesBck.begin(),
+							collidedEntitiesBck.begin() + idx + 1);
+					} else {
+						collidedEntitiesBck.clear();
+					}
+				}
+				// Apply shortcut and clear collisions
+				if (isShortcut) {
+					hasCollided = false;
+					futureMovement = shortcutMovement;
+					collidedEntities.clear();
+
+					// Trigger on shortcutted entity
+
 					// Other entity will always be a collider
-					if (!collidedEntitiesBck[idx]->getNeedToBeDestroyed())
-						collidedEntitiesBck[idx]->onCollisionEnter(entity);
+					if (!shortcutEntity->getNeedToBeDestroyed())
+						shortcutEntity->onCollisionEnter(entity);
 					// Check if we are a trigger or a collider
 					if (!entity->getNeedToBeDestroyed()) {
 						if (collider->isTrigger)
-							entity->onTriggerEnter(collidedEntitiesBck[idx]);
+							entity->onTriggerEnter(shortcutEntity);
 						else
-							entity->onCollisionEnter(collidedEntitiesBck[idx]);
+							entity->onCollisionEnter(shortcutEntity);
 					}
-					// Clear entities
-					collidedEntitiesBck.erase(
-						collidedEntitiesBck.begin(),
-						collidedEntitiesBck.begin() + idx + 1);
-				} else {
-					collidedEntitiesBck.clear();
+				}
+				// Trigger all triggers
+				while (!collidedTriggers.empty() &&
+					   !entity->getNeedToBeDestroyed()) {
+					idx = _checkCollision(entity, futureMovement,
+										  collidedTriggers);
+					if (idx != collidedTriggers.size()) {
+						// Other entity will always be a trigger
+						collidedTriggers[idx]->onTriggerEnter(entity);
+						// Check if we are a trigger or a collider
+						if (collider->isTrigger)
+							entity->onTriggerEnter(collidedTriggers[idx]);
+						else
+							entity->onCollisionEnter(collidedTriggers[idx]);
+						// Clear entities
+						collidedTriggers.erase(
+							collidedTriggers.begin(),
+							collidedTriggers.begin() + idx + 1);
+					} else
+						collidedTriggers.clear();
 				}
 			}
-			// Apply shortcut and clear collisions
-			if (isShortcut) {
-				hasCollided = false;
-				futureMovement = shortcutMovement;
-				collidedEntities.clear();
 
-				// Trigger on shortcutted entity
-
-				// Other entity will always be a collider
-				if (!shortcutEntity->getNeedToBeDestroyed())
-					shortcutEntity->onCollisionEnter(entity);
-				// Check if we are a trigger or a collider
-				if (!entity->getNeedToBeDestroyed()) {
-					if (collider->isTrigger)
-						entity->onTriggerEnter(shortcutEntity);
-					else
-						entity->onCollisionEnter(shortcutEntity);
-				}
-			}
-			// Trigger all triggers
-			while (!collidedTriggers.empty() &&
-				   !entity->getNeedToBeDestroyed()) {
-				idx = _checkCollision(entity, futureMovement, collidedTriggers);
-				if (idx != collidedTriggers.size()) {
-					// Other entity will always be a trigger
-					collidedTriggers[idx]->onTriggerEnter(entity);
-					// Check if we are a trigger or a collider
-					if (collider->isTrigger)
-						entity->onTriggerEnter(collidedTriggers[idx]);
-					else
-						entity->onCollisionEnter(collidedTriggers[idx]);
-					// Clear entities
-					collidedTriggers.erase(collidedTriggers.begin(),
-										   collidedTriggers.begin() + idx + 1);
-				} else
-					collidedTriggers.clear();
-			}
 			if ((futureMovement.x != 0 || futureMovement.z != 0) &&
 				!hasCollided && !entity->getNeedToBeDestroyed()) {
 				entity->translate(futureMovement);

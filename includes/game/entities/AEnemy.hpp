@@ -8,7 +8,7 @@ class AEnemy : public Damageable {
    public:
 	AEnemy(glm::vec3 position, glm::vec3 eulerAngles, std::string name,
 		   LayerTag tag, bool doMeleeDmg, Entity *gameManager,
-		   Entity *toSpawn = nullptr);
+		   std::string modelName, Entity *toSpawn = nullptr);
 	~AEnemy(void);
 
 	virtual void update(void) = 0;

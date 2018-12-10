@@ -7,11 +7,10 @@ extern std::string _assetsDir;
 
 AEnemy::AEnemy(glm::vec3 position, glm::vec3 eulerAngles, std::string name,
 			   LayerTag tag, bool doMeleeDmg, Entity *sceneManager,
-			   Entity *toSpawn)
-	: Damageable(glm::vec3(position.x, position.y + 0.4f, position.z),
-				 eulerAngles, new Collider(Collider::Circle, tag, 0.4f, 0.4f),
-				 "Sphere", name, "Enemy", 1, tag, EnemySpecialLayer, 2.0f,
-				 sceneManager),
+			   std::string modelName, Entity *toSpawn)
+	: Damageable(glm::vec3(position.x, position.y, position.z), eulerAngles,
+				 new Collider(Collider::Circle, tag, 0.4f, 0.4f), modelName,
+				 name, "Enemy", 1, tag, EnemySpecialLayer, 2.0f, sceneManager),
 	  _bombCooldown(0.0f),
 	  _resetMoveCoolDown(0.0f),
 	  _doMeleeDmg(doMeleeDmg),
@@ -22,10 +21,8 @@ AEnemy::AEnemy(glm::vec3 position, glm::vec3 eulerAngles, std::string name,
 
 	_neededSounds["damage_1"] = _assetsDir + "Audio/Sounds/Enemy/damage_1.wav";
 	_neededSounds["damage_2"] = _assetsDir + "Audio/Sounds/Enemy/damage_2.wav";
-	_neededSounds["damage_3"] = _assetsDir + "Audio/Sounds/Enemy/damage_3.wav";
 	_damagingSounds.push_back("damage_1");
 	_damagingSounds.push_back("damage_2");
-	_damagingSounds.push_back("damage_3");
 }
 
 AEnemy::~AEnemy(void) {
@@ -87,7 +84,8 @@ void AEnemy::_runIn(SceneTools *cam, size_t distFromPlayer, bool putBomb) {
 				currentPos = *currentPos.prevNodesByDist[bestDist][0];
 			_way.push_back(currentPos.z * mapWidth + currentPos.x);
 		}
-	}
+	} else
+		randomMove(cam, 2.0f);
 }
 
 void AEnemy::_runAway(SceneTools *cam, size_t distFromPlayer, bool putBomb) {
@@ -116,22 +114,22 @@ void AEnemy::_runAway(SceneTools *cam, size_t distFromPlayer, bool putBomb) {
 				size_t playerDist = 0;
 				size_t idx = 0;
 				size_t saveIdx = 0;
+				bool findWay = false;
 				for (const auto &v : currentPos.runAwayNodesByDist[bestDist]) {
+					findWay = true;
 					if (v->dist > playerDist) {
 						playerDist = v->dist;
 						saveIdx = idx;
 					}
 					idx++;
 				}
-				if (idx == 0) break;
+				if (!findWay) break;
 				currentPos = *currentPos.runAwayNodesByDist[bestDist][saveIdx];
 			}
 			_way.push_back(currentPos.z * mapWidth + currentPos.x);
 		}
-	}
-	// for (const auto &c : _way) {
-	// 	std::cout << c << std::endl;
-	// }
+	} else
+		randomMove(cam, 2.0f);
 }
 
 void AEnemy::randomMove(SceneTools *cam, float timer) {

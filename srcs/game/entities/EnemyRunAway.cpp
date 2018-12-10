@@ -1,9 +1,10 @@
 #include "game/entities/EnemyRunAway.hpp"
 
 EnemyRunAway::EnemyRunAway(glm::vec3 position, glm::vec3 eulerAngles,
-						   Entity *gameManager, Entity *toSpawn)
-	: AEnemy(position, eulerAngles, "RunAway", EnemyRunAwayLayer, false,
-			 gameManager, toSpawn) {
+						   std::string modelName, Entity *gameManager,
+						   Entity *toSpawn)
+	: AEnemy(position, eulerAngles, "EnemyRunAway", EnemyRunAwayLayer, false,
+			 gameManager, modelName, toSpawn) {
 	_speed = 4.0f;
 }
 

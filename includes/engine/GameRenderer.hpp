@@ -9,14 +9,6 @@
 
 #include "GUI/GUI.hpp"
 
-// // Custom Defines
-// #define WHITE_SHADER 1
-// #define GREEN_SHADER 2
-// #define RED_SHADER 3
-// #define CYAN_SHADER 4
-// #define YELLOW_SHADER 5
-// #define GRAY_SHADER 6
-
 #define SHADOW_H 4096
 #define SHADOW_W 4096
 
@@ -63,14 +55,11 @@ class GameRenderer final {
 	void _initShader(void);
 	void _initModels(void);
 
-	// void _initCubeMap(void);
-	// void _initSkyboxFaces(void);
-
 	static GameEngine *_gameEngine;
 	static glm::vec2 _mousePos;
 
 	// General vars
-	GLFWwindow *_window;
+	GLFWwindow *_window = nullptr;
 	AGame *_game;
 	bool _isFullScreen;
 	int _width;
@@ -95,10 +84,4 @@ class GameRenderer final {
 
 	// Light
 	glm::mat4 _lightSpaceMatrix;
-
-	// // Skybox
-	// std::vector<std::string> _faces;
-	// GLuint	_skyboxTexture;
-	// GLuint _skyboxVAO;
-	// GLuint _skyboxVBO;
 };

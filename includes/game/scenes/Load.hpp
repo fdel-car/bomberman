@@ -12,6 +12,7 @@ class Load : public SceneTools {
 	Load &operator=(Load const &rhs);
 
 	virtual void drawGUI(GUI *graphicUI);
+	virtual void configGUI(GUI *graphicUI);
 
    private:
 	Load(void);

@@ -35,14 +35,23 @@ SceneTools::SceneTools(size_t mapWidth, size_t mapHeight, glm::vec3 const &pos,
 	  _timer(timer),
 	  _pauseMenu(false) {
 	_neededImages.push_back(std::tuple<std::string, std::string>(
-		(_assetsDir + "GUI/icons/heart.png"), "heart"));
+		(_assetsDir + "GUI/Icons/heart.png"), "heart"));
 	_neededImages.push_back(std::tuple<std::string, std::string>(
-		(_assetsDir + "GUI/icons/sad_chopper.png"), "sad_chopper"));
+		(_assetsDir + "GUI/Icons/sad_chopper.png"), "sad_chopper"));
 
 	// TODO: music when starting dialogues
 }
 
-SceneTools::~SceneTools(void) { _clearGraphe(); }
+SceneTools::~SceneTools(void) {
+	for (auto node : _graphe) {
+		delete node.second;
+	}
+	_graphe.clear();
+	for (auto node : nodePool) {
+		delete node;
+	}
+	nodePool.clear();
+}
 
 void SceneTools::_initSoundsForGameplay(void) {
 	// Explosion sounds
@@ -94,6 +103,7 @@ void SceneTools::_initSoundsForGameplay(void) {
 		_assetsDir + "Audio/Sounds/Perk/get_perk_3.wav";
 	_neededSounds["get_perk_4"] =
 		_assetsDir + "Audio/Sounds/Perk/get_perk_4.wav";
+	_neededSounds["bad_perk"] = _assetsDir + "Audio/Sounds/Perk/bad_perk.wav";
 	_neededSounds["portal_spawn"] =
 		_assetsDir + "Audio/Sounds/Portal/portal_spawn.wav";
 }
@@ -126,7 +136,7 @@ void SceneTools::drawGUI(GUI *graphicUI) {
 	}
 
 	bool timerCanChange = static_cast<int>(_timer) > 0;
-	if (!isPause() && !_showDeathScreen && !_showVictoryScreen)
+	if (!isPause())
 		_displayTimer(graphicUI, false);
 	else
 		_displayTimer(graphicUI, true);
@@ -185,16 +195,15 @@ void SceneTools::_displayDialogue(GUI *graphicUI, int *searchWord,
 	int nbrOfLineTmp =
 		(((_gameEngine->getGameRenderer()->getHeight() / 4) - 45) / 22) - 2;
 	nbrOfLine = nbrOfLine > nbrOfLineTmp ? nbrOfLineTmp : nbrOfLine;
-	if (_slowGUIAnimation) {
-		if (*searchWord < (int)str.size()) {
-			*searchWord += 1;
-			if (str[*searchWord] == ' ') *lastWord = *searchWord;
-		} else
-			*lastWord = *searchWord;
-		if (*lastWord - *startStrIdx >= (int)maxCharPerLine * (nbrOfLine - 1))
-			*startStrIdx += maxCharPerLine;
-	}
-	_slowGUIAnimation = !_slowGUIAnimation;
+	if (nbrOfLine > 2)
+		nbrOfLine -= 1;
+	if (*searchWord < (int)str.size()) {
+		*searchWord += 1;
+		if (str[*searchWord] == ' ') *lastWord = *searchWord;
+	} else
+		*lastWord = *searchWord;
+	if (*lastWord - *startStrIdx >= (int)maxCharPerLine * nbrOfLine)
+		*startStrIdx += maxCharPerLine;
 	std::string displayableStr =
 		str.substr(*startStrIdx, *lastWord - *startStrIdx);
 	graphicUI->uiDialogBox(name.c_str(), imgName, displayableStr.c_str(),
@@ -215,20 +224,20 @@ bool SceneTools::_displayPauseMenu(GUI *graphicUI) {
 		if (graphicUI->uiButton(
 				_gameEngine->getGameRenderer()->getWidth() / 4,
 				(_gameEngine->getGameRenderer()->getHeight() / 9) - 9, 0,
-				"Resume", "", "20_BOMBERMAN")) {
+				"Resume", "", "20_slider")) {
 			res = false;
 		}
 		if (graphicUI->uiButton(
 				_gameEngine->getGameRenderer()->getWidth() / 4,
 				(_gameEngine->getGameRenderer()->getHeight() / 9) - 9, 0,
-				"Restart", "", "20_BOMBERMAN")) {
+				"Restart", "", "20_slider")) {
 			_newSceneName = _ownLvlName;
 			res = false;
 		}
 		if (graphicUI->uiButton(
 				_gameEngine->getGameRenderer()->getWidth() / 4,
 				(_gameEngine->getGameRenderer()->getHeight() / 9) - 9, 0,
-				"Quit", "", "20_BOMBERMAN")) {
+				"Quit", "", "20_slider")) {
 			_newSceneName = _startLvlName;
 			res = false;
 		}
@@ -289,15 +298,15 @@ void SceneTools::_displayVictoryScreen(GUI *graphicUI) {
 			NK_WINDOW_NO_SCROLLBAR | NK_WINDOW_BORDER | NK_WINDOW_TITLE)) {
 		rowHeight += 8;
 		if (graphicUI->uiButton(windowWidth, rowHeight, 0, "Next", "",
-								"20_BOMBERMAN")) {
+								"20_slider")) {
 			_newSceneName = _nextLvlName;
 		}
 		if (graphicUI->uiButton(windowWidth, rowHeight, 0, "Restart", "",
-								"20_BOMBERMAN")) {
+								"20_slider")) {
 			_newSceneName = _ownLvlName;
 		}
 		if (graphicUI->uiButton(windowWidth, rowHeight, 0, "Quit", "",
-								"20_BOMBERMAN")) {
+								"20_slider")) {
 			_newSceneName = _startLvlName;
 		}
 	}
@@ -309,10 +318,6 @@ void SceneTools::_displayDeathScreen(GUI *graphicUI) {
 	int windowHeight = _gameEngine->getGameRenderer()->getHeight() / 3;
 	int rowHeight = (windowHeight / 3) - 17;
 	int rowWidth = windowWidth - 10;
-	// int blockXPadding = 8;
-	// (void)rowWidth;
-	// (void)rowHeight;
-	// return;
 	if (graphicUI->uiStartBlock(
 			"DeathScreen", "Defeat !",
 			nk_rect((_gameEngine->getGameRenderer()->getWidth() / 2) -
@@ -328,11 +333,11 @@ void SceneTools::_displayDeathScreen(GUI *graphicUI) {
 
 		rowHeight += 8;
 		if (graphicUI->uiButton(windowWidth, rowHeight, 0, "Restart", "",
-								"20_BOMBERMAN")) {
+								"20_slider")) {
 			_newSceneName = _ownLvlName;
 		}
 		if (graphicUI->uiButton(windowWidth, rowHeight, 0, "Quit", "",
-								"20_BOMBERMAN")) {
+								"20_slider")) {
 			_newSceneName = _startLvlName;
 		}
 	}
@@ -354,7 +359,7 @@ void SceneTools::_displayTimer(GUI *graphicUI, bool isPause) {
 		std::string sec =
 			tmpSec < 10 ? "0" + std::to_string(tmpSec) : std::to_string(tmpSec);
 		graphicUI->uiHeader((minutes + " : " + sec).c_str(), NK_TEXT_CENTERED,
-							50, "35_BOMBERMAN");
+							50, "35_slider");
 	}
 	graphicUI->uiEndBlock();
 	activeStyle = defaultStyle;
@@ -401,9 +406,7 @@ bool SceneTools::_btnHover(GUI *graphicUI, int rectWidth, int rectHeight,
 bool SceneTools::_displayMultipleDialogue(GUI *graphicUI,
 										  std::vector<Dialogue> *dialogues) {
 	if (!dialogues->empty()) {
-		if (dialogues->at(0).searchWord ==
-				static_cast<int>(dialogues->at(0).text.size()) &&
-			_gameEngine->isKeyPressed(KEY_SPACE)) {
+		if (_gameEngine->isKeyJustPressed(KEY_SPACE)) {
 			dialogues->erase(dialogues->begin());
 			if (!dialogues->empty())
 				_displayDialogue(
@@ -414,6 +417,8 @@ bool SceneTools::_displayMultipleDialogue(GUI *graphicUI,
 					dialogues->at(0).maxCharPerLine, dialogues->at(0).nbrOfLine,
 					dialogues->at(0).textPosition, dialogues->at(0).fontText,
 					dialogues->at(0).fontTitle);
+			if (dialogues->empty())
+				return false;
 		} else
 			_displayDialogue(
 				graphicUI, &dialogues->at(0).searchWord,
@@ -647,17 +652,13 @@ void SceneTools::putExplosion(float xCenter, float zCenter, size_t range) {
 		this));
 	bool hasDestroyedBox = false;
 	// Left
-	hasDestroyedBox = _putExplosionsInDirection(xCoord, zCoord, -1, 0, range) ||
-					  hasDestroyedBox;
+	_putExplosionsInDirection(xCoord, zCoord, -1, 0, range, hasDestroyedBox);
 	// Right
-	hasDestroyedBox = _putExplosionsInDirection(xCoord, zCoord, 1, 0, range) ||
-					  hasDestroyedBox;
+	_putExplosionsInDirection(xCoord, zCoord, 1, 0, range, hasDestroyedBox);
 	// Top
-	hasDestroyedBox = _putExplosionsInDirection(xCoord, zCoord, 0, -1, range) ||
-					  hasDestroyedBox;
+	_putExplosionsInDirection(xCoord, zCoord, 0, -1, range, hasDestroyedBox);
 	// Down
-	hasDestroyedBox = _putExplosionsInDirection(xCoord, zCoord, 0, 1, range) ||
-					  hasDestroyedBox;
+	_putExplosionsInDirection(xCoord, zCoord, 0, 1, range, hasDestroyedBox);
 
 	// Play random sound
 	if (hasDestroyedBox) {
@@ -669,28 +670,25 @@ void SceneTools::putExplosion(float xCenter, float zCenter, size_t range) {
 	}
 }
 
-bool SceneTools::_putExplosionsInDirection(size_t xCoord, size_t zCoord,
+void SceneTools::_putExplosionsInDirection(size_t xCoord, size_t zCoord,
 										   int xChange, int zChange,
-										   size_t range) {
-	bool hasDestroyedBox = false;
+										   size_t range,
+										   bool &hasDestroyedBox) {
 	size_t rangeIdx = 0;
 	bool canPutExplosion;
 	while (rangeIdx < range) {
 		xCoord += xChange;
 		zCoord += zChange;
-		if (xCoord < 1 || xCoord >= _mapWidth || zCoord < 1 ||
-			zCoord >= _mapHeight)
+		if (xCoord == 0 || xCoord >= _mapWidth || zCoord < 1 ||
+			zCoord >= _mapHeight) {
 			break;
+		}
 		canPutExplosion = true;
 		for (auto entity : _entitiesInSquares[zCoord * _mapWidth + xCoord]) {
 			if (entity.second->getTag().compare("Wall") == 0) {
 				canPutExplosion = false;
-			} else if (entity.second->getTag().compare("Bomb") == 0) {
-				// Force stop when destroying first Box/Bomb
-				rangeIdx = range;
 			} else if (entity.second->getTag().compare("Box") == 0) {
 				hasDestroyedBox = true;
-				rangeIdx = range;
 				canPutExplosion = false;
 				Damageable *damageable =
 					dynamic_cast<Damageable *>(entity.second);
@@ -708,7 +706,6 @@ bool SceneTools::_putExplosionsInDirection(size_t xCoord, size_t zCoord,
 			break;
 		rangeIdx++;
 	}
-	return hasDestroyedBox;
 }
 
 void SceneTools::tellPlayerHp(size_t hp) {
@@ -770,7 +767,15 @@ void SceneTools::_startBuildingGrapheForPathFinding(void) {
 
 	// Create the first node who will be the target for the enemies with the
 	// player position
-	Node *originNode = new Node(nullptr, 0, x, z, _playerPos);
+	// Node *originNode = new Node(nullptr, 0, x, z, _playerPos);
+	Node *originNode;
+	if (nodePool.size() == 0)
+		originNode = new Node(nullptr, 0, x, z, _playerPos);
+	else {
+		originNode = nodePool.back();
+		nodePool.pop_back();
+		originNode->newNode(nullptr, 0, x, z, _playerPos);
+	}
 	_graphe.insert(std::pair<size_t, Node *>(_playerPos, originNode));
 	_searchWay(true, originNode, _playerPos);
 	size_t dist = 0;
@@ -781,7 +786,6 @@ void SceneTools::_startBuildingGrapheForPathFinding(void) {
 			_runAwayPos = node.second->id;
 		}
 	}
-	// std::cout << _runAway << std::endl;
 	if (_runAwayPos != 0) _searchWay(false, _graphe[_runAwayPos], _runAwayPos);
 }
 
@@ -832,7 +836,14 @@ void SceneTools::_buildNewNode(size_t dist, size_t x, size_t z, size_t pos,
 	}
 	if (_graphe.find(pos) == _graphe.end()) {
 		// Save if it's a new node
-		Node *tmpNode = new Node(node, dist, x, z, pos);
+		Node *tmpNode;
+		if (nodePool.size() == 0)
+			tmpNode = new Node(node, dist, x, z, pos);
+		else {
+			tmpNode = nodePool.back();
+			nodePool.pop_back();
+			tmpNode->newNode(node, dist, x, z, pos);
+		}
 		_graphe.insert(std::pair<size_t, Node *>(pos, tmpNode));
 		for (const auto &map : _entitiesInSquares[pos]) {
 			if (static_cast<size_t>(map.second->getPosition().x + _xOffset) ==
@@ -865,7 +876,8 @@ void SceneTools::_buildNewNode(size_t dist, size_t x, size_t z, size_t pos,
 
 void SceneTools::_clearGraphe(void) {
 	for (auto node : _graphe) {
-		delete node.second;
+		node.second->clear();
+		nodePool.push_back(node.second);
 	}
 	_graphe.clear();
 }
@@ -895,7 +907,6 @@ Node::Node(Node *newPrev, size_t newDist, size_t xPos, size_t zPos,
 	  x(xPos),
 	  z(zPos),
 	  id(newId),
-	  isFatal(false),
 	  isAnEntity(false) {
 	if (newPrev == nullptr) return;
 	std::vector<Node *> tmpVector;
@@ -905,6 +916,20 @@ Node::Node(Node *newPrev, size_t newDist, size_t xPos, size_t zPos,
 }
 
 Node::~Node(void) {}
+
+void Node::newNode(Node *newPrev, size_t newDist, size_t xPos, size_t zPos,
+			size_t newId) {
+	dist = newDist;
+	x = xPos;
+	z = zPos;
+	id = newId;
+	if (newPrev == nullptr) return;
+	std::vector<Node *> tmpVector;
+	tmpVector.push_back(newPrev);
+	prevNodesByDist.insert(
+		std::pair<size_t, std::vector<Node *>>(dist, tmpVector));
+}
+
 
 void Node::updateNode(Node *old, size_t newDist, bool saveInPrevious) {
 	if (prevNodesByDist.find(newDist) == prevNodesByDist.end() &&
@@ -925,4 +950,12 @@ void Node::updateNode(Node *old, size_t newDist, bool saveInPrevious) {
 		} else
 			runAwayNodesByDist[runAwayDist].push_back(old);
 	}
+}
+
+void Node::clear(void) {
+	this->prevNodesByDist.clear();
+	this->runAwayNodesByDist.clear();
+	this->entitiesOnMe.clear();
+	this->runAwayDist = 0;
+	this->isAnEntity = false;
 }
