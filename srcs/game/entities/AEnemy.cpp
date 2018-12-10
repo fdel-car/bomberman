@@ -62,7 +62,7 @@ void AEnemy::_runIn(SceneTools *cam, size_t distFromPlayer, bool putBomb) {
 			}
 			if (bestDist <= distFromPlayer) {
 				_bombCooldown = 2.0f;
-				cam->putBomb(getPosition().x, getPosition().z, 2.0f, 1);
+				cam->putBomb(getPosition().x, getPosition().z, 3.0f, 2);
 				_runAway(cam, distFromPlayer, false);
 				return;
 			}

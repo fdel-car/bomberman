@@ -2,6 +2,7 @@
 #include "game/entities/Box.hpp"
 #include "game/entities/EnemyBasic.hpp"
 #include "game/entities/EnemyMelee.hpp"
+#include "game/entities/EnemyBomber.hpp"
 #include "game/entities/EnemyRunAway.hpp"
 #include "game/entities/Perk.hpp"
 #include "game/entities/Player.hpp"
@@ -12,11 +13,11 @@
 #include "game/scenes/MainMenu.hpp"
 #include "game/scenes/Pokemon.hpp"
 #include "game/scenes/Space.hpp"
-#include "game/scenes/Volcano.hpp"
+#include "game/scenes/Mario.hpp"
 
 extern std::string _assetsDir;
 
-Bomberman::Bomberman(void) : AGame(13), _startLevelName("MainMenu") {
+Bomberman::Bomberman(void) : AGame(14), _startLevelName("MainMenu") {
 	// Set needed fonts
 	for (float size = 12.0f; size <= 48.0f; size += 1.0f)
 		_neededFonts.push_back(std::tuple<float, std::string, std::string>(
@@ -38,6 +39,8 @@ Bomberman::Bomberman(void) : AGame(13), _startLevelName("MainMenu") {
 	setLayerCollision(PlayerSpecialLayer, EnemyRunAwayLayer, false);
 
 	setLayerCollision(EnemyRunAwayLayer, EnemyRunAwayLayer, false);
+	setLayerCollision(EnemyBomberLayer, EnemyBomberLayer, false);
+	setLayerCollision(EnemyBomberLayer, EnemyBasicLayer, false);
 	setLayerCollision(EnemyRunAwayLayer, EnemySpecialLayer, false);
 	setLayerCollision(EnemyRunAwayLayer, EnemyLayer, false);
 
@@ -57,9 +60,11 @@ Bomberman::Bomberman(void) : AGame(13), _startLevelName("MainMenu") {
 	setLayerCollision(PortalLayer, BoxLayer, false);
 	setLayerCollision(PortalLayer, PlayerSpecialLayer, false);
 	setLayerCollision(PortalLayer, EnemyRunAwayLayer, false);
+	setLayerCollision(PortalLayer, EnemyLayer, false);
 	setLayerCollision(PortalLayer, EnemySpecialLayer, false);
 	setLayerCollision(PortalLayer, BombLayer, false);
 	setLayerCollision(PortalLayer, ExplosionLayer, false);
+	setLayerCollision(PortalLayer, EnemyBomberLayer, false);
 	setLayerCollision(PortalLayer, PerkLayer, false);
 	setLayerCollision(PortalLayer, PortalLayer, false);
 	setLayerCollision(PortalLayer, EnemyMeleeLayer, false);
@@ -125,23 +130,22 @@ void Bomberman::_mainMenu(void) {
 
 void Bomberman::_forest(void) {
 	_skybox = new Skybox("Default");
-	_camera = new Forest(glm::vec3(-5.35, 20.0, 6.0),
+	_camera = new Forest(glm::vec3(-4, 20.0, 6.0),
 						 glm::vec3(-60.0, 0.0, 0.0), this);
 	_light = new Light(glm::vec2(-20.0, 8.0), glm::vec3(0.0f));
-	// _entities.push_back(new Entity(glm::vec3(0.0f), glm::vec3(0.0f), nullptr,
-	// 							   "Island", "Island", "Island"));
-   _entities.push_back(new Entity(glm::vec3(0.0f), glm::vec3(0.0f), nullptr,
-								   "CloudMap", "CloudMap", "CloudMap"));
+	_entities.push_back(new Entity(glm::vec3(0.0f), glm::vec3(0.0f), nullptr,
+								   "Island", "Island", "Island"));
+	_entities.push_back(new Entity(glm::vec3(-15.0, -1.0, -9.0),
+								   glm::vec3(0.0f), nullptr, "OakTree",
+								   "OakTree", "OakTree"));
+	_entities.back()->scale(glm::vec3(1.8f));
 	_entities.push_back(new Player(glm::vec3(-7.0, 0.0, -7.0), glm::vec3(0.0f),
 								   _save, _camera));
 
 	// Portal to clear lvl
-	_entities.push_back(new Portal(glm::vec3(1.0, 0, 1.0), _camera));
-
-	// Walls/Boxes
-	// size_t totalBoxes = 120;
-	// size_t avgPerks = 10;
-	// size_t perkProb = (avgPerks * 100) / totalBoxes;
+	Entity *portal = new Portal(glm::vec3(0), _camera);
+	_entities.push_back(new Box(glm::vec3(7, 0, 7), _camera,
+								"Box", 0, portal));
 	std::vector<std::tuple<int, int>> protectedCase;
 	protectedCase.push_back(std::tuple<int, int>(-7.0, -7.0));
 	protectedCase.push_back(std::tuple<int, int>(-6.0, -7.0));
@@ -160,8 +164,7 @@ void Bomberman::_forest(void) {
 	destructibleBlock.push_back("Box");
 	std::vector<std::string> enemies;
 	enemies.push_back("Fuzzy");
-
-	_createMap(8, 8, protectedCase, 10, 1000, border, undestructibleBlock,
+	_createMap(8, 8, protectedCase, 6, 10, border, undestructibleBlock,
 			   destructibleBlock, enemies);
 }
 
@@ -169,7 +172,7 @@ void Bomberman::_pokemon(void) {
 	_skybox = new Skybox("Default");
 	_camera =
 		new Pokemon(glm::vec3(-4, 20, 20), glm::vec3(-60.0, 0.0, 0.0), this);
-	_light = new Light(glm::vec2(-20.0, 8.0), glm::vec3(0.0f));
+	_light = new Light(glm::vec2(-50.0, 20.0), glm::vec3(0.0f));
 	_entities.push_back(new Entity(glm::vec3(0.0f), glm::vec3(0.0f), nullptr,
 								   "Stadium", "Stadium", "Stadium"));
 	_entities.push_back(new Player(glm::vec3(-7.0, 0.0, 11.0), glm::vec3(0.0f),
@@ -216,79 +219,105 @@ void Bomberman::_pokemon(void) {
 			   destructibleBlock, enemies);
 }
 
-void Bomberman::_volcano(void) {
-	_skybox = new Skybox("space");
+void Bomberman::_mario(void) {
+	_skybox = new Skybox("Default");
 
-	_camera = new Volcano(glm::vec3(-16, 20.0, 11.0), glm::vec3(-60.0, 0.0, 0.0),
+
+	_camera = new Mario(glm::vec3(-16, 20.0, 11.0), glm::vec3(-60.0, 0.0, 0.0),
 					 this);
 	_light = new Light(glm::vec2(-20.0, 8.0), glm::vec3(0.0f));
-	_entities.push_back(new Player(glm::vec3(-19.0, 0.0, -3.0), glm::vec3(0.0f),
+	_entities.push_back(new Player(glm::vec3(-19.0, 0.0, -5.0), glm::vec3(0.0f),
 							   _save, _camera));
 
 	// Portal to clear lvl
 	std::vector<std::tuple<int, int>> protectedCase;
+	protectedCase.push_back(std::tuple<int, int>(-19.0, -5.0));
+	protectedCase.push_back(std::tuple<int, int>(-18.0, -5.0));
+	protectedCase.push_back(std::tuple<int, int>(-19.0, -4.0));
+	protectedCase.push_back(std::tuple<int, int>(-17.0, -5.0));
 	protectedCase.push_back(std::tuple<int, int>(-19.0, -3.0));
-	protectedCase.push_back(std::tuple<int, int>(-18.0, -3.0));
-	protectedCase.push_back(std::tuple<int, int>(-19.0, -2.0));
-	protectedCase.push_back(std::tuple<int, int>(-17.0, -3.0));
-	protectedCase.push_back(std::tuple<int, int>(-19.0, -1.0));
-	protectedCase.push_back(std::tuple<int, int>(17.0, 1.0));
-	protectedCase.push_back(std::tuple<int, int>(19.0, 3.0));
+	protectedCase.push_back(std::tuple<int, int>(17.0, 3.0));
+	protectedCase.push_back(std::tuple<int, int>(19.0, 5.0));
 
 	_entities.push_back(
-	new Box(glm::vec3(-17.0, 0, -3.0), _camera, "Box"));
+	new Box(glm::vec3(-17.0, 0, -5.0), _camera, "RockPipe"));
 	_entities.push_back(
-	new Box(glm::vec3(-19.0, 0, -1.0), _camera, "Box"));
-	_entities.push_back(new Portal(glm::vec3(19, 0, 3), _camera));
+	new Box(glm::vec3(-19.0, 0, -3.0), _camera, "RockPipe"));
+	Entity *portal = new Portal(glm::vec3(0), _camera);
+	_entities.push_back(new Box(glm::vec3(19, 0, 5), _camera,
+								"RockPipe", 0, portal));
 
-
-	protectedCase.push_back(std::tuple<int, int>(-20.0, -4.0));
-	_entities.push_back(new Box(glm::vec3(-20.0, 0, -4.0), _camera, "WarpPipeCorner"));
-	protectedCase.push_back(std::tuple<int, int>(-20.0, 4.0));
-	_entities.push_back(new Box(glm::vec3(-20.0, 0, 4.0), _camera, "WarpPipeCorner"));
+	protectedCase.push_back(std::tuple<int, int>(-20.0, -6.0));
+	_entities.push_back(new Box(glm::vec3(-20.0, 0, -6.0), _camera, "WarpPipeCorner"));
+	protectedCase.push_back(std::tuple<int, int>(-20.0, 6.0));
+	_entities.push_back(new Box(glm::vec3(-20.0, 0, 6.0), _camera, "WarpPipeCorner"));
 	_entities.back()->rotateY(90);
-	protectedCase.push_back(std::tuple<int, int>(20.0, -4.0));
-	_entities.push_back(new Box(glm::vec3(20.0, 0, -4.0), _camera, "WarpPipeCorner"));
+	protectedCase.push_back(std::tuple<int, int>(20.0, -6.0));
+	_entities.push_back(new Box(glm::vec3(20.0, 0, -6.0), _camera, "WarpPipeCorner"));
 	_entities.back()->rotateY(270);
-	protectedCase.push_back(std::tuple<int, int>(20.0, 4.0));
-	_entities.push_back(new Box(glm::vec3(20.0, 0, 4.0), _camera, "WarpPipeCorner"));
+	protectedCase.push_back(std::tuple<int, int>(20.0, 6.0));
+	_entities.push_back(new Box(glm::vec3(20.0, 0, 6.0), _camera, "WarpPipeCorner"));
 	_entities.back()->rotateY(180);
 
 	for (int i = -19; i < 20; i++) {
-		protectedCase.push_back(std::tuple<int, int>(i, -4.0));
+		protectedCase.push_back(std::tuple<int, int>(i, -6.0));
 		_entities.push_back(new Entity(
-			glm::vec3(i, 0.0, -4.0), glm::vec3(0.0f),
+			glm::vec3(i, 0.0, -6.0), glm::vec3(0.0f),
 			new Collider(Collider::Rectangle, LayerTag::WallLayer, 0.5,
 						 0.5), "WarpPipe", "Wall", "Wall", _camera));
 		_entities.back()->rotateY(90);
-		protectedCase.push_back(std::tuple<int, int>(i, 4.0));
+		protectedCase.push_back(std::tuple<int, int>(i, 6.0));
 		_entities.push_back(new Entity(
-			glm::vec3(i, 0.0, 4.0), glm::vec3(0.0f),
+			glm::vec3(i, 0.0, 6.0), glm::vec3(0.0f),
 			new Collider(Collider::Rectangle, LayerTag::WallLayer, 0.5,
 						 0.5), "WarpPipe", "Wall", "Wall", _camera));
 		_entities.back()->rotateY(90);
 	}
 
 	_entities.push_back(new Entity(glm::vec3(0.0f), glm::vec3(0.0f), nullptr,
-								   "MarioWorld", "MarioWorld", "MarioWorld"));
+								   "CloudMap", "CloudMap", "CloudMap"));
+	_entities.back()->rotateY(90);
+
+	protectedCase.push_back(std::tuple<int, int>(1.0, 1.0));
+	_entities.push_back(new EnemyBomber(glm::vec3(1, 0.0, 1),
+									glm::vec3(0.0f), "EnemyBomber", _camera));
+	protectedCase.push_back(std::tuple<int, int>(1.0, 3.0));
+	_entities.push_back(new EnemyBomber(glm::vec3(1, 0.0, 3),
+									glm::vec3(0.0f), "EnemyBomber", _camera));
+	protectedCase.push_back(std::tuple<int, int>(3.0, 1.0));
+	_entities.push_back(new EnemyBomber(glm::vec3(3, 0.0, 1),
+									glm::vec3(0.0f), "EnemyBomber", _camera));
+	protectedCase.push_back(std::tuple<int, int>(-1.0, -1.0));
+	_entities.push_back(new EnemyBomber(glm::vec3(-1, 0.0, -1),
+									glm::vec3(0.0f), "EnemyBomber", _camera));
+	protectedCase.push_back(std::tuple<int, int>(-1.0, -3.0));
+	_entities.push_back(new EnemyBomber(glm::vec3(-1, 0.0, -3),
+									glm::vec3(0.0f), "EnemyBomber", _camera));
+	protectedCase.push_back(std::tuple<int, int>(-3.0, -1.0));
+	_entities.push_back(new EnemyBomber(glm::vec3(-3, 0.0, -1),
+									glm::vec3(0.0f), "EnemyBomber", _camera));
+	protectedCase.push_back(std::tuple<int, int>(3.0, 3.0));
+	_entities.push_back(new EnemyBomber(glm::vec3(3, 0.0, 3),
+									glm::vec3(0.0f), "EnemyBomber", _camera));
+	protectedCase.push_back(std::tuple<int, int>(-3.0, -3.0));
+	_entities.push_back(new EnemyBomber(glm::vec3(-3, 0.0, -3),
+									glm::vec3(0.0f), "EnemyBomber", _camera));
 
 	std::vector<std::string> border;
 	border.push_back("WarpPipe");
 	std::vector<std::string> undestructibleBlock;
-	// undestructibleBlock.push_back("Wall");
 	undestructibleBlock.push_back("Pipe");
 	std::vector<std::string> destructibleBlock;
-	// destructibleBlock.push_back("Box");
 	destructibleBlock.push_back("RockPipe");
 	std::vector<std::string> enemies;
 	enemies.push_back("Fuzzy");
 
-	_createMap(20, 4, protectedCase, 10, 20, border, undestructibleBlock,
+	_createMap(20, 6, protectedCase, 10, 100, border, undestructibleBlock,
 		   destructibleBlock, enemies);
 }
 
 void Bomberman::_space(void) {
-	_skybox = new Skybox("space2");
+	_skybox = new Skybox("BlueSpace");
 	_camera =
 		new Space(glm::vec3(-10, 20.0, 6.0), glm::vec3(-60.0, 0.0, 0.0), this);
 	_light = new Light(glm::vec2(-20.0, 8.0), glm::vec3(0.0f));
@@ -399,7 +428,7 @@ void Bomberman::_space(void) {
 }
 
 void Bomberman::_credits(void) {
-	_skybox = new Skybox("space");
+	_skybox = new Skybox("BlueSpace");
 	_camera = new Credits(glm::vec3(-14.5, 20.0, -3.0),
 						  glm::vec3(-60.0, 0.0, 0.0), this);
 	_light = new Light(glm::vec2(-10.0, -10.0), glm::vec3(0.0f), 10.0f);
@@ -409,12 +438,12 @@ void Bomberman::_initScenes(void) {
 	_scenesNames.push_back(_startLevelName);
 	_scenesMap[_scenesNames.back()] = &Bomberman::_mainMenu;
 
-	_scenesNames.push_back("Pokemon");
-	_scenesMap[_scenesNames.back()] = &Bomberman::_pokemon;
 	_scenesNames.push_back("Forest");
 	_scenesMap[_scenesNames.back()] = &Bomberman::_forest;
-	_scenesNames.push_back("Volcano");
-	_scenesMap[_scenesNames.back()] = &Bomberman::_volcano;
+	_scenesNames.push_back("Pokemon");
+	_scenesMap[_scenesNames.back()] = &Bomberman::_pokemon;
+	_scenesNames.push_back("Mario");
+	_scenesMap[_scenesNames.back()] = &Bomberman::_mario;
 	_scenesNames.push_back("Space");
 	_scenesMap[_scenesNames.back()] = &Bomberman::_space;
 	_scenesNames.push_back("Credits");

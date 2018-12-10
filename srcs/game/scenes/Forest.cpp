@@ -6,7 +6,7 @@ extern std::string _assetsDir;
 Forest::Forest(glm::vec3 const &pos, glm::vec3 const &eulerAngles,
 			   Bomberman *bomberman)
 	:  // Camera(pos, eulerAngles),
-	  SceneTools(17, 17, pos, eulerAngles, bomberman, "Forest", "Volcano"),
+	  SceneTools(17, 17, pos, eulerAngles, bomberman, "Forest", "Pokemon"),
 	  _cooldown(0.0f) {
 	configAI();
 	_startMusic = _assetsDir + "Audio/Musics/Planet-Timbertree.wav";
