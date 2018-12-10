@@ -14,6 +14,7 @@ enum LayerTag {
 	PlayerSpecialLayer,
 	EnemyLayer,
 	EnemyRunAwayLayer,
+	EnemyBomberLayer,
 	EnemyMeleeLayer,
 	EnemySpecialLayer,
 	EnemyBasicLayer,
@@ -66,7 +67,7 @@ class Bomberman : public AGame {
 	void _forest(void);
 	void _pokemon(void);
 	void _loadScene(void);
-	void _volcano(void);
+	void _mario(void);
 	void _space(void);
 	void _credits(void);
 

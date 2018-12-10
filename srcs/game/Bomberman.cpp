@@ -1,6 +1,7 @@
 #include "game/Bomberman.hpp"
 #include "game/entities/Box.hpp"
 #include "game/entities/EnemyBasic.hpp"
+#include "game/entities/EnemyBomber.hpp"
 #include "game/entities/EnemyMelee.hpp"
 #include "game/entities/EnemyRunAway.hpp"
 #include "game/entities/Perk.hpp"
@@ -10,13 +11,13 @@
 #include "game/scenes/Forest.hpp"
 #include "game/scenes/Load.hpp"
 #include "game/scenes/MainMenu.hpp"
+#include "game/scenes/Mario.hpp"
 #include "game/scenes/Pokemon.hpp"
 #include "game/scenes/Space.hpp"
-#include "game/scenes/Volcano.hpp"
 
 extern std::string _assetsDir;
 
-Bomberman::Bomberman(void) : AGame(13), _startLevelName("MainMenu") {
+Bomberman::Bomberman(void) : AGame(14), _startLevelName("MainMenu") {
 	// Set needed fonts
 	for (float size = 12.0f; size <= 48.0f; size += 1.0f)
 		_neededFonts.push_back(std::tuple<float, std::string, std::string>(
@@ -38,6 +39,8 @@ Bomberman::Bomberman(void) : AGame(13), _startLevelName("MainMenu") {
 	setLayerCollision(PlayerSpecialLayer, EnemyRunAwayLayer, false);
 
 	setLayerCollision(EnemyRunAwayLayer, EnemyRunAwayLayer, false);
+	setLayerCollision(EnemyBomberLayer, EnemyBomberLayer, false);
+	setLayerCollision(EnemyBomberLayer, EnemyBasicLayer, false);
 	setLayerCollision(EnemyRunAwayLayer, EnemySpecialLayer, false);
 	setLayerCollision(EnemyRunAwayLayer, EnemyLayer, false);
 
@@ -57,9 +60,11 @@ Bomberman::Bomberman(void) : AGame(13), _startLevelName("MainMenu") {
 	setLayerCollision(PortalLayer, BoxLayer, false);
 	setLayerCollision(PortalLayer, PlayerSpecialLayer, false);
 	setLayerCollision(PortalLayer, EnemyRunAwayLayer, false);
+	setLayerCollision(PortalLayer, EnemyLayer, false);
 	setLayerCollision(PortalLayer, EnemySpecialLayer, false);
 	setLayerCollision(PortalLayer, BombLayer, false);
 	setLayerCollision(PortalLayer, ExplosionLayer, false);
+	setLayerCollision(PortalLayer, EnemyBomberLayer, false);
 	setLayerCollision(PortalLayer, PerkLayer, false);
 	setLayerCollision(PortalLayer, PortalLayer, false);
 	setLayerCollision(PortalLayer, EnemyMeleeLayer, false);
@@ -132,6 +137,11 @@ void Bomberman::initAllAssets(void) {
 	_allAssets["DomeFossil"] = "Models/Fossils/DomeFossil/domeFossil.obj";
 	_allAssets["HelixFossil"] = "Models/Fossils/HelixFossil/helixFossil.obj";
 	_allAssets["OakTree"] = "Models/OakTree/oakTree.obj";
+	_allAssets["WarpPipe"] = "models/WarpPipe/WarpPipe.obj";
+	_allAssets["WarpPipeCorner"] = "models/WarpPipeCorner/WarpPipeCorner.obj";
+	_allAssets["RockPipe"] = "models/RockPipe/RockPipe.obj";
+	_allAssets["Pipe"] = "models/Pipe/Pipe.obj";
+	_allAssets["CloudMap"] = "models/CloudMap/CloudMap.obj";
 }
 
 void Bomberman::initAllSounds(void) {
@@ -200,8 +210,8 @@ void Bomberman::_mainMenu(void) {
 
 void Bomberman::_forest(void) {
 	_skybox = new Skybox("Default");
-	_camera = new Forest(glm::vec3(-5.35, 20.0, 6.0),
-						 glm::vec3(-60.0, 0.0, 0.0), this);
+	_camera =
+		new Forest(glm::vec3(-4, 20.0, 6.0), glm::vec3(-60.0, 0.0, 0.0), this);
 	_light = new Light(glm::vec2(-20.0, 8.0), glm::vec3(0.0f));
 	_entities.push_back(new Entity(glm::vec3(0.0f), glm::vec3(0.0f), nullptr,
 								   "Island", "Island", "Island"));
@@ -209,28 +219,21 @@ void Bomberman::_forest(void) {
 								   glm::vec3(0.0f), nullptr, "OakTree",
 								   "OakTree", "OakTree"));
 	_entities.back()->scale(glm::vec3(1.8f));
-	_entities.push_back(new Player(glm::vec3(-9.0, 0.0, -9.0), glm::vec3(0.0f),
+	_entities.push_back(new Player(glm::vec3(-7.0, 0.0, -7.0), glm::vec3(0.0f),
 								   _save, _camera));
 
 	// Portal to clear lvl
-	_entities.push_back(new Portal(glm::vec3(1.0, 0, 1.0), _camera));
-
-	// Walls/Boxes
-	// size_t totalBoxes = 120;
-	// size_t avgPerks = 10;
-	// size_t perkProb = (avgPerks * 100) / totalBoxes;
+	Entity *portal = new Portal(glm::vec3(0), _camera);
+	_entities.push_back(new Box(glm::vec3(7, 0, 7), _camera, "Box", 0, portal));
 	std::vector<std::tuple<int, int>> protectedCase;
-	protectedCase.push_back(std::tuple<int, int>(-9.0, -9.0));
-	protectedCase.push_back(std::tuple<int, int>(-8.0, -9.0));
-	protectedCase.push_back(std::tuple<int, int>(-9.0, -8.0));
-	protectedCase.push_back(std::tuple<int, int>(-7.0, -9.0));
-	protectedCase.push_back(std::tuple<int, int>(-9.0, -7.0));
-	protectedCase.push_back(std::tuple<int, int>(9.0, 9.0));
-	_entities.push_back(new Box(glm::vec3(-7.0, 0, -9.0), _camera, "Box"));
-	_entities.push_back(new Box(glm::vec3(-9.0, 0, -7.0), _camera, "Box"));
-
-	_entities.push_back(new EnemyRunAway(glm::vec3(9.0, 0.0, 9.0),
-										 glm::vec3(0.0f), "Fuzzy", _camera));
+	protectedCase.push_back(std::tuple<int, int>(-7.0, -7.0));
+	protectedCase.push_back(std::tuple<int, int>(-6.0, -7.0));
+	protectedCase.push_back(std::tuple<int, int>(-7.0, -6.0));
+	protectedCase.push_back(std::tuple<int, int>(-5.0, -7.0));
+	protectedCase.push_back(std::tuple<int, int>(-7.0, -5.0));
+	protectedCase.push_back(std::tuple<int, int>(7.0, 7.0));
+	_entities.push_back(new Box(glm::vec3(-5.0, 0, -7.0), _camera, "Box"));
+	_entities.push_back(new Box(glm::vec3(-7.0, 0, -5.0), _camera, "Box"));
 
 	std::vector<std::string> border;
 	border.push_back("Wall");
@@ -240,8 +243,7 @@ void Bomberman::_forest(void) {
 	destructibleBlock.push_back("Box");
 	std::vector<std::string> enemies;
 	enemies.push_back("Fuzzy");
-
-	_createMap(10, 10, protectedCase, 10, 1000, border, undestructibleBlock,
+	_createMap(8, 8, protectedCase, 6, 10, border, undestructibleBlock,
 			   destructibleBlock, enemies);
 
 	// Droppped Assets
@@ -253,6 +255,9 @@ void Bomberman::_forest(void) {
 	_neededAssets.insert("MaxBombPerk");
 	_neededAssets.insert("RangePerk");
 	_neededAssets.insert("SpeedPerk");
+
+	// Dropped sounds
+	_neededSounds.insert("portal_spawn");
 }
 
 void Bomberman::_pokemon(void) {
@@ -311,48 +316,128 @@ void Bomberman::_pokemon(void) {
 	// Force add of models (for entities that may be dropped randomly)
 	_neededAssets.insert("Bomb");
 	_neededAssets.insert("Sphere");
+	_neededAssets.insert("Portal");
 	_neededAssets.insert("KickPerk");
 	_neededAssets.insert("DamagePerk");
 	_neededAssets.insert("MaxBombPerk");
 	_neededAssets.insert("RangePerk");
 	_neededAssets.insert("SpeedPerk");
-	_neededAssets.insert("DomeFossil");
-	_neededAssets.insert("HelixFossil");
 
-	// Force add of sounds (for entities that may be dropped randomly)
+	// Dropped sounds
+	_neededSounds.insert("portal_spawn");
 }
 
-void Bomberman::_volcano(void) {
-	_skybox = new Skybox("CyanSpace");
+void Bomberman::_mario(void) {
+	_skybox = new Skybox("Default");
 
-	_camera = new Volcano(glm::vec3(-14.5, 20.0, -3.0),
-						  glm::vec3(-60.0, 0.0, 0.0), this);
+	_camera =
+		new Mario(glm::vec3(-16, 20.0, 11.0), glm::vec3(-60.0, 0.0, 0.0), this);
 	_light = new Light(glm::vec2(-20.0, 8.0), glm::vec3(0.0f));
-	// _entities.push_back(new Entity(glm::vec3(0.0f), glm::vec3(0.0f), nullptr,
-	//    "Island", "Island", "Island"));
-	_entities.push_back(new Player(glm::vec3(-17.0, 0.0, -17.0),
-								   glm::vec3(0.0f), _save, _camera));
+	_entities.push_back(new Player(glm::vec3(-19.0, 0.0, -5.0), glm::vec3(0.0f),
+								   _save, _camera));
 
 	// Portal to clear lvl
-	_entities.push_back(new Portal(glm::vec3(-7, 0, 0), _camera));
 	std::vector<std::tuple<int, int>> protectedCase;
-	protectedCase.push_back(std::tuple<int, int>(-17.0, -17.0));
-	protectedCase.push_back(std::tuple<int, int>(-16.0, -17.0));
-	protectedCase.push_back(std::tuple<int, int>(-17.0, -16.0));
+	protectedCase.push_back(std::tuple<int, int>(-19.0, -5.0));
+	protectedCase.push_back(std::tuple<int, int>(-18.0, -5.0));
+	protectedCase.push_back(std::tuple<int, int>(-19.0, -4.0));
+	protectedCase.push_back(std::tuple<int, int>(-17.0, -5.0));
+	protectedCase.push_back(std::tuple<int, int>(-19.0, -3.0));
+	protectedCase.push_back(std::tuple<int, int>(17.0, 3.0));
+	protectedCase.push_back(std::tuple<int, int>(19.0, 5.0));
+
+	_entities.push_back(
+		new Box(glm::vec3(-17.0, 0, -5.0), _camera, "RockPipe"));
+	_entities.push_back(
+		new Box(glm::vec3(-19.0, 0, -3.0), _camera, "RockPipe"));
+	Entity *portal = new Portal(glm::vec3(0), _camera);
+	_entities.push_back(
+		new Box(glm::vec3(19, 0, 5), _camera, "RockPipe", 0, portal));
+
+	protectedCase.push_back(std::tuple<int, int>(-20.0, -6.0));
+	_entities.push_back(
+		new Box(glm::vec3(-20.0, 0, -6.0), _camera, "WarpPipeCorner"));
+	protectedCase.push_back(std::tuple<int, int>(-20.0, 6.0));
+	_entities.push_back(
+		new Box(glm::vec3(-20.0, 0, 6.0), _camera, "WarpPipeCorner"));
+	_entities.back()->rotateY(90);
+	protectedCase.push_back(std::tuple<int, int>(20.0, -6.0));
+	_entities.push_back(
+		new Box(glm::vec3(20.0, 0, -6.0), _camera, "WarpPipeCorner"));
+	_entities.back()->rotateY(270);
+	protectedCase.push_back(std::tuple<int, int>(20.0, 6.0));
+	_entities.push_back(
+		new Box(glm::vec3(20.0, 0, 6.0), _camera, "WarpPipeCorner"));
+	_entities.back()->rotateY(180);
+
+	for (int i = -19; i < 20; i++) {
+		protectedCase.push_back(std::tuple<int, int>(i, -6.0));
+		_entities.push_back(new Entity(
+			glm::vec3(i, 0.0, -6.0), glm::vec3(0.0f),
+			new Collider(Collider::Rectangle, LayerTag::WallLayer, 0.5, 0.5),
+			"WarpPipe", "Wall", "Wall", _camera));
+		_entities.back()->rotateY(90);
+		protectedCase.push_back(std::tuple<int, int>(i, 6.0));
+		_entities.push_back(new Entity(
+			glm::vec3(i, 0.0, 6.0), glm::vec3(0.0f),
+			new Collider(Collider::Rectangle, LayerTag::WallLayer, 0.5, 0.5),
+			"WarpPipe", "Wall", "Wall", _camera));
+		_entities.back()->rotateY(90);
+	}
+
+	_entities.push_back(new Entity(glm::vec3(0.0f), glm::vec3(0.0f), nullptr,
+								   "CloudMap", "CloudMap", "CloudMap"));
+	_entities.back()->rotateY(90);
+
+	protectedCase.push_back(std::tuple<int, int>(1.0, 1.0));
+	_entities.push_back(new EnemyBomber(glm::vec3(1, 0.0, 1), glm::vec3(0.0f),
+										"EnemyBomber", _camera));
+	protectedCase.push_back(std::tuple<int, int>(1.0, 3.0));
+	_entities.push_back(new EnemyBomber(glm::vec3(1, 0.0, 3), glm::vec3(0.0f),
+										"EnemyBomber", _camera));
+	protectedCase.push_back(std::tuple<int, int>(3.0, 1.0));
+	_entities.push_back(new EnemyBomber(glm::vec3(3, 0.0, 1), glm::vec3(0.0f),
+										"EnemyBomber", _camera));
+	protectedCase.push_back(std::tuple<int, int>(-1.0, -1.0));
+	_entities.push_back(new EnemyBomber(glm::vec3(-1, 0.0, -1), glm::vec3(0.0f),
+										"EnemyBomber", _camera));
+	protectedCase.push_back(std::tuple<int, int>(-1.0, -3.0));
+	_entities.push_back(new EnemyBomber(glm::vec3(-1, 0.0, -3), glm::vec3(0.0f),
+										"EnemyBomber", _camera));
+	protectedCase.push_back(std::tuple<int, int>(-3.0, -1.0));
+	_entities.push_back(new EnemyBomber(glm::vec3(-3, 0.0, -1), glm::vec3(0.0f),
+										"EnemyBomber", _camera));
+	protectedCase.push_back(std::tuple<int, int>(3.0, 3.0));
+	_entities.push_back(new EnemyBomber(glm::vec3(3, 0.0, 3), glm::vec3(0.0f),
+										"EnemyBomber", _camera));
+	protectedCase.push_back(std::tuple<int, int>(-3.0, -3.0));
+	_entities.push_back(new EnemyBomber(glm::vec3(-3, 0.0, -3), glm::vec3(0.0f),
+										"EnemyBomber", _camera));
 
 	std::vector<std::string> border;
-	border.push_back("Wall");
+	border.push_back("WarpPipe");
 	std::vector<std::string> undestructibleBlock;
-	undestructibleBlock.push_back("Wall");
-	undestructibleBlock.push_back("Meteor");
+	undestructibleBlock.push_back("Pipe");
 	std::vector<std::string> destructibleBlock;
-	destructibleBlock.push_back("Box");
-	destructibleBlock.push_back("DestructibleMeteor");
+	destructibleBlock.push_back("RockPipe");
 	std::vector<std::string> enemies;
 	enemies.push_back("Fuzzy");
 
-	_createMap(18, 18, protectedCase, 2, 13, border, undestructibleBlock,
+	_createMap(20, 6, protectedCase, 10, 100, border, undestructibleBlock,
 			   destructibleBlock, enemies);
+
+	// Force add of models (for entities that may be dropped randomly)
+	_neededAssets.insert("Bomb");
+	_neededAssets.insert("Sphere");
+	_neededAssets.insert("Portal");
+	_neededAssets.insert("KickPerk");
+	_neededAssets.insert("DamagePerk");
+	_neededAssets.insert("MaxBombPerk");
+	_neededAssets.insert("RangePerk");
+	_neededAssets.insert("SpeedPerk");
+
+	// Dropped sounds
+	_neededSounds.insert("portal_spawn");
 }
 
 void Bomberman::_space(void) {
@@ -469,17 +554,14 @@ void Bomberman::_space(void) {
 	_neededAssets.insert("Bomb");
 	_neededAssets.insert("Sphere");
 	_neededAssets.insert("Portal");
-	_neededAssets.insert("Player");
 	_neededAssets.insert("KickPerk");
 	_neededAssets.insert("DamagePerk");
 	_neededAssets.insert("MaxBombPerk");
 	_neededAssets.insert("RangePerk");
 	_neededAssets.insert("SpeedPerk");
-	_neededAssets.insert("Meteor");
-	_neededAssets.insert("BigMeteor");
-	_neededAssets.insert("DestructibleMeteor");
-	_neededAssets.insert("Fuzzy");
-	_neededAssets.insert("RedGhost");
+
+	// Dropped sounds
+	_neededSounds.insert("portal_spawn");
 }
 
 void Bomberman::_credits(void) {
@@ -487,25 +569,6 @@ void Bomberman::_credits(void) {
 	_camera = new Credits(glm::vec3(-14.5, 20.0, -3.0),
 						  glm::vec3(-60.0, 0.0, 0.0), this);
 	_light = new Light(glm::vec2(-10.0, -10.0), glm::vec3(0.0f), 10.0f);
-
-	// _skybox = new Skybox("BlueSpace");
-	//
-	// _camera = new Volcano(glm::vec3(-14.5, 20.0, -3.0),
-	// 					  glm::vec3(-60.0, 0.0, 0.0), this);
-	// _light = new Light(glm::vec2(-20.0, 8.0), glm::vec3(0.0f));
-	// // _entities.push_back(new Entity(glm::vec3(0.0f), glm::vec3(0.0f),
-	// nullptr,
-	// //    "Island", "Island", "Island"));
-	// _entities.push_back(new Player(glm::vec3(-17.0, 0.0, -17.0),
-	// 							   glm::vec3(0.0f), _save, _camera));
-	//
-	// // Portal to clear lvl
-	// _entities.push_back(new Portal(glm::vec3(-7, 0, 0), _camera));
-	// std::vector<std::tuple<int, int>> protectedCase;
-	// protectedCase.push_back(std::tuple<int, int>(-17.0, -17.0));
-	// protectedCase.push_back(std::tuple<int, int>(-16.0, -17.0));
-	// protectedCase.push_back(std::tuple<int, int>(-17.0, -16.0));
-	// _createMap(18, 18, protectedCase, 2, 13);
 }
 
 void Bomberman::_initScenes(void) {
@@ -516,8 +579,8 @@ void Bomberman::_initScenes(void) {
 	_scenesMap[_scenesNames.back()] = &Bomberman::_forest;
 	_scenesNames.push_back("Pokemon");
 	_scenesMap[_scenesNames.back()] = &Bomberman::_pokemon;
-	_scenesNames.push_back("Volcano");
-	_scenesMap[_scenesNames.back()] = &Bomberman::_volcano;
+	_scenesNames.push_back("Mario");
+	_scenesMap[_scenesNames.back()] = &Bomberman::_mario;
 	_scenesNames.push_back("Space");
 	_scenesMap[_scenesNames.back()] = &Bomberman::_space;
 	_scenesNames.push_back("Credits");
@@ -533,13 +596,19 @@ void Bomberman::_createMap(int width, int height,
 						   std::vector<std::string> enemies) {
 	for (int x = -width; x <= width; x++) {
 		for (int z = -height; z <= height; z++) {
-			if (abs(x) == width || abs(z) == height) {
+			bool canPutBlocks = true;
+			for (const auto &t : protectedCase) {
+				if (std::get<1>(t) == z && std::get<0>(t) == x) {
+					canPutBlocks = false;
+				}
+			}
+			if (canPutBlocks && (abs(x) == width || abs(z) == height)) {
 				_entities.push_back(new Entity(
 					glm::vec3(x, 0.0, z), glm::vec3(0.0f),
 					new Collider(Collider::Rectangle, LayerTag::WallLayer, 0.45,
 								 0.45),
 					border[rand() % border.size()], "Wall", "Wall", _camera));
-			} else if (x % 2 == 0 && z % 2 == 0) {
+			} else if (canPutBlocks && x % 2 == 0 && z % 2 == 0) {
 				_entities.push_back(new Entity(
 					glm::vec3(x, 0.0, z), glm::vec3(0.0f),
 					new Collider(Collider::Rectangle, LayerTag::WallLayer, 0.5,
@@ -548,12 +617,6 @@ void Bomberman::_createMap(int width, int height,
 					"Wall", "Wall", _camera));
 
 			} else {
-				bool canPutBlocks = true;
-				for (const auto &t : protectedCase) {
-					if (std::get<1>(t) == z && std::get<0>(t) == x) {
-						canPutBlocks = false;
-					}
-				}
 				if (canPutBlocks && rand() % boxRate == 0) {
 					_entities.push_back(new Box(
 						glm::vec3(x, 0, z), _camera,

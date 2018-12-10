@@ -4,7 +4,7 @@
 Forest::Forest(glm::vec3 const &pos, glm::vec3 const &eulerAngles,
 			   Bomberman *bomberman)
 	:  // Camera(pos, eulerAngles),
-	  SceneTools(21, 21, pos, eulerAngles, bomberman, "Forest", "Pokemon"),
+	  SceneTools(17, 17, pos, eulerAngles, bomberman, "Forest", "Pokemon"),
 	  _cooldown(0.0f) {
 	configAI();
 	_startMusic = "Audio/Musics/Planet-Timbertree.wav";

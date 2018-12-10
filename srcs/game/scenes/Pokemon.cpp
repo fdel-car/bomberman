@@ -3,8 +3,7 @@
 
 Pokemon::Pokemon(glm::vec3 const &pos, glm::vec3 const &eulerAngles,
 				 Bomberman *bomberman)
-	:  // Camera(pos, eulerAngles),
-	  SceneTools(17, 25, pos, eulerAngles, bomberman, "Pokemon", "Volcano"),
+	: SceneTools(17, 25, pos, eulerAngles, bomberman, "Pokemon", "Mario"),
 	  _cooldown(0.0f) {
 	configAI();
 	_startMusic = "Audio/Musics/Town.wav";

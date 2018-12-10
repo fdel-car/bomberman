@@ -8,7 +8,7 @@ Space::Space(glm::vec3 const &pos, glm::vec3 const &eulerAngles,
 	  _cooldown(0.0f) {
 	configAI();
 	_initSoundsForGameplay();
-	_startMusic = "Audio/Musics/MainMenu.wav";
+	_startMusic = "Audio/Musics/Mystery.wav";
 }
 
 Space::~Space(void) {}
@@ -43,7 +43,6 @@ void Space::update(void) {
 		_cooldown = 0.2f;
 		_startBuildingGrapheForPathFinding();
 		_refreshAI = true;
-		// printMapInfo();
 	}
 	_cooldown -= _gameEngine->getDeltaTime();
 }
