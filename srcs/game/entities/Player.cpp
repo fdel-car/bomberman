@@ -3,8 +3,6 @@
 #include "game/Bomberman.hpp"
 #include "game/entities/Bomb.hpp"
 
-extern std::string _assetsDir;
-
 Player::Player(glm::vec3 position, glm::vec3 eulerAngles, Save &save,
 			   Entity *sceneManager)
 	: Damageable(
@@ -26,10 +24,8 @@ Player::Player(glm::vec3 position, glm::vec3 eulerAngles, Save &save,
 		_cam->tellPlayerHp(_hp);
 	}
 
-	_neededSounds["defeat_effect"] =
-		_assetsDir + "Audio/Sounds/Hero/defeat_effect.wav";
-	_neededSounds["defeat_voice"] =
-		_assetsDir + "Audio/Sounds/Hero/defeat_voice.wav";
+	_neededSounds.insert("defeat_effect");
+	_neededSounds.insert("defeat_voice");
 }
 
 Player::~Player(void) {}

@@ -126,7 +126,9 @@ void Model::_processNode(aiNode *node, const aiScene *scene,
 
 void Model::draw(ShaderProgram const &shaderProgram,
 				 glm::vec3 const &color) const {
-	for (const auto mesh : _meshes) mesh->draw(shaderProgram, color);
+	for (const auto mesh : _meshes) {
+		if (mesh != nullptr) mesh->draw(shaderProgram, color);
+	}
 }
 
 std::vector<Mesh *> const Model::getMeshes(void) const { return _meshes; }

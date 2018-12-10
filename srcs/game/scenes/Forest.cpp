@@ -1,15 +1,13 @@
 #include "game/scenes/Forest.hpp"
 #include "engine/GameEngine.hpp"
 
-extern std::string _assetsDir;
-
 Forest::Forest(glm::vec3 const &pos, glm::vec3 const &eulerAngles,
 			   Bomberman *bomberman)
 	:  // Camera(pos, eulerAngles),
-	  SceneTools(21, 21, pos, eulerAngles, bomberman, "Forest", "Volcano"),
+	  SceneTools(21, 21, pos, eulerAngles, bomberman, "Forest", "Pokemon"),
 	  _cooldown(0.0f) {
 	configAI();
-	_startMusic = _assetsDir + "Audio/Musics/Planet-Timbertree.wav";
+	_startMusic = "Audio/Musics/Planet-Timbertree.wav";
 	_initSoundsForGameplay();
 }
 

@@ -32,6 +32,8 @@ class Bomberman : public AGame {
 	virtual void loadSceneByIndex(int sceneIdx, std::atomic_int *_sceneState,
 								  bool *_checkLoadSceneIsGood);
 	virtual void initLoadScene(void);
+	virtual void initAllAssets(void);
+	virtual void initAllSounds(void);
 	virtual size_t getWindowWidth();
 	virtual size_t getWindowHeight();
 	virtual bool isFullScreen();
@@ -67,4 +69,7 @@ class Bomberman : public AGame {
 	void _volcano(void);
 	void _space(void);
 	void _credits(void);
+
+	void _initAssetsForGameplay(void);
+	void _initSoundsForGameplay(void);
 };

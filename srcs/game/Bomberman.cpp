@@ -64,6 +64,9 @@ Bomberman::Bomberman(void) : AGame(13), _startLevelName("MainMenu") {
 	setLayerCollision(PortalLayer, PortalLayer, false);
 	setLayerCollision(PortalLayer, EnemyMeleeLayer, false);
 
+	// Set all assets that will be needed by game (they wont be charged until
+	// added to _neededAssets)
+
 	// Set map of scenes
 	_initScenes();
 	initLoadScene();
@@ -87,6 +90,7 @@ void Bomberman::loadSceneByIndex(int sceneIdx, std::atomic_int *_sceneState,
 	else {
 		(this->*(_scenesMap[_scenesNames[sceneIdx]]))();
 		*_checkLoadSceneIsGood = true;
+		AGame::loadAssets();
 		AGame::loadSounds();
 	}
 	*_sceneState = BACKGROUND_LOAD_FINISHED;
@@ -96,6 +100,76 @@ void Bomberman::initLoadScene() {
 	_loadingCamera =
 		new Load(glm::vec3(-5.35, 20.0, 6.0), glm::vec3(-60.0, 0.0, 0.0), this);
 	_loadingLight = new Light(glm::vec2(-10.0, -10.0), glm::vec3(0.0f), 10.0f);
+}
+
+void Bomberman::initAllAssets(void) {
+	_allAssets["Sphere"] = "Models/Sphere/sphere.dae";
+	_allAssets["Bomb"] = "Models/Bomb/bomb.obj";
+	_allAssets["Island"] = "Models/Island/island.obj";
+	_allAssets["Stadium"] = "Models/Stadium/stadium.obj";
+	_allAssets["Wall"] = "Models/Wall/wall.obj";
+	_allAssets["Box"] = "Models/Box/box.obj";
+	_allAssets["Portal"] = "Models/Portal/portal.obj";
+	_allAssets["Player"] = "Models/Hero/hero.dae";
+	_allAssets["KickPerk"] = "Models/Perks/Kick/kick.obj";
+	_allAssets["DamagePerk"] = "Models/Perks/Damage/damage.obj";
+	_allAssets["MaxBombPerk"] = "Models/Perks/MaxBomb/maxBomb.obj";
+	_allAssets["RangePerk"] = "Models/Perks/Range/range.obj";
+	_allAssets["SpeedPerk"] = "Models/Perks/Speed/speed.obj";
+	_allAssets["Meteor"] = "Models/Meteorite/meteorite.obj";
+	_allAssets["BigMeteor"] = "Models/BigMeteor/bigMeteor.obj";
+	_allAssets["DestructibleMeteor"] =
+		"Models/DestructibleMeteorite/destructibleMeteorite.obj";
+	_allAssets["HolePlanet"] = "Models/HolePlanet/holePlanet.dae";
+	_allAssets["StrengthBoulder"] =
+		"Models/StrengthBoulder/strengthBoulder.obj";
+	_allAssets["Fuzzy"] = "Models/Fuzzy/fuzzy.obj";
+	_allAssets["Diglett"] = "Models/Diglett/diglett.obj";
+	_allAssets["Lapras"] = "Models/Lapras/lapras.obj";
+	_allAssets["Groudon"] = "Models/Groudon/groudon.obj";
+	_allAssets["RedGhost"] = "Models/RedGhost/redGhost.obj";
+	_allAssets["EnemyBomber"] = "Models/EnemyBomber/enemyBomber.obj";
+	_allAssets["DomeFossil"] = "Models/Fossils/DomeFossil/domeFossil.obj";
+	_allAssets["HelixFossil"] = "Models/Fossils/HelixFossil/helixFossil.obj";
+}
+
+void Bomberman::initAllSounds(void) {
+	// Main menu
+	_allSounds["select"] = "Audio/Sounds/Menu/select.wav";
+	_allSounds["lateral_select"] = "Audio/Sounds/Menu/lateral_select.wav";
+	_allSounds["first_load"] = "Audio/Sounds/Menu/first_load.wav";
+	_allSounds["open_settings"] = "Audio/Sounds/Menu/open_settings.wav";
+	_allSounds["back"] = "Audio/Sounds/Menu/back.wav";
+	_allSounds["reset_default"] = "Audio/Sounds/Menu/reset_default.wav";
+	_allSounds["save"] = "Audio/Sounds/Menu/save.wav";
+
+	// In-Game
+	_allSounds["explosion_1"] = "Audio/Sounds/Explosion/explosion_1.wav";
+	_allSounds["explosion_2"] = "Audio/Sounds/Explosion/explosion_2.wav";
+	_allSounds["explosion_with_box_1"] =
+		"Audio/Sounds/Explosion/explosion_with_box_1.wav";
+	_allSounds["explosion_with_box_2"] =
+		"Audio/Sounds/Explosion/explosion_with_box_2.wav";
+	_allSounds["time_over_effect"] = "Audio/Sounds/Hero/time_over_effect.wav";
+	_allSounds["time_over_voice"] = "Audio/Sounds/Hero/time_over_voice.wav";
+	_allSounds["winner_effect"] = "Audio/Sounds/Hero/winner_effect.wav";
+	_allSounds["winner_voice"] = "Audio/Sounds/Hero/winner_voice.wav";
+	_allSounds["defeat_effect"] = "Audio/Sounds/Hero/defeat_effect.wav";
+	_allSounds["defeat_voice"] = "Audio/Sounds/Hero/defeat_voice.wav";
+	_allSounds["pause_start"] = "Audio/Sounds/Menu/pause_start.wav";
+	_allSounds["pause_end"] = "Audio/Sounds/Menu/pause_end.wav";
+	_allSounds["put_bomb_1"] = "Audio/Sounds/Bomb/put_bomb_1.wav";
+	_allSounds["put_bomb_2"] = "Audio/Sounds/Bomb/put_bomb_2.wav";
+	_allSounds["burn_player_1"] = "Audio/Sounds/Explosion/burn_player_1.wav";
+	_allSounds["burn_player_2"] = "Audio/Sounds/Explosion/burn_player_2.wav";
+	_allSounds["get_perk_1"] = "Audio/Sounds/Perk/get_perk_1.wav";
+	_allSounds["get_perk_2"] = "Audio/Sounds/Perk/get_perk_2.wav";
+	_allSounds["get_perk_3"] = "Audio/Sounds/Perk/get_perk_3.wav";
+	_allSounds["get_perk_4"] = "Audio/Sounds/Perk/get_perk_4.wav";
+	_allSounds["bad_perk"] = "Audio/Sounds/Perk/bad_perk.wav";
+	_allSounds["portal_spawn"] = "Audio/Sounds/Portal/portal_spawn.wav";
+	_allSounds["damage_1"] = "Audio/Sounds/Enemy/damage_1.wav";
+	_allSounds["damage_2"] = "Audio/Sounds/Enemy/damage_2.wav";
 }
 
 Save &Bomberman::getSave(void) { return _save; }
@@ -215,6 +289,20 @@ void Bomberman::_pokemon(void) {
 
 	_createMap(8, 12, protectedCase, 10, 20, border, undestructibleBlock,
 			   destructibleBlock, enemies);
+
+	// Add entities that will be dropped
+	_spawnableEntities.push_back(portal);
+
+	// Force add of models (for entities that may be dropped randomly)
+	_neededAssets.insert("KickPerk");
+	_neededAssets.insert("DamagePerk");
+	_neededAssets.insert("MaxBombPerk");
+	_neededAssets.insert("RangePerk");
+	_neededAssets.insert("SpeedPerk");
+	_neededAssets.insert("DomeFossil");
+	_neededAssets.insert("HelixFossil");
+
+	// Force add of sounds (for entities that may be dropped randomly)
 }
 
 void Bomberman::_volcano(void) {
@@ -359,6 +447,22 @@ void Bomberman::_space(void) {
 	enemies.push_back("Fuzzy");
 	_createMap(14, 10, protectedCase, 10, 1000, border, undestructibleBlock,
 			   destructibleBlock, enemies);
+
+	// Assets
+	_neededAssets.insert("Bomb");
+	_neededAssets.insert("Sphere");
+	_neededAssets.insert("Portal");
+	_neededAssets.insert("Player");
+	_neededAssets.insert("KickPerk");
+	_neededAssets.insert("DamagePerk");
+	_neededAssets.insert("MaxBombPerk");
+	_neededAssets.insert("RangePerk");
+	_neededAssets.insert("SpeedPerk");
+	_neededAssets.insert("Meteor");
+	_neededAssets.insert("BigMeteor");
+	_neededAssets.insert("DestructibleMeteor");
+	_neededAssets.insert("Fuzzy");
+	_neededAssets.insert("RedGhost");
 }
 
 void Bomberman::_credits(void) {
@@ -391,10 +495,10 @@ void Bomberman::_initScenes(void) {
 	_scenesNames.push_back(_startLevelName);
 	_scenesMap[_scenesNames.back()] = &Bomberman::_mainMenu;
 
-	_scenesNames.push_back("Pokemon");
-	_scenesMap[_scenesNames.back()] = &Bomberman::_pokemon;
 	_scenesNames.push_back("Forest");
 	_scenesMap[_scenesNames.back()] = &Bomberman::_forest;
+	_scenesNames.push_back("Pokemon");
+	_scenesMap[_scenesNames.back()] = &Bomberman::_pokemon;
 	_scenesNames.push_back("Volcano");
 	_scenesMap[_scenesNames.back()] = &Bomberman::_volcano;
 	_scenesNames.push_back("Space");

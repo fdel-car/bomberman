@@ -89,13 +89,15 @@ std::string const &Entity::getName(void) const { return _name; }
 
 std::string const &Entity::getTag(void) const { return _tag; }
 
+std::string const &Entity::getModelName(void) const { return _modelName; }
+
 glm::vec3 const &Entity::getTargetMovement(void) const {
 	return _targetMovement;
 }
 
 bool Entity::getNeedToBeDestroyed(void) const { return _needToBeDestroyed; }
 
-std::map<std::string, std::string> Entity::getNeededSounds(void) const {
+std::set<std::string> Entity::getNeededSounds(void) const {
 	return _neededSounds;
 };
 

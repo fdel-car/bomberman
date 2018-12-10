@@ -23,20 +23,16 @@ MainMenu::MainMenu(glm::vec3 const &pos, glm::vec3 const &eulerAngles,
 	_updateVarsFromSave();
 
 	// Audio settings
-	_startMusic = _assetsDir + "Audio/Musics/MainMenu.wav";
-	_neededSounds["select"] = _assetsDir + "Audio/Sounds/Menu/select.wav";
-	_neededSounds["lateral_select"] =
-		_assetsDir + "Audio/Sounds/Menu/lateral_select.wav";
+	_startMusic = "Audio/Musics/MainMenu.wav";
+	_neededSounds.insert("select");
+	_neededSounds.insert("lateral_select");
 	if (FIRST_LOAD) {
-		_neededSounds["first_load"] =
-			_assetsDir + "Audio/Sounds/Menu/first_load.wav";
+		_neededSounds.insert("first_load");
 	}
-	_neededSounds["open_settings"] =
-		_assetsDir + "Audio/Sounds/Menu/open_settings.wav";
-	_neededSounds["back"] = _assetsDir + "Audio/Sounds/Menu/back.wav";
-	_neededSounds["reset_default"] =
-		_assetsDir + "Audio/Sounds/Menu/reset_default.wav";
-	_neededSounds["save"] = _assetsDir + "Audio/Sounds/Menu/save.wav";
+	_neededSounds.insert("open_settings");
+	_neededSounds.insert("back");
+	_neededSounds.insert("reset_default");
+	_neededSounds.insert("save");
 }
 
 MainMenu::~MainMenu(void) {}

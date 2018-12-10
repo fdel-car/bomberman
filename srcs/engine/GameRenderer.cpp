@@ -5,7 +5,7 @@
 #include "engine/Model.hpp"
 
 extern std::string _srcsDir;
-// extern std::string _assetsDir;
+extern std::string _assetsDir;
 
 GameRenderer::GameRenderer(GameEngine *gameEngine, AGame *game)
 	: _game(game),
@@ -171,6 +171,31 @@ void GameRenderer::_initModels(void) {
 		new Model("Models/Fossils/DomeFossil/domeFossil.obj");
 	_models["HelixFossil"] =
 		new Model("Models/Fossils/HelixFossil/helixFossil.obj");
+}
+
+void GameRenderer::loadAssets(std::map<std::string, std::string> resources) {
+	return;
+	// Remove old models if no longer needed
+	std::vector<std::string> toDelete;
+	for (auto &elem : _models) {
+		if (resources.find(elem.first) == resources.end()) {
+			toDelete.push_back(elem.first);
+		}
+	}
+	for (auto name : toDelete) {
+		if (_models[name] != nullptr) delete _models[name];
+		_models.erase(name);
+	}
+
+	// Add new
+	for (auto resource : resources) {
+		if (_models.find(resource.first) == _models.end()) {
+			std::cout << "adding: " << resource.first << " (" << resource.second
+					  << ")" << std::endl;
+			_models[resource.first] = new Model(resource.second);
+			std::cout << "Done!" << std::endl;
+		}
+	}
 }
 
 void GameRenderer::getUserInput(void) { glfwPollEvents(); }

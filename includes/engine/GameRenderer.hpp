@@ -28,6 +28,7 @@ class GameRenderer final {
 	void refreshWindow(std::vector<Entity *> &entities, Camera *camera,
 					   Light *light, Skybox *skybox);
 	void setNewResolution(bool isFullScreen, int width, int height);
+	void loadAssets(std::map<std::string, std::string> assets);
 
 	Model *getModel(std::string modelName) const;
 	int getWidth(void) const;

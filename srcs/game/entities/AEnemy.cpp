@@ -3,8 +3,6 @@
 #include "game/Bomberman.hpp"
 #include "game/entities/Player.hpp"
 
-extern std::string _assetsDir;
-
 AEnemy::AEnemy(glm::vec3 position, glm::vec3 eulerAngles, std::string name,
 			   LayerTag tag, bool doMeleeDmg, Entity *sceneManager,
 			   std::string modelName, Entity *toSpawn)
@@ -19,8 +17,8 @@ AEnemy::AEnemy(glm::vec3 position, glm::vec3 eulerAngles, std::string name,
 	  _damagingSounds(std::vector<std::string>()) {
 	scale(glm::vec3(0.8, 0.8, 0.8));
 
-	_neededSounds["damage_1"] = _assetsDir + "Audio/Sounds/Enemy/damage_1.wav";
-	_neededSounds["damage_2"] = _assetsDir + "Audio/Sounds/Enemy/damage_2.wav";
+	_neededSounds.insert("damage_1");
+	_neededSounds.insert("damage_2");
 	_damagingSounds.push_back("damage_1");
 	_damagingSounds.push_back("damage_2");
 }

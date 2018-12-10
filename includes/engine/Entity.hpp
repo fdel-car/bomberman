@@ -26,10 +26,11 @@ class Entity {
 	size_t const &getId(void) const;
 	std::string const &getName(void) const;
 	std::string const &getTag(void) const;
+	std::string const &getModelName(void) const;
 	glm::vec3 const &getTargetMovement(void) const;
 	glm::vec3 const &getColor(void) const;
 	bool getNeedToBeDestroyed(void) const;
-	std::map<std::string, std::string> getNeededSounds(void) const;
+	std::set<std::string> getNeededSounds(void) const;
 
 	virtual void update(void);
 	virtual void initEntity(GameEngine *gameEngine);
@@ -82,7 +83,7 @@ class Entity {
 	bool _isTmp;
 
 	glm::vec3 _targetMovement;
-	std::map<std::string, std::string> _neededSounds;
+	std::set<std::string> _neededSounds;
 	std::vector<std::string> _initSounds;
 	std::vector<std::string> _destroySounds;
 
