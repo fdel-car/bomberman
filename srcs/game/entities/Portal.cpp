@@ -4,14 +4,13 @@
 #include "game/entities/Player.hpp"
 #include "game/scenes/SceneTools.hpp"
 
-extern std::string _assetsDir;
-
 Portal::Portal(glm::vec3 position, Entity *sceneManager)
 	: Entity(glm::vec3(position.x, position.y, position.z), glm::vec3(0),
 			 new Collider(Collider::Circle, LayerTag::PortalLayer, 0.25f, 0.25f,
 						  true),
 			 "Portal", "Portal", "Portal", sceneManager),
 	  _hasTriggered(false) {
+	_neededSounds.insert("portal_spawn");
 	_initSounds.push_back("portal_spawn");
 }
 

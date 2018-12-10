@@ -1,26 +1,24 @@
-#include "game/scenes/Volcano.hpp"
+#include "game/scenes/Mario.hpp"
 #include "engine/GameEngine.hpp"
 
-Volcano::Volcano(glm::vec3 const &pos, glm::vec3 const &eulerAngles,
-				 Bomberman *bomberman)
+Mario::Mario(glm::vec3 const &pos, glm::vec3 const &eulerAngles,
+			 Bomberman *bomberman)
 	:  // Camera(pos, eulerAngles),
-	  SceneTools(37, 37, pos, eulerAngles, bomberman, "Volcano", "Desert"),
+	  SceneTools(41, 13, pos, eulerAngles, bomberman, "Mario", "Space"),
 	  _cooldown(0.0f) {
 	configAI();
 	_initSoundsForGameplay();
-	_startMusic = "";  // TODO
+	_startMusic = "Audio/Musics/Robots.wav";  // TODO
 }
 
-Volcano::~Volcano(void) {}
+Mario::~Mario(void) {}
 
-void Volcano::configAI(void) {
+void Mario::configAI(void) {
 	_staticDecor.push_back("Wall");
 
 	_tmpDecor.push_back("Explosion");
-	_tmpDecor.push_back("OFDT");
-	_tmpDecor.push_back("EnemyRunAway");
-	_tmpDecor.push_back("EPB");
 	_tmpDecor.push_back("EnemyBasic");
+	_tmpDecor.push_back("EnemyBomber");
 	_tmpDecor.push_back("Bomb");
 	_tmpDecor.push_back("Box");
 
@@ -29,7 +27,7 @@ void Volcano::configAI(void) {
 	_tmpDecorForRunAway.push_back("Box");
 }
 
-void Volcano::configGUI(GUI *graphicUI) {
+void Mario::configGUI(GUI *graphicUI) {
 	graphicUI->setAssetImages(_neededImages);
 
 	graphicUI->getDefaultStyle(THEME_RED, &defaultStyle);
@@ -38,7 +36,7 @@ void Volcano::configGUI(GUI *graphicUI) {
 	_refreshAI = false;
 }
 
-void Volcano::drawGUI(GUI *graphicUI) {
+void Mario::drawGUI(GUI *graphicUI) {
 	SceneTools::drawGUI(graphicUI);
 	// static int searchWord = 0;
 	// static int lastWord = 0;
@@ -51,9 +49,9 @@ void Volcano::drawGUI(GUI *graphicUI) {
 	// 				 "12_slider", "18_slider");
 }
 
-void Volcano::tellPosition(Entity *entity) { _savePositions(entity); }
+void Mario::tellPosition(Entity *entity) { _savePositions(entity); }
 
-void Volcano::update(void) {
+void Mario::update(void) {
 	Camera::update();
 	_refreshAI = false;
 	if (_cooldown <= 0.0f) {

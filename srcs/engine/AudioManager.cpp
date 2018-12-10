@@ -1,5 +1,7 @@
 #include "engine/AudioManager.hpp"
 
+extern std::string _assetsDir;
+
 AudioManager::AudioManager(int musicVolume, int soundsVolume)
 	: _musicVolume(musicVolume),
 	  _soundsVolume(soundsVolume),
@@ -43,7 +45,8 @@ void AudioManager::loadSounds(std::map<std::string, std::string> resources) {
 	for (auto resource : resources) {
 		if (_soundsMap.find(resource.first) == _soundsMap.end()) {
 			_soundsMap[resource.first] = sf::SoundBuffer();
-			if (!_soundsMap[resource.first].loadFromFile(resource.second)) {
+			if (!_soundsMap[resource.first].loadFromFile(_assetsDir +
+														 resource.second)) {
 				std::cerr
 					<< "\033[0;33m:Warning:\033[0m Could not load Sound at "
 					<< resource.second << std::endl;
@@ -58,7 +61,7 @@ void AudioManager::playMusic(std::string musicPath) {
 		return;
 	}
 
-	if (_musicPlayer.openFromFile(musicPath)) {
+	if (_musicPlayer.openFromFile(_assetsDir + musicPath)) {
 		_musicPlayer.setVolume(_musicVolume);
 		_musicPlayer.play();
 	} else {
@@ -69,12 +72,11 @@ void AudioManager::playMusic(std::string musicPath) {
 
 void AudioManager::playSound(std::string soundName) {
 	if (_soundsMap.find(soundName) != _soundsMap.end()) {
-		// Find first available sound player
-		for (auto player : _soundPlayers) {
-			if (player.getStatus() != player.Playing) {
-				player.setBuffer(_soundsMap[soundName]);
-				player.play();
-				return;
+		// Delete sounds that have finished
+		for (size_t i = _soundPlayers.size() - 1; i < _soundPlayers.size();
+			 i--) {
+			if (_soundPlayers[i].getStatus() != _soundPlayers[i].Playing) {
+				_soundPlayers.erase(_soundPlayers.begin() + i);
 			}
 		}
 

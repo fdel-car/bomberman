@@ -1,15 +1,12 @@
 #include "game/scenes/Pokemon.hpp"
 #include "engine/GameEngine.hpp"
 
-extern std::string _assetsDir;
-
 Pokemon::Pokemon(glm::vec3 const &pos, glm::vec3 const &eulerAngles,
 				 Bomberman *bomberman)
-	:  // Camera(pos, eulerAngles),
-	  SceneTools(17, 25, pos, eulerAngles, bomberman, "Pokemon", "Forest"),
+	: SceneTools(17, 25, pos, eulerAngles, bomberman, "Pokemon", "Mario"),
 	  _cooldown(0.0f) {
 	configAI();
-	_startMusic = _assetsDir + "Audio/Musics/Town.wav";
+	_startMusic = "Audio/Musics/Town.wav";
 	_initSoundsForGameplay();
 }
 

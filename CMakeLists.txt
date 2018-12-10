@@ -46,7 +46,7 @@ set(SRCS
   srcs/game/scenes/Forest.cpp
   srcs/game/scenes/Pokemon.cpp
   srcs/game/scenes/Load.cpp
-  srcs/game/scenes/Volcano.cpp
+  srcs/game/scenes/Mario.cpp
   srcs/game/scenes/Space.cpp
   srcs/game/scenes/Credits.cpp
   srcs/game/entities/Player.cpp
@@ -54,6 +54,7 @@ set(SRCS
   srcs/game/entities/AEnemy.cpp
   srcs/game/entities/EnemyBasic.cpp
   srcs/game/entities/EnemyRunAway.cpp
+  srcs/game/entities/EnemyBomber.cpp
   srcs/game/entities/EnemyMelee.cpp
   srcs/game/entities/Explosion.cpp
   srcs/game/entities/Box.cpp
@@ -96,7 +97,7 @@ set(HEADERS
   includes/game/scenes/Forest.hpp
   includes/game/scenes/Pokemon.hpp
   includes/game/scenes/Load.hpp
-  includes/game/scenes/Volcano.hpp
+  includes/game/scenes/Mario.hpp
   includes/game/scenes/Space.hpp
   includes/game/scenes/Credits.hpp
   includes/game/entities/Player.hpp
@@ -104,6 +105,7 @@ set(HEADERS
   includes/game/entities/AEnemy.hpp
   includes/game/entities/EnemyBasic.hpp
   includes/game/entities/EnemyRunAway.hpp
+  includes/game/entities/EnemyBomber.hpp
   includes/game/entities/EnemyMelee.hpp
   includes/game/entities/Explosion.hpp
   includes/game/entities/Box.hpp

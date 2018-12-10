@@ -28,6 +28,8 @@ class GameRenderer final {
 	void refreshWindow(std::vector<Entity *> &entities, Camera *camera,
 					   Light *light, Skybox *skybox);
 	void setNewResolution(bool isFullScreen, int width, int height);
+	void loadAssets(std::map<std::string, std::string> assets);
+	void initModelsMeshes(void);
 
 	Model *getModel(std::string modelName) const;
 	int getWidth(void) const;
@@ -77,6 +79,7 @@ class GameRenderer final {
 	ShaderProgram *_shadowShaderProgram;
 	ShaderProgram *_skyboxShaderProgram;
 	std::map<std::string, Model *> _models;
+	std::vector<std::string> _toDelete;  // Models to delete
 
 	// Shadow
 	GLuint _depthMapFBO;

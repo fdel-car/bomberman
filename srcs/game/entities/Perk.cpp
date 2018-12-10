@@ -4,8 +4,6 @@
 #include "game/entities/Player.hpp"
 #include "game/scenes/SceneTools.hpp"
 
-extern std::string _assetsDir;
-
 const float Perk::TIME_BETWEEN_ANIM = 3.0f;
 
 const std::vector<std::tuple<PerkType, size_t, std::string>> getPossiblePerks(

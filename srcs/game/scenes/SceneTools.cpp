@@ -54,15 +54,15 @@ SceneTools::~SceneTools(void) {
 }
 
 void SceneTools::_initSoundsForGameplay(void) {
-	// Explosion sounds
-	_neededSounds["explosion_1"] =
-		_assetsDir + "Audio/Sounds/Explosion/explosion_1.wav";
-	_neededSounds["explosion_2"] =
-		_assetsDir + "Audio/Sounds/Explosion/explosion_2.wav";
-	_neededSounds["explosion_with_box_1"] =
-		_assetsDir + "Audio/Sounds/Explosion/explosion_with_box_1.wav";
-	_neededSounds["explosion_with_box_2"] =
-		_assetsDir + "Audio/Sounds/Explosion/explosion_with_box_2.wav";
+	// Bomb
+	_neededSounds.insert("put_bomb_1");
+	_neededSounds.insert("put_bomb_2");
+
+	// Explosion
+	_neededSounds.insert("explosion_1");
+	_neededSounds.insert("explosion_2");
+	_neededSounds.insert("explosion_with_box_1");
+	_neededSounds.insert("explosion_with_box_2");
 
 	_explosionSounds.push_back("explosion_1");
 	_explosionSounds.push_back("explosion_2");
@@ -70,42 +70,25 @@ void SceneTools::_initSoundsForGameplay(void) {
 	_explosionWithBoxSounds.push_back("explosion_with_box_2");
 
 	// Time over
-	_neededSounds["time_over_effect"] =
-		_assetsDir + "Audio/Sounds/Hero/time_over_effect.wav";
-	_neededSounds["time_over_voice"] =
-		_assetsDir + "Audio/Sounds/Hero/time_over_voice.wav";
+	_neededSounds.insert("time_over_effect");
+	_neededSounds.insert("time_over_voice");
 
 	// Win
-	_neededSounds["winner_effect"] =
-		_assetsDir + "Audio/Sounds/Hero/winner_effect.wav";
-	_neededSounds["winner_voice"] =
-		_assetsDir + "Audio/Sounds/Hero/winner_voice.wav";
+	_neededSounds.insert("winner_effect");
+	_neededSounds.insert("winner_voice");
 
 	// Pause menu
-	_neededSounds["pause_start"] =
-		_assetsDir + "Audio/Sounds/Menu/pause_start.wav";
-	_neededSounds["pause_end"] = _assetsDir + "Audio/Sounds/Menu/pause_end.wav";
+	_neededSounds.insert("pause_start");
+	_neededSounds.insert("pause_end");
 
 	// Sounds that are not used in this class, but will not be loaded otherwise
-	_neededSounds["put_bomb_1"] =
-		_assetsDir + "Audio/Sounds/Bomb/put_bomb_1.wav";
-	_neededSounds["put_bomb_2"] =
-		_assetsDir + "Audio/Sounds/Bomb/put_bomb_2.wav";
-	_neededSounds["burn_player_1"] =
-		_assetsDir + "Audio/Sounds/Explosion/burn_player_1.wav";
-	_neededSounds["burn_player_2"] =
-		_assetsDir + "Audio/Sounds/Explosion/burn_player_2.wav";
-	_neededSounds["get_perk_1"] =
-		_assetsDir + "Audio/Sounds/Perk/get_perk_1.wav";
-	_neededSounds["get_perk_2"] =
-		_assetsDir + "Audio/Sounds/Perk/get_perk_2.wav";
-	_neededSounds["get_perk_3"] =
-		_assetsDir + "Audio/Sounds/Perk/get_perk_3.wav";
-	_neededSounds["get_perk_4"] =
-		_assetsDir + "Audio/Sounds/Perk/get_perk_4.wav";
-	_neededSounds["bad_perk"] = _assetsDir + "Audio/Sounds/Perk/bad_perk.wav";
-	_neededSounds["portal_spawn"] =
-		_assetsDir + "Audio/Sounds/Portal/portal_spawn.wav";
+	_neededSounds.insert("burn_player_1");
+	_neededSounds.insert("burn_player_2");
+	_neededSounds.insert("get_perk_1");
+	_neededSounds.insert("get_perk_2");
+	_neededSounds.insert("get_perk_3");
+	_neededSounds.insert("get_perk_4");
+	_neededSounds.insert("bad_perk");
 }
 
 void SceneTools::initEntity(GameEngine *gameEngine) {
@@ -195,8 +178,7 @@ void SceneTools::_displayDialogue(GUI *graphicUI, int *searchWord,
 	int nbrOfLineTmp =
 		(((_gameEngine->getGameRenderer()->getHeight() / 4) - 45) / 22) - 2;
 	nbrOfLine = nbrOfLine > nbrOfLineTmp ? nbrOfLineTmp : nbrOfLine;
-	if (nbrOfLine > 2)
-		nbrOfLine -= 1;
+	if (nbrOfLine > 2) nbrOfLine -= 1;
 	if (*searchWord < (int)str.size()) {
 		*searchWord += 1;
 		if (str[*searchWord] == ' ') *lastWord = *searchWord;
@@ -417,8 +399,7 @@ bool SceneTools::_displayMultipleDialogue(GUI *graphicUI,
 					dialogues->at(0).maxCharPerLine, dialogues->at(0).nbrOfLine,
 					dialogues->at(0).textPosition, dialogues->at(0).fontText,
 					dialogues->at(0).fontTitle);
-			if (dialogues->empty())
-				return false;
+			if (dialogues->empty()) return false;
 		} else
 			_displayDialogue(
 				graphicUI, &dialogues->at(0).searchWord,
@@ -487,7 +468,8 @@ void SceneTools::_savePositions(Entity *entity) {
 		vectorIdx = zCoord * _mapWidth + xCoord;
 		if (vectorIdx >= allNewSquareWeAreIn.size())
 			throw std::runtime_error(
-				"An entity located outside of the map boundaries tried to be "
+				"An entity located outside of the map boundaries tried to "
+				"be "
 				"pushed inside it.");
 		allNewSquareWeAreIn.push_back(vectorIdx);
 	} else {
@@ -532,7 +514,8 @@ void SceneTools::_savePositions(Entity *entity) {
 		size_t MIN_DISTANCE_FROM_WALL_TO_MOVE_CAM = 5;
 		int FOLLOW_CORRECTION = static_cast<int>(_mapHeight / 2) -
 								MIN_DISTANCE_FROM_WALL_TO_MOVE_CAM;  // 3
-		// std::cout << "FOLLOW_CORRECTION " << FOLLOW_CORRECTION << std::endl;
+		// std::cout << "FOLLOW_CORRECTION " << FOLLOW_CORRECTION <<
+		// std::endl;
 		FOLLOW_CORRECTION = 3;
 		_playerPos = vectorIdx;
 		// Move cam
@@ -918,7 +901,7 @@ Node::Node(Node *newPrev, size_t newDist, size_t xPos, size_t zPos,
 Node::~Node(void) {}
 
 void Node::newNode(Node *newPrev, size_t newDist, size_t xPos, size_t zPos,
-			size_t newId) {
+				   size_t newId) {
 	dist = newDist;
 	x = xPos;
 	z = zPos;
@@ -929,7 +912,6 @@ void Node::newNode(Node *newPrev, size_t newDist, size_t xPos, size_t zPos,
 	prevNodesByDist.insert(
 		std::pair<size_t, std::vector<Node *>>(dist, tmpVector));
 }
-
 
 void Node::updateNode(Node *old, size_t newDist, bool saveInPrevious) {
 	if (prevNodesByDist.find(newDist) == prevNodesByDist.end() &&

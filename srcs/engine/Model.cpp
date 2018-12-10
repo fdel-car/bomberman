@@ -63,40 +63,36 @@ void Model::updateBoneTransforms(double *animTime) {
 	for (auto joint : _joints) joint->updateFinalTransform();
 }
 
-void Model::_loadDiffuseTexture(GLuint *diffuseTexture, aiMaterial *assimpMat,
+void Model::initModel(void) {
+	// Meshes
+	for (auto mesh : _meshes) {
+		mesh->setupTexture();
+		mesh->setupBuffers();
+	}
+}
+
+void Model::_loadDiffuseTexture(TextureInfo &textureInfo, aiMaterial *assimpMat,
 								Material &material) {
 	aiString str;
 	assimpMat->GetTexture(aiTextureType_DIFFUSE, 0, &str);
-	glGenTextures(1, diffuseTexture);
-	glBindTexture(GL_TEXTURE_2D, *diffuseTexture);
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	int x, y, n;
 	std::string textureName = _assetsDir + _directory + '/' + str.C_Str();
 	stbi_set_flip_vertically_on_load(true);
-	unsigned char *data = stbi_load((textureName).c_str(), &x, &y, &n, 0);
-	if (data) {
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, x, y, 0, GL_RGBA,
-					 GL_UNSIGNED_BYTE, data);
-		glGenerateMipmap(GL_TEXTURE_2D);
+	textureInfo.data = stbi_load((textureName).c_str(), &textureInfo.x,
+								 &textureInfo.y, &textureInfo.n, 0);
+	if (textureInfo.data) {
 		material.hasDiffuseTexture = true;
 	} else {
 		std::cerr << "\033[0;33m:Warning:\033[0m "
 				  << "Failed to load texture file: " + textureName << std::endl;
-		*diffuseTexture = -1;
 	}
 	stbi_set_flip_vertically_on_load(false);
-	stbi_image_free(data);
 }
 
 Mesh *Model::_processMesh(aiMesh *mesh, const aiScene *scene,
 						  glm::mat4 transform) {
 	std::vector<Vertex> vertices;
 	// std::vector<unsigned int> indices;
-	GLuint diffuseTexture = -1;
+	TextureInfo textureInfo;
 	Material material;
 
 	if (mesh->mMaterialIndex < scene->mNumMaterials) {
@@ -117,7 +113,7 @@ Mesh *Model::_processMesh(aiMesh *mesh, const aiScene *scene,
 		assimpMat->Get(AI_MATKEY_SHININESS, material.shininess);
 		// Load only one texture per mesh
 		if (assimpMat->GetTextureCount(aiTextureType_DIFFUSE) > 0)
-			_loadDiffuseTexture(&diffuseTexture, assimpMat, material);
+			_loadDiffuseTexture(textureInfo, assimpMat, material);
 	}
 
 	if (mesh->HasBones()) transform = glm::mat4(1.0f);
@@ -168,8 +164,7 @@ Mesh *Model::_processMesh(aiMesh *mesh, const aiScene *scene,
 			}
 		}
 	}
-
-	return new Mesh(vertices, material, diffuseTexture);
+	return new Mesh(textureInfo, vertices, material);
 }
 
 aiNode *Model::_findNodeByName(std::string const &name, aiNode *node) {
@@ -210,7 +205,9 @@ void Model::draw(ShaderProgram const &shaderProgram, glm::vec3 const &color) {
 									  : glm::mat4(1.0f));
 		}
 	}
-	for (const auto mesh : _meshes) mesh->draw(shaderProgram, color);
+	for (const auto mesh : _meshes) {
+		if (mesh != nullptr) mesh->draw(shaderProgram, color);
+	}
 }
 
 std::vector<Mesh *> const Model::getMeshes(void) const { return _meshes; }

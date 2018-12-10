@@ -55,6 +55,7 @@ GameEngine::GameEngine(AGame *game)
 
 	// Create interface class
 	_gameRenderer = new GameRenderer(this, _game);
+	_game->setGameRenderer(_gameRenderer);
 	// Create audio manager
 	_audioManager = new AudioManager(_game->getStartingMusicVolume(),
 									 _game->getStartingSoundsVolume());
@@ -107,25 +108,31 @@ void GameEngine::run(void) {
 		_loadSceneThread =
 			new std::thread(&GameEngine::_loadScene, this, _sceneIdx,
 							&_sceneState, &_checkLoadSceneIsGood);
+
+		// Wait for other thread to finish
+		while (_sceneState != BACKGROUND_LOAD_FINISHED) {
+			_camera->update();
+			_gameRenderer->refreshWindow(_allEntities, _camera, _light,
+										 _skybox);
+		}
+		// Free thread
+		_loadSceneThread->join();
+		delete _loadSceneThread;
+		_loadSceneThread = nullptr;
+
+		// Load level
+		if (_checkLoadSceneIsGood == false)
+			throw std::runtime_error("Cannot load scene!");
+		if (!_initScene(_sceneIdx))
+			throw std::runtime_error("Cannot load scene " +
+									 std::to_string(_sceneIdx) + "!");
+		_sceneState = BACKGROUND_LOAD_NOT_NEEDED;
 	}
 
 	// Start game loop
 	int newSceneIdx = -1;
 	_lastFrameTs = Clock::now();
 	while (true) {
-		if (_sceneState == BACKGROUND_LOAD_FINISHED) {
-			_loadSceneThread->join();
-			delete _loadSceneThread;
-			_loadSceneThread = nullptr;
-
-			if (_checkLoadSceneIsGood == false)
-				throw std::runtime_error("Cannot load scene!");
-			if (!_initScene(_sceneIdx))
-				throw std::runtime_error("Cannot load scene " +
-										 std::to_string(_sceneIdx) + "!");
-			_sceneState = BACKGROUND_LOAD_NOT_NEEDED;
-			_lastFrameTs = Clock::now();
-		}
 		// Get delta time in order to synch entities positions
 		_frameTs = Clock::now();
 		_deltaTime = (std::chrono::duration_cast<std::chrono::microseconds>(
@@ -355,6 +362,7 @@ bool GameEngine::_initScene(size_t newSceneIdx) {
 	if (!_game) return false;
 	// Add new entities
 	_sceneIdx = newSceneIdx;
+	_gameRenderer->initModelsMeshes();
 	_setSceneVariables();
 	return true;
 }

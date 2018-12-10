@@ -11,13 +11,22 @@ struct Material {
 	float shininess = 64;
 };
 
+struct TextureInfo {
+	unsigned char *data = nullptr;
+	int x;
+	int y;
+	int n;
+};
+
 class Mesh final {
    public:
-	Mesh(std::vector<Vertex> const &vertices, Material const &material,
-		 GLuint diffuseTexture);
+	Mesh(TextureInfo textureInfo, std::vector<Vertex> vertices,
+		 Material const &material);
 	virtual ~Mesh(void);
 
 	size_t getSize(void) const;
+	void setupTexture(void);
+	void setupBuffers(void);
 	void draw(ShaderProgram const &shaderProgram, glm::vec3 const &color) const;
 
 	GLuint VAO;
@@ -25,13 +34,13 @@ class Mesh final {
 
    private:
 	size_t _size;
+	TextureInfo _textureInfo;
+	std::vector<Vertex> _vertices;
 	Material const _material;
-	GLuint const _diffuseTexture;
+	GLuint _diffuseTexture;
 
 	Mesh(void);
 	Mesh(Mesh const &src);
-
-	void _setupBuffers(std::vector<Vertex> const &vertices);
 
 	Mesh &operator=(Mesh const &rhs);
 };

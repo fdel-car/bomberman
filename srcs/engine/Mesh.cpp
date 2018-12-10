@@ -1,26 +1,28 @@
 #include "engine/Mesh.hpp"
 
-Mesh::Mesh(std::vector<Vertex> const &vertices, Material const &material,
-		   GLuint diffuseTexture)
+Mesh::Mesh(TextureInfo textureInfo, std::vector<Vertex> vertices,
+		   Material const &material)
 	: _size(vertices.size()),
-	  _material(material),
-	  _diffuseTexture(diffuseTexture) {
-	_setupBuffers(vertices);
-}
+	  _textureInfo(textureInfo),
+	  _vertices(vertices),
+	  _material(material) {}
 
 Mesh::~Mesh(void) {
+	if (_textureInfo.data != nullptr) stbi_image_free(_textureInfo.data);
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
 }
 
-void Mesh::_setupBuffers(std::vector<Vertex> const &vertices) {
+void Mesh::setupBuffers(void) {
+	if (_vertices.size() == 0) return;
+
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
 
 	glBindVertexArray(VAO);
 
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * _size, &vertices.front(),
+	glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * _size, &_vertices.front(),
 				 GL_STATIC_DRAW);
 
 	// Positions
@@ -49,6 +51,28 @@ void Mesh::_setupBuffers(std::vector<Vertex> const &vertices) {
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
+
+	// Clear vertices
+	_vertices.clear();
+}
+
+void Mesh::setupTexture(void) {
+	if (_textureInfo.data == nullptr) return;
+
+	glGenTextures(1, &_diffuseTexture);
+	glBindTexture(GL_TEXTURE_2D, _diffuseTexture);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, _textureInfo.x, _textureInfo.y, 0,
+				 GL_RGBA, GL_UNSIGNED_BYTE, _textureInfo.data);
+	glGenerateMipmap(GL_TEXTURE_2D);
+
+	stbi_image_free(_textureInfo.data);
+	_textureInfo.data = nullptr;
 }
 
 void Mesh::draw(ShaderProgram const &shaderProgram,

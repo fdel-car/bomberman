@@ -14,6 +14,7 @@ enum LayerTag {
 	PlayerSpecialLayer,
 	EnemyLayer,
 	EnemyRunAwayLayer,
+	EnemyBomberLayer,
 	EnemyMeleeLayer,
 	EnemySpecialLayer,
 	EnemyBasicLayer,
@@ -32,6 +33,8 @@ class Bomberman : public AGame {
 	virtual void loadSceneByIndex(int sceneIdx, std::atomic_int *_sceneState,
 								  bool *_checkLoadSceneIsGood);
 	virtual void initLoadScene(void);
+	virtual void initAllAssets(void);
+	virtual void initAllSounds(void);
 	virtual size_t getWindowWidth();
 	virtual size_t getWindowHeight();
 	virtual bool isFullScreen();
@@ -64,7 +67,10 @@ class Bomberman : public AGame {
 	void _forest(void);
 	void _pokemon(void);
 	void _loadScene(void);
-	void _volcano(void);
+	void _mario(void);
 	void _space(void);
 	void _credits(void);
+
+	void _initAssetsForGameplay(void);
+	void _initSoundsForGameplay(void);
 };

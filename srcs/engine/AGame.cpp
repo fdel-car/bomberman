@@ -1,15 +1,21 @@
 #include "engine/AGame.hpp"
 
 AGame::AGame(size_t enumSize)
-	: _entities(std::vector<Entity *>()),
+	: _spawnableEntities(std::vector<Entity *>()),
+	  _entities(std::vector<Entity *>()),
 	  _camera(nullptr),
 	  _light(nullptr),
 	  _skybox(nullptr),
 	  _loadingEntities(std::vector<Entity *>()),
 	  _loadingCamera(nullptr),
 	  _loadingLight(nullptr),
-	  _loadingSkybox(nullptr) {
-	_collisionTable = std::vector<std::vector<bool>>(enumSize);
+	  _loadingSkybox(nullptr),
+	  _neededFonts(std::vector<std::tuple<float, std::string, std::string>>()),
+	  _allAssets(std::map<std::string, std::string>()),
+	  _neededAssets(std::set<std::string>()),
+	  _allSounds(std::map<std::string, std::string>()),
+	  _neededSounds(std::set<std::string>()),
+	  _collisionTable(std::vector<std::vector<bool>>(enumSize)) {
 	for (auto &collisionTag : _collisionTable) {
 		collisionTag = std::vector<bool>(enumSize, true);
 	}
@@ -54,11 +60,14 @@ std::vector<std::tuple<float, std::string, std::string>>
 }
 
 void AGame::unload(void) {
+	_spawnableEntities.clear();
 	_entities.clear();
 
 	_light = nullptr;
 	_camera = nullptr;
 	_skybox = nullptr;
+
+	_neededAssets.clear();
 
 	// Reset counter for next scene
 	Entity::resetSpawnedEntities();
@@ -87,20 +96,139 @@ void AGame::setLayerCollision(int layer1, int layer2, bool doCollide) {
 	_collisionTable[layer2][layer1] = doCollide;
 }
 
+void AGame::setGameRenderer(GameRenderer *gameRenderer) {
+	_gameRenderer = gameRenderer;
+	initAllAssets();
+}
+
 void AGame::setAudioManager(AudioManager *audioManager) {
 	_audioManager = audioManager;
+	initAllSounds();
+}
+
+void AGame::loadAssets(void) {
+	std::map<std::string, std::string> neededAssets;
+	std::map<std::string, std::string>::iterator it;
+
+	for (auto assetName : _neededAssets) {
+		// Skip if already added
+		if (neededAssets.find(assetName) != neededAssets.end()) continue;
+
+		// Retrieve file path
+		it = _allAssets.find(assetName);
+		if (it != _allAssets.end()) {
+			neededAssets[assetName] = it->second;
+		} else {
+			std::cerr << "\033[0;33m:Warning:\033[0m Sound \"" << assetName
+					  << "\" has not been added to _allAssets variable"
+					  << std::endl;
+		}
+	}
+
+	for (auto entity : _spawnableEntities) {
+		// Skip if already added
+		if (neededAssets.find(entity->getModelName()) != neededAssets.end())
+			continue;
+
+		// Retrieve file path
+		it = _allAssets.find(entity->getModelName());
+		if (it != _allAssets.end()) {
+			neededAssets[entity->getModelName()] = it->second;
+		} else {
+			std::cerr << "\033[0;33m:Warning:\033[0m Sound \""
+					  << entity->getModelName()
+					  << "\" has not been added to _allAssets variable"
+					  << std::endl;
+		}
+	}
+
+	for (auto entity : _entities) {
+		// Skip if already added
+		if (neededAssets.find(entity->getModelName()) != neededAssets.end())
+			continue;
+
+		// Retrieve file path
+		it = _allAssets.find(entity->getModelName());
+		if (it != _allAssets.end()) {
+			neededAssets[entity->getModelName()] = it->second;
+		} else {
+			std::cerr << "\033[0;33m:Warning:\033[0m Sound \""
+					  << entity->getModelName()
+					  << "\" has not been added to _allAssets variable"
+					  << std::endl;
+		}
+	}
+
+	_gameRenderer->loadAssets(neededAssets);
 }
 
 void AGame::loadSounds(void) {
-	std::map<std::string, std::string> neededSounds =
-		std::map<std::string, std::string>();
+	std::map<std::string, std::string> neededSounds;
+	std::map<std::string, std::string>::iterator it;
+
+	for (auto assetName : _neededSounds) {
+		// Skip if already added
+		if (neededSounds.find(assetName) != neededSounds.end()) continue;
+
+		// Retrieve file path
+		it = _allSounds.find(assetName);
+		if (it != _allSounds.end()) {
+			neededSounds[assetName] = it->second;
+		} else {
+			std::cerr << "\033[0;33m:Warning:\033[0m Sound \"" << assetName
+					  << "\" has not been added to _allSounds variable"
+					  << std::endl;
+		}
+	}
+
 	if (_camera != nullptr) {
-		neededSounds = _camera->getNeededSounds();
+		for (auto sound : _camera->getNeededSounds()) {
+			// Skip if already added
+			if (neededSounds.find(sound) != neededSounds.end()) continue;
+
+			// Retrieve file path
+			it = _allSounds.find(sound);
+			if (it != _allSounds.end()) {
+				neededSounds[sound] = it->second;
+			} else {
+				std::cerr << "\033[0;33m:Warning:\033[0m Sound \"" << sound
+						  << "\" has not been added to _allSounds variable"
+						  << std::endl;
+			}
+		}
+	}
+
+	for (auto entity : _spawnableEntities) {
+		for (auto sound : entity->getNeededSounds()) {
+			// Skip if already added
+			if (neededSounds.find(sound) != neededSounds.end()) continue;
+
+			// Retrieve file path
+			it = _allSounds.find(sound);
+			if (it != _allSounds.end()) {
+				neededSounds[sound] = it->second;
+			} else {
+				std::cerr << "\033[0;33m:Warning:\033[0m Sound \"" << sound
+						  << "\" has not been added to _allSounds variable"
+						  << std::endl;
+			}
+		}
 	}
 
 	for (auto entity : _entities) {
 		for (auto sound : entity->getNeededSounds()) {
-			neededSounds[sound.first] = sound.second;
+			// Skip if already added
+			if (neededSounds.find(sound) != neededSounds.end()) continue;
+
+			// Retrieve file path
+			it = _allSounds.find(sound);
+			if (it != _allSounds.end()) {
+				neededSounds[sound] = it->second;
+			} else {
+				std::cerr << "\033[0;33m:Warning:\033[0m Sound \"" << sound
+						  << "\" has not been added to _allSounds variable"
+						  << std::endl;
+			}
 		}
 	}
 

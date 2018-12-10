@@ -1,8 +1,6 @@
 #include "game/scenes/Space.hpp"
 #include "engine/GameEngine.hpp"
 
-extern std::string _assetsDir;
-
 Space::Space(glm::vec3 const &pos, glm::vec3 const &eulerAngles,
 			 Bomberman *bomberman)
 	:  // Camera(pos, eulerAngles),
@@ -10,7 +8,7 @@ Space::Space(glm::vec3 const &pos, glm::vec3 const &eulerAngles,
 	  _cooldown(0.0f) {
 	configAI();
 	_initSoundsForGameplay();
-	_startMusic = _assetsDir + "Audio/Musics/MainMenu.wav";
+	_startMusic = "Audio/Musics/Mystery.wav";
 }
 
 Space::~Space(void) {}
@@ -45,7 +43,6 @@ void Space::update(void) {
 		_cooldown = 0.2f;
 		_startBuildingGrapheForPathFinding();
 		_refreshAI = true;
-		// printMapInfo();
 	}
 	_cooldown -= _gameEngine->getDeltaTime();
 }

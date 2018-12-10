@@ -2,11 +2,11 @@
 
 #include "game/scenes/SceneTools.hpp"
 
-class Volcano : public SceneTools {
+class Mario : public SceneTools {
    public:
-	Volcano(glm::vec3 const &pos, glm::vec3 const &eulerAngles,
+	Mario(glm::vec3 const &pos, glm::vec3 const &eulerAngles,
 			Bomberman *bomberman);
-	virtual ~Volcano(void);
+	virtual ~Mario(void);
 
 	virtual void drawGUI(GUI *graphicUI);
 	virtual void configGUI(GUI *graphicUI);
@@ -17,9 +17,9 @@ class Volcano : public SceneTools {
 	// void printMapInfo(void);
 
    private:
-	Volcano(void);
-	Volcano(Volcano const &src);
-	Volcano &operator=(Volcano const &rhs);
+	Mario(void);
+	Mario(Mario const &src);
+	Mario &operator=(Mario const &rhs);
 
 	float _cooldown;
 };
