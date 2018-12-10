@@ -71,7 +71,7 @@ void AudioManager::playSound(std::string soundName) {
 	if (_soundsMap.find(soundName) != _soundsMap.end()) {
 		// Find first available sound player
 		for (auto player : _soundPlayers) {
-			if (!player.Playing) {
+			if (player.getStatus() != player.Playing) {
 				player.setBuffer(_soundsMap[soundName]);
 				player.play();
 				return;

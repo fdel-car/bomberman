@@ -218,7 +218,7 @@ void Bomberman::_pokemon(void) {
 }
 
 void Bomberman::_volcano(void) {
-	_skybox = new Skybox("space");
+	_skybox = new Skybox("CyanSpace");
 
 	_camera = new Volcano(glm::vec3(-14.5, 20.0, -3.0),
 						  glm::vec3(-60.0, 0.0, 0.0), this);
@@ -362,12 +362,12 @@ void Bomberman::_space(void) {
 }
 
 void Bomberman::_credits(void) {
-	_skybox = new Skybox("space");
+	_skybox = new Skybox("BlueSpace");
 	_camera = new Credits(glm::vec3(-14.5, 20.0, -3.0),
 						  glm::vec3(-60.0, 0.0, 0.0), this);
 	_light = new Light(glm::vec2(-10.0, -10.0), glm::vec3(0.0f), 10.0f);
 
-	// _skybox = new Skybox("space");
+	// _skybox = new Skybox("BlueSpace");
 	//
 	// _camera = new Volcano(glm::vec3(-14.5, 20.0, -3.0),
 	// 					  glm::vec3(-60.0, 0.0, 0.0), this);
