@@ -2,11 +2,11 @@
 
 #include "game/scenes/SceneTools.hpp"
 
-class Desert : public SceneTools {
+class Pokemon : public SceneTools {
    public:
-	Desert(glm::vec3 const &pos, glm::vec3 const &eulerAngles,
-		   Bomberman *bomberman);
-	virtual ~Desert(void);
+	Pokemon(glm::vec3 const &pos, glm::vec3 const &eulerAngles,
+			Bomberman *bomberman);
+	virtual ~Pokemon(void);
 
 	virtual void drawGUI(GUI *graphicUI);
 	virtual void configGUI(GUI *graphicUI);
@@ -17,9 +17,10 @@ class Desert : public SceneTools {
 	// void printMapInfo(void);
 
    private:
-	Desert(void);
-	Desert(Desert const &src);
-	Desert &operator=(Desert const &rhs);
+	Pokemon(void);
+	Pokemon(Pokemon const &src);
+	Pokemon &operator=(Pokemon const &rhs);
 
+	std::vector<Dialogue> _dialogues;
 	float _cooldown;
 };

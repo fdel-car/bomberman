@@ -9,8 +9,6 @@ Box::Box(glm::vec3 position, Entity *sceneManager, std::string modelName,
 	: Damageable(
 		  position, glm::vec3(0.0f),
 		  new Collider(Collider::Rectangle, LayerTag::BoxLayer, 0.45f, 0.45f),
-		  // "DestructibleMeteor", "Box", "Box", 1, BoxLayer, WallLayer, 1.0f,
-		  // sceneManager),
 		  modelName, "Box", "Box", 1, BoxLayer, WallLayer, 1.0f, sceneManager),
 	  _onFire(false),
 	  _hasSpawned(false),

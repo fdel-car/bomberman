@@ -85,7 +85,7 @@ void AEnemy::_runIn(SceneTools *cam, size_t distFromPlayer, bool putBomb) {
 			_way.push_back(currentPos.z * mapWidth + currentPos.x);
 		}
 	} else
-		randomMove(cam, 3.0f);
+		randomMove(cam, 2.0f);
 }
 
 void AEnemy::_runAway(SceneTools *cam, size_t distFromPlayer, bool putBomb) {
@@ -129,7 +129,7 @@ void AEnemy::_runAway(SceneTools *cam, size_t distFromPlayer, bool putBomb) {
 			_way.push_back(currentPos.z * mapWidth + currentPos.x);
 		}
 	} else
-		randomMove(cam, 3.0f);
+		randomMove(cam, 2.0f);
 }
 
 void AEnemy::randomMove(SceneTools *cam, float timer) {

@@ -1,28 +1,26 @@
-#include "game/scenes/Forest.hpp"
+#include "game/scenes/Pokemon.hpp"
 #include "engine/GameEngine.hpp"
 
 extern std::string _assetsDir;
 
-Forest::Forest(glm::vec3 const &pos, glm::vec3 const &eulerAngles,
-			   Bomberman *bomberman)
+Pokemon::Pokemon(glm::vec3 const &pos, glm::vec3 const &eulerAngles,
+				 Bomberman *bomberman)
 	:  // Camera(pos, eulerAngles),
-	  SceneTools(17, 17, pos, eulerAngles, bomberman, "Forest", "Volcano"),
+	  SceneTools(17, 25, pos, eulerAngles, bomberman, "Pokemon", "Forest"),
 	  _cooldown(0.0f) {
 	configAI();
-	_startMusic = _assetsDir + "Audio/Musics/Planet-Timbertree.wav";
+	_startMusic = _assetsDir + "Audio/Musics/Town.wav";
 	_initSoundsForGameplay();
 }
 
-Forest::~Forest(void) {}
+Pokemon::~Pokemon(void) {}
 
-void Forest::configAI(void) {
+void Pokemon::configAI(void) {
 	_staticDecor.push_back("Wall");
 
 	_tmpDecor.push_back("Explosion");
 	_tmpDecor.push_back("OFDT");
-	// _tmpDecor.push_back("EnemyRunAway");
 	_tmpDecor.push_back("EPB");
-	// _tmpDecor.push_back("EnemyBasic");
 	_tmpDecor.push_back("Bomb");
 	_tmpDecor.push_back("Box");
 
@@ -32,7 +30,7 @@ void Forest::configAI(void) {
 	_tmpDecorForRunAway.push_back("Box");
 }
 
-void Forest::configGUI(GUI *graphicUI) {
+void Pokemon::configGUI(GUI *graphicUI) {
 	graphicUI->setAssetImages(_neededImages);
 
 	graphicUI->getDefaultStyle(THEME_RED, &defaultStyle);
@@ -53,7 +51,7 @@ void Forest::configGUI(GUI *graphicUI) {
 	}
 }
 
-void Forest::drawGUI(GUI *graphicUI) {
+void Pokemon::drawGUI(GUI *graphicUI) {
 	if (_dialogues.empty())
 		SceneTools::drawGUI(graphicUI);
 	else {
@@ -62,9 +60,9 @@ void Forest::drawGUI(GUI *graphicUI) {
 	}
 }
 
-void Forest::tellPosition(Entity *entity) { _savePositions(entity); }
+void Pokemon::tellPosition(Entity *entity) { _savePositions(entity); }
 
-void Forest::update(void) {
+void Pokemon::update(void) {
 	Camera::update();
 
 	_refreshAI = false;
