@@ -32,40 +32,36 @@ Model::~Model(void) {
 // 	return nullptr;
 // }
 
-void Model::_loadDiffuseTexture(GLuint *diffuseTexture, aiMaterial *assimpMat,
+void Model::initModel(void) {
+	// Meshes
+	for (auto mesh : _meshes) {
+		mesh->setupTexture();
+		mesh->setupBuffers();
+	}
+}
+
+void Model::_loadDiffuseTexture(TextureInfo &textureInfo, aiMaterial *assimpMat,
 								Material &material) {
 	aiString str;
 	assimpMat->GetTexture(aiTextureType_DIFFUSE, 0, &str);
-	glGenTextures(1, diffuseTexture);
-	glBindTexture(GL_TEXTURE_2D, *diffuseTexture);
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	int x, y, n;
 	std::string textureName = _assetsDir + _directory + '/' + str.C_Str();
 	stbi_set_flip_vertically_on_load(true);
-	unsigned char *data = stbi_load((textureName).c_str(), &x, &y, &n, 0);
-	if (data) {
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, x, y, 0, GL_RGBA,
-					 GL_UNSIGNED_BYTE, data);
-		glGenerateMipmap(GL_TEXTURE_2D);
+	textureInfo.data = stbi_load((textureName).c_str(), &textureInfo.x,
+								 &textureInfo.y, &textureInfo.n, 0);
+	if (textureInfo.data) {
 		material.hasDiffuseTexture = true;
 	} else {
 		std::cerr << "\033[0;33m:Warning:\033[0m "
 				  << "Failed to load texture file: " + textureName << std::endl;
-		*diffuseTexture = -1;
 	}
 	stbi_set_flip_vertically_on_load(false);
-	stbi_image_free(data);
 }
 
 Mesh *Model::_processMesh(aiMesh *mesh, const aiScene *scene,
 						  glm::mat4 transform) {
 	std::vector<Vertex> vertices;
 	// std::vector<unsigned int> indices;
-	GLuint diffuseTexture = -1;
+	TextureInfo textureInfo;
 	Material material;
 
 	if (mesh->mMaterialIndex < scene->mNumMaterials) {
@@ -86,7 +82,7 @@ Mesh *Model::_processMesh(aiMesh *mesh, const aiScene *scene,
 		assimpMat->Get(AI_MATKEY_SHININESS, material.shininess);
 		// Load only one texture per mesh
 		if (assimpMat->GetTextureCount(aiTextureType_DIFFUSE) > 0)
-			_loadDiffuseTexture(&diffuseTexture, assimpMat, material);
+			_loadDiffuseTexture(textureInfo, assimpMat, material);
 	}
 
 	for (unsigned int i = 0; i < mesh->mNumVertices; i++) {
@@ -108,7 +104,7 @@ Mesh *Model::_processMesh(aiMesh *mesh, const aiScene *scene,
 										 mesh->mTextureCoords[0][i].y);
 		vertices.push_back(vertex);
 	}
-	return new Mesh(vertices, material, diffuseTexture);
+	return new Mesh(textureInfo, vertices, material);
 }
 
 void Model::_processNode(aiNode *node, const aiScene *scene,

@@ -12,7 +12,8 @@ GameRenderer::GameRenderer(GameEngine *gameEngine, AGame *game)
 	  _isFullScreen(game->isFullScreen()),
 	  _widthRequested(game->getWindowWidth()),
 	  _heightRequested(game->getWindowHeight()),
-	  _models(std::map<std::string, Model *>()) {
+	  _models(std::map<std::string, Model *>()),
+	  _toDelete(std::vector<std::string>()) {
 	_gameEngine = gameEngine;
 	glfwSetErrorCallback(errorCallback);
 	if (!glfwInit()) throw std::runtime_error("Failed to initialize GLFW");
@@ -67,7 +68,6 @@ void GameRenderer::_initWindow(void) {
 	glfwSetCursorPosCallback(_window, mouseCallback);
 
 	_initGUI();
-	_initModels();
 	_initDepthMap();  // TODO Check if the Framebuffer was create correctly
 	_initShader();
 }
@@ -135,67 +135,35 @@ void GameRenderer::_initShader(void) {
 	_skyboxShaderProgram->setInt("skybox", 2);
 }
 
-void GameRenderer::_initModels(void) {
-	for (auto model : _models) {
-		delete model.second;
-	}
-	_models.clear();
-
-	_models["Sphere"] = new Model("Models/Sphere/sphere.dae");
-	_models["Bomb"] = new Model("Models/Bomb/bomb.obj");
-	_models["Island"] = new Model("Models/Island/island.obj");
-	_models["Stadium"] = new Model("Models/Stadium/stadium.obj");
-	_models["Wall"] = new Model("Models/Wall/wall.obj");
-	_models["Box"] = new Model("Models/Box/box.obj");
-	_models["Portal"] = new Model("Models/Portal/portal.obj");
-	_models["Player"] = new Model("Models/Hero/hero.dae");
-	_models["KickPerk"] = new Model("Models/Perks/Kick/kick.obj");
-	_models["DamagePerk"] = new Model("Models/Perks/Damage/damage.obj");
-	_models["MaxBombPerk"] = new Model("Models/Perks/MaxBomb/maxBomb.obj");
-	_models["RangePerk"] = new Model("Models/Perks/Range/range.obj");
-	_models["SpeedPerk"] = new Model("Models/Perks/Speed/speed.obj");
-	_models["Meteor"] = new Model("Models/Meteorite/meteorite.obj");
-	_models["BigMeteor"] = new Model("Models/BigMeteor/bigMeteor.obj");
-	_models["DestructibleMeteor"] =
-		new Model("Models/DestructibleMeteorite/destructibleMeteorite.obj");
-	_models["HolePlanet"] = new Model("Models/HolePlanet/holePlanet.dae");
-	_models["StrengthBoulder"] =
-		new Model("Models/StrengthBoulder/strengthBoulder.obj");
-	_models["OakTree"] = new Model("Models/OakTree/oakTree.obj");
-	_models["Fuzzy"] = new Model("Models/Fuzzy/fuzzy.obj");
-	_models["Diglett"] = new Model("Models/Diglett/diglett.obj");
-	_models["Lapras"] = new Model("Models/Lapras/lapras.obj");
-	_models["Groudon"] = new Model("Models/Groudon/groudon.obj");
-	_models["RedGhost"] = new Model("Models/RedGhost/redGhost.obj");
-	_models["EnemyBomber"] = new Model("Models/EnemyBomber/enemyBomber.obj");
-	_models["DomeFossil"] =
-		new Model("Models/Fossils/DomeFossil/domeFossil.obj");
-	_models["HelixFossil"] =
-		new Model("Models/Fossils/HelixFossil/helixFossil.obj");
-}
-
 void GameRenderer::loadAssets(std::map<std::string, std::string> resources) {
-	return;
-	// Remove old models if no longer needed
-	std::vector<std::string> toDelete;
+	// Find old models that are no longer needed
 	for (auto &elem : _models) {
 		if (resources.find(elem.first) == resources.end()) {
-			toDelete.push_back(elem.first);
+			_toDelete.push_back(elem.first);
 		}
-	}
-	for (auto name : toDelete) {
-		if (_models[name] != nullptr) delete _models[name];
-		_models.erase(name);
 	}
 
 	// Add new
 	for (auto resource : resources) {
 		if (_models.find(resource.first) == _models.end()) {
-			std::cout << "adding: " << resource.first << " (" << resource.second
-					  << ")" << std::endl;
 			_models[resource.first] = new Model(resource.second);
-			std::cout << "Done!" << std::endl;
 		}
+	}
+}
+
+void GameRenderer::initModelsMeshes(void) {
+	// Free models that are no longer used
+	for (auto name : _toDelete) {
+		if (_models[name] != nullptr) {
+			delete _models[name];
+		}
+		_models.erase(name);
+	}
+	_toDelete.clear();
+
+	// Init each remaining model
+	for (auto model : _models) {
+		model.second->initModel();
 	}
 }
 

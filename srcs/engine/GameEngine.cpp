@@ -362,6 +362,7 @@ bool GameEngine::_initScene(size_t newSceneIdx) {
 	if (!_game) return false;
 	// Add new entities
 	_sceneIdx = newSceneIdx;
+	_gameRenderer->initModelsMeshes();
 	_setSceneVariables();
 	return true;
 }

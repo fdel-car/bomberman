@@ -243,6 +243,16 @@ void Bomberman::_forest(void) {
 
 	_createMap(10, 10, protectedCase, 10, 1000, border, undestructibleBlock,
 			   destructibleBlock, enemies);
+
+	// Droppped Assets
+	_neededAssets.insert("Bomb");
+	_neededAssets.insert("Sphere");
+	_neededAssets.insert("Portal");
+	_neededAssets.insert("KickPerk");
+	_neededAssets.insert("DamagePerk");
+	_neededAssets.insert("MaxBombPerk");
+	_neededAssets.insert("RangePerk");
+	_neededAssets.insert("SpeedPerk");
 }
 
 void Bomberman::_pokemon(void) {
@@ -299,6 +309,8 @@ void Bomberman::_pokemon(void) {
 	_spawnableEntities.push_back(portal);
 
 	// Force add of models (for entities that may be dropped randomly)
+	_neededAssets.insert("Bomb");
+	_neededAssets.insert("Sphere");
 	_neededAssets.insert("KickPerk");
 	_neededAssets.insert("DamagePerk");
 	_neededAssets.insert("MaxBombPerk");

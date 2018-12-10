@@ -11,6 +11,7 @@ class Model final {
 	virtual ~Model(void);
 
 	std::vector<Mesh *> const getMeshes(void) const;
+	void initModel(void);
 	void draw(ShaderProgram const &shaderProgram,
 			  glm::vec3 const &color = glm::vec3(-1.0f)) const;
 
@@ -24,7 +25,7 @@ class Model final {
 	void _processNode(aiNode *node, const aiScene *scene, glm::mat4 transform);
 	Mesh *_processMesh(aiMesh *mesh, const aiScene *scene, glm::mat4 transform);
 	// aiNode *_findNode(aiNode *node, const char *name);
-	void _loadDiffuseTexture(GLuint *diffuseTexture, aiMaterial *assimpMat,
+	void _loadDiffuseTexture(TextureInfo &textureInfo, aiMaterial *assimpMat,
 							 Material &material);
 	static glm::mat4 toGlmMat4(const aiMatrix4x4 &src);
 
