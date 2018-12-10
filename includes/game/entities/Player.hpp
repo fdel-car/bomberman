@@ -11,7 +11,8 @@ class Player : public Damageable {
 	~Player(void);
 
 	virtual void update(void);
-	virtual void onTakeDamage(std::vector<std::string> demagingSounds = std::vector<std::string>());
+	virtual void onTakeDamage(
+		std::vector<std::string> demagingSounds = std::vector<std::string>());
 	virtual void onDeath(void);
 	virtual void onCollisionEnter(Entity *entity);
 
@@ -29,6 +30,7 @@ class Player : public Damageable {
 	bool _bombKick;
 	std::vector<float> _bombTimers;
 	SceneTools *_cam;
+	float _rotationAngle = 0.0f;
 
 	Player(void);
 	Player(Player const &src);

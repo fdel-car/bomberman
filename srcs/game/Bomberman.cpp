@@ -339,12 +339,12 @@ void Bomberman::_space(void) {
 	// Border
 	for (int tmpY = -9; tmpY < 10; tmpY += 2) {
 		_entities.push_back(
-			new Box(glm::vec3(0, 0, tmpY), _camera, "DestructibleMeteor", 30));
+			new Box(glm::vec3(0, 0, tmpY), _camera, "DestructibleMeteor", 50));
 		protectedCase.push_back(std::tuple<int, int>(0, tmpY));
 	}
 	for (int tmpX = -13; tmpX <= 13; tmpX += 2) {
 		_entities.push_back(
-			new Box(glm::vec3(tmpX, 0, 0), _camera, "DestructibleMeteor", 30));
+			new Box(glm::vec3(tmpX, 0, 0), _camera, "DestructibleMeteor", 50));
 		protectedCase.push_back(std::tuple<int, int>(tmpX, 0));
 	}
 

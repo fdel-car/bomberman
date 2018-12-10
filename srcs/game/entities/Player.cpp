@@ -14,7 +14,7 @@ Player::Player(glm::vec3 position, glm::vec3 eulerAngles, Save &save,
 		  2.0f, sceneManager),
 	  _save(save),
 	  _speed(6.0f),
-	  _maxBombs(3),
+	  _maxBombs(1),
 	  _bombCooldown(2.5f),
 	  _bombRange(2),
 	  _bombKick(false),
@@ -82,6 +82,17 @@ void Player::update(void) {
 		float totalMagnitude = xSign + zSign;
 		xDirection *= sqrt(xSign / totalMagnitude);
 		zDirection *= sqrt(zSign / totalMagnitude);
+	}
+
+	if (glm::epsilonNotEqual(xDirection, 0.0f, EPSILON) ||
+		glm::epsilonNotEqual(zDirection, 0.0f, EPSILON)) {
+		float angle;
+		if (xDirection < 0)
+			angle = 360.0f - glm::degrees(atan2(xDirection, zDirection) * -1);
+		else
+			angle = glm::degrees(atan2(xDirection, zDirection));
+		rotateY(angle - _rotationAngle);
+		_rotationAngle = angle;
 	}
 
 	_targetMovement.x = xDirection * _speed * deltaTime;

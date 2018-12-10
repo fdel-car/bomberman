@@ -12,11 +12,11 @@ const std::vector<std::tuple<PerkType, size_t, std::string>> getPossiblePerks(
 	void) {
 	std::vector<std::tuple<PerkType, size_t, std::string>> vPerk;
 	vPerk.push_back(std::make_tuple<PerkType, size_t, std::string>(
-		SpeedBoost, 3, "SpeedPerk"));
+		SpeedBoost, 4, "SpeedPerk"));
 	vPerk.push_back(std::make_tuple<PerkType, size_t, std::string>(
-		BombRange, 2, "RangePerk"));
+		BombRange, 3, "RangePerk"));
 	vPerk.push_back(std::make_tuple<PerkType, size_t, std::string>(
-		MaxBomb, 2, "MaxBombPerk"));
+		MaxBomb, 4, "MaxBombPerk"));
 	vPerk.push_back(std::make_tuple<PerkType, size_t, std::string>(
 		Damage, 1, "DamagePerk"));
 	vPerk.push_back(std::make_tuple<PerkType, size_t, std::string>(KickBomb, 2,
@@ -84,7 +84,7 @@ void Perk::onTriggerEnter(Entity *entity) {
 	if (player != nullptr) {
 		switch (_perkType) {
 			case SpeedBoost:
-				player->gotSpeedBoost(0.3f);
+				player->gotSpeedBoost(1.0f);
 				break;
 			case BombRange:
 				player->gotBombRangeBoost(1);

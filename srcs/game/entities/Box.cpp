@@ -35,7 +35,7 @@ void Box::update(void) {
 			_hasSpawned = true;
 			_toSpawn->translate(getPosition() - _toSpawn->getPosition());
 			_gameEngine->addNewEntity(_toSpawn);
-		} else if (static_cast<unsigned int>(rand() % 100) < _perkProb) {
+		} else if (rand() % 100 < _perkProb) {
 			_gameEngine->addNewEntity(new Perk(getPosition(), _sceneManager));
 		}
 	}
