@@ -18,6 +18,26 @@ Model::Model(std::string const &modelPath)
 	_processNode(scene->mRootNode, scene, glm::mat4(1.0f));
 	if (_joints.size() > 0) _rigged = true;
 	_buildSkeletonHierarchy(scene->mRootNode);
+	if (scene->HasAnimations()) {
+		_animated = true;
+		// Only support one animation for now
+		for (size_t i = 0; i < 1 /*scene->mNumAnimations*/; i++) {
+			aiAnimation *anim = scene->mAnimations[i];
+			_animLength = anim->mDuration;
+			for (size_t j = 0; j < anim->mNumChannels; j++) {
+				aiNodeAnim *nodeAnim = anim->mChannels[j];
+				Joint *joint = findJointByName(nodeAnim->mNodeName.C_Str());
+				if (joint != nullptr) {
+					joint->setPositionKeys(nodeAnim->mPositionKeys,
+										   nodeAnim->mNumPositionKeys);
+					joint->setRotationKeys(nodeAnim->mRotationKeys,
+										   nodeAnim->mNumRotationKeys);
+					joint->setScalingKeys(nodeAnim->mScalingKeys,
+										  nodeAnim->mNumScalingKeys);
+				}
+			}
+		}
+	}
 }
 
 Model::~Model(void) {
@@ -31,9 +51,15 @@ void Model::_buildSkeletonHierarchy(aiNode *rootNode) {
 		Joint *parent = findJointByName(node->mParent->mName.C_Str());
 		joint->parent = parent;
 	}
+	updateBoneTransforms(nullptr);
 }
 
-void Model::updateBoneTransforms(void) {
+void Model::updateBoneTransforms(double *animTime) {
+	if (_animated) {
+		*animTime += 0.01;
+		if (*animTime + EPSILON >= _animLength) *animTime = 0.0;
+		for (auto joint : _joints) joint->applyAnimationTransform(*animTime);
+	}
 	for (auto joint : _joints) joint->updateFinalTransform();
 }
 

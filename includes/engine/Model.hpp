@@ -1,8 +1,5 @@
 #pragma once
 
-#include <assimp/postprocess.h>
-#include <assimp/scene.h>
-#include <assimp/Importer.hpp>
 #include "engine/Joint.hpp"
 #include "engine/Mesh.hpp"
 
@@ -15,7 +12,7 @@ class Model final {
 	void draw(ShaderProgram const &shaderProgram,
 			  glm::vec3 const &color = glm::vec3(-1.0f));
 	Joint *findJointByName(std::string const &name);
-	void updateBoneTransforms(void);
+	void updateBoneTransforms(double *animTime);
 	bool isRigged(void) const;
 
    private:
@@ -25,6 +22,8 @@ class Model final {
 	std::vector<Joint *> _joints;
 	unsigned int _jointIndex = 0;
 	bool _rigged = false;
+	bool _animated = false;
+	double _animLength;
 
 	Model(void);
 	Model(Model const &src);

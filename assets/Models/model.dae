@@ -55,7 +55,7 @@
               <color sid="emission">0 0 0 1</color>
             </emission>
             <ambient>
-              <color sid="ambient">0.5 0.5 0.5 1</color>
+              <color sid="ambient">0 0 0 1</color>
             </ambient>
             <diffuse>
               <texture texture="character_Texture_png-sampler" texcoord="UVMap"/>

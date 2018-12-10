@@ -16,6 +16,9 @@ class Entity {
 		   Entity *sceneManager = nullptr);
 	virtual ~Entity(void);
 
+	double currentAnimTime = 0.0;
+	bool shouldBeAnimated = false;
+
 	GameEngine *getGameEngine(void) const;
 	const glm::vec3 &getPosition(void) const;
 	const glm::mat4 &getModelMatrix(void) const;
@@ -47,9 +50,6 @@ class Entity {
 	void rotateX(float angle);
 	void rotateY(float angle);
 	virtual void translate(glm::vec3 translation);
-
-	// Animation *anim;
-	// bool isTrigger;
 
    private:
 	glm::vec3 _position;

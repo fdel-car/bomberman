@@ -192,7 +192,8 @@ void GameRenderer::refreshWindow(std::vector<Entity *> &entities,
 
 	for (auto entity : entities) {
 		Model *model = entity->getModel();
-		if (model && model->isRigged()) model->updateBoneTransforms();
+		if (model && model->isRigged() && entity->shouldBeAnimated)
+			model->updateBoneTransforms(&entity->currentAnimTime);
 	}
 
 	_lightSpaceMatrix = light->getProjectionMatrix() * light->getViewMatrix();

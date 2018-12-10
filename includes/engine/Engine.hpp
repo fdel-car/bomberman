@@ -30,10 +30,7 @@ std::string toString(const T& val) {
 	return oss.str();
 }
 
-// #define WINDOW_W 1280
-// #define WINDOW_H 720
-// #define WINDOW_W 2560
-// #define WINDOW_H 1400
+#define EPSILON 0.001f
 
 #define BACKGROUND_LOAD_NEEDED 0
 #define BACKGROUND_LOAD_NOT_NEEDED 1

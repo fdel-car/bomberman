@@ -20,8 +20,9 @@ Player::Player(glm::vec3 position, glm::vec3 eulerAngles, Save &save,
 	  _bombKick(false),
 	  _bombTimers(std::vector<float>()),
 	  _cam(dynamic_cast<SceneTools *>(_sceneManager)) {
-	scale(glm::vec3(0.8, 0.8, 0.8));
-	// setColor(glm::vec3(0.2, 0.2, 0.8));
+	// rotateX(90);
+	scale(glm::vec3(0.4f));
+	shouldBeAnimated = true;
 	if (_cam != nullptr) {
 		_cam->tellPlayerHp(_hp);
 	}

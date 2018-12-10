@@ -7,8 +7,6 @@
 #include "engine/Light.hpp"
 #include "engine/Skybox.hpp"
 
-#define EPSILON 0.01f
-
 // For Threads
 #include <atomic>
 #include <thread>

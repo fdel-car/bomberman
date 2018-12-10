@@ -1,6 +1,24 @@
 #pragma once
 
+#include <assimp/postprocess.h>
+#include <assimp/scene.h>
+#include <assimp/Importer.hpp>
 #include "engine/Engine.hpp"
+
+struct PositionKey {
+	double frameTime;
+	glm::vec3 position;
+};
+
+struct RotationKey {
+	double frameTime;
+	glm::quat rotation;
+};
+
+struct ScalingKey {
+	double frameTime;
+	glm::vec3 scaling;
+};
 
 class Joint {
    public:
@@ -15,7 +33,16 @@ class Joint {
 	glm::mat4 localTransform;
 	glm::mat4 finalTransform;
 
+	// Animation
+	std::vector<PositionKey> _positionKeys;
+	std::vector<RotationKey> _rotationKeys;
+	std::vector<ScalingKey> _scalingKeys;
+
+	void applyAnimationTransform(double currentAnimTime);
 	void updateFinalTransform(void);
+	void setPositionKeys(aiVectorKey *positionKeys, size_t nbr);
+	void setRotationKeys(aiQuatKey *rotationKeys, size_t nbr);
+	void setScalingKeys(aiVectorKey *scalingKeys, size_t nbr);
 
    private:
 	static glm::mat4 _toYAxisUp;
