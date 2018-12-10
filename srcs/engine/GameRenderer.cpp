@@ -161,6 +161,7 @@ void GameRenderer::_initModels(void) {
 	_models["HolePlanet"] = new Model("Models/HolePlanet/holePlanet.dae");
 	_models["StrengthBoulder"] =
 		new Model("Models/StrengthBoulder/strengthBoulder.obj");
+	_models["OakTree"] = new Model("Models/OakTree/oakTree.obj");
 	_models["Fuzzy"] = new Model("Models/Fuzzy/fuzzy.obj");
 	_models["Diglett"] = new Model("Models/Diglett/diglett.obj");
 	_models["Lapras"] = new Model("Models/Lapras/lapras.obj");
@@ -206,6 +207,7 @@ void GameRenderer::refreshWindow(std::vector<Entity *> &entities,
 
 	// Basic rendering OpenGL state
 	glViewport(0, 0, _width, _height);
+	glDisable(GL_CULL_FACE);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glUseProgram(_shaderProgram->getID());
 	_shaderProgram->setMat4(
@@ -248,7 +250,6 @@ void GameRenderer::refreshWindow(std::vector<Entity *> &entities,
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	glDisable(GL_MULTISAMPLE);
 	glDisable(GL_DEPTH_TEST);
-	glDisable(GL_CULL_FACE);
 
 	_graphicUI->nkNewFrame();
 	camera->drawGUI(_graphicUI);

@@ -130,6 +130,10 @@ void Bomberman::_forest(void) {
 	_light = new Light(glm::vec2(-20.0, 8.0), glm::vec3(0.0f));
 	_entities.push_back(new Entity(glm::vec3(0.0f), glm::vec3(0.0f), nullptr,
 								   "Island", "Island", "Island"));
+	_entities.push_back(new Entity(glm::vec3(-15.0, -1.0, -9.0),
+								   glm::vec3(0.0f), nullptr, "OakTree",
+								   "OakTree", "OakTree"));
+	_entities.back()->scale(glm::vec3(1.8f));
 	_entities.push_back(new Player(glm::vec3(-9.0, 0.0, -9.0), glm::vec3(0.0f),
 								   _save, _camera));
 
@@ -170,7 +174,7 @@ void Bomberman::_pokemon(void) {
 	_skybox = new Skybox("Default");
 	_camera =
 		new Pokemon(glm::vec3(-4, 20, 20), glm::vec3(-60.0, 0.0, 0.0), this);
-	_light = new Light(glm::vec2(-20.0, 8.0), glm::vec3(0.0f));
+	_light = new Light(glm::vec2(-50.0, 20.0), glm::vec3(0.0f));
 	_entities.push_back(new Entity(glm::vec3(0.0f), glm::vec3(0.0f), nullptr,
 								   "Stadium", "Stadium", "Stadium"));
 	_entities.push_back(new Player(glm::vec3(-7.0, 0.0, 11.0), glm::vec3(0.0f),
@@ -251,7 +255,7 @@ void Bomberman::_volcano(void) {
 }
 
 void Bomberman::_space(void) {
-	_skybox = new Skybox("space2");
+	_skybox = new Skybox("BlueSpace");
 	_camera =
 		new Space(glm::vec3(-10, 20.0, 6.0), glm::vec3(-60.0, 0.0, 0.0), this);
 	_light = new Light(glm::vec2(-20.0, 8.0), glm::vec3(0.0f));
