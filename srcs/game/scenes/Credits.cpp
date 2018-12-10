@@ -6,14 +6,15 @@ extern std::string _assetsDir;
 Credits::Credits(glm::vec3 const &pos, glm::vec3 const &eulerAngles,
 				 Bomberman *bomberman)
 	: SceneTools(0, 0, pos, eulerAngles, bomberman, "Credits", "MainMenu") {
+	_startMusic = _assetsDir + "Audio/Musics/Credits.wav";
 	_neededImages.push_back(std::tuple<std::string, std::string>(
-		(_assetsDir + "GUI/Icons/jimmy.png"), "jimmy"));
+		(_assetsDir + "GUI/icons/jimmy.png"), "jimmy"));
 	_neededImages.push_back(std::tuple<std::string, std::string>(
-		(_assetsDir + "GUI/Icons/claudio.png"), "claudio"));
+		(_assetsDir + "GUI/icons/claudio.png"), "claudio"));
 	_neededImages.push_back(std::tuple<std::string, std::string>(
-		(_assetsDir + "GUI/Icons/fabien.png"), "fabien"));
+		(_assetsDir + "GUI/icons/fabien.png"), "fabien"));
 	_neededImages.push_back(std::tuple<std::string, std::string>(
-		(_assetsDir + "GUI/Icons/vivien.png"), "vivien"));
+		(_assetsDir + "GUI/icons/vivien.png"), "vivien"));
 }
 
 Credits::~Credits(void) {}
