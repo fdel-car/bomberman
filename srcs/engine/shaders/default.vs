@@ -15,6 +15,14 @@ uniform mat4 VP;
 uniform mat4 lightSpaceMatrix;
 uniform mat4 boneTransforms[32];
 uniform bool rigged;
+uniform bool instances;
+
+// uniform int numberOfOffsets;
+// uniform vec2 offsets[numberOfOffsets];
+
+uniform vec3 offsets[500];
+
+
 
 void main()
 {
@@ -26,7 +34,15 @@ void main()
         gl_Position = VP * M * jointTransform * vec4(position, 1.0f);
         _normal = normalize(M * jointTransform * vec4(normal, 0.0f)).xyz;
         _fragPos = vec3(M * jointTransform * vec4(position, 1.0f));
-    } else {
+    }
+    else if (instances) {
+        gl_Position = VP * M * vec4(position - offsets[gl_InstanceID], 1.0f);
+        _normal = normalize(M * vec4(normal, 0.0f)).xyz;
+        _fragPos = vec3(M * vec4(position, 1.0f));
+    } 
+    
+    
+    else {
         gl_Position = VP * M * vec4(position, 1.0f);
         _normal = normalize(M * vec4(normal, 0.0f)).xyz;
         _fragPos = vec3(M * vec4(position, 1.0f));

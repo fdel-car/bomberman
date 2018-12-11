@@ -50,6 +50,10 @@ Light *AGame::getLoadingLight(void) const { return _loadingLight; }
 
 Skybox *AGame::getLoadingSkybox(void) const { return _loadingSkybox; }
 
+std::vector<glm::vec3> AGame::getInstancePosition() const {
+	return _transforms;
+}
+
 std::vector<std::vector<bool>> const &AGame::getCollisionTable(void) {
 	return _collisionTable;
 }
@@ -58,6 +62,8 @@ std::vector<std::tuple<float, std::string, std::string>>
 	&AGame::getNeededFont() {
 	return _neededFonts;
 }
+
+void AGame::clearInstancePosition(void) { _transforms.clear(); }
 
 void AGame::unload(void) {
 	_spawnableEntities.clear();

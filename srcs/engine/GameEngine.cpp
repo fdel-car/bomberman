@@ -112,8 +112,8 @@ void GameEngine::run(void) {
 		// Wait for other thread to finish
 		while (_sceneState != BACKGROUND_LOAD_FINISHED) {
 			_camera->update();
-			_gameRenderer->refreshWindow(_allEntities, _camera, _light,
-										 _skybox);
+			_gameRenderer->refreshWindow(_allEntities, _camera, _light, _skybox,
+										 _game->getInstancePosition());
 		}
 		// Free thread
 		_loadSceneThread->join();
@@ -263,13 +263,15 @@ void GameEngine::run(void) {
 				}
 			}
 		}
-		_gameRenderer->refreshWindow(_allEntities, _camera, _light, _skybox);
+		_gameRenderer->refreshWindow(_allEntities, _camera, _light, _skybox,
+									 _game->getInstancePosition());
 
 		if (_game->needResolutionChange) _setNewResolution();
 	}
 	if (newSceneIdx != -1) {
 		_sceneIdx = newSceneIdx;
 		_sceneState = BACKGROUND_LOAD_NEEDED;
+		_game->clearInstancePosition();
 		run();
 	}
 }

@@ -26,7 +26,8 @@ class GameRenderer final {
 	void getUserInput(void);
 	void switchCursorMode(bool debug) const;
 	void refreshWindow(std::vector<Entity *> &entities, Camera *camera,
-					   Light *light, Skybox *skybox);
+					   Light *light, Skybox *skybox,
+					   std::vector<glm::vec3> transforms);
 	void setNewResolution(bool isFullScreen, int width, int height);
 	void loadAssets(std::map<std::string, std::string> assets);
 	void initModelsMeshes(void);

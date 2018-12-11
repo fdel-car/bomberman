@@ -27,7 +27,8 @@ class Mesh final {
 	size_t getSize(void) const;
 	void setupTexture(void);
 	void setupBuffers(void);
-	void draw(ShaderProgram const &shaderProgram, glm::vec3 const &color) const;
+	void draw(ShaderProgram const &shaderProgram, glm::vec3 const &color,
+			  std::vector<glm::vec3> transform) const;
 
 	GLuint VAO;
 	GLuint VBO;

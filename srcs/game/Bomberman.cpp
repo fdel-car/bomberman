@@ -609,6 +609,7 @@ void Bomberman::_createMap(int width, int height,
 					new Collider(Collider::Rectangle, LayerTag::WallLayer, 0.45,
 								 0.45),
 					border[rand() % border.size()], "Wall", "Wall", _camera));
+				_transforms.push_back(glm::vec3(x, 0.0, z));
 			} else if (canPutBlocks && x % 2 == 0 && z % 2 == 0) {
 				_entities.push_back(new Entity(
 					glm::vec3(x, 0.0, z), glm::vec3(0.0f),
@@ -616,7 +617,7 @@ void Bomberman::_createMap(int width, int height,
 								 0.5),
 					undestructibleBlock[rand() % undestructibleBlock.size()],
 					"Wall", "Wall", _camera));
-
+				_transforms.push_back(glm::vec3(x, 0.0, z));
 			} else {
 				if (canPutBlocks && rand() % boxRate == 0) {
 					_entities.push_back(new Box(
@@ -630,6 +631,7 @@ void Bomberman::_createMap(int width, int height,
 			}
 		}
 	}
+	std::cout << "Number of Walls: " << _transforms.size() << std::endl;
 }
 
 size_t Bomberman::getWindowWidth() {

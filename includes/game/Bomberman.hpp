@@ -49,10 +49,6 @@ class Bomberman : public AGame {
 	Save _save;
 	const std::string _startLevelName;
 	std::map<std::string, Scene> _scenesMap;
-	// GLFWwindow *_window; // to get current context in the Skybox thread or GL
-	// Function will segfault
-
-	// std::atomic_int loadState;
 
 	void _initScenes(void);
 	void _createMap(int width, int height,

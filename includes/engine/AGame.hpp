@@ -39,6 +39,8 @@ class AGame {
 	Light *getLoadingLight() const;
 	Skybox *getLoadingSkybox() const;
 	std::vector<std::vector<bool>> const &getCollisionTable(void);
+	std::vector<glm::vec3> getInstancePosition() const;
+	void clearInstancePosition(void);
 
 	void unload(void);
 	void setGameRenderer(GameRenderer *gameRenderer);
@@ -67,6 +69,8 @@ class AGame {
 	std::map<std::string, std::string> _allSounds;  // keyword -> path
 	std::set<std::string> _neededSounds;
 	std::vector<std::vector<bool>> _collisionTable;
+
+	std::vector<glm::vec3> _transforms;  // for renderer instances
 
 	void setLayerCollision(int layer1, int layer2, bool doCollide);
 	void loadAssets(void);

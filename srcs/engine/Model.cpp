@@ -195,7 +195,8 @@ void Model::_processNode(aiNode *node, const aiScene *scene,
 	}
 }
 
-void Model::draw(ShaderProgram const &shaderProgram, glm::vec3 const &color) {
+void Model::draw(ShaderProgram const &shaderProgram,
+				 std::vector<glm::vec3> transform, glm::vec3 const &color) {
 	shaderProgram.setBool("rigged", _rigged);
 	if (_rigged) {
 		for (size_t i = 0; i < 32; i++) {
@@ -205,8 +206,25 @@ void Model::draw(ShaderProgram const &shaderProgram, glm::vec3 const &color) {
 									  : glm::mat4(1.0f));
 		}
 	}
+
+	// shaderProgram.setInt("numberOfOffsets", transform.size());
+	// (void)transform;
+
+	if (!transform.empty()) {
+		size_t i = 0;
+		// shaderProgram.setInt("numberOfOffsets", (const int)transform.size());
+		shaderProgram.setBool("instances", true);
+		for (auto trans : transform) {
+			shaderProgram.setVec3("offsets[" + std::to_string(i) + "]", trans);
+			i++;
+		}
+		std::cout << "number of walls: " << i << std::endl;
+		std::cout << "Vector is not empty" << std::endl;
+	} else
+		shaderProgram.setBool("instances", false);
+
 	for (const auto mesh : _meshes) {
-		if (mesh != nullptr) mesh->draw(shaderProgram, color);
+		if (mesh != nullptr) mesh->draw(shaderProgram, color, transform);
 	}
 }
 

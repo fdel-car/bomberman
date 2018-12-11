@@ -75,8 +75,8 @@ void Mesh::setupTexture(void) {
 	_textureInfo.data = nullptr;
 }
 
-void Mesh::draw(ShaderProgram const &shaderProgram,
-				glm::vec3 const &color) const {
+void Mesh::draw(ShaderProgram const &shaderProgram, glm::vec3 const &color,
+				std::vector<glm::vec3> transform) const {
 	if (color.x != -1.0f && color.y != -1.0f && color.z != -1.0f) {
 		shaderProgram.setVec3("material.ambientColor",
 							  glm::mix(_material.ambientColor, color, 0.7));
@@ -99,9 +99,20 @@ void Mesh::draw(ShaderProgram const &shaderProgram,
 		glBindTexture(GL_TEXTURE_2D, _diffuseTexture);
 	}
 
-	glBindVertexArray(VAO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glDrawArrays(GL_TRIANGLES, 0, _size);
+	if (!transform.empty()) {
+		glBindVertexArray(VAO);
+		glBindBuffer(GL_ARRAY_BUFFER, VBO);
+		glDrawArraysInstanced(GL_TRIANGLES, 0, _size, transform.size());
+	} else {
+		glBindVertexArray(VAO);
+		glBindBuffer(GL_ARRAY_BUFFER, VBO);
+		glDrawArrays(GL_TRIANGLES, 0, _size);
+	}
+
+	// (void)transform;
+	// glBindVertexArray(VAO);
+	// glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	// glDrawArrays(GL_TRIANGLES, 0, _size);
 }
 
 size_t Mesh::getSize(void) const { return _size; }
