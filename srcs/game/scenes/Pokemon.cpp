@@ -1,9 +1,11 @@
 #include "game/scenes/Pokemon.hpp"
 #include "engine/GameEngine.hpp"
 
-Pokemon::Pokemon(glm::vec3 const &pos, glm::vec3 const &eulerAngles,
+Pokemon::Pokemon(WorldLocation &dialogueLocation,
+				 WorldLocation &gameplayLocation, float transitionTime,
 				 Bomberman *bomberman)
-	: SceneTools(17, 25, pos, eulerAngles, bomberman, "Pokemon", "Mario"),
+	: SceneTools(17, 25, dialogueLocation, gameplayLocation, transitionTime,
+				 bomberman, "Pokemon", "Mario"),
 	  _cooldown(0.0f) {
 	configAI();
 	_startMusic = "Audio/Musics/Town.wav";
@@ -39,21 +41,10 @@ void Pokemon::configGUI(GUI *graphicUI) {
 			"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do "
 			"officia deserunt mollit anim id est laborum.";
 
-		_dialogues.push_back(_builNewDialogue(
-			0, 0, 0, "Bomberman", "heart", str, false, 1000, 1000, NK_TEXT_LEFT,
-			"20_BOMBERMAN", "24_BOMBERMAN"));
-		_dialogues.push_back(_builNewDialogue(
-			0, 0, 0, "Bomberman", "heart", str, true, 1000, 1000, NK_TEXT_LEFT,
-			"20_BOMBERMAN", "24_BOMBERMAN"));
-	}
-}
-
-void Pokemon::drawGUI(GUI *graphicUI) {
-	if (_dialogues.empty())
-		SceneTools::drawGUI(graphicUI);
-	else {
-		_isPause = true;
-		if (!_displayMultipleDialogue(graphicUI, &_dialogues)) _isPause = false;
+		_buildNewDialogue(0, 0, 0, "Bomberman", "heart", str, false, 1000, 1000,
+						  NK_TEXT_LEFT, "20_BOMBERMAN", "24_BOMBERMAN");
+		_buildNewDialogue(0, 0, 0, "Bomberman", "heart", str, true, 1000, 1000,
+						  NK_TEXT_LEFT, "20_BOMBERMAN", "24_BOMBERMAN");
 	}
 }
 

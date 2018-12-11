@@ -1,9 +1,8 @@
 #include "game/scenes/Load.hpp"
 #include "engine/GameRenderer.hpp"
 
-Load::Load(glm::vec3 const &pos, glm::vec3 const &eulerAngles,
-		   Bomberman *bomberman)
-	: SceneTools(0, 0, pos, eulerAngles, bomberman,
+Load::Load(WorldLocation &startLocation, Bomberman *bomberman)
+	: SceneTools(0, 0, startLocation, bomberman,
 				 bomberman->getStartLevelName()) {}
 
 Load::~Load(void) {}
