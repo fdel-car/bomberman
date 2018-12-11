@@ -24,7 +24,6 @@ class Entity {
 	const glm::mat4 &getModelMatrix(void) const;
 	const Collider *getCollider(void) const;
 	Model *getModel(void) const;
-	bool getTmpState(void) const;
 	glm::vec3 const &getEulerAngles(void) const;
 	size_t const &getId(void) const;
 	std::string const &getName(void) const;
@@ -34,6 +33,7 @@ class Entity {
 	glm::vec3 const &getColor(void) const;
 	bool getNeedToBeDestroyed(void) const;
 	std::set<std::string> getNeededSounds(void) const;
+	bool doShowModel(void) const;
 
 	virtual void update(void);
 	virtual void initEntity(GameEngine *gameEngine);
@@ -77,10 +77,10 @@ class Entity {
 	std::string _tag;
 	Entity *_sceneManager;
 
+	bool _showModel;
 	Model *_model;
 	Collider *_collider;
 	GameEngine *_gameEngine;
-	bool _isTmp;
 
 	glm::vec3 _targetMovement;
 	std::set<std::string> _neededSounds;

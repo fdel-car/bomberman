@@ -9,7 +9,7 @@ Player::Player(glm::vec3 position, glm::vec3 eulerAngles, Save &save,
 		  glm::vec3(position.x, position.y - 0.05f, position.z), eulerAngles,
 		  new Collider(Collider::Circle, LayerTag::PlayerLayer, 0.4f, 0.4f),
 		  "Player", "Player", "Player", 3, PlayerLayer, PlayerSpecialLayer,
-		  2.0f, sceneManager),
+		  2.0f, sceneManager, glm::vec3(1, 0, 0)),
 	  _save(save),
 	  _speed(6.0f),
 	  _maxBombs(1),
@@ -27,6 +27,8 @@ Player::Player(glm::vec3 position, glm::vec3 eulerAngles, Save &save,
 
 	_neededSounds.insert("defeat_effect");
 	_neededSounds.insert("defeat_voice");
+
+	Damageable::setFlickering(0.1f, 0.3f);
 }
 
 Player::~Player(void) {}

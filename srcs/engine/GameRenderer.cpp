@@ -218,6 +218,8 @@ void GameRenderer::refreshWindow(std::vector<Entity *> &entities,
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, _depthMap);
 	for (auto entity : entities) {
+		if (!entity->doShowModel()) continue;
+
 		_shaderProgram->setMat4("M", entity->getModelMatrix());
 		Model *model = entity->getModel();
 		if (model) model->draw(*_shaderProgram, entity->getColor());

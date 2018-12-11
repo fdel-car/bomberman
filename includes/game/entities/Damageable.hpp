@@ -7,7 +7,8 @@ class Damageable : public Entity {
 	Damageable(glm::vec3 position, glm::vec3 eulerAngles, Collider *collider,
 			   std::string modelName, std::string name, std::string tag,
 			   size_t hp, int baseLayer, int damagedLayer,
-			   float _damagedMaxTime, Entity *sceneManager = nullptr);
+			   float _damagedMaxTime, Entity *sceneManager = nullptr,
+			   glm::vec3 damagedColor = glm::vec3(-1));
 	~Damageable(void);
 
 	virtual void update(void);
@@ -25,7 +26,17 @@ class Damageable : public Entity {
 	float _damagedMaxTime;
 	float _timeDamaged;
 
+	void setFlickering(float flickerHideTime, float flickerDisplayTime);
+
    private:
+	glm::vec3 _damagedColor;
+	glm::vec3 _defaultColor;
+	// Allow flickering option
+	bool _doFlicker;
+	float _flickerTimer;
+	float _flickerHideTime;
+	float _flickerDisplayTime;
+
 	Damageable(void);
 	Damageable(Damageable const &src);
 	Damageable &operator=(Damageable const &rhs);

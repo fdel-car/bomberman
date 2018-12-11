@@ -56,7 +56,7 @@ void main() {
     vec3 diffuse;
     float diffCoeff = max(dot(_normal, -lightDir), 0.0f);
     if (material.hasDiffuseTexture)
-        diffuse = diffCoeff * texture(diffuseTexture, _texCoords).xyz * lightColor;
+        diffuse = diffCoeff * texture(diffuseTexture, _texCoords).xyz * material.diffuseColor * lightColor;
     else
         diffuse = diffCoeff * material.diffuseColor * lightColor;
 

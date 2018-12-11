@@ -21,9 +21,12 @@ Entity::Entity(glm::vec3 position, glm::vec3 eulerAngles, Collider *collider,
 	  _name(name),
 	  _tag(tag),
 	  _sceneManager(sceneManager),
+	  _showModel(true),
+	  _model(nullptr),
 	  _collider(collider),
-	  _isTmp(true),
+	  _gameEngine(nullptr),
 	  _targetMovement(glm::vec3()),
+	  _neededSounds(std::set<std::string>()),
 	  _initSounds(std::vector<std::string>()),
 	  _destroySounds(std::vector<std::string>()) {
 	_translationMatrix = glm::mat4(1.0f);
@@ -77,8 +80,6 @@ void Entity::updateModel(void) {
 	_model = _gameEngine->getGameRenderer()->getModel(_modelName);
 }
 
-bool Entity::getTmpState(void) const { return _isTmp; }
-
 size_t const &Entity::getId(void) const { return _id; }
 
 glm::vec3 const &Entity::getEulerAngles() const {
@@ -100,6 +101,8 @@ bool Entity::getNeedToBeDestroyed(void) const { return _needToBeDestroyed; }
 std::set<std::string> Entity::getNeededSounds(void) const {
 	return _neededSounds;
 };
+
+bool Entity::doShowModel(void) const { return _showModel; }
 
 void Entity::setColor(glm::vec3 const &color) { _color = color; }
 
