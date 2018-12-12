@@ -126,7 +126,6 @@ void Bomberman::initAllAssets(void) {
 	_allAssets["BigMeteor"] = "Models/BigMeteor/bigMeteor.obj";
 	_allAssets["DestructibleMeteor"] =
 		"Models/DestructibleMeteorite/destructibleMeteorite.obj";
-	_allAssets["HolePlanet"] = "Models/HolePlanet/holePlanet.dae";
 	_allAssets["StrengthBoulder"] =
 		"Models/StrengthBoulder/strengthBoulder.obj";
 	_allAssets["Fuzzy"] = "Models/Fuzzy/fuzzy.obj";
@@ -206,9 +205,9 @@ void Bomberman::_mainMenu(void) {
 								 _scenesNames.begin() + maxPlayableLvlIdx),
 		this);
 	_light = new Light(glm::vec2(-10.0, -10.0), glm::vec3(0.0f), 10.0f);
-	// _entities.push_back(new Entity(glm::vec3(2.0, 0.5, -2.0), glm::vec3(0.0f),
-	// 							   nullptr, "Bomb", "Bomb", "Bomb"));
-	// _entities.back()->scale(glm::vec3(2.5f));
+	// _entities.push_back(new Entity(glm::vec3(2.0, 0.5, -2.0),
+	// glm::vec3(0.0f), 							   nullptr, "Bomb", "Bomb",
+	// "Bomb")); _entities.back()->scale(glm::vec3(2.5f));
 }
 
 void Bomberman::_forest(void) {
@@ -624,7 +623,7 @@ void Bomberman::_createMap(int width, int height,
 								 0.45),
 					border[rand() % border.size()], "Wall", "Wall", _camera));
 			} else if (canPutBlocks && x % 2 == 0 && z % 2 == 0 &&
-										width % 2 == 0 && height % 2 == 0) {
+					   width % 2 == 0 && height % 2 == 0) {
 				_entities.push_back(new Entity(
 					glm::vec3(x, 0.0, z), glm::vec3(0.0f),
 					new Collider(Collider::Rectangle, LayerTag::WallLayer, 0.5,
@@ -632,17 +631,16 @@ void Bomberman::_createMap(int width, int height,
 					undestructibleBlock[rand() % undestructibleBlock.size()],
 					"Wall", "Wall", _camera));
 
-			}
-			else if (canPutBlocks && x % 2 != 0 && z % 2 != 0 &&
-										width % 2 != 0 && height % 2 != 0) {
-			   _entities.push_back(new Entity(
-				   glm::vec3(x, 0.0, z), glm::vec3(0.0f),
-				   new Collider(Collider::Rectangle, LayerTag::WallLayer, 0.5,
-								0.5),
-				   undestructibleBlock[rand() % undestructibleBlock.size()],
-				   "Wall", "Wall", _camera));
+			} else if (canPutBlocks && x % 2 != 0 && z % 2 != 0 &&
+					   width % 2 != 0 && height % 2 != 0) {
+				_entities.push_back(new Entity(
+					glm::vec3(x, 0.0, z), glm::vec3(0.0f),
+					new Collider(Collider::Rectangle, LayerTag::WallLayer, 0.5,
+								 0.5),
+					undestructibleBlock[rand() % undestructibleBlock.size()],
+					"Wall", "Wall", _camera));
 
-		   } else {
+			} else {
 				if (canPutBlocks && rand() % boxRate == 0) {
 					_entities.push_back(new Box(
 						glm::vec3(x, 0, z), _camera,
