@@ -90,6 +90,7 @@ int Bomberman::getStartingSoundsVolume(void) const {
 void Bomberman::loadSceneByIndex(int sceneIdx, std::atomic_int *_sceneState,
 								 bool *_checkLoadSceneIsGood) {
 	unload();
+	Perk::kickPerkDropped = false;
 	if (sceneIdx < 0 || sceneIdx >= static_cast<int>(_scenesNames.size()))
 		*_checkLoadSceneIsGood = false;
 	else {
