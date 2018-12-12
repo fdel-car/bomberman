@@ -16,7 +16,7 @@ class Model final {
 	void updateBoneTransforms(double *animTime, std::string &animName,
 							  bool loop, float deltaTime, float speed);
 	bool isRigged(void) const;
-	void addAnimation(std::string const &animPath, std::string const &animName);
+	void addAnimation(std::string const &animName, std::string const &animPath);
 
    private:
 	std::vector<Mesh *> _meshes;

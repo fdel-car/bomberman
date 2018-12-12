@@ -4,8 +4,6 @@
 #include "game/entities/Player.hpp"
 #include "game/scenes/SceneTools.hpp"
 
-const float Perk::TIME_BETWEEN_ANIM = 3.0f;
-
 const std::vector<std::tuple<PerkType, size_t, std::string>> getPossiblePerks(
 	void) {
 	std::vector<std::tuple<PerkType, size_t, std::string>> vPerk;
@@ -22,7 +20,7 @@ const std::vector<std::tuple<PerkType, size_t, std::string>> getPossiblePerks(
 	return vPerk;
 }
 const std::vector<std::tuple<PerkType, size_t, std::string>>
-	Perk::POSSIBLE_PERKS = getPossiblePerks();
+	Perk::_possiblePerks = getPossiblePerks();
 
 size_t getTotalPerkProbability(
 	std::vector<std::tuple<PerkType, size_t, std::string>> const &vPerk) {
@@ -32,24 +30,22 @@ size_t getTotalPerkProbability(
 	}
 	return tot;
 }
-const size_t Perk::TOTAL_PERK_PROBABILITY =
-	getTotalPerkProbability(Perk::POSSIBLE_PERKS);
+const size_t Perk::_totalPerkProbs =
+	getTotalPerkProbability(Perk::_possiblePerks);
 
 const std::vector<std::string> getDamagingSounds(void) {
 	std::vector<std::string> vSounds;
 	vSounds.push_back("bad_perk");
 	return vSounds;
 }
-const std::vector<std::string> Perk::damagingSounds = getDamagingSounds();
+const std::vector<std::string> Perk::_damagingSounds = getDamagingSounds();
 
-Perk::Perk(glm::vec3 position, Entity *sceneManager)
-	: Entity(glm::vec3(position.x, position.y + 0.3f, position.z), glm::vec3(0),
-			 new Collider(Collider::Rectangle, LayerTag::PerkLayer, 0.4f, 0.4f,
-						  true),
-			 "SetPerk", "Perk", "Perk", sceneManager),
-	  _timer(TIME_BETWEEN_ANIM) {
-	size_t randResult = rand() % TOTAL_PERK_PROBABILITY;
-	for (auto const &perk : POSSIBLE_PERKS) {
+bool Perk::kickPerkDropped = false;
+
+void Perk::_defineDroppedPerk(void) {
+	size_t randResult = rand() % _totalPerkProbs;
+
+	for (auto const &perk : _possiblePerks) {
 		if (std::get<1>(perk) > randResult) {
 			_perkType = std::get<0>(perk);
 			_modelName = std::get<2>(perk);
@@ -58,6 +54,19 @@ Perk::Perk(glm::vec3 position, Entity *sceneManager)
 			randResult -= std::get<1>(perk);
 		}
 	}
+}
+
+Perk::Perk(glm::vec3 position, Entity *sceneManager)
+	: Entity(glm::vec3(position.x, position.y + 0.3f, position.z), glm::vec3(0),
+			 new Collider(Collider::Rectangle, LayerTag::PerkLayer, 0.4f, 0.4f,
+						  true),
+			 "SetPerk", "Perk", "Perk", sceneManager) {
+	do {
+		_defineDroppedPerk();
+	} while (_perkType == KickBomb && kickPerkDropped);
+
+	if (_perkType == KickBomb) kickPerkDropped = true;
+
 	_destroySounds.push_back("get_perk_1");
 	_destroySounds.push_back("get_perk_2");
 	_destroySounds.push_back("get_perk_3");
@@ -66,23 +75,13 @@ Perk::Perk(glm::vec3 position, Entity *sceneManager)
 
 Perk::~Perk(void) {}
 
-void Perk::update(void) {
-	float deltaTime = _gameEngine->getDeltaTime();
-	_timer -= deltaTime;
-
-	if (_timer <= 0.0f) {
-		// TODO: do anim
-		_timer = TIME_BETWEEN_ANIM;
-	}
-}
-
 void Perk::onTriggerEnter(Entity *entity) {
 	Player *player = dynamic_cast<Player *>(entity);
 
 	if (player != nullptr) {
 		switch (_perkType) {
 			case SpeedBoost:
-				player->gotSpeedBoost(1.0f);
+				player->gotSpeedBoost(0.8f);
 				break;
 			case BombRange:
 				player->gotBombRangeBoost(1);
@@ -91,7 +90,7 @@ void Perk::onTriggerEnter(Entity *entity) {
 				player->gotMaxBombBoost(1);
 				break;
 			case Damage:
-				player->takeDamage(damagingSounds);
+				player->takeDamage(_damagingSounds);
 				_destroySounds.clear();
 				break;
 			case KickBomb:

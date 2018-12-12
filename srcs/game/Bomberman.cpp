@@ -90,6 +90,7 @@ int Bomberman::getStartingSoundsVolume(void) const {
 void Bomberman::loadSceneByIndex(int sceneIdx, std::atomic_int *_sceneState,
 								 bool *_checkLoadSceneIsGood) {
 	unload();
+	Perk::kickPerkDropped = false;
 	if (sceneIdx < 0 || sceneIdx >= static_cast<int>(_scenesNames.size()))
 		*_checkLoadSceneIsGood = false;
 	else {
@@ -109,40 +110,46 @@ void Bomberman::initLoadScene() {
 }
 
 void Bomberman::initAllAssets(void) {
-	_allAssets["Sphere"] = "Models/Sphere/sphere.dae";
-	_allAssets["Bomb"] = "Models/Bomb/bomb.obj";
-	_allAssets["Island"] = "Models/Island/island.obj";
-	_allAssets["Stadium"] = "Models/Stadium/stadium.obj";
-	_allAssets["Wall"] = "Models/Wall/wall.obj";
-	_allAssets["Box"] = "Models/Box/box.obj";
-	_allAssets["Portal"] = "Models/Portal/portal.obj";
-	_allAssets["Player"] = "Models/Hero/hero.dae";
-	_allAssets["KickPerk"] = "Models/Perks/Kick/kick.obj";
-	_allAssets["DamagePerk"] = "Models/Perks/Damage/damage.obj";
-	_allAssets["MaxBombPerk"] = "Models/Perks/MaxBomb/maxBomb.obj";
-	_allAssets["RangePerk"] = "Models/Perks/Range/range.obj";
-	_allAssets["SpeedPerk"] = "Models/Perks/Speed/speed.obj";
-	_allAssets["Meteor"] = "Models/Meteorite/meteorite.obj";
-	_allAssets["BigMeteor"] = "Models/BigMeteor/bigMeteor.obj";
+	std::map<std::string, std::string> animInfo =
+		std::map<std::string, std::string>();
+	_allAssets["Sphere"] = ModelInfo("Models/Sphere/sphere.dae");
+	_allAssets["Bomb"] = ModelInfo("Models/Bomb/bomb.obj");
+	_allAssets["Island"] = ModelInfo("Models/Island/island.obj");
+	_allAssets["Stadium"] = ModelInfo("Models/Stadium/stadium.obj");
+	_allAssets["Wall"] = ModelInfo("Models/Wall/wall.obj");
+	_allAssets["Box"] = ModelInfo("Models/Box/box.obj");
+	_allAssets["Portal"] = ModelInfo("Models/Portal/portal.obj");
+	animInfo["Run"] = "Animations/Hero/run.dae";
+	_allAssets["Player"] = ModelInfo("Models/Hero/hero.dae", animInfo);
+	animInfo.clear();
+	_allAssets["KickPerk"] = ModelInfo("Models/Perks/Kick/kick.obj");
+	_allAssets["DamagePerk"] = ModelInfo("Models/Perks/Damage/damage.obj");
+	_allAssets["MaxBombPerk"] = ModelInfo("Models/Perks/MaxBomb/maxBomb.obj");
+	_allAssets["RangePerk"] = ModelInfo("Models/Perks/Range/range.obj");
+	_allAssets["SpeedPerk"] = ModelInfo("Models/Perks/Speed/speed.obj");
+	_allAssets["Meteor"] = ModelInfo("Models/Meteorite/meteorite.obj");
+	_allAssets["BigMeteor"] = ModelInfo("Models/BigMeteor/bigMeteor.obj");
 	_allAssets["DestructibleMeteor"] =
-		"Models/DestructibleMeteorite/destructibleMeteorite.obj";
-	_allAssets["HolePlanet"] = "Models/HolePlanet/holePlanet.dae";
+		ModelInfo("Models/DestructibleMeteorite/destructibleMeteorite.obj");
 	_allAssets["StrengthBoulder"] =
-		"Models/StrengthBoulder/strengthBoulder.obj";
-	_allAssets["Fuzzy"] = "Models/Fuzzy/fuzzy.obj";
-	_allAssets["Diglett"] = "Models/Diglett/diglett.obj";
-	_allAssets["Lapras"] = "Models/Lapras/lapras.obj";
-	_allAssets["Groudon"] = "Models/Groudon/groudon.obj";
-	_allAssets["RedGhost"] = "Models/RedGhost/redGhost.obj";
-	_allAssets["EnemyBomber"] = "Models/EnemyBomber/enemyBomber.obj";
-	_allAssets["DomeFossil"] = "Models/Fossils/DomeFossil/domeFossil.obj";
-	_allAssets["HelixFossil"] = "Models/Fossils/HelixFossil/helixFossil.obj";
-	_allAssets["OakTree"] = "Models/OakTree/oakTree.obj";
-	_allAssets["WarpPipe"] = "Models/WarpPipe/WarpPipe.obj";
-	_allAssets["WarpPipeCorner"] = "Models/WarpPipeCorner/WarpPipeCorner.obj";
-	_allAssets["RockPipe"] = "Models/RockPipe/RockPipe.obj";
-	_allAssets["Pipe"] = "Models/Pipe/Pipe.obj";
-	_allAssets["CloudMap"] = "Models/CloudMap/CloudMap.obj";
+		ModelInfo("Models/StrengthBoulder/strengthBoulder.obj");
+	_allAssets["Fuzzy"] = ModelInfo("Models/Fuzzy/fuzzy.obj");
+	_allAssets["Diglett"] = ModelInfo("Models/Diglett/diglett.obj");
+	_allAssets["Lapras"] = ModelInfo("Models/Lapras/lapras.obj");
+	_allAssets["Groudon"] = ModelInfo("Models/Groudon/groudon.obj");
+	_allAssets["RedGhost"] = ModelInfo("Models/RedGhost/redGhost.obj");
+	_allAssets["EnemyBomber"] = ModelInfo("Models/EnemyBomber/enemyBomber.obj");
+	_allAssets["DomeFossil"] =
+		ModelInfo("Models/Fossils/DomeFossil/domeFossil.obj");
+	_allAssets["HelixFossil"] =
+		ModelInfo("Models/Fossils/HelixFossil/helixFossil.obj");
+	_allAssets["OakTree"] = ModelInfo("Models/OakTree/oakTree.obj");
+	_allAssets["WarpPipe"] = ModelInfo("Models/WarpPipe/WarpPipe.obj");
+	_allAssets["WarpPipeCorner"] =
+		ModelInfo("Models/WarpPipeCorner/WarpPipeCorner.obj");
+	_allAssets["RockPipe"] = ModelInfo("Models/RockPipe/RockPipe.obj");
+	_allAssets["Pipe"] = ModelInfo("Models/Pipe/Pipe.obj");
+	_allAssets["CloudMap"] = ModelInfo("Models/CloudMap/CloudMap.obj");
 }
 
 void Bomberman::initAllSounds(void) {
@@ -206,9 +213,9 @@ void Bomberman::_mainMenu(void) {
 								 _scenesNames.begin() + maxPlayableLvlIdx),
 		this);
 	_light = new Light(glm::vec2(-10.0, -10.0), glm::vec3(0.0f), 10.0f);
-	// _entities.push_back(new Entity(glm::vec3(2.0, 0.5, -2.0), glm::vec3(0.0f),
-	// 							   nullptr, "Bomb", "Bomb", "Bomb"));
-	// _entities.back()->scale(glm::vec3(2.5f));
+	// _entities.push_back(new Entity(glm::vec3(2.0, 0.5, -2.0),
+	// glm::vec3(0.0f), 							   nullptr, "Bomb", "Bomb",
+	// "Bomb")); _entities.back()->scale(glm::vec3(2.5f));
 }
 
 void Bomberman::_forest(void) {
@@ -624,7 +631,7 @@ void Bomberman::_createMap(int width, int height,
 								 0.45),
 					border[rand() % border.size()], "Wall", "Wall", _camera));
 			} else if (canPutBlocks && x % 2 == 0 && z % 2 == 0 &&
-										width % 2 == 0 && height % 2 == 0) {
+					   width % 2 == 0 && height % 2 == 0) {
 				_entities.push_back(new Entity(
 					glm::vec3(x, 0.0, z), glm::vec3(0.0f),
 					new Collider(Collider::Rectangle, LayerTag::WallLayer, 0.5,
@@ -632,17 +639,16 @@ void Bomberman::_createMap(int width, int height,
 					undestructibleBlock[rand() % undestructibleBlock.size()],
 					"Wall", "Wall", _camera));
 
-			}
-			else if (canPutBlocks && x % 2 != 0 && z % 2 != 0 &&
-										width % 2 != 0 && height % 2 != 0) {
-			   _entities.push_back(new Entity(
-				   glm::vec3(x, 0.0, z), glm::vec3(0.0f),
-				   new Collider(Collider::Rectangle, LayerTag::WallLayer, 0.5,
-								0.5),
-				   undestructibleBlock[rand() % undestructibleBlock.size()],
-				   "Wall", "Wall", _camera));
+			} else if (canPutBlocks && x % 2 != 0 && z % 2 != 0 &&
+					   width % 2 != 0 && height % 2 != 0) {
+				_entities.push_back(new Entity(
+					glm::vec3(x, 0.0, z), glm::vec3(0.0f),
+					new Collider(Collider::Rectangle, LayerTag::WallLayer, 0.5,
+								 0.5),
+					undestructibleBlock[rand() % undestructibleBlock.size()],
+					"Wall", "Wall", _camera));
 
-		   } else {
+			} else {
 				if (canPutBlocks && rand() % boxRate == 0) {
 					_entities.push_back(new Box(
 						glm::vec3(x, 0, z), _camera,

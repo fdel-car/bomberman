@@ -135,7 +135,7 @@ void GameRenderer::_initShader(void) {
 	_skyboxShaderProgram->setInt("skybox", 2);
 }
 
-void GameRenderer::loadAssets(std::map<std::string, std::string> resources) {
+void GameRenderer::loadAssets(std::map<std::string, ModelInfo> resources) {
 	// Find old models that are no longer needed
 	for (auto &elem : _models) {
 		if (resources.find(elem.first) == resources.end()) {
@@ -146,10 +146,10 @@ void GameRenderer::loadAssets(std::map<std::string, std::string> resources) {
 	// Add new
 	for (auto resource : resources) {
 		if (_models.find(resource.first) == _models.end()) {
-			_models[resource.first] = new Model(resource.second);
-			if (resource.first == "Player") {
-				_models["Player"]->addAnimation("Animations/Hero/run.dae",
-												"Run");
+			_models[resource.first] = new Model(resource.second.modelPath);
+			for (auto animInfo : resource.second.animMap) {
+				_models[resource.first]->addAnimation(animInfo.first,
+													  animInfo.second);
 			}
 		}
 	}
