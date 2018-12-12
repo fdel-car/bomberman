@@ -228,10 +228,8 @@ void GameRenderer::refreshWindow(std::vector<Entity *> &entities,
 	bool wallIsDraw = false;
 	for (auto entity : entities) {
 		if (!entity->doShowModel()) continue;
-
 		_shaderProgram->setMat4("M", entity->getModelMatrix());
 		Model *model = entity->getModel();
-
 		if (model && entity->getTag().compare("Wall") != 0) {
 			model->draw(*_shaderProgram, std::vector<glm::vec3>(),
 						entity->getColor());
@@ -239,13 +237,10 @@ void GameRenderer::refreshWindow(std::vector<Entity *> &entities,
 			model->draw(*_shaderProgram, std::vector<glm::vec3>(),
 						entity->getColor());
 		} else if (wallIsDraw == false) {
+			// std::cout << "enter Instance" << std::endl;
 			model->draw(*_shaderProgram, transforms, entity->getColor());
 			wallIsDraw = true;
 		}
-
-		// if (model)
-		// 	model->draw(*_shaderProgram, std::vector<glm::vec3>(),
-		// 				entity->getColor());
 	}
 
 	if (skybox != nullptr) {

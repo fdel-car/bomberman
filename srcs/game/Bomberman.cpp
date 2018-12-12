@@ -397,14 +397,12 @@ void Bomberman::_mario(void) {
 			new Collider(Collider::Rectangle, LayerTag::WallLayer, 0.5, 0.5),
 			"WarpPipe", "Wall", "Wall", _camera));
 		_entities.back()->rotateY(90);
-		// _transforms.push_back(glm::vec3(i, 0.0, -6.0));
 		protectedCase.push_back(std::tuple<int, int>(i, 6.0));
 		_entities.push_back(new Entity(
 			glm::vec3(i, 0.0, 6.0), glm::vec3(0.0f),
 			new Collider(Collider::Rectangle, LayerTag::WallLayer, 0.5, 0.5),
 			"WarpPipe", "Wall", "Wall", _camera));
 		_entities.back()->rotateY(90);
-		// _transforms.push_back(glm::vec3(i, 0.0, 6.0));
 	}
 
 	_entities.push_back(new Entity(glm::vec3(0.0f), glm::vec3(0.0f), nullptr,
@@ -621,6 +619,7 @@ void Bomberman::_createMap(int width, int height,
 						   std::vector<std::string> destructibleBlock,
 						   std::vector<std::string> enemies,
 						   bool needInstance) {
+	(void)needInstance;
 	for (int x = -width; x <= width; x++) {
 		for (int z = -height; z <= height; z++) {
 			bool canPutBlocks = true;
@@ -644,6 +643,7 @@ void Bomberman::_createMap(int width, int height,
 								 0.5),
 					undestructibleBlock[rand() % undestructibleBlock.size()],
 					"Wall", "Wall", _camera));
+				if (needInstance) _transforms.push_back(glm::vec3(x, 0.0, z));
 
 			} else if (canPutBlocks && x % 2 != 0 && z % 2 != 0 &&
 					   width % 2 != 0 && height % 2 != 0) {
