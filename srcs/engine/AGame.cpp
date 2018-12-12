@@ -1,5 +1,15 @@
 #include "engine/AGame.hpp"
 
+ModelInfo::ModelInfo(void)
+	: modelPath(""), animMap(std::map<std::string, std::string>()) {}
+
+ModelInfo::ModelInfo(std::string modelPath)
+	: modelPath(modelPath), animMap(std::map<std::string, std::string>()) {}
+
+ModelInfo::ModelInfo(std::string modelPath,
+					 std::map<std::string, std::string> animMap)
+	: modelPath(modelPath), animMap(animMap) {}
+
 AGame::AGame(size_t enumSize)
 	: _spawnableEntities(std::vector<Entity *>()),
 	  _entities(std::vector<Entity *>()),
@@ -11,7 +21,7 @@ AGame::AGame(size_t enumSize)
 	  _loadingLight(nullptr),
 	  _loadingSkybox(nullptr),
 	  _neededFonts(std::vector<std::tuple<float, std::string, std::string>>()),
-	  _allAssets(std::map<std::string, std::string>()),
+	  _allAssets(std::map<std::string, ModelInfo>()),
 	  _neededAssets(std::set<std::string>()),
 	  _allSounds(std::map<std::string, std::string>()),
 	  _neededSounds(std::set<std::string>()),
@@ -107,8 +117,8 @@ void AGame::setAudioManager(AudioManager *audioManager) {
 }
 
 void AGame::loadAssets(void) {
-	std::map<std::string, std::string> neededAssets;
-	std::map<std::string, std::string>::iterator it;
+	std::map<std::string, ModelInfo> neededAssets;
+	std::map<std::string, ModelInfo>::iterator it;
 
 	for (auto assetName : _neededAssets) {
 		// Skip if already added
