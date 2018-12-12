@@ -4,11 +4,10 @@
 
 class Mario : public SceneTools {
    public:
-	Mario(glm::vec3 const &pos, glm::vec3 const &eulerAngles,
-			Bomberman *bomberman);
+	Mario(WorldLocation &dialogueLocation, WorldLocation &gameplayLocation,
+		  float transitionTime, Bomberman *bomberman);
 	virtual ~Mario(void);
 
-	virtual void drawGUI(GUI *graphicUI);
 	virtual void configGUI(GUI *graphicUI);
 	virtual void configAI(void);
 	virtual void tellPosition(Entity *entity);

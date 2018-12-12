@@ -4,11 +4,10 @@
 
 class Pokemon : public SceneTools {
    public:
-	Pokemon(glm::vec3 const &pos, glm::vec3 const &eulerAngles,
-			Bomberman *bomberman);
+	Pokemon(WorldLocation &dialogueLocation, WorldLocation &gameplayLocation,
+			float transitionTime, Bomberman *bomberman);
 	virtual ~Pokemon(void);
 
-	virtual void drawGUI(GUI *graphicUI);
 	virtual void configGUI(GUI *graphicUI);
 	virtual void configAI(void);
 	virtual void tellPosition(Entity *entity);

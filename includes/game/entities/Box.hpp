@@ -5,7 +5,7 @@
 class Box : public Damageable {
    public:
 	Box(glm::vec3 position, Entity *gameManager, std::string modelName,
-		int perkProb = 25, Entity *toSpawn = nullptr);
+		int perkProb = 33, Entity *toSpawn = nullptr);
 	virtual ~Box(void);
 
 	virtual void update(void);

@@ -147,6 +147,9 @@ void GameRenderer::loadAssets(std::map<std::string, std::string> resources) {
 	for (auto resource : resources) {
 		if (_models.find(resource.first) == _models.end()) {
 			_models[resource.first] = new Model(resource.second);
+			if (resource.first == "Player") {
+				std::cout << "Player found" << std::endl;
+			}
 		}
 	}
 }
@@ -187,7 +190,8 @@ void GameRenderer::refreshWindow(std::vector<Entity *> &entities,
 	for (auto entity : entities) {
 		Model *model = entity->getModel();
 		if (model && model->isRigged() && entity->shouldBeAnimated)
-			model->updateBoneTransforms(&entity->currentAnimTime);
+			model->updateBoneTransforms(&entity->currentAnimTime,
+										_gameEngine->getDeltaTime());
 	}
 
 	_lightSpaceMatrix = light->getProjectionMatrix() * light->getViewMatrix();

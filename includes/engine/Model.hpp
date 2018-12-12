@@ -14,7 +14,7 @@ class Model final {
 			  std::vector<glm::vec3> transform = std::vector<glm::vec3>(),
 			  glm::vec3 const &color = glm::vec3(-1.0f));
 	Joint *findJointByName(std::string const &name);
-	void updateBoneTransforms(double *animTime);
+	void updateBoneTransforms(double *animTime, float deltaTime);
 	bool isRigged(void) const;
 
    private:

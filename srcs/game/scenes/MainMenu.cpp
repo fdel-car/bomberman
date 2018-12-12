@@ -6,9 +6,9 @@ extern std::string _assetsDir;
 
 bool MainMenu::FIRST_LOAD = true;
 
-MainMenu::MainMenu(glm::vec3 const &pos, glm::vec3 const &eulerAngles,
+MainMenu::MainMenu(WorldLocation &startLocation,
 				   std::vector<std::string> levelsName, Bomberman *bomberman)
-	: SceneTools(0, 0, pos, eulerAngles, bomberman,
+	: SceneTools(0, 0, startLocation, bomberman,
 				 bomberman->getStartLevelName()),
 	  _levelsName(levelsName) {
 	_neededImages.push_back(std::tuple<std::string, std::string>(
