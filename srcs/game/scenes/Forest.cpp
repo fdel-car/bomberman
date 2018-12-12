@@ -38,14 +38,27 @@ void Forest::configGUI(GUI *graphicUI) {
 	activeStyle = defaultStyle;
 	_refreshAI = false;
 	if (true) {
-		std::string str =
-			"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do "
-			"officia deserunt mollit anim id est laborum.";
-
-		_buildNewDialogue(0, 0, 0, "Bomberman", "heart", str, false, 1000, 1000,
-						  NK_TEXT_LEFT, "20_BOMBERMAN", "24_BOMBERMAN");
-		_buildNewDialogue(0, 0, 0, "Bomberman", "heart", str, true, 1000, 1000,
-						  NK_TEXT_LEFT, "20_BOMBERMAN", "24_BOMBERMAN");
+		std::string str = "Wow, my head is hurting...";
+		_buildNewDialogue(0, 0, 0, "Bomberman", "BomberWhite", str, false, 1000, 1000,
+				  			NK_TEXT_LEFT, "20_BOMBERMAN", "24_BOMBERMAN");
+		str = "What happened ? Where am i ?";
+		_buildNewDialogue(0, 0, 0, "Bomberman", "BomberWhite", str, false, 1000, 1000,
+				  			NK_TEXT_LEFT, "20_BOMBERMAN", "24_BOMBERMAN");
+		str = "You was in a party and you tried LSD for the first time. And now you are in a dream, dying from an overdose.";
+		_buildNewDialogue(0, 0, 0, "Bomberman", "BomberBlack", str, true, 1000, 1000,
+				  			NK_TEXT_LEFT, "20_BOMBERMAN", "24_BOMBERMAN");
+		str = "Who is talking ? WHAT i'm DEAD ????";
+		_buildNewDialogue(0, 0, 0, "Bomberman", "BomberWhite", str, false, 1000, 1000,
+				  			NK_TEXT_LEFT, "20_BOMBERMAN", "24_BOMBERMAN");
+		str = "I'm your subconscious... No you're not. I'm here for helping you. If you want to survive you have to listen me. You have to find a portal in the wooden boxes. But care about the Fuzzy, they hurt.";
+		_buildNewDialogue(0, 0, 0, "Bomberman", "BomberBlack", str, true, 1000, 1000,
+				  			NK_TEXT_LEFT, "20_BOMBERMAN", "24_BOMBERMAN");
+		str = "Ok ok but how am i supposed to destroy the wooden boxes ? And what is a Fuzzy ?";
+		_buildNewDialogue(0, 0, 0, "Bomberman", "BomberWhite", str, false, 1000, 1000,
+				  			NK_TEXT_LEFT, "20_BOMBERMAN", "24_BOMBERMAN");
+		str = "For the boxes use your brain and your bombs... And for the Fuzzy they are little hairballs, just don't touch them. You should hurry. We don't have time to talk.";
+		_buildNewDialogue(0, 0, 0, "Bomberman", "BomberBlack", str, true, 1000, 1000,
+				  			NK_TEXT_LEFT, "20_BOMBERMAN", "24_BOMBERMAN");
 	}
 }
 

@@ -25,6 +25,10 @@ MainMenu::MainMenu(WorldLocation &startLocation,
 		(_assetsDir + "GUI/Icons/Mario.png"), "Mario"));
 	_neededImages.push_back(std::tuple<std::string, std::string>(
 		(_assetsDir + "GUI/Icons/Forest.png"), "Forest"));
+	_neededImages.push_back(std::tuple<std::string, std::string>(
+		(_assetsDir + "GUI/Icons/BombermanWhite.png"), "BomberWhite"));
+	_neededImages.push_back(std::tuple<std::string, std::string>(
+		(_assetsDir + "GUI/Icons/BombermanBlack.png"), "BomberBlack"));
 
 	_updateVarsFromSave();
 

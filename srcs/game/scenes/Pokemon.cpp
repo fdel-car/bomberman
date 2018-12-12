@@ -36,15 +36,28 @@ void Pokemon::configGUI(GUI *graphicUI) {
 	graphicUI->setStyle(defaultStyle);
 	activeStyle = defaultStyle;
 	_refreshAI = false;
-	if (false) {
-		std::string str =
-			"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do "
-			"officia deserunt mollit anim id est laborum.";
-
-		_buildNewDialogue(0, 0, 0, "Bomberman", "heart", str, false, 1000, 1000,
-						  NK_TEXT_LEFT, "20_BOMBERMAN", "24_BOMBERMAN");
-		_buildNewDialogue(0, 0, 0, "Bomberman", "heart", str, true, 1000, 1000,
-						  NK_TEXT_LEFT, "20_BOMBERMAN", "24_BOMBERMAN");
+	if (true) {
+		std::string str = "Oh...";
+		_buildNewDialogue(0, 0, 0, "Bomberman", "BomberBlack", str, true, 1000, 1000,
+				  			NK_TEXT_LEFT, "20_BOMBERMAN", "24_BOMBERMAN");
+		str = "Wow, i love pokemon !!!! But i prefer Kyogre.";
+		_buildNewDialogue(0, 0, 0, "Bomberman", "BomberWhite", str, false, 1000, 1000,
+				  			NK_TEXT_LEFT, "20_BOMBERMAN", "24_BOMBERMAN");
+		str = "Maybe but for now you have to catch the digglet...";
+		_buildNewDialogue(0, 0, 0, "Bomberman", "BomberBlack", str, true, 1000, 1000,
+				  			NK_TEXT_LEFT, "20_BOMBERMAN", "24_BOMBERMAN");
+		str = "Why ? The portal isn't in a fossil ?";
+		_buildNewDialogue(0, 0, 0, "Bomberman", "BomberWhite", str, false, 1000, 1000,
+				  			NK_TEXT_LEFT, "20_BOMBERMAN", "24_BOMBERMAN");
+		str = "That's the problem, the digglet stole the portal and now you have to kill him for survive... And he run really fast.";
+		_buildNewDialogue(0, 0, 0, "Bomberman", "BomberBlack", str, true, 1000, 1000,
+				  			NK_TEXT_LEFT, "20_BOMBERMAN", "24_BOMBERMAN");
+		str = "Don't worry i'm gonna blow him like terrorist with a girl sch...";
+		_buildNewDialogue(0, 0, 0, "Bomberman", "BomberWhite", str, false, 1000, 1000,
+				  			NK_TEXT_LEFT, "20_BOMBERMAN", "24_BOMBERMAN");
+		str = "Don't make jokes with this and stop losing your time.";
+		_buildNewDialogue(0, 0, 0, "Bomberman", "BomberBlack", str, true, 1000, 1000,
+				  			NK_TEXT_LEFT, "20_BOMBERMAN", "24_BOMBERMAN");
 	}
 }
 
