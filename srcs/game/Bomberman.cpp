@@ -206,9 +206,9 @@ void Bomberman::_mainMenu(void) {
 								 _scenesNames.begin() + maxPlayableLvlIdx),
 		this);
 	_light = new Light(glm::vec2(-10.0, -10.0), glm::vec3(0.0f), 10.0f);
-	_entities.push_back(new Entity(glm::vec3(2.0, 0.5, -2.0), glm::vec3(0.0f),
-								   nullptr, "Bomb", "Bomb", "Bomb"));
-	_entities.back()->scale(glm::vec3(2.5f));
+	// _entities.push_back(new Entity(glm::vec3(2.0, 0.5, -2.0), glm::vec3(0.0f),
+	// 							   nullptr, "Bomb", "Bomb", "Bomb"));
+	// _entities.back()->scale(glm::vec3(2.5f));
 }
 
 void Bomberman::_forest(void) {
@@ -268,8 +268,8 @@ void Bomberman::_forest(void) {
 
 void Bomberman::_pokemon(void) {
 	_skybox = new Skybox("Default");
-	WorldLocation dialogueLocation(glm::vec3(-14.5, 20.0, -3.0),
-								   glm::vec3(-60.0, 0.0, 0.0));
+	WorldLocation dialogueLocation(glm::vec3(15.5, 13.5, 33.0),
+								   glm::vec3(-16.0, 24.1, 0.0));
 	WorldLocation gameplayLocation(glm::vec3(-4, 20, 20),
 								   glm::vec3(-60.0, 0.0, 0.0));
 	_camera = new Pokemon(dialogueLocation, gameplayLocation, 3.0f, this);
@@ -338,9 +338,8 @@ void Bomberman::_pokemon(void) {
 
 void Bomberman::_mario(void) {
 	_skybox = new Skybox("Default");
-
-	WorldLocation dialogueLocation(glm::vec3(-14.5, 20.0, -3.0),
-								   glm::vec3(-60.0, 0.0, 0.0));
+	WorldLocation dialogueLocation(glm::vec3(28.5, 15.8, 22.0),
+								   glm::vec3(-32.0, 37.6, 0.0));
 	WorldLocation gameplayLocation(glm::vec3(-16, 20.0, 11.0),
 								   glm::vec3(-60.0, 0.0, 0.0));
 	_camera = new Mario(dialogueLocation, gameplayLocation, 3.0f, this);
@@ -453,9 +452,9 @@ void Bomberman::_mario(void) {
 }
 
 void Bomberman::_space(void) {
-	_skybox = new Skybox("BlueSpace");
-	WorldLocation dialogueLocation(glm::vec3(-14.5, 20.0, -3.0),
-								   glm::vec3(-60.0, 0.0, 0.0));
+	_skybox = new Skybox("CyanSpace");
+	WorldLocation dialogueLocation(glm::vec3(18.0, 7.0, 26.3),
+								   glm::vec3(-4.5, 24.3, 0.0));
 	WorldLocation gameplayLocation(glm::vec3(-10, 20.0, 6.0),
 								   glm::vec3(-60.0, 0.0, 0.0));
 	_camera = new Space(dialogueLocation, gameplayLocation, 3.0f, this);
@@ -624,7 +623,8 @@ void Bomberman::_createMap(int width, int height,
 					new Collider(Collider::Rectangle, LayerTag::WallLayer, 0.45,
 								 0.45),
 					border[rand() % border.size()], "Wall", "Wall", _camera));
-			} else if (canPutBlocks && x % 2 == 0 && z % 2 == 0) {
+			} else if (canPutBlocks && x % 2 == 0 && z % 2 == 0 &&
+										width % 2 == 0 && height % 2 == 0) {
 				_entities.push_back(new Entity(
 					glm::vec3(x, 0.0, z), glm::vec3(0.0f),
 					new Collider(Collider::Rectangle, LayerTag::WallLayer, 0.5,
@@ -632,7 +632,17 @@ void Bomberman::_createMap(int width, int height,
 					undestructibleBlock[rand() % undestructibleBlock.size()],
 					"Wall", "Wall", _camera));
 
-			} else {
+			}
+			else if (canPutBlocks && x % 2 != 0 && z % 2 != 0 &&
+										width % 2 != 0 && height % 2 != 0) {
+			   _entities.push_back(new Entity(
+				   glm::vec3(x, 0.0, z), glm::vec3(0.0f),
+				   new Collider(Collider::Rectangle, LayerTag::WallLayer, 0.5,
+								0.5),
+				   undestructibleBlock[rand() % undestructibleBlock.size()],
+				   "Wall", "Wall", _camera));
+
+		   } else {
 				if (canPutBlocks && rand() % boxRate == 0) {
 					_entities.push_back(new Box(
 						glm::vec3(x, 0, z), _camera,

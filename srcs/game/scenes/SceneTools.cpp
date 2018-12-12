@@ -385,8 +385,9 @@ bool SceneTools::_btnHover(GUI *graphicUI, int rectWidth, int rectHeight,
 	xRectPos -= *extraSize / 2;
 	yRectPos -= *extraSize / 2;
 	fontName = std::to_string(fontSize + *extraSize) + fontName;
+	std::string id = btnName + fontName;
 	if (graphicUI->uiStartBlock(
-			btnName.c_str(), "",
+			id.c_str(), "",
 			nk_rect(xRectPos, yRectPos, rectWidth, rectHeight),
 			NK_WINDOW_NO_SCROLLBAR)) {
 		if (graphicUI->uiHover()) {
