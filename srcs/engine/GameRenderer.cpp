@@ -135,7 +135,7 @@ void GameRenderer::_initShader(void) {
 	_skyboxShaderProgram->setInt("skybox", 2);
 }
 
-void GameRenderer::loadAssets(std::map<std::string, std::string> resources) {
+void GameRenderer::loadAssets(std::map<std::string, ModelInfo> resources) {
 	// Find old models that are no longer needed
 	for (auto &elem : _models) {
 		if (resources.find(elem.first) == resources.end()) {
@@ -146,9 +146,10 @@ void GameRenderer::loadAssets(std::map<std::string, std::string> resources) {
 	// Add new
 	for (auto resource : resources) {
 		if (_models.find(resource.first) == _models.end()) {
-			_models[resource.first] = new Model(resource.second);
-			if (resource.first == "Player") {
-				std::cout << "Player found" << std::endl;
+			_models[resource.first] = new Model(resource.second.modelPath);
+			for (auto animInfo : resource.second.animMap) {
+				_models[resource.first]->addAnimation(animInfo.first,
+													  animInfo.second);
 			}
 		}
 	}
@@ -189,8 +190,10 @@ void GameRenderer::refreshWindow(std::vector<Entity *> &entities,
 	for (auto entity : entities) {
 		Model *model = entity->getModel();
 		if (model && model->isRigged() && entity->shouldBeAnimated)
-			model->updateBoneTransforms(&entity->currentAnimTime,
-										_gameEngine->getDeltaTime());
+			model->updateBoneTransforms(
+				&entity->currentAnimTime, entity->currentAnimName,
+				entity->loopAnim, _gameEngine->getDeltaTime(),
+				entity->currentAnimSpeed);
 	}
 
 	_lightSpaceMatrix = light->getProjectionMatrix() * light->getViewMatrix();

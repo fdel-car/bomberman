@@ -20,22 +20,19 @@ Model::Model(std::string const &modelPath)
 	_buildSkeletonHierarchy(scene->mRootNode);
 	if (scene->HasAnimations()) {
 		_animated = true;
-		std::cout << "Anim count:" << scene->mNumAnimations << std::endl;
-		// Only support one animation for now
+		// Load first animation only...
 		for (size_t i = 0; i < 1 /*scene->mNumAnimations*/; i++) {
 			aiAnimation *anim = scene->mAnimations[i];
-			std::cout << anim->mName.C_Str() << std::endl;
-			_animLength = anim->mDuration;
-			std::cout << _animLength << std::endl;
+			_animLengths["Idle"] = anim->mDuration;
 			for (size_t j = 0; j < anim->mNumChannels; j++) {
 				aiNodeAnim *nodeAnim = anim->mChannels[j];
 				Joint *joint = findJointByName(nodeAnim->mNodeName.C_Str());
 				if (joint != nullptr) {
-					joint->setPositionKeys(nodeAnim->mPositionKeys,
+					joint->setPositionKeys("Idle", nodeAnim->mPositionKeys,
 										   nodeAnim->mNumPositionKeys);
-					joint->setRotationKeys(nodeAnim->mRotationKeys,
+					joint->setRotationKeys("Idle", nodeAnim->mRotationKeys,
 										   nodeAnim->mNumRotationKeys);
-					joint->setScalingKeys(nodeAnim->mScalingKeys,
+					joint->setScalingKeys("Idle", nodeAnim->mScalingKeys,
 										  nodeAnim->mNumScalingKeys);
 				}
 			}
@@ -54,14 +51,26 @@ void Model::_buildSkeletonHierarchy(aiNode *rootNode) {
 		Joint *parent = findJointByName(node->mParent->mName.C_Str());
 		joint->parent = parent;
 	}
-	updateBoneTransforms(nullptr, 0.0f);
+	for (auto joint : _joints) joint->updateFinalTransform();
 }
 
-void Model::updateBoneTransforms(double *animTime, float deltaTime) {
+void Model::updateBoneTransforms(double *animTime, std::string &animName,
+								 bool loop, float deltaTime, float speed) {
 	if (_animated) {
-		*animTime += deltaTime;
-		if (*animTime + EPSILON >= _animLength) *animTime = 0.0;
-		for (auto joint : _joints) joint->applyAnimationTransform(*animTime);
+		double tmp = *animTime + deltaTime * speed;
+		if (tmp + EPSILON >= _animLengths[animName]) {
+			if (loop) *animTime = 0.0;
+		} else
+			*animTime = tmp;
+		if (_animLengths.find(animName) == _animLengths.end()) {
+			std::cerr << "\033[0;33m:Warning:\033[0m " << animName
+					  << " not found inside the animations map. Replaced by "
+						 "the default one 'Idle'."
+					  << std::endl;
+			animName = "Idle";
+		}
+		for (auto joint : _joints)
+			joint->applyAnimationTransform(*animTime, animName);
 	}
 	for (auto joint : _joints) joint->updateFinalTransform();
 }
@@ -226,6 +235,38 @@ void Model::draw(ShaderProgram const &shaderProgram,
 
 	for (const auto mesh : _meshes) {
 		if (mesh != nullptr) mesh->draw(shaderProgram, color, transform);
+	}
+}
+
+void Model::addAnimation(std::string const &animName,
+						 std::string const &animPath) {
+	Assimp::Importer importer;
+	const aiScene *scene =
+		importer.ReadFile(_assetsDir + animPath, aiProcess_LimitBoneWeights);
+	if (!scene || !scene->mRootNode) {
+		std::cerr << "\033[0;31m:Error:Assimp:\033[0m "
+				  << importer.GetErrorString() << std::endl;
+		return;
+	}
+	if (scene->HasAnimations()) {
+		_animated = true;
+		// Only support one animation for now
+		for (size_t i = 0; i < 1 /*scene->mNumAnimations*/; i++) {
+			aiAnimation *anim = scene->mAnimations[i];
+			_animLengths[animName] = anim->mDuration;
+			for (size_t j = 0; j < anim->mNumChannels; j++) {
+				aiNodeAnim *nodeAnim = anim->mChannels[j];
+				Joint *joint = findJointByName(nodeAnim->mNodeName.C_Str());
+				if (joint != nullptr) {
+					joint->setPositionKeys(animName, nodeAnim->mPositionKeys,
+										   nodeAnim->mNumPositionKeys);
+					joint->setRotationKeys(animName, nodeAnim->mRotationKeys,
+										   nodeAnim->mNumRotationKeys);
+					joint->setScalingKeys(animName, nodeAnim->mScalingKeys,
+										  nodeAnim->mNumScalingKeys);
+				}
+			}
+		}
 	}
 }
 

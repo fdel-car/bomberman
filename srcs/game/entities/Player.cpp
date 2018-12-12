@@ -24,6 +24,7 @@ Player::Player(glm::vec3 position, glm::vec3 eulerAngles, Save &save,
 
 	_neededSounds.insert("defeat_effect");
 	_neededSounds.insert("defeat_voice");
+	shouldBeAnimated = true;
 
 	Damageable::setFlickering(0.1f, 0.3f);
 }
@@ -81,7 +82,8 @@ void Player::update(void) {
 
 	if (glm::epsilonNotEqual(xDirection, 0.0f, EPSILON) ||
 		glm::epsilonNotEqual(zDirection, 0.0f, EPSILON)) {
-		shouldBeAnimated = true;
+		currentAnimName = "Run";
+		currentAnimSpeed = _speed / 6.0f;
 		float angle;
 		if (xDirection < 0)
 			angle = 360.0f - glm::degrees(atan2(xDirection, zDirection) * -1);
@@ -89,8 +91,10 @@ void Player::update(void) {
 			angle = glm::degrees(atan2(xDirection, zDirection));
 		rotateY(angle - _rotationAngle);
 		_rotationAngle = angle;
-	} else
-		shouldBeAnimated = false;
+	} else {
+		currentAnimName = "Idle";
+		currentAnimSpeed = 1.0f;
+	}
 
 	_targetMovement.x = xDirection * _speed * deltaTime;
 	_targetMovement.z = zDirection * _speed * deltaTime;

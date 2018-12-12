@@ -10,6 +10,16 @@
 
 #include <atomic>
 
+struct ModelInfo {
+	std::string modelPath;
+	std::map<std::string, std::string> animMap;
+
+	ModelInfo(void);
+	ModelInfo(std::string modelPath);
+	ModelInfo(std::string modelPath,
+			  std::map<std::string, std::string> animMap);
+};
+
 class AGame {
    public:
 	AGame(size_t enumSize);
@@ -65,7 +75,7 @@ class AGame {
 	Skybox *_loadingSkybox;
 
 	std::vector<std::tuple<float, std::string, std::string>> _neededFonts;
-	std::map<std::string, std::string> _allAssets;  // keyword -> path
+	std::map<std::string, ModelInfo> _allAssets;
 	std::set<std::string> _neededAssets;
 	std::map<std::string, std::string> _allSounds;  // keyword -> path
 	std::set<std::string> _neededSounds;

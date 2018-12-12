@@ -18,6 +18,8 @@ class Entity;
 
 class AGame;
 
+struct ModelInfo;
+
 class GameRenderer final {
    public:
 	GameRenderer(GameEngine *gameEngine, AGame *game);
@@ -29,7 +31,7 @@ class GameRenderer final {
 					   Light *light, Skybox *skybox,
 					   std::vector<glm::vec3> transforms);
 	void setNewResolution(bool isFullScreen, int width, int height);
-	void loadAssets(std::map<std::string, std::string> assets);
+	void loadAssets(std::map<std::string, ModelInfo> assets);
 	void initModelsMeshes(void);
 
 	Model *getModel(std::string modelName) const;
