@@ -20,6 +20,12 @@ struct ScalingKey {
 	glm::vec3 scaling;
 };
 
+struct Animation {
+	std::vector<PositionKey> positionKeys;
+	std::vector<RotationKey> rotationKeys;
+	std::vector<ScalingKey> scalingKeys;
+};
+
 class Joint {
    public:
 	Joint(std::string const &name, glm::mat4 const &offsetMatrix, int index);
@@ -33,19 +39,18 @@ class Joint {
 	glm::mat4 localTransform;
 	glm::mat4 finalTransform;
 
-	// Animation
-	std::vector<PositionKey> _positionKeys;
-	std::vector<RotationKey> _rotationKeys;
-	std::vector<ScalingKey> _scalingKeys;
-
-	void applyAnimationTransform(double currentAnimTime);
+	void applyAnimationTransform(double animTime, std::string const &animName);
 	void updateFinalTransform(void);
-	void setPositionKeys(aiVectorKey *positionKeys, size_t nbr);
-	void setRotationKeys(aiQuatKey *rotationKeys, size_t nbr);
-	void setScalingKeys(aiVectorKey *scalingKeys, size_t nbr);
+	void setPositionKeys(std::string const &animName, aiVectorKey *positionKeys,
+						 size_t nbr);
+	void setRotationKeys(std::string const &animName, aiQuatKey *rotationKeys,
+						 size_t nbr);
+	void setScalingKeys(std::string const &animName, aiVectorKey *scalingKeys,
+						size_t nbr);
 
    private:
 	static glm::mat4 _toYAxisUp;
+	std::map<std::string, Animation> _animations;
 
 	Joint(void);
 	Joint(Joint const &src);

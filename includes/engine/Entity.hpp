@@ -16,8 +16,12 @@ class Entity {
 		   Entity *sceneManager = nullptr);
 	virtual ~Entity(void);
 
+	// Animation related
 	double currentAnimTime = 0.0;
+	std::string currentAnimName = "Idle";
+	bool loopAnim = true;
 	bool shouldBeAnimated = false;
+	float currentAnimSpeed = 1.0f;
 
 	GameEngine *getGameEngine(void) const;
 	const glm::vec3 &getPosition(void) const;

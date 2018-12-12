@@ -148,7 +148,8 @@ void GameRenderer::loadAssets(std::map<std::string, std::string> resources) {
 		if (_models.find(resource.first) == _models.end()) {
 			_models[resource.first] = new Model(resource.second);
 			if (resource.first == "Player") {
-				std::cout << "Player found" << std::endl;
+				_models["Player"]->addAnimation("Animations/Hero/run.dae",
+												"Run");
 			}
 		}
 	}
@@ -188,8 +189,10 @@ void GameRenderer::refreshWindow(std::vector<Entity *> &entities,
 	for (auto entity : entities) {
 		Model *model = entity->getModel();
 		if (model && model->isRigged() && entity->shouldBeAnimated)
-			model->updateBoneTransforms(&entity->currentAnimTime,
-										_gameEngine->getDeltaTime());
+			model->updateBoneTransforms(
+				&entity->currentAnimTime, entity->currentAnimName,
+				entity->loopAnim, _gameEngine->getDeltaTime(),
+				entity->currentAnimSpeed);
 	}
 
 	_lightSpaceMatrix = light->getProjectionMatrix() * light->getViewMatrix();
