@@ -102,8 +102,9 @@ void Bomberman::loadSceneByIndex(int sceneIdx, std::atomic_int *_sceneState,
 }
 
 void Bomberman::initLoadScene() {
-	_loadingCamera =
-		new Load(glm::vec3(-5.35, 20.0, 6.0), glm::vec3(-60.0, 0.0, 0.0), this);
+	WorldLocation startLocation(glm::vec3(-5.35, 20.0, 6.0),
+								glm::vec3(-60.0, 0.0, 0.0));
+	_loadingCamera = new Load(startLocation, this);
 	_loadingLight = new Light(glm::vec2(-10.0, -10.0), glm::vec3(0.0f), 10.0f);
 }
 
@@ -197,8 +198,10 @@ void Bomberman::_mainMenu(void) {
 								? lastPlayableLvlIdx + 1
 								: _save.level + 2;
 	}
+	WorldLocation startLocation(glm::vec3(-14.5, 20.0, -3.0),
+								glm::vec3(-60.0, 0.0, 0.0));
 	_camera = new MainMenu(
-		glm::vec3(0.0, 0.0, 10.0), glm::vec3(0.0f),
+		startLocation,
 		std::vector<std::string>(_scenesNames.begin() + firstPlayableLvlIdx,
 								 _scenesNames.begin() + maxPlayableLvlIdx),
 		this);
@@ -210,8 +213,11 @@ void Bomberman::_mainMenu(void) {
 
 void Bomberman::_forest(void) {
 	_skybox = new Skybox("Default");
-	_camera =
-		new Forest(glm::vec3(-4, 20.0, 6.0), glm::vec3(-60.0, 0.0, 0.0), this);
+	WorldLocation dialogueLocation(glm::vec3(23, 11.0, 26),
+								   glm::vec3(-14.0, 37.0, 0.0));
+	WorldLocation gameplayLocation(glm::vec3(-4, 20.0, 6.0),
+								   glm::vec3(-60.0, 0.0, 0.0));
+	_camera = new Forest(dialogueLocation, gameplayLocation, 3.0f, this);
 	_light = new Light(glm::vec2(-20.0, 8.0), glm::vec3(0.0f));
 	_entities.push_back(new Entity(glm::vec3(0.0f), glm::vec3(0.0f), nullptr,
 								   "Island", "Island", "Island"));
@@ -262,8 +268,11 @@ void Bomberman::_forest(void) {
 
 void Bomberman::_pokemon(void) {
 	_skybox = new Skybox("Default");
-	_camera =
-		new Pokemon(glm::vec3(-4, 20, 20), glm::vec3(-60.0, 0.0, 0.0), this);
+	WorldLocation dialogueLocation(glm::vec3(-14.5, 20.0, -3.0),
+								   glm::vec3(-60.0, 0.0, 0.0));
+	WorldLocation gameplayLocation(glm::vec3(-4, 20, 20),
+								   glm::vec3(-60.0, 0.0, 0.0));
+	_camera = new Pokemon(dialogueLocation, gameplayLocation, 3.0f, this);
 	_light = new Light(glm::vec2(-50.0, 20.0), glm::vec3(0.0f));
 	_entities.push_back(new Entity(glm::vec3(0.0f), glm::vec3(0.0f), nullptr,
 								   "Stadium", "Stadium", "Stadium"));
@@ -330,8 +339,11 @@ void Bomberman::_pokemon(void) {
 void Bomberman::_mario(void) {
 	_skybox = new Skybox("Default");
 
-	_camera =
-		new Mario(glm::vec3(-16, 20.0, 11.0), glm::vec3(-60.0, 0.0, 0.0), this);
+	WorldLocation dialogueLocation(glm::vec3(-14.5, 20.0, -3.0),
+								   glm::vec3(-60.0, 0.0, 0.0));
+	WorldLocation gameplayLocation(glm::vec3(-16, 20.0, 11.0),
+								   glm::vec3(-60.0, 0.0, 0.0));
+	_camera = new Mario(dialogueLocation, gameplayLocation, 3.0f, this);
 	_light = new Light(glm::vec2(-20.0, 8.0), glm::vec3(0.0f));
 	_entities.push_back(new Player(glm::vec3(-19.0, 0.0, -5.0), glm::vec3(0.0f),
 								   _save, _camera));
@@ -442,8 +454,11 @@ void Bomberman::_mario(void) {
 
 void Bomberman::_space(void) {
 	_skybox = new Skybox("BlueSpace");
-	_camera =
-		new Space(glm::vec3(-10, 20.0, 6.0), glm::vec3(-60.0, 0.0, 0.0), this);
+	WorldLocation dialogueLocation(glm::vec3(-14.5, 20.0, -3.0),
+								   glm::vec3(-60.0, 0.0, 0.0));
+	WorldLocation gameplayLocation(glm::vec3(-10, 20.0, 6.0),
+								   glm::vec3(-60.0, 0.0, 0.0));
+	_camera = new Space(dialogueLocation, gameplayLocation, 3.0f, this);
 	_light = new Light(glm::vec2(-20.0, 8.0), glm::vec3(0.0f));
 	_entities.push_back(new Entity(glm::vec3(0), glm::vec3(0.0f), nullptr,
 								   "BigMeteor", "BigMeteor", "BigMeteor"));
@@ -566,8 +581,9 @@ void Bomberman::_space(void) {
 
 void Bomberman::_credits(void) {
 	_skybox = new Skybox("BlueSpace");
-	_camera = new Credits(glm::vec3(-14.5, 20.0, -3.0),
-						  glm::vec3(-60.0, 0.0, 0.0), this);
+	WorldLocation startLocation(glm::vec3(-14.5, 20.0, -3.0),
+								glm::vec3(-60.0, 0.0, 0.0));
+	_camera = new Credits(startLocation, this);
 	_light = new Light(glm::vec2(-10.0, -10.0), glm::vec3(0.0f), 10.0f);
 }
 

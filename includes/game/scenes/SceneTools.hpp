@@ -45,12 +45,22 @@ struct Dialogue {
 	std::string fontTitle;
 };
 
+struct WorldLocation {
+	glm::vec3 pos = glm::vec3(0);
+	glm::vec3 rot = glm::vec3(0);
+	WorldLocation(glm::vec3 pos, glm::vec3 rot);
+};
+
 class SceneTools : public Camera {
    public:
-	SceneTools(size_t mapWidth, size_t mapHeight, glm::vec3 const &pos,
-			   glm::vec3 const &eulerAngles, Bomberman *bomberman,
+	SceneTools(size_t mapWidth, size_t mapHeight,
+			   WorldLocation &dialogueLocation, WorldLocation &gameplayLocation,
+			   float transitionTime, Bomberman *bomberman,
 			   std::string ownLvlName = "", std::string nextLvlName = "",
 			   float timer = 181.0f);
+	SceneTools(size_t mapWidth, size_t mapHeight, WorldLocation &startLocation,
+			   Bomberman *bomberman, std::string ownLvlName = "",
+			   std::string nextLvlName = "", float timer = 181.0f);
 	virtual ~SceneTools(void);
 
 	virtual void initEntity(GameEngine *gameEngine);
@@ -81,33 +91,43 @@ class SceneTools : public Camera {
    protected:
 	void _initSoundsForGameplay(void);
 
+	// General tool
+	bool _btnHover(GUI *graphicUI, int rectWidth, int rectHeight, int xRectPos,
+				   int yRectPos, int fontSize, std::string fontName,
+				   int *extraSizePlay, int maxSize, bool *isPlayButtonHover,
+				   std::string btnName, std::string btnImageHover = "",
+				   std::string btnImage = "");
+
+	// Dialogue logic
+	bool _displayMultipleDialogue(GUI *graphicUI);
 	void _displayDialogue(GUI *graphicUI, int *searchWord, int *lastWord,
 						  int *startStrIdx, std::string name,
 						  std::string imgName, std::string text, bool isImgLeft,
 						  size_t maxCharPerLine, int nbrOfLine,
 						  nk_flags textPosition, std::string fontText,
 						  std::string fontTitle);
+	void _buildNewDialogue(int searchWord, int lastWord, int startStrIdx,
+						   std::string name, std::string imgName,
+						   std::string text, bool isImgLeft,
+						   size_t maxCharPerLine, int nbrOfLine,
+						   nk_flags textPosition, std::string fontText,
+						   std::string fontTitle);
+
+	// Transition tool
+	void _doTransition(void);
+
+	// Gameplay tool
+	void _savePositions(Entity *entity);
+
+	// Display during gameplay
+	void _gameplayDisplay(GUI *graphicUI);
 	bool _displayPauseMenu(GUI *graphicUI);
 	void _displayPlayerHP(GUI *graphicUI, size_t hp);
 	void _displayVictoryScreen(GUI *graphicUI);
 	void _displayDeathScreen(GUI *graphicUI);
 	void _displayTimer(GUI *graphicUI, bool isPause);
-	bool _btnHover(GUI *graphicUI, int rectWidth, int rectHeight, int xRectPos,
-				   int yRectPos, int fontSize, std::string fontName,
-				   int *extraSizePlay, int maxSize, bool *isPlayButtonHover,
-				   std::string btnName, std::string btnImageHover = "",
-				   std::string btnImage = "");
-	bool _displayMultipleDialogue(GUI *graphicUI,
-								  std::vector<Dialogue> *dialogues);
-	Dialogue _builNewDialogue(int searchWord, int lastWord, int startStrIdx,
-							  std::string name, std::string imgName,
-							  std::string text, bool isImgLeft,
-							  size_t maxCharPerLine, int nbrOfLine,
-							  nk_flags textPosition, std::string fontText,
-							  std::string fontTitle);
-	void _savePositions(Entity *entity);
 
-	// Build graphe
+	// Build graph
 	void _startBuildingGrapheForPathFinding(void);
 	void _searchWay(bool searchBestWay, Node *originNode, size_t playerPos);
 	void _buildNewNode(size_t dist, size_t x, size_t z, size_t pos, Node *node,
@@ -151,6 +171,13 @@ class SceneTools : public Camera {
 
 	float _xOffset = static_cast<float>(_mapWidth) / 2;
 	float _zOffset = static_cast<float>(_mapHeight) / 2;
+	std::vector<Dialogue> _dialogues = std::vector<Dialogue>();
+	WorldLocation _currentLocation;
+	WorldLocation _dialogueLocation;
+	WorldLocation _gameplayLocation;
+	glm::vec3 _pastRotation;
+	float _transitionTime;
+	float _transitionElapsedTime = 0.0f;
 	std::vector<Node *> nodePool;
 	std::string _ownLvlName;
 	std::string _startLvlName;

@@ -1,10 +1,12 @@
 #include "game/scenes/Space.hpp"
 #include "engine/GameEngine.hpp"
 
-Space::Space(glm::vec3 const &pos, glm::vec3 const &eulerAngles,
+Space::Space(WorldLocation &dialogueLocation, WorldLocation &gameplayLocation,
+			 float transitionTime,
 			 Bomberman *bomberman)
 	:  // Camera(pos, eulerAngles),
-	  SceneTools(29, 21, pos, eulerAngles, bomberman, "Space", "Credits"),
+	  SceneTools(29, 21, dialogueLocation, gameplayLocation, transitionTime,
+				 bomberman, "Space", "Credits"),
 	  _cooldown(0.0f) {
 	configAI();
 	_initSoundsForGameplay();
@@ -30,9 +32,17 @@ void Space::configGUI(GUI *graphicUI) {
 	graphicUI->setStyle(defaultStyle);
 	activeStyle = defaultStyle;
 	_refreshAI = false;
-}
+	if (false) {
+		std::string str =
+			"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do "
+			"officia deserunt mollit anim id est laborum.";
 
-void Space::drawGUI(GUI *graphicUI) { SceneTools::drawGUI(graphicUI); }
+		_buildNewDialogue(0, 0, 0, "Bomberman", "heart", str, false, 1000, 1000,
+						  NK_TEXT_LEFT, "20_BOMBERMAN", "24_BOMBERMAN");
+		_buildNewDialogue(0, 0, 0, "Bomberman", "heart", str, true, 1000, 1000,
+						  NK_TEXT_LEFT, "20_BOMBERMAN", "24_BOMBERMAN");
+	}
+}
 
 void Space::tellPosition(Entity *entity) { _savePositions(entity); }
 

@@ -5,8 +5,7 @@
 
 class Load : public SceneTools {
    public:
-	Load(glm::vec3 const &pos, glm::vec3 const &eulerAngles,
-		 Bomberman *bomberman);
+	Load(WorldLocation &startLocation, Bomberman *bomberman);
 	Load(Load const &src);
 
 	Load &operator=(Load const &rhs);

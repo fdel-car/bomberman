@@ -4,8 +4,8 @@
 
 class MainMenu : public SceneTools {
    public:
-	MainMenu(glm::vec3 const &pos, glm::vec3 const &eulerAngles,
-			 std::vector<std::string> levelsName, Bomberman *bomberman);
+	MainMenu(WorldLocation &startLocation, std::vector<std::string> levelsName,
+			 Bomberman *bomberman);
 	virtual ~MainMenu(void);
 
 	virtual void drawGUI(GUI *graphicUI);

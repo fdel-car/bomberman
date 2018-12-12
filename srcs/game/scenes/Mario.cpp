@@ -1,10 +1,10 @@
 #include "game/scenes/Mario.hpp"
 #include "engine/GameEngine.hpp"
 
-Mario::Mario(glm::vec3 const &pos, glm::vec3 const &eulerAngles,
-			 Bomberman *bomberman)
-	:  // Camera(pos, eulerAngles),
-	  SceneTools(41, 13, pos, eulerAngles, bomberman, "Mario", "Space"),
+Mario::Mario(WorldLocation &dialogueLocation, WorldLocation &gameplayLocation,
+			 float transitionTime, Bomberman *bomberman)
+	: SceneTools(41, 13, dialogueLocation, gameplayLocation, transitionTime,
+				 bomberman, "Mario", "Space"),
 	  _cooldown(0.0f) {
 	configAI();
 	_initSoundsForGameplay();
@@ -34,19 +34,16 @@ void Mario::configGUI(GUI *graphicUI) {
 	graphicUI->setStyle(defaultStyle);
 	activeStyle = defaultStyle;
 	_refreshAI = false;
-}
+	if (false) {
+		std::string str =
+			"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do "
+			"officia deserunt mollit anim id est laborum.";
 
-void Mario::drawGUI(GUI *graphicUI) {
-	SceneTools::drawGUI(graphicUI);
-	// static int searchWord = 0;
-	// static int lastWord = 0;
-	// static int startStrIdx = 0;
-	// std::string str =
-	// 	"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do "
-	// 	"officia deserunt mollit anim id est laborum.";
-	// _displayDialogue(graphicUI, &searchWord, &lastWord, &startStrIdx,
-	// 				 "Bomberman", "heart", str, false, 1000, 1000, NK_TEXT_LEFT,
-	// 				 "12_slider", "18_slider");
+		_buildNewDialogue(0, 0, 0, "Bomberman", "heart", str, false, 1000, 1000,
+						  NK_TEXT_LEFT, "20_BOMBERMAN", "24_BOMBERMAN");
+		_buildNewDialogue(0, 0, 0, "Bomberman", "heart", str, true, 1000, 1000,
+						  NK_TEXT_LEFT, "20_BOMBERMAN", "24_BOMBERMAN");
+	}
 }
 
 void Mario::tellPosition(Entity *entity) { _savePositions(entity); }

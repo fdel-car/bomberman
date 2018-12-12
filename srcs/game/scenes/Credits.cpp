@@ -3,9 +3,8 @@
 
 extern std::string _assetsDir;
 
-Credits::Credits(glm::vec3 const &pos, glm::vec3 const &eulerAngles,
-				 Bomberman *bomberman)
-	: SceneTools(0, 0, pos, eulerAngles, bomberman, "Credits", "MainMenu") {
+Credits::Credits(WorldLocation &startLocation, Bomberman *bomberman)
+	: SceneTools(0, 0, startLocation, bomberman, "Credits", "MainMenu") {
 	_startMusic = _assetsDir + "Audio/Musics/Credits.wav";
 	_neededImages.push_back(std::tuple<std::string, std::string>(
 		(_assetsDir + "GUI/icons/jimmy.png"), "jimmy"));

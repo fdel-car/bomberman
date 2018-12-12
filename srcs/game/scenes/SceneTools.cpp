@@ -7,11 +7,17 @@
 
 extern std::string _assetsDir;
 
-SceneTools::SceneTools(size_t mapWidth, size_t mapHeight, glm::vec3 const &pos,
-					   glm::vec3 const &eulerAngles, Bomberman *bomberman,
-					   std::string ownLvlName, std::string nextLvlName,
-					   float timer)
-	: Camera(pos, eulerAngles),
+WorldLocation::WorldLocation(glm::vec3 pos, glm::vec3 rot) {
+	this->pos = pos;
+	this->rot = rot;
+}
+
+SceneTools::SceneTools(size_t mapWidth, size_t mapHeight,
+					   WorldLocation &dialogueLocation,
+					   WorldLocation &gameplayLocation, float transitionTime,
+					   Bomberman *bomberman, std::string ownLvlName,
+					   std::string nextLvlName, float timer)
+	: Camera(dialogueLocation.pos, dialogueLocation.rot),
 	  _bomberman(bomberman),
 	  _save(bomberman->getSave()),
 	  _slowGUIAnimation(true),
@@ -29,6 +35,11 @@ SceneTools::SceneTools(size_t mapWidth, size_t mapHeight, glm::vec3 const &pos,
 	  _startMusic(""),
 	  _xOffset(static_cast<float>(_mapWidth) / 2.0f),
 	  _zOffset(static_cast<float>(_mapHeight) / 2.0f),
+	  _currentLocation(dialogueLocation),
+	  _dialogueLocation(dialogueLocation),
+	  _gameplayLocation(gameplayLocation),
+	  _pastRotation(dialogueLocation.rot),
+	  _transitionTime(transitionTime),
 	  _ownLvlName(ownLvlName),
 	  _startLvlName(bomberman->getStartLevelName()),
 	  _nextLvlName(nextLvlName),
@@ -38,9 +49,39 @@ SceneTools::SceneTools(size_t mapWidth, size_t mapHeight, glm::vec3 const &pos,
 		(_assetsDir + "GUI/Icons/heart.png"), "heart"));
 	_neededImages.push_back(std::tuple<std::string, std::string>(
 		(_assetsDir + "GUI/Icons/sad_chopper.png"), "sad_chopper"));
-
-	// TODO: music when starting dialogues
 }
+
+SceneTools::SceneTools(size_t mapWidth, size_t mapHeight,
+					   WorldLocation &startLocation, Bomberman *bomberman,
+					   std::string ownLvlName, std::string nextLvlName,
+					   float timer)
+	: Camera(startLocation.pos, startLocation.rot),
+	  _bomberman(bomberman),
+	  _save(bomberman->getSave()),
+	  _slowGUIAnimation(true),
+	  _playerMaxHp(0),
+	  _playerHp(0),
+	  _showPlayerHp(false),
+	  _showVictoryScreen(false),
+	  _showDeathScreen(false),
+	  _mapWidth(mapWidth),
+	  _mapHeight(mapHeight),
+	  _entitiesInSquares(
+		  std::vector<std::map<size_t, Entity *>>(mapWidth * mapHeight)),
+	  _firstPlayerPos(true),
+	  _distanceFromPlayer(glm::vec3(0)),
+	  _startMusic(""),
+	  _xOffset(static_cast<float>(_mapWidth) / 2.0f),
+	  _zOffset(static_cast<float>(_mapHeight) / 2.0f),
+	  _currentLocation(startLocation),
+	  _dialogueLocation(startLocation),
+	  _gameplayLocation(startLocation),
+	  _transitionTime(0.0f),
+	  _ownLvlName(ownLvlName),
+	  _startLvlName(bomberman->getStartLevelName()),
+	  _nextLvlName(nextLvlName),
+	  _timer(timer),
+	  _pauseMenu(false) {}
 
 SceneTools::~SceneTools(void) {
 	for (auto node : _graphe) {
@@ -97,37 +138,14 @@ void SceneTools::initEntity(GameEngine *gameEngine) {
 }
 
 void SceneTools::drawGUI(GUI *graphicUI) {
-	if (!_debugMode &&
-		(_pauseMenu || _gameEngine->isKeyJustPressed(KEY_ESCAPE))) {
-		_pauseMenu = _displayPauseMenu(graphicUI);
-		_isPause = _pauseMenu;
-		if (_isPause && _gameEngine->isKeyJustPressed(KEY_ESCAPE)) {
-			_gameEngine->playSound("pause_start");
-
-		} else if (!_isPause) {
-			_gameEngine->playSound("pause_end");
-		}
-	}
-
-	if (_showPlayerHp) {
-		if (_showVictoryScreen) {
-			_displayVictoryScreen(graphicUI);
-		} else if (_showDeathScreen) {
-			_displayDeathScreen(graphicUI);
-		}
-		_displayPlayerHP(graphicUI, _playerHp);
-	}
-
-	bool timerCanChange = static_cast<int>(_timer) > 0;
-	if (!isPause())
-		_displayTimer(graphicUI, false);
-	else
-		_displayTimer(graphicUI, true);
-	if (timerCanChange && static_cast<int>(_timer) == 0) {
-		_gameEngine->playMusic("");
-		_gameEngine->playSound("time_over_effect");
-		_gameEngine->playSound("time_over_voice");
-		_showDeathScreen = true;
+	if (!_dialogues.empty()) {
+		_isPause = true;
+		if (!_displayMultipleDialogue(graphicUI)) _isPause = false;
+	} else if (_transitionElapsedTime < _transitionTime) {
+		_isPause = true;
+		_doTransition();
+	} else {
+		_gameplayDisplay(graphicUI);
 	}
 }
 
@@ -160,37 +178,6 @@ void SceneTools::updateDebugMode(void) {
 		_gameEngine->getGameRenderer()->switchCursorMode(_debugMode);
 		// TODO: Avoid camera jump if _lastMousePos is too weird.
 	}
-}
-
-void SceneTools::_displayDialogue(GUI *graphicUI, int *searchWord,
-								  int *lastWord, int *startStrIdx,
-								  std::string name, std::string imgName,
-								  std::string str, bool isImgLeft,
-								  size_t maxCharPerLine, int nbrOfLine,
-								  nk_flags textPosition, std::string fontText,
-								  std::string fontTitle) {
-	size_t maxCPL = ((_gameEngine->getGameRenderer()->getWidth() / 4) * 3 -
-					 (((_gameEngine->getGameRenderer()->getHeight() / 4) - 45) -
-					  (_gameEngine->getGameRenderer()->getWidth() / 4)) -
-					 40) /
-					8.5;
-	maxCharPerLine = maxCharPerLine > maxCPL ? maxCPL : maxCharPerLine;
-	int nbrOfLineTmp =
-		(((_gameEngine->getGameRenderer()->getHeight() / 4) - 45) / 22) - 2;
-	nbrOfLine = nbrOfLine > nbrOfLineTmp ? nbrOfLineTmp : nbrOfLine;
-	if (nbrOfLine > 2) nbrOfLine -= 1;
-	if (*searchWord < (int)str.size()) {
-		*searchWord += 1;
-		if (str[*searchWord] == ' ') *lastWord = *searchWord;
-	} else
-		*lastWord = *searchWord;
-	if (*lastWord - *startStrIdx >= (int)maxCharPerLine * nbrOfLine)
-		*startStrIdx += maxCharPerLine;
-	std::string displayableStr =
-		str.substr(*startStrIdx, *lastWord - *startStrIdx);
-	graphicUI->uiDialogBox(name.c_str(), imgName, displayableStr.c_str(),
-						   isImgLeft, maxCharPerLine, nbrOfLine, textPosition,
-						   fontText, fontTitle);
 }
 
 bool SceneTools::_displayPauseMenu(GUI *graphicUI) {
@@ -226,6 +213,41 @@ bool SceneTools::_displayPauseMenu(GUI *graphicUI) {
 	}
 	graphicUI->uiEndBlock();
 	return res;
+}
+
+void SceneTools::_gameplayDisplay(GUI *graphicUI) {
+	if (!_debugMode &&
+		(_pauseMenu || _gameEngine->isKeyJustPressed(KEY_ESCAPE))) {
+		_pauseMenu = _displayPauseMenu(graphicUI);
+		_isPause = _pauseMenu;
+		if (_isPause && _gameEngine->isKeyJustPressed(KEY_ESCAPE)) {
+			_gameEngine->playSound("pause_start");
+
+		} else if (!_isPause) {
+			_gameEngine->playSound("pause_end");
+		}
+	}
+
+	if (_showPlayerHp) {
+		if (_showVictoryScreen) {
+			_displayVictoryScreen(graphicUI);
+		} else if (_showDeathScreen) {
+			_displayDeathScreen(graphicUI);
+		}
+		_displayPlayerHP(graphicUI, _playerHp);
+	}
+
+	bool timerCanChange = static_cast<int>(_timer) > 0;
+	if (!isPause())
+		_displayTimer(graphicUI, false);
+	else
+		_displayTimer(graphicUI, true);
+	if (timerCanChange && static_cast<int>(_timer) == 0) {
+		_gameEngine->playMusic("");
+		_gameEngine->playSound("time_over_effect");
+		_gameEngine->playSound("time_over_voice");
+		_showDeathScreen = true;
+	}
 }
 
 void SceneTools::_displayPlayerHP(GUI *graphicUI, size_t hp) {
@@ -385,42 +407,72 @@ bool SceneTools::_btnHover(GUI *graphicUI, int rectWidth, int rectHeight,
 	return ret;
 }
 
-bool SceneTools::_displayMultipleDialogue(GUI *graphicUI,
-										  std::vector<Dialogue> *dialogues) {
-	if (!dialogues->empty()) {
+bool SceneTools::_displayMultipleDialogue(GUI *graphicUI) {
+	if (!_dialogues.empty()) {
 		if (_gameEngine->isKeyJustPressed(KEY_SPACE)) {
-			dialogues->erase(dialogues->begin());
-			if (!dialogues->empty())
+			_dialogues.erase(_dialogues.begin());
+			if (!_dialogues.empty())
 				_displayDialogue(
-					graphicUI, &dialogues->at(0).searchWord,
-					&dialogues->at(0).lastWord, &dialogues->at(0).startStrIdx,
-					dialogues->at(0).name, dialogues->at(0).imgName,
-					dialogues->at(0).text, dialogues->at(0).isImgLeft,
-					dialogues->at(0).maxCharPerLine, dialogues->at(0).nbrOfLine,
-					dialogues->at(0).textPosition, dialogues->at(0).fontText,
-					dialogues->at(0).fontTitle);
-			if (dialogues->empty()) return false;
+					graphicUI, &_dialogues.at(0).searchWord,
+					&_dialogues.at(0).lastWord, &_dialogues.at(0).startStrIdx,
+					_dialogues.at(0).name, _dialogues.at(0).imgName,
+					_dialogues.at(0).text, _dialogues.at(0).isImgLeft,
+					_dialogues.at(0).maxCharPerLine, _dialogues.at(0).nbrOfLine,
+					_dialogues.at(0).textPosition, _dialogues.at(0).fontText,
+					_dialogues.at(0).fontTitle);
+			if (_dialogues.empty()) return false;
 		} else
 			_displayDialogue(
-				graphicUI, &dialogues->at(0).searchWord,
-				&dialogues->at(0).lastWord, &dialogues->at(0).startStrIdx,
-				dialogues->at(0).name, dialogues->at(0).imgName,
-				dialogues->at(0).text, dialogues->at(0).isImgLeft,
-				dialogues->at(0).maxCharPerLine, dialogues->at(0).nbrOfLine,
-				dialogues->at(0).textPosition, dialogues->at(0).fontText,
-				dialogues->at(0).fontTitle);
+				graphicUI, &_dialogues.at(0).searchWord,
+				&_dialogues.at(0).lastWord, &_dialogues.at(0).startStrIdx,
+				_dialogues.at(0).name, _dialogues.at(0).imgName,
+				_dialogues.at(0).text, _dialogues.at(0).isImgLeft,
+				_dialogues.at(0).maxCharPerLine, _dialogues.at(0).nbrOfLine,
+				_dialogues.at(0).textPosition, _dialogues.at(0).fontText,
+				_dialogues.at(0).fontTitle);
 		return true;
 	} else
 		return false;
 }
 
-Dialogue SceneTools::_builNewDialogue(int searchWord, int lastWord,
-									  int startStrIdx, std::string name,
-									  std::string imgName, std::string text,
-									  bool isImgLeft, size_t maxCharPerLine,
-									  int nbrOfLine, nk_flags textPosition,
-									  std::string fontText,
-									  std::string fontTitle) {
+void SceneTools::_displayDialogue(GUI *graphicUI, int *searchWord,
+								  int *lastWord, int *startStrIdx,
+								  std::string name, std::string imgName,
+								  std::string str, bool isImgLeft,
+								  size_t maxCharPerLine, int nbrOfLine,
+								  nk_flags textPosition, std::string fontText,
+								  std::string fontTitle) {
+	size_t maxCPL = ((_gameEngine->getGameRenderer()->getWidth() / 4) * 3 -
+					 (((_gameEngine->getGameRenderer()->getHeight() / 4) - 45) -
+					  (_gameEngine->getGameRenderer()->getWidth() / 4)) -
+					 40) /
+					8.5;
+	maxCharPerLine = maxCharPerLine > maxCPL ? maxCPL : maxCharPerLine;
+	int nbrOfLineTmp =
+		(((_gameEngine->getGameRenderer()->getHeight() / 4) - 45) / 22) - 2;
+	nbrOfLine = nbrOfLine > nbrOfLineTmp ? nbrOfLineTmp : nbrOfLine;
+	if (nbrOfLine > 2) nbrOfLine -= 1;
+	if (*searchWord < (int)str.size()) {
+		*searchWord += 1;
+		if (str[*searchWord] == ' ') *lastWord = *searchWord;
+	} else
+		*lastWord = *searchWord;
+	if (*lastWord - *startStrIdx >= (int)maxCharPerLine * nbrOfLine)
+		*startStrIdx += maxCharPerLine;
+	std::string displayableStr =
+		str.substr(*startStrIdx, *lastWord - *startStrIdx);
+	graphicUI->uiDialogBox(name.c_str(), imgName, displayableStr.c_str(),
+						   isImgLeft, maxCharPerLine, nbrOfLine, textPosition,
+						   fontText, fontTitle);
+}
+
+void SceneTools::_buildNewDialogue(int searchWord, int lastWord,
+								   int startStrIdx, std::string name,
+								   std::string imgName, std::string text,
+								   bool isImgLeft, size_t maxCharPerLine,
+								   int nbrOfLine, nk_flags textPosition,
+								   std::string fontText,
+								   std::string fontTitle) {
 	Dialogue dialog;
 	dialog.searchWord = searchWord;
 	dialog.lastWord = lastWord;
@@ -434,7 +486,43 @@ Dialogue SceneTools::_builNewDialogue(int searchWord, int lastWord,
 	dialog.textPosition = textPosition;
 	dialog.fontText = fontText;
 	dialog.fontTitle = fontTitle;
-	return dialog;
+
+	_dialogues.push_back(dialog);
+}
+
+void SceneTools::_doTransition(void) {
+	std::cout << "translating" << std::endl;
+	_transitionElapsedTime += _gameEngine->getDeltaTime();
+	if (_transitionElapsedTime >= _transitionTime) {
+		_transitionElapsedTime = _transitionTime;
+		_isPause = false;
+	}
+
+	// Find percentage of transition
+	float mixRatio = _transitionElapsedTime / _transitionTime;
+
+	// Translate
+	glm::vec3 targetPos =
+		(_gameplayLocation.pos - _dialogueLocation.pos) * mixRatio +
+		_dialogueLocation.pos;
+	glm::vec3 neededTranslation = targetPos - getPosition();
+	translate(neededTranslation);
+
+	// Rotate
+	glm::vec3 targetRot =
+		(_gameplayLocation.rot - _dialogueLocation.rot) * mixRatio +
+		_dialogueLocation.rot;
+	glm::vec3 neededRotation = targetRot - _pastRotation;
+	_pastRotation = targetRot;
+	if (glm::epsilonNotEqual(0.0f, neededRotation.y, EPSILON))
+		rotateY(neededRotation.y);
+	if (glm::epsilonNotEqual(0.0f, neededRotation.x, EPSILON))
+		rotateX(neededRotation.x);
+
+	// Update cam data
+	_updateData();
+
+	std::cout << *this << std::endl;
 }
 
 void SceneTools::tellPosition(Entity *entity) { _savePositions(entity); }
@@ -521,7 +609,7 @@ void SceneTools::_savePositions(Entity *entity) {
 		// Move cam
 		if (_firstPlayerPos) {
 			_firstPlayerPos = false;
-			_distanceFromPlayer = getPosition() - entity->getPosition();
+			_distanceFromPlayer = _gameplayLocation.pos - entity->getPosition();
 			if (xCoord < MIN_DISTANCE_FROM_WALL_TO_MOVE_CAM ||
 				xCoord > _mapWidth - MIN_DISTANCE_FROM_WALL_TO_MOVE_CAM) {
 				_distanceFromPlayer.x +=

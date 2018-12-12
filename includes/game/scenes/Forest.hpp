@@ -4,11 +4,10 @@
 
 class Forest : public SceneTools {
    public:
-	Forest(glm::vec3 const &pos, glm::vec3 const &eulerAngles,
-		   Bomberman *bomberman);
+	Forest(WorldLocation &dialogueLocation, WorldLocation &gameplayLocation,
+		   float transitionTime, Bomberman *bomberman);
 	virtual ~Forest(void);
 
-	virtual void drawGUI(GUI *graphicUI);
 	virtual void configGUI(GUI *graphicUI);
 	virtual void configAI(void);
 	virtual void tellPosition(Entity *entity);
@@ -21,6 +20,5 @@ class Forest : public SceneTools {
 	Forest(Forest const &src);
 	Forest &operator=(Forest const &rhs);
 
-	std::vector<Dialogue> _dialogues;
 	float _cooldown;
 };
