@@ -222,8 +222,8 @@ void Model::draw(ShaderProgram const &shaderProgram, glm::vec3 const &color) {
 	}
 }
 
-void Model::addAnimation(std::string const &animPath,
-						 std::string const &animName) {
+void Model::addAnimation(std::string const &animName,
+						 std::string const &animPath) {
 	Assimp::Importer importer;
 	const aiScene *scene =
 		importer.ReadFile(_assetsDir + animPath, aiProcess_LimitBoneWeights);
