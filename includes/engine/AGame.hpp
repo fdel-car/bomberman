@@ -40,6 +40,7 @@ class AGame {
 	Skybox *getLoadingSkybox() const;
 	std::vector<std::vector<bool>> const &getCollisionTable(void);
 	std::vector<glm::vec3> getInstancePosition() const;
+	std::vector<glm::vec3> getInstanceRotation() const;
 	void clearInstancePosition(void);
 
 	void unload(void);
@@ -71,6 +72,7 @@ class AGame {
 	std::vector<std::vector<bool>> _collisionTable;
 
 	std::vector<glm::vec3> _transforms;  // for renderer instances
+	std::vector<glm::vec3> _transformsRot;
 
 	void setLayerCollision(int layer1, int layer2, bool doCollide);
 	void loadAssets(void);

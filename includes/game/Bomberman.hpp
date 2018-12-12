@@ -57,7 +57,7 @@ class Bomberman : public AGame {
 					std::vector<std::string> border,
 					std::vector<std::string> undestrutibleBlock,
 					std::vector<std::string> destrutibleBlock,
-					std::vector<std::string> enemies);
+					std::vector<std::string> enemies, bool needInstance);
 
 	void _mainMenu(void);
 	void _forest(void);

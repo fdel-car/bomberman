@@ -175,7 +175,6 @@ void GameRenderer::getUserInput(void) { glfwPollEvents(); }
 void GameRenderer::refreshWindow(std::vector<Entity *> &entities,
 								 Camera *camera, Light *light, Skybox *skybox,
 								 std::vector<glm::vec3> transforms) {
-	(void)transforms;
 	glfwSetWindowTitle(_window,
 					   toString(1.0f / _gameEngine->getDeltaTime())
 						   .c_str());  // TODO: Don't forget to remove this
@@ -229,7 +228,11 @@ void GameRenderer::refreshWindow(std::vector<Entity *> &entities,
 
 		_shaderProgram->setMat4("M", entity->getModelMatrix());
 		Model *model = entity->getModel();
+
 		if (model && entity->getTag().compare("Wall") != 0) {
+			model->draw(*_shaderProgram, std::vector<glm::vec3>(),
+						entity->getColor());
+		} else if (transforms.empty()) {
 			model->draw(*_shaderProgram, std::vector<glm::vec3>(),
 						entity->getColor());
 		} else if (wallIsDraw == false) {

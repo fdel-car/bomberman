@@ -491,7 +491,7 @@ void SceneTools::_buildNewDialogue(int searchWord, int lastWord,
 }
 
 void SceneTools::_doTransition(void) {
-	std::cout << "translating" << std::endl;
+	// std::cout << "translating" << std::endl;
 	_transitionElapsedTime += _gameEngine->getDeltaTime();
 	if (_transitionElapsedTime >= _transitionTime) {
 		_transitionElapsedTime = _transitionTime;
@@ -522,7 +522,7 @@ void SceneTools::_doTransition(void) {
 	// Update cam data
 	_updateData();
 
-	std::cout << *this << std::endl;
+	// std::cout << *this << std::endl;
 }
 
 void SceneTools::tellPosition(Entity *entity) { _savePositions(entity); }

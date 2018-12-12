@@ -32,17 +32,18 @@ void main()
         _fragPos = vec3(M * jointTransform * vec4(position, 1.0f));
     }
     else if (instances) {
-        gl_Position = VP * M * vec4(position + offsets[gl_InstanceID], 1.0f);
-        _normal = normalize(M * vec4(normal, 0.0f)).xyz;
-        _fragPos = vec3(M * vec4(position + offsets[gl_InstanceID], 1.0f));
+        mat4 tmp = M;
+        tmp[3][0] = offsets[gl_InstanceID].x;
+        tmp[3][1] = offsets[gl_InstanceID].y;
+        tmp[3][2] = offsets[gl_InstanceID].z;
+        gl_Position = VP * tmp * vec4(position, 1.0f);
+        _normal = normalize(tmp * vec4(normal, 0.0f)).xyz;
+        _fragPos = vec3(tmp * vec4(position, 1.0f));
     } 
     else {
         gl_Position = VP * M * vec4(position, 1.0f);
         _normal = normalize(M * vec4(normal, 0.0f)).xyz;
         _fragPos = vec3(M * vec4(position, 1.0f));
-        // gl_Position = VP * M * vec4(position + offsets[gl_InstanceID], 1.0f);
-        // _normal = normalize(M * vec4(normal, 0.0f)).xyz;
-        // _fragPos = vec3(M * vec4(position + offsets[gl_InstanceID], 1.0f));
     }
     // Look up transpose(inverse(M)), this works now but it won't always do
     _texCoords = texCoords;

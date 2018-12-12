@@ -54,6 +54,10 @@ std::vector<glm::vec3> AGame::getInstancePosition() const {
 	return _transforms;
 }
 
+std::vector<glm::vec3> AGame::getInstanceRotation() const {
+	return _transformsRot;
+}
+
 std::vector<std::vector<bool>> const &AGame::getCollisionTable(void) {
 	return _collisionTable;
 }

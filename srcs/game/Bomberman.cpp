@@ -250,7 +250,7 @@ void Bomberman::_forest(void) {
 	std::vector<std::string> enemies;
 	enemies.push_back("Fuzzy");
 	_createMap(8, 8, protectedCase, 6, 10, border, undestructibleBlock,
-			   destructibleBlock, enemies);
+			   destructibleBlock, enemies, true);
 
 	// Droppped Assets
 	_neededAssets.insert("Bomb");
@@ -317,7 +317,7 @@ void Bomberman::_pokemon(void) {
 	enemies.push_back("Fuzzy");
 
 	_createMap(8, 12, protectedCase, 10, 20, border, undestructibleBlock,
-			   destructibleBlock, enemies);
+			   destructibleBlock, enemies, true);
 
 	// Add entities that will be dropped
 	_spawnableEntities.push_back(portal);
@@ -382,6 +382,8 @@ void Bomberman::_mario(void) {
 		new Box(glm::vec3(20.0, 0, 6.0), _camera, "WarpPipeCorner"));
 	_entities.back()->rotateY(180);
 
+	// top and bottom Line
+
 	for (int i = -19; i < 20; i++) {
 		protectedCase.push_back(std::tuple<int, int>(i, -6.0));
 		_entities.push_back(new Entity(
@@ -389,12 +391,14 @@ void Bomberman::_mario(void) {
 			new Collider(Collider::Rectangle, LayerTag::WallLayer, 0.5, 0.5),
 			"WarpPipe", "Wall", "Wall", _camera));
 		_entities.back()->rotateY(90);
+		// _transforms.push_back(glm::vec3(i, 0.0, -6.0));
 		protectedCase.push_back(std::tuple<int, int>(i, 6.0));
 		_entities.push_back(new Entity(
 			glm::vec3(i, 0.0, 6.0), glm::vec3(0.0f),
 			new Collider(Collider::Rectangle, LayerTag::WallLayer, 0.5, 0.5),
 			"WarpPipe", "Wall", "Wall", _camera));
 		_entities.back()->rotateY(90);
+		// _transforms.push_back(glm::vec3(i, 0.0, 6.0));
 	}
 
 	_entities.push_back(new Entity(glm::vec3(0.0f), glm::vec3(0.0f), nullptr,
@@ -436,7 +440,7 @@ void Bomberman::_mario(void) {
 	enemies.push_back("Fuzzy");
 
 	_createMap(20, 6, protectedCase, 10, 100, border, undestructibleBlock,
-			   destructibleBlock, enemies);
+			   destructibleBlock, enemies, false);
 
 	// Force add of models (for entities that may be dropped randomly)
 	_neededAssets.insert("Bomb");
@@ -563,7 +567,7 @@ void Bomberman::_space(void) {
 	std::vector<std::string> enemies;
 	enemies.push_back("Fuzzy");
 	_createMap(14, 10, protectedCase, 10, 1000, border, undestructibleBlock,
-			   destructibleBlock, enemies);
+			   destructibleBlock, enemies, true);
 
 	// Assets
 	_neededAssets.insert("Bomb");
@@ -609,7 +613,8 @@ void Bomberman::_createMap(int width, int height,
 						   std::vector<std::string> border,
 						   std::vector<std::string> undestructibleBlock,
 						   std::vector<std::string> destructibleBlock,
-						   std::vector<std::string> enemies) {
+						   std::vector<std::string> enemies,
+						   bool needInstance) {
 	for (int x = -width; x <= width; x++) {
 		for (int z = -height; z <= height; z++) {
 			bool canPutBlocks = true;
@@ -624,7 +629,7 @@ void Bomberman::_createMap(int width, int height,
 					new Collider(Collider::Rectangle, LayerTag::WallLayer, 0.45,
 								 0.45),
 					border[rand() % border.size()], "Wall", "Wall", _camera));
-				_transforms.push_back(glm::vec3(x, 0.0, z));
+				if (needInstance) _transforms.push_back(glm::vec3(x, 0.0, z));
 			} else if (canPutBlocks && x % 2 == 0 && z % 2 == 0) {
 				_entities.push_back(new Entity(
 					glm::vec3(x, 0.0, z), glm::vec3(0.0f),
@@ -632,7 +637,7 @@ void Bomberman::_createMap(int width, int height,
 								 0.5),
 					undestructibleBlock[rand() % undestructibleBlock.size()],
 					"Wall", "Wall", _camera));
-				_transforms.push_back(glm::vec3(x, 0.0, z));
+				if (needInstance) _transforms.push_back(glm::vec3(x, 0.0, z));
 			} else {
 				if (canPutBlocks && rand() % boxRate == 0) {
 					_entities.push_back(new Box(
