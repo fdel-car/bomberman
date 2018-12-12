@@ -1,4 +1,5 @@
 #version 410 core
+#define MAX_WALLS 500
 layout (location = 0) in vec3 position;
 layout (location = 1) in vec3 normal;
 layout (location = 2) in vec2 texCoords;
@@ -17,12 +18,7 @@ uniform mat4 boneTransforms[32];
 uniform bool rigged;
 uniform bool instances;
 
-// uniform int numberOfOffsets;
-// uniform vec2 offsets[numberOfOffsets];
-
-uniform vec3 offsets[500];
-
-
+uniform vec3 offsets[MAX_WALLS];
 
 void main()
 {
@@ -36,16 +32,17 @@ void main()
         _fragPos = vec3(M * jointTransform * vec4(position, 1.0f));
     }
     else if (instances) {
-        gl_Position = VP * M * vec4(position - offsets[gl_InstanceID], 1.0f);
+        gl_Position = VP * M * vec4(position + offsets[gl_InstanceID], 1.0f);
         _normal = normalize(M * vec4(normal, 0.0f)).xyz;
-        _fragPos = vec3(M * vec4(position, 1.0f));
+        _fragPos = vec3(M * vec4(position + offsets[gl_InstanceID], 1.0f));
     } 
-    
-    
     else {
         gl_Position = VP * M * vec4(position, 1.0f);
         _normal = normalize(M * vec4(normal, 0.0f)).xyz;
         _fragPos = vec3(M * vec4(position, 1.0f));
+        // gl_Position = VP * M * vec4(position + offsets[gl_InstanceID], 1.0f);
+        // _normal = normalize(M * vec4(normal, 0.0f)).xyz;
+        // _fragPos = vec3(M * vec4(position + offsets[gl_InstanceID], 1.0f));
     }
     // Look up transpose(inverse(M)), this works now but it won't always do
     _texCoords = texCoords;

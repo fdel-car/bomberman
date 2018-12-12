@@ -207,19 +207,17 @@ void Model::draw(ShaderProgram const &shaderProgram,
 		}
 	}
 
-	// shaderProgram.setInt("numberOfOffsets", transform.size());
 	// (void)transform;
-
 	if (!transform.empty()) {
-		size_t i = 0;
-		// shaderProgram.setInt("numberOfOffsets", (const int)transform.size());
+		int i = 0;
 		shaderProgram.setBool("instances", true);
 		for (auto trans : transform) {
 			shaderProgram.setVec3("offsets[" + std::to_string(i) + "]", trans);
 			i++;
 		}
-		std::cout << "number of walls: " << i << std::endl;
-		std::cout << "Vector is not empty" << std::endl;
+
+		// std::cout << "number of walls: " << i << std::endl;
+		// std::cout << "Vector is not empty" << std::endl;
 	} else
 		shaderProgram.setBool("instances", false);
 
