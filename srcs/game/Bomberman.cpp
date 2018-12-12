@@ -115,8 +115,7 @@ void Bomberman::initAllAssets(void) {
 	_allAssets["Wall"] = "Models/Wall/wall.obj";
 	_allAssets["Box"] = "Models/Box/box.obj";
 	_allAssets["Portal"] = "Models/Portal/portal.obj";
-	// _allAssets["Player"] = "Models/Hero/hero.dae";
-	_allAssets["Player"] = "Models/model.dae";
+	_allAssets["Player"] = "Models/Hero/hero.dae";
 	_allAssets["KickPerk"] = "Models/Perks/Kick/kick.obj";
 	_allAssets["DamagePerk"] = "Models/Perks/Damage/damage.obj";
 	_allAssets["MaxBombPerk"] = "Models/Perks/MaxBomb/maxBomb.obj";
@@ -526,12 +525,12 @@ void Bomberman::_space(void) {
 	// Border
 	for (int tmpY = -9; tmpY < 10; tmpY += 2) {
 		_entities.push_back(
-			new Box(glm::vec3(0, 0, tmpY), _camera, "DestructibleMeteor", 50));
+			new Box(glm::vec3(0, 0, tmpY), _camera, "DestructibleMeteor", 66));
 		protectedCase.push_back(std::tuple<int, int>(0, tmpY));
 	}
 	for (int tmpX = -13; tmpX <= 13; tmpX += 2) {
 		_entities.push_back(
-			new Box(glm::vec3(tmpX, 0, 0), _camera, "DestructibleMeteor", 50));
+			new Box(glm::vec3(tmpX, 0, 0), _camera, "DestructibleMeteor", 66));
 		protectedCase.push_back(std::tuple<int, int>(tmpX, 0));
 	}
 

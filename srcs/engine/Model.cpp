@@ -20,10 +20,13 @@ Model::Model(std::string const &modelPath)
 	_buildSkeletonHierarchy(scene->mRootNode);
 	if (scene->HasAnimations()) {
 		_animated = true;
+		std::cout << "Anim count:" << scene->mNumAnimations << std::endl;
 		// Only support one animation for now
 		for (size_t i = 0; i < 1 /*scene->mNumAnimations*/; i++) {
 			aiAnimation *anim = scene->mAnimations[i];
+			std::cout << anim->mName.C_Str() << std::endl;
 			_animLength = anim->mDuration;
+			std::cout << _animLength << std::endl;
 			for (size_t j = 0; j < anim->mNumChannels; j++) {
 				aiNodeAnim *nodeAnim = anim->mChannels[j];
 				Joint *joint = findJointByName(nodeAnim->mNodeName.C_Str());
@@ -51,12 +54,12 @@ void Model::_buildSkeletonHierarchy(aiNode *rootNode) {
 		Joint *parent = findJointByName(node->mParent->mName.C_Str());
 		joint->parent = parent;
 	}
-	updateBoneTransforms(nullptr);
+	updateBoneTransforms(nullptr, 0.0f);
 }
 
-void Model::updateBoneTransforms(double *animTime) {
+void Model::updateBoneTransforms(double *animTime, float deltaTime) {
 	if (_animated) {
-		*animTime += 0.01;
+		*animTime += deltaTime;
 		if (*animTime + EPSILON >= _animLength) *animTime = 0.0;
 		for (auto joint : _joints) joint->applyAnimationTransform(*animTime);
 	}

@@ -13,7 +13,7 @@ class Model final {
 	void draw(ShaderProgram const &shaderProgram,
 			  glm::vec3 const &color = glm::vec3(-1.0f));
 	Joint *findJointByName(std::string const &name);
-	void updateBoneTransforms(double *animTime);
+	void updateBoneTransforms(double *animTime, float deltaTime);
 	bool isRigged(void) const;
 
    private:

@@ -31,7 +31,7 @@ std::string toString(const T& val) {
 	return oss.str();
 }
 
-#define EPSILON 0.001f
+#define EPSILON 0.01f
 
 #define BACKGROUND_LOAD_NEEDED 0
 #define BACKGROUND_LOAD_NOT_NEEDED 1

@@ -18,9 +18,6 @@ Player::Player(glm::vec3 position, glm::vec3 eulerAngles, Save &save,
 	  _bombKick(false),
 	  _bombTimers(std::vector<float>()),
 	  _cam(dynamic_cast<SceneTools *>(_sceneManager)) {
-	// rotateX(90);
-	scale(glm::vec3(0.4f));
-	shouldBeAnimated = true;
 	if (_cam != nullptr) {
 		_cam->tellPlayerHp(_hp);
 	}
@@ -84,6 +81,7 @@ void Player::update(void) {
 
 	if (glm::epsilonNotEqual(xDirection, 0.0f, EPSILON) ||
 		glm::epsilonNotEqual(zDirection, 0.0f, EPSILON)) {
+		shouldBeAnimated = true;
 		float angle;
 		if (xDirection < 0)
 			angle = 360.0f - glm::degrees(atan2(xDirection, zDirection) * -1);
@@ -91,7 +89,8 @@ void Player::update(void) {
 			angle = glm::degrees(atan2(xDirection, zDirection));
 		rotateY(angle - _rotationAngle);
 		_rotationAngle = angle;
-	}
+	} else
+		shouldBeAnimated = false;
 
 	_targetMovement.x = xDirection * _speed * deltaTime;
 	_targetMovement.z = zDirection * _speed * deltaTime;
