@@ -16,9 +16,15 @@ MainMenu::MainMenu(WorldLocation &startLocation,
 	_neededImages.push_back(std::tuple<std::string, std::string>(
 		(_assetsDir + "GUI/Icons/leftAngleBracket.png"), "leftAngleBracket"));
 	_neededImages.push_back(std::tuple<std::string, std::string>(
-		(_assetsDir + "GUI/Icons/settings.png"), "settings"));
-	_neededImages.push_back(std::tuple<std::string, std::string>(
 		(_assetsDir + "GUI/Icons/MainMenuTitle.png"), "title"));
+	_neededImages.push_back(std::tuple<std::string, std::string>(
+		(_assetsDir + "GUI/Icons/Space.png"), "Space"));
+	_neededImages.push_back(std::tuple<std::string, std::string>(
+		(_assetsDir + "GUI/Icons/Pokemon.png"), "Pokemon"));
+	_neededImages.push_back(std::tuple<std::string, std::string>(
+		(_assetsDir + "GUI/Icons/Mario.png"), "Mario"));
+	_neededImages.push_back(std::tuple<std::string, std::string>(
+		(_assetsDir + "GUI/Icons/Forest.png"), "Forest"));
 
 	_updateVarsFromSave();
 
@@ -56,25 +62,67 @@ void MainMenu::drawGUI(GUI *graphicUI) {
 		FIRST_LOAD = false;
 		_gameEngine->playSound("first_load");
 	}
+	if (graphicUI->uiStartBlock(
+			"imgBehind", "",
+			nk_rect(-10, -10, _gameEngine->getGameRenderer()->getWidth() + 20,
+			_gameEngine->getGameRenderer()->getHeight() + 20),
+			NK_WINDOW_NO_SCROLLBAR | NK_WINDOW_NO_INPUT)) {
+				graphicUI->uiRowMultipleElem(true, _gameEngine->getGameRenderer()->getHeight() + 20, 1);
+				graphicUI->uiAddElemInRow(_gameEngine->getGameRenderer()->getWidth() + 20);
+				if (_levelsName[_lvlIndex] == "Space")
+					graphicUI->uiSetImage(_levelsName[_lvlIndex]);
+				else if (_levelsName[_lvlIndex] == "Pokemon")
+					graphicUI->uiSetImage(_levelsName[_lvlIndex]);
+				else if (_levelsName[_lvlIndex] == "Mario")
+					graphicUI->uiSetImage(_levelsName[_lvlIndex]);
+				else if (_levelsName[_lvlIndex] == "Forest")
+					graphicUI->uiSetImage(_levelsName[_lvlIndex]);
+				graphicUI->uiRowMultipleElem(false);
 
+	}
+	graphicUI->uiEndBlock();
 	if (!_changeSettings) {
 		_movingTitle(graphicUI);
 
+		activeStyle[NK_COLOR_WINDOW] = nk_rgba(57, 67, 71, 215);
+		// activeStyle[NK_COLOR_TEXT] = nk_rgba(215, 215, 215, 255);
+		graphicUI->setStyle(activeStyle);
+		activeStyle = defaultStyle;
 		if (graphicUI->uiStartBlock(
 				"Levels", "",
 				nk_rect((_gameEngine->getGameRenderer()->getWidth() / 5) * 2,
 						(_gameEngine->getGameRenderer()->getHeight() / 5) * 2,
 						(_gameEngine->getGameRenderer()->getWidth() / 5), 50),
-				NK_WINDOW_NO_SCROLLBAR)) {
+				NK_WINDOW_NO_SCROLLBAR | NK_WINDOW_BORDER)) {
 			if (graphicUI->uiHorizontalSelection(
-					(_gameEngine->getGameRenderer()->getWidth() / 5), "",
+					(_gameEngine->getGameRenderer()->getWidth() / 5) + 5, "",
 					_levelsName[_lvlIndex], &_lvlIndex, _levelsName.size() - 1,
-					30)) {
+					39)) {
 				_gameEngine->playSound("lateral_select");
 			}
 		}
 		graphicUI->uiEndBlock();
-
+		// graphicUI->setStyle(activeStyle);
+		// activeStyle[NK_COLOR_BUTTON_ACTIVE] = nk_rgba(51, 55, 67, 0);
+		// activeStyle[NK_COLOR_TEXT] = nk_rgba(0, 0, 0, 255);
+		//
+		// activeStyle[NK_COLOR_BORDER] = nk_rgba(51, 55, 67, 0);
+		// activeStyle[NK_COLOR_BUTTON] = nk_rgba(51, 55, 67, 0);
+		// activeStyle[NK_COLOR_BUTTON_HOVER] = nk_rgba(51, 55, 67, 0);
+		// graphicUI->setStyle(activeStyle);
+		//
+		// static int extraSizeHiddePlay = 0;
+		// static bool isHiddePlayButtonHover = false;
+		// if (_btnHover(
+		// 		graphicUI, (_gameEngine->getGameRenderer()->getWidth() / 5), 60,
+		// 		(_gameEngine->getGameRenderer()->getWidth() / 5) * 2,
+		// 		(_gameEngine->getGameRenderer()->getHeight() / 5) * 2.7, 34,
+		// 		"_slider", &extraSizeHiddePlay, 10, &isHiddePlayButtonHover, "Play")) {
+		// 	// _newSceneName = _levelsName[_lvlIndex];
+		// 	// _gameEngine->playSound("select");
+		// }
+		// activeStyle = defaultStyle;
+		// graphicUI->setStyle(activeStyle);
 		activeStyle[NK_COLOR_BUTTON_ACTIVE] = nk_rgba(51, 55, 67, 0);
 		activeStyle[NK_COLOR_BORDER] = nk_rgba(51, 55, 67, 0);
 		activeStyle[NK_COLOR_BUTTON] = nk_rgba(51, 55, 67, 0);
@@ -90,7 +138,6 @@ void MainMenu::drawGUI(GUI *graphicUI) {
 			_newSceneName = _levelsName[_lvlIndex];
 			_gameEngine->playSound("select");
 		}
-
 		activeStyle = defaultStyle;
 		graphicUI->setStyle(activeStyle);
 
@@ -102,7 +149,7 @@ void MainMenu::drawGUI(GUI *graphicUI) {
 					((_gameEngine->getGameRenderer()->getWidth() / 5) / 2),
 				(_gameEngine->getGameRenderer()->getHeight() / 5) * 4, 20,
 				"_slider", &extraSizeSetting, 10, &isSettingButtonHover,
-				"Settings", "settings")) {
+				"Settings")) {
 			_changeSettings = true;
 			_gameEngine->playSound("open_settings");
 		}
@@ -115,7 +162,6 @@ void MainMenu::drawGUI(GUI *graphicUI) {
 					  (_gameEngine->getGameRenderer()->getHeight() / 5) * 4, 20,
 					  "_slider", &extraSizeCredits, 10, &isCreditButtonHover,
 					  "Credits")) {
-			// std::cout << "Hey hey, nothing happened. bad luck." << std::endl;
 			_gameEngine->playSound("select");
 			_newSceneName = "Credits";
 		}

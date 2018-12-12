@@ -215,6 +215,18 @@ void AEnemy::walk(SceneTools *cam) {
 			float totalMagnitude = xSign + zSign;
 			xDirection *= sqrt(xSign / totalMagnitude);
 			zDirection *= sqrt(zSign / totalMagnitude);
+			if (glm::epsilonNotEqual(xDirection, 0.0f, EPSILON) ||
+				glm::epsilonNotEqual(zDirection, 0.0f, EPSILON)) {
+				shouldBeAnimated = true;
+				float angle;
+				if (xDirection < 0)
+					angle = 360.0f - glm::degrees(atan2(xDirection, zDirection) * -1);
+				else
+					angle = glm::degrees(atan2(xDirection, zDirection));
+				rotateY(angle - _rotationAngle);
+				_rotationAngle = angle;
+			} else
+				shouldBeAnimated = false;
 			float deltaTime = _gameEngine->getDeltaTime();
 			_targetMovement.x = xDirection * _speed * deltaTime;
 			_targetMovement.z = zDirection * _speed * deltaTime;

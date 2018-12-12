@@ -385,8 +385,9 @@ bool SceneTools::_btnHover(GUI *graphicUI, int rectWidth, int rectHeight,
 	xRectPos -= *extraSize / 2;
 	yRectPos -= *extraSize / 2;
 	fontName = std::to_string(fontSize + *extraSize) + fontName;
+	std::string id = btnName + fontName;
 	if (graphicUI->uiStartBlock(
-			btnName.c_str(), "",
+			id.c_str(), "",
 			nk_rect(xRectPos, yRectPos, rectWidth, rectHeight),
 			NK_WINDOW_NO_SCROLLBAR)) {
 		if (graphicUI->uiHover()) {
@@ -491,7 +492,6 @@ void SceneTools::_buildNewDialogue(int searchWord, int lastWord,
 }
 
 void SceneTools::_doTransition(void) {
-	std::cout << "translating" << std::endl;
 	_transitionElapsedTime += _gameEngine->getDeltaTime();
 	if (_transitionElapsedTime >= _transitionTime) {
 		_transitionElapsedTime = _transitionTime;
@@ -521,8 +521,6 @@ void SceneTools::_doTransition(void) {
 
 	// Update cam data
 	_updateData();
-
-	std::cout << *this << std::endl;
 }
 
 void SceneTools::tellPosition(Entity *entity) { _savePositions(entity); }
