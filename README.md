@@ -50,6 +50,7 @@ Here is the key mapping:
 
 ### Known issues
 * macOS Mojave compatibility
+
 As of today OpenGl has some issues running on a mac with Mojave installed there are some hotfixes that we tried but none are really perfect.
 This piece of code place inside the refreshWindow function place right after glClear(...) should be working (at the price of a lower framerate, thanks Apple to just forget about OpenGL 👍).
 ```
