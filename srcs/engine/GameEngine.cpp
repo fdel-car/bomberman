@@ -373,7 +373,6 @@ void GameEngine::_unloadScene(void) {
 	if (_allEntities.empty() != true) {
 		for (size_t idx = _allEntities.size() - 1; idx < _allEntities.size();
 			 idx--) {
-			// TODO: add logic for entities that survive between scenes
 			delete _allEntities[idx];
 			_allEntities.erase(_allEntities.begin() + idx);
 		}
@@ -679,27 +678,21 @@ void GameEngine::_getMovementLines(Entity *entity, glm::vec3 &targetMovement,
 		// Find points based on shape
 		if (entity->getCollider()->shape == Collider::Rectangle) {
 			// Rectangle
-			// TODO: for now we increase Z when we want to go down, but will
-			// change soon
 			if ((targetMovement.x > 0.0f && targetMovement.z > 0.0f) ||
 				(targetMovement.x < 0.0f && targetMovement.z < 0.0f)) {
 				// We are going Down-Right or Up-Left, take TopRight(A) and
 				// BottomLeft(B) corners
 				lineA->startX += entity->getCollider()->width;
-				lineA->startZ -= entity->getCollider()
-									 ->height;  // TODO: Change minus to plus
+				lineA->startZ -= entity->getCollider()->height;
 				lineB->startX -= entity->getCollider()->width;
-				lineB->startZ += entity->getCollider()
-									 ->height;  // TODO: Change plus to minus
+				lineB->startZ += entity->getCollider()->height;
 			} else {
 				// We are going Down-Left or Up-Right, take TopLeft(A) and
 				// BottomRight(B) corners
 				lineA->startX -= entity->getCollider()->width;
-				lineA->startZ -= entity->getCollider()
-									 ->height;  // TODO: Change minus to plus
+				lineA->startZ -= entity->getCollider()->height;
 				lineB->startX += entity->getCollider()->width;
-				lineB->startZ += entity->getCollider()
-									 ->height;  // TODO: Change plus to minus
+				lineB->startZ += entity->getCollider()->height;
 			}
 		} else {
 			// Circle
@@ -751,7 +744,6 @@ bool GameEngine::_hasCollisionCourse(LineInfo &lineA, LineInfo &lineB,
 	const Collider *colliderB = entityB->getCollider();
 	if (colliderB->shape == Collider::Rectangle) {
 		// Rectangle
-		// TODO:: change sign for Z when up is positive
 		float leftX = entityB->getPosition().x - colliderB->width;
 		float rightX = entityB->getPosition().x + colliderB->width;
 		float upZ = entityB->getPosition().z - colliderB->height;

@@ -8,7 +8,7 @@ Mario::Mario(WorldLocation &dialogueLocation, WorldLocation &gameplayLocation,
 	  _cooldown(0.0f) {
 	configAI();
 	_initSoundsForGameplay();
-	_startMusic = "Audio/Musics/Robots.wav";  // TODO
+	_startMusic = "Audio/Musics/Robots.wav";
 }
 
 Mario::~Mario(void) {}
