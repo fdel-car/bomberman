@@ -13,7 +13,7 @@ class Camera : public Entity {
 	glm::mat4 const &getProjectionMatrix(void) const;
 	int getNewSceneIdx(void) const;
 	std::string getNewSceneName(void) const;
-	std::vector<std::tuple<std::string, std::string>> const &getNeededImages()
+	std::vector<std::tuple<std::string, std::string, bool>> const &getNeededImages()
 		const;
 	bool isGameRunning(void) const;
 

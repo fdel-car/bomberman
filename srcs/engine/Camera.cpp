@@ -24,7 +24,7 @@ bool Camera::isGameRunning(void) const { return _isRunning; }
 
 bool Camera::isPause(void) const { return _debugMode || _isPause; }
 
-std::vector<std::tuple<std::string, std::string>> const &
+std::vector<std::tuple<std::string, std::string, bool>> const &
 Camera::getNeededImages() const {
 	return _neededImages;
 }

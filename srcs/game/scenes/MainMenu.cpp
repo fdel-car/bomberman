@@ -11,34 +11,34 @@ MainMenu::MainMenu(WorldLocation &startLocation,
 	: SceneTools(0, 0, startLocation, bomberman,
 				 bomberman->getStartLevelName()),
 	  _levelsName(levelsName) {
-	_neededImages.push_back(std::tuple<std::string, std::string>(
-		(_assetsDir + "GUI/Icons/rightAngleBracket.png"), "rightAngleBracket"));
-	_neededImages.push_back(std::tuple<std::string, std::string>(
-		(_assetsDir + "GUI/Icons/leftAngleBracket.png"), "leftAngleBracket"));
-	_neededImages.push_back(std::tuple<std::string, std::string>(
-		(_assetsDir + "GUI/Icons/MainMenuTitle.png"), "title"));
-	_neededImages.push_back(std::tuple<std::string, std::string>(
-		(_assetsDir + "GUI/Icons/Space.png"), "Space"));
-	_neededImages.push_back(std::tuple<std::string, std::string>(
-		(_assetsDir + "GUI/Icons/Pokemon.png"), "Pokemon"));
-	_neededImages.push_back(std::tuple<std::string, std::string>(
-		(_assetsDir + "GUI/Icons/Mario.png"), "Mario"));
-	_neededImages.push_back(std::tuple<std::string, std::string>(
-		(_assetsDir + "GUI/Icons/Forest.png"), "Forest"));
-	_neededImages.push_back(std::tuple<std::string, std::string>(
-		(_assetsDir + "GUI/Icons/BombermanWhite.png"), "BomberWhite"));
-	_neededImages.push_back(std::tuple<std::string, std::string>(
-		(_assetsDir + "GUI/Icons/BombermanBlack.png"), "BomberBlack"));
-	_neededImages.push_back(std::tuple<std::string, std::string>(
-		(_assetsDir + "GUI/Icons/maxBomb.png"), "maxBomb"));
-	_neededImages.push_back(std::tuple<std::string, std::string>(
-		(_assetsDir + "GUI/Icons/speedBoost.png"), "speedBoost"));
-	_neededImages.push_back(std::tuple<std::string, std::string>(
-		(_assetsDir + "GUI/Icons/kickBombBoost.png"), "kickBombBoost"));
-	_neededImages.push_back(std::tuple<std::string, std::string>(
-		(_assetsDir + "GUI/Icons/kickBombBoostActivated.png"), "kickBombBoostActivated"));
-	_neededImages.push_back(std::tuple<std::string, std::string>(
-		(_assetsDir + "GUI/Icons/rangeBoost.png"), "rangeBoost"));
+	_neededImages.push_back(std::tuple<std::string, std::string, bool>(
+		(_assetsDir + "GUI/Icons/rightAngleBracket.png"), "rightAngleBracket", true));
+	_neededImages.push_back(std::tuple<std::string, std::string, bool>(
+		(_assetsDir + "GUI/Icons/leftAngleBracket.png"), "leftAngleBracket", true));
+	_neededImages.push_back(std::tuple<std::string, std::string, bool>(
+		(_assetsDir + "GUI/Icons/MainMenuTitle.png"), "title", true));
+	_neededImages.push_back(std::tuple<std::string, std::string, bool>(
+		(_assetsDir + "GUI/Icons/Space.jpg"), "Space", false));
+	_neededImages.push_back(std::tuple<std::string, std::string, bool>(
+		(_assetsDir + "GUI/Icons/Pokemon.jpg"), "Pokemon", false));
+	_neededImages.push_back(std::tuple<std::string, std::string, bool>(
+		(_assetsDir + "GUI/Icons/Mario.jpg"), "Mario", false));
+	_neededImages.push_back(std::tuple<std::string, std::string, bool>(
+		(_assetsDir + "GUI/Icons/Forest.jpg"), "Forest", false));
+	_neededImages.push_back(std::tuple<std::string, std::string, bool>(
+		(_assetsDir + "GUI/Icons/BombermanWhite.png"), "BomberWhite", true));
+	_neededImages.push_back(std::tuple<std::string, std::string, bool>(
+		(_assetsDir + "GUI/Icons/BombermanBlack.png"), "BomberBlack", true));
+	_neededImages.push_back(std::tuple<std::string, std::string, bool>(
+		(_assetsDir + "GUI/Icons/maxBomb.png"), "maxBomb", true));
+	_neededImages.push_back(std::tuple<std::string, std::string, bool>(
+		(_assetsDir + "GUI/Icons/speedBoost.png"), "speedBoost", true));
+	_neededImages.push_back(std::tuple<std::string, std::string, bool>(
+		(_assetsDir + "GUI/Icons/kickBombBoost.png"), "kickBombBoost", true));
+	_neededImages.push_back(std::tuple<std::string, std::string, bool>(
+		(_assetsDir + "GUI/Icons/kickBombBoostActivated.png"), "kickBombBoostActivated", true));
+	_neededImages.push_back(std::tuple<std::string, std::string, bool>(
+		(_assetsDir + "GUI/Icons/rangeBoost.png"), "rangeBoost", true));
 
 	_updateVarsFromSave();
 
@@ -79,20 +79,21 @@ void MainMenu::drawGUI(GUI *graphicUI) {
 	if (graphicUI->uiStartBlock(
 			"imgBehind", "",
 			nk_rect(-10, -10, _gameEngine->getGameRenderer()->getWidth() + 20,
-			_gameEngine->getGameRenderer()->getHeight() + 20),
+					_gameEngine->getGameRenderer()->getHeight() + 20),
 			NK_WINDOW_NO_SCROLLBAR | NK_WINDOW_NO_INPUT)) {
-				graphicUI->uiRowMultipleElem(true, _gameEngine->getGameRenderer()->getHeight() + 20, 1);
-				graphicUI->uiAddElemInRow(_gameEngine->getGameRenderer()->getWidth() + 20);
-				if (_levelsName[_lvlIndex] == "Space")
-					graphicUI->uiSetImage(_levelsName[_lvlIndex]);
-				else if (_levelsName[_lvlIndex] == "Pokemon")
-					graphicUI->uiSetImage(_levelsName[_lvlIndex]);
-				else if (_levelsName[_lvlIndex] == "Mario")
-					graphicUI->uiSetImage(_levelsName[_lvlIndex]);
-				else if (_levelsName[_lvlIndex] == "Forest")
-					graphicUI->uiSetImage(_levelsName[_lvlIndex]);
-				graphicUI->uiRowMultipleElem(false);
-
+		graphicUI->uiRowMultipleElem(
+			true, _gameEngine->getGameRenderer()->getHeight() + 20, 1);
+		graphicUI->uiAddElemInRow(_gameEngine->getGameRenderer()->getWidth() +
+								  20);
+		if (_levelsName[_lvlIndex] == "Space")
+			graphicUI->uiSetImage(_levelsName[_lvlIndex]);
+		else if (_levelsName[_lvlIndex] == "Pokemon")
+			graphicUI->uiSetImage(_levelsName[_lvlIndex]);
+		else if (_levelsName[_lvlIndex] == "Mario")
+			graphicUI->uiSetImage(_levelsName[_lvlIndex]);
+		else if (_levelsName[_lvlIndex] == "Forest")
+			graphicUI->uiSetImage(_levelsName[_lvlIndex]);
+		graphicUI->uiRowMultipleElem(false);
 	}
 	graphicUI->uiEndBlock();
 	if (!_changeSettings) {
@@ -131,7 +132,8 @@ void MainMenu::drawGUI(GUI *graphicUI) {
 		// 		graphicUI, (_gameEngine->getGameRenderer()->getWidth() / 5), 60,
 		// 		(_gameEngine->getGameRenderer()->getWidth() / 5) * 2,
 		// 		(_gameEngine->getGameRenderer()->getHeight() / 5) * 2.7, 34,
-		// 		"_slider", &extraSizeHiddePlay, 10, &isHiddePlayButtonHover, "Play")) {
+		// 		"_slider", &extraSizeHiddePlay, 10, &isHiddePlayButtonHover,
+		// "Play")) {
 		// 	// _newSceneName = _levelsName[_lvlIndex];
 		// 	// _gameEngine->playSound("select");
 		// }

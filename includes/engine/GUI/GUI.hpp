@@ -85,7 +85,7 @@ class GUI {
 	void getDefaultStyle(enum theme theme, std::map<int, nk_color> *styleMap);
 	void setStyle(std::map<int, nk_color> &styleMap);
 	void setAssetImages(
-		std::vector<std::tuple<std::string, std::string>> vFontImage);
+		std::vector<std::tuple<std::string, std::string, bool>> vFontImage);
 
 	bool uiStartBlock(const char *id, const char *title, struct nk_rect bounds,
 					  nk_flags flags);
@@ -159,7 +159,7 @@ class GUI {
 		std::vector<std::tuple<float, std::string, std::string>> &vFontPath);
 	void _setImages(
 		std::vector<std::tuple<std::string, std::string, bool>> &vImagePath);
-	struct nk_image iconLoad(const char *filename);
+	struct nk_image iconLoad(const char *filename, bool hasAlphaChannel = true);
 
 	/*
 	** Free GUI (nuklear)

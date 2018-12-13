@@ -45,10 +45,10 @@ SceneTools::SceneTools(size_t mapWidth, size_t mapHeight,
 	  _nextLvlName(nextLvlName),
 	  _timer(timer),
 	  _pauseMenu(false) {
-	_neededImages.push_back(std::tuple<std::string, std::string>(
-		(_assetsDir + "GUI/Icons/heart.png"), "heart"));
-	_neededImages.push_back(std::tuple<std::string, std::string>(
-		(_assetsDir + "GUI/Icons/sad_chopper.png"), "sad_chopper"));
+	_neededImages.push_back(std::tuple<std::string, std::string, bool>(
+		(_assetsDir + "GUI/Icons/heart.png"), "heart", true));
+	_neededImages.push_back(std::tuple<std::string, std::string, bool>(
+		(_assetsDir + "GUI/Icons/sad_chopper.png"), "sad_chopper", true));
 }
 
 SceneTools::SceneTools(size_t mapWidth, size_t mapHeight,
