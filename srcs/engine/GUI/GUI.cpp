@@ -277,7 +277,7 @@ void GUI::_nkFontStashEnd() {
 						  &_media->myFonts.begin()->second->handle);
 }
 
-struct nk_image GUI::iconLoad(const char *filename) {
+struct nk_image GUI::iconLoad(const char *filename, bool hasAlphaChannel) {
 	int x, y, n;
 	GLuint tex;
 	unsigned char *data = stbi_load(filename, &x, &y, &n, 0);
@@ -295,8 +295,8 @@ struct nk_image GUI::iconLoad(const char *filename) {
 					GL_LINEAR_MIPMAP_NEAREST);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, x, y, 0, GL_RGBA, GL_UNSIGNED_BYTE,
-				 data);
+	glTexImage2D(GL_TEXTURE_2D, 0, hasAlphaChannel ? GL_RGBA8 : GL_RGB8, x, y,
+				 0, hasAlphaChannel ? GL_RGBA : GL_RGB, GL_UNSIGNED_BYTE, data);
 	glGenerateMipmap(GL_TEXTURE_2D);
 	stbi_image_free(data);
 	return nk_image_id((int)tex);
@@ -881,8 +881,8 @@ void GUI::uiDialogBox(const char *name, std::string imgName, const char *text,
 }
 
 bool GUI::uiHorizontalSelection(int widgetWidth, std::string leftText,
-								std::string rightText, int *choice,
-								int maxSize, int height) {
+								std::string rightText, int *choice, int maxSize,
+								int height) {
 	bool tmp = false;
 	widgetWidth -= (40 + height * 2);
 	nk_layout_row_begin(&glfw.ctx, NK_STATIC, height, 4);
