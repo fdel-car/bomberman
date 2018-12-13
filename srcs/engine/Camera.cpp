@@ -83,7 +83,7 @@ void Camera::update(void) {
 }
 
 void Camera::updateDebugMode(void) {
-	if (!_isPause && _gameEngine->isKeyJustPressed(KEY_GRAVE_ACCENT)) {
+	if (!_isPause && _gameEngine->isKeyJustPressed(KEY_TAB)) {
 		_debugMode = !_debugMode;
 		// Avoid camera jump on first frame
 		_lastMousePos.x = _gameEngine->getGameRenderer()->getMousePos().x;

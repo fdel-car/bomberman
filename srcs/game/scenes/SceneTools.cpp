@@ -154,7 +154,7 @@ bool SceneTools::isPause(void) const {
 }
 
 void SceneTools::updateDebugMode(void) {
-	if (!_isPause && _gameEngine->isKeyJustPressed(KEY_GRAVE_ACCENT)) {
+	if (!_isPause && _gameEngine->isKeyJustPressed(KEY_TAB)) {
 		_debugMode = !_debugMode;
 
 		if (_debugMode) {
