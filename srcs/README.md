@@ -10,7 +10,7 @@ Normally you shouldn't have the need to modify the game engine resources, howeve
 # The AGame class (a.k.a. Where to start)
 In order to create your own game you will need to have a class which inherits from AGame. This class will contain all the infos needed by the engine to run properly, provided that you implemented all the virtual functions.
 
-The engine will require the AGame to provide some entities (Camera and Light, but also Entity list and a Skybox) for both the loading screen and the actual level that is currently playing.
+The engine will require the AGame to provide some entities (Camera and Light, but also a Entity list and a Skybox) for both the loading screen and the actual level that is currently playing.
 
 How you handle a level switch and the change of in-use entities/assets is up to you, just bear in mind that the engine will always put the loading screen between each switch and will launch a thread to let you load all your new assets without freezing the game.
 
@@ -31,7 +31,7 @@ Its main role is to run the game loop and ensuring that every logical step is do
 The GameRender object is a wrapper for a GLFW context and its main duty is to display in a OpenGL window all the entities that are given by the GameEngine.
 The order of rendering is as follow:
 - The Light is added first and the shadows are pre-calculated.
-- Then all basic Entity are rendered if they are in the field of view of the Camera.
+- Then all basic Entity, if they are in the field of view of the Camera, are rendered based on their Model.
 - The Skybox is then added.
 - Finally, the GUI object is given to the Camera in order to add any gui.
 
@@ -60,6 +60,9 @@ After the entity has been initialized by the engine, it will have a pointer on t
 #### Moving
 The second most important point is that a Entity child has no direct acces to its 3D position. In order to move your entity you will have to set the "targetMovement" attribute to something different than the identity vector. The GameEngine will then move your entity of the desired amount in the given direction, handling the collisions with all others entities and triggering "onCollisionEnter()" and "onTriggerEnter()" if a Collider has been set.
 
+#### Animations
+Even though entities of the same class will have a pointer over the same Model, each single entity will be able to play (or not) it's own animation without being affected by the others. In order to do so, some attributes like "_currentAnimName" and "_loopAnim" are available to the end user of the class.
+
 #### Scene Manager
 When instantiating any entity you may give as a parameter a pointer over another entity (usually the Camera) and it will be stored in the "_sceneManager" attribute. This will enable your levels to have a reference object to which every other entity will report to every time they move or they die.
 
@@ -70,6 +73,19 @@ This bring us to the "_needToBeDestroyed" attribute, which is a boolean checked 
 As you may have guessed, an Entity can have a Collider attached to it. Colliders are used by the GameEngine to know if an Entity can perform the requested movement or if it's not possible due to a physical collision.
 
 Beware that you can set a different "layerTag" attribute for each entity and, in your AGame instance, you will be able to define which layer collides with which. You can also change the layer of an entity at any moment during runtime, thus creating interesting changes in your gameplay.
+
+# The Model class
+We already mentioned this class in the GameRenderer but, now that we better understand how an Entity works, we will no longer delay the Model class presentation.
+This class is the sum of one or more Mesh objects with a list of Joint objects, so it's the core object you need in order to have a visual representation of your game elements.
+
+Thanks to the Assimp library, a Model may be created from both ".obj" and ".dae" files. Obviously only the latter will provide a skeleton, thus enabling the capability of animating the model.
+To add additional animations (only one can be put in a ".dae") a function called "addAnimation()" is provided.
+
+# The Mesh class
+A Mesh object organises the vertices, materials and textures of a specific model's fragment. A Mesh is usually static but it can be deformed by the influence of its linked Joint objects.
+
+# The Joint class
+A Joint is a group of position, rotation and scale values that will cause a deformation to the Model thay are owned by. These deformations will depend on the time elapsed from the beginning of the animations since we lerp between two keyframes.
 
 # The Camera class
 The Camera class is a mandatory Entity for each level of your game since the GameRenderer will use its position and rotation to draw what is visible and what is not. Moreover it's also needed if you want to draw any UI.
