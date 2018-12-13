@@ -48,7 +48,7 @@ SceneTools::SceneTools(size_t mapWidth, size_t mapHeight,
 	_neededImages.push_back(std::tuple<std::string, std::string, bool>(
 		(_assetsDir + "GUI/Icons/heart.png"), "heart", true));
 	_neededImages.push_back(std::tuple<std::string, std::string, bool>(
-		(_assetsDir + "GUI/Icons/sad_chopper.png"), "sad_chopper", true));
+		(_assetsDir + "GUI/Icons/sad_bomberman.png"), "sad_bomberman", true));
 }
 
 SceneTools::SceneTools(size_t mapWidth, size_t mapHeight,
@@ -374,7 +374,7 @@ void SceneTools::_displayDeathScreen(GUI *graphicUI) {
 		graphicUI->uiRowMultipleElem(true, rowHeight, 1);
 		graphicUI->uiAddElemInRow(rowHeight);
 		graphicUI->uiAddElemOffset((rowWidth - rowHeight) / 2);
-		graphicUI->uiSetImage("sad_chopper");
+		graphicUI->uiSetImage("sad_bomberman");
 		graphicUI->uiRowMultipleElem(false);
 
 		rowHeight += 8;
