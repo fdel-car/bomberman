@@ -29,6 +29,16 @@ MainMenu::MainMenu(WorldLocation &startLocation,
 		(_assetsDir + "GUI/Icons/BombermanWhite.png"), "BomberWhite"));
 	_neededImages.push_back(std::tuple<std::string, std::string>(
 		(_assetsDir + "GUI/Icons/BombermanBlack.png"), "BomberBlack"));
+	_neededImages.push_back(std::tuple<std::string, std::string>(
+		(_assetsDir + "GUI/Icons/maxBomb.png"), "maxBomb"));
+	_neededImages.push_back(std::tuple<std::string, std::string>(
+		(_assetsDir + "GUI/Icons/speedBoost.png"), "speedBoost"));
+	_neededImages.push_back(std::tuple<std::string, std::string>(
+		(_assetsDir + "GUI/Icons/kickBombBoost.png"), "kickBombBoost"));
+	_neededImages.push_back(std::tuple<std::string, std::string>(
+		(_assetsDir + "GUI/Icons/kickBombBoostActivated.png"), "kickBombBoostActivated"));
+	_neededImages.push_back(std::tuple<std::string, std::string>(
+		(_assetsDir + "GUI/Icons/rangeBoost.png"), "rangeBoost"));
 
 	_updateVarsFromSave();
 

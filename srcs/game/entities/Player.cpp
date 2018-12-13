@@ -12,7 +12,7 @@ Player::Player(glm::vec3 position, glm::vec3 eulerAngles, Save &save,
 		  2.0f, sceneManager, glm::vec3(1, 0, 0)),
 	  _save(save),
 	  _speed(6.0f),
-	  _maxBombs(1),
+	  _maxBombs(2),
 	  _bombCooldown(2.5f),
 	  _bombRange(2),
 	  _bombKick(false),
@@ -27,6 +27,7 @@ Player::Player(glm::vec3 position, glm::vec3 eulerAngles, Save &save,
 	shouldBeAnimated = true;
 
 	Damageable::setFlickering(0.1f, 0.3f);
+	_cam->setPerksValues(_speed, _maxBombs, _bombRange, false);
 }
 
 Player::~Player(void) {}
@@ -123,13 +124,25 @@ void Player::onDeath(void) {
 	_targetMovement *= 0;
 }
 
-void Player::gotSpeedBoost(float boost) { _speed += boost; }
+void Player::gotSpeedBoost(float boost) {
+	_speed += boost;
+	_cam->gotSpeedBoost(_speed);
+}
 
-void Player::gotBombRangeBoost(size_t boost) { _bombRange += boost; }
+void Player::gotBombRangeBoost(size_t boost) {
+	_bombRange += boost;
+	_cam->gotRangeBoost(_bombRange);
+}
 
-void Player::gotMaxBombBoost(size_t boost) { _maxBombs += boost; }
+void Player::gotMaxBombBoost(size_t boost) {
+	_maxBombs += boost;
+	_cam->gotMaxBombBoost(_maxBombs);
+}
 
-void Player::gotBombKickBoost(bool boost) { _bombKick = boost; }
+void Player::gotBombKickBoost(bool boost) {
+	_bombKick = boost;
+	_cam->gotBombKickBoost(_bombKick);
+}
 
 void Player::onCollisionEnter(Entity *entity) {
 	if (_bombKick && _gameEngine->isKeyPressed(KEY_LEFT_SHIFT)) {

@@ -854,9 +854,9 @@ void GUI::uiDialogBox(const char *name, std::string imgName, const char *text,
 			size_t printedChars = 0;
 			std::string myStr = std::string(text);
 			if ((dialogBoxHeight / 20) - 1 < nbrOfLine || nbrOfLine <= 0)
-				nbrOfLine = (dialogBoxHeight / 20) - 1;
+				nbrOfLine = (dialogBoxHeight / 25) - 1;
 			nk_layout_row_dynamic(&glfw.ctx,
-								  (dialogBoxHeight / nbrOfLine) - 1.0f, 1);
+								  (dialogBoxHeight / nbrOfLine) - 5, 1);
 			for (int i = 0; i < nbrOfLine; i++) {
 				std::string partialStr =
 					myStr.substr(printedChars, maxCharPerLine);
