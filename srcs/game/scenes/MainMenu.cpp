@@ -30,15 +30,15 @@ MainMenu::MainMenu(WorldLocation &startLocation,
 	_neededImages.push_back(std::tuple<std::string, std::string>(
 		(_assetsDir + "GUI/Icons/BombermanBlack.png"), "BomberBlack"));
 	_neededImages.push_back(std::tuple<std::string, std::string>(
-		(_assetsDir + "GUI/Icons/maxBomb.png"), "maxBomb"));
+		(_assetsDir + "GUI/Icons/maxBomb.jpg"), "maxBomb"));
 	_neededImages.push_back(std::tuple<std::string, std::string>(
-		(_assetsDir + "GUI/Icons/speedBoost.png"), "speedBoost"));
+		(_assetsDir + "GUI/Icons/speedBoost.jpg"), "speedBoost"));
 	_neededImages.push_back(std::tuple<std::string, std::string>(
-		(_assetsDir + "GUI/Icons/kickBombBoost.png"), "kickBombBoost"));
+		(_assetsDir + "GUI/Icons/kickBombBoostOff.jpg"), "kickBombBoostOff"));
 	_neededImages.push_back(std::tuple<std::string, std::string>(
-		(_assetsDir + "GUI/Icons/kickBombBoostActivated.png"), "kickBombBoostActivated"));
+		(_assetsDir + "GUI/Icons/kickBombBoostOn.jpg"), "kickBombBoostOn"));
 	_neededImages.push_back(std::tuple<std::string, std::string>(
-		(_assetsDir + "GUI/Icons/rangeBoost.png"), "rangeBoost"));
+		(_assetsDir + "GUI/Icons/rangeBoost.jpg"), "rangeBoost"));
 
 	_updateVarsFromSave();
 

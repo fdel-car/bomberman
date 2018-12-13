@@ -243,7 +243,6 @@ void SceneTools::_gameplayDisplay(GUI *graphicUI) {
 	else
 		_displayTimer(graphicUI, true);
 
-
 	int rowHeight =
 		std::min(_gameEngine->getGameRenderer()->getHeight() / 12, 50);
 	int rowWidth = _playerMaxHp * rowHeight;
@@ -253,39 +252,41 @@ void SceneTools::_gameplayDisplay(GUI *graphicUI) {
 	graphicUI->setStyle(activeStyle);
 	if (graphicUI->uiStartBlock(
 			"perksCount", "",
-			nk_rect(_gameEngine->getGameRenderer()->getWidth() - (windowWidth + 20), 30,
-					windowWidth, windowHeight),
+			nk_rect(
+				_gameEngine->getGameRenderer()->getWidth() - (windowWidth + 20),
+				30, windowWidth, windowHeight),
 			NK_WINDOW_NO_SCROLLBAR | NK_COLOR_BORDER)) {
 		graphicUI->uiRowMultipleElem(true, windowWidth / 8, 7);
-			graphicUI->uiAddElemInRow(windowWidth / 8);
-			graphicUI->uiSetImage("speedBoost");
-			graphicUI->uiAddElemInRow(windowWidth / 8);
-			if (_speedBoost < 10.0f)
-				graphicUI->uiText(std::to_string(_speedBoost).substr(0,3), NK_TEXT_CENTERED, "20_slider");
-			else
-				graphicUI->uiText(std::to_string(_speedBoost).substr(0,4), NK_TEXT_CENTERED, "20_slider");
-			graphicUI->uiAddElemInRow(windowWidth / 8);
-			graphicUI->uiSetImage("rangeBoost");
-			graphicUI->uiAddElemInRow(windowWidth / 8);
-			graphicUI->uiText(std::to_string(_rangeBoost), NK_TEXT_CENTERED, "20_slider");
-			graphicUI->uiAddElemInRow(windowWidth / 8);
-			graphicUI->uiSetImage("maxBomb");
-			graphicUI->uiAddElemInRow(windowWidth / 8);
-			graphicUI->uiText(std::to_string(_maxBombBoost), NK_TEXT_CENTERED, "20_slider");
-			graphicUI->uiAddElemInRow(windowWidth / 8);
-			if (_bombKickBoost)
-				graphicUI->uiSetImage("kickBombBoostActivated");
-			else
-				graphicUI->uiSetImage("kickBombBoost");
-
+		graphicUI->uiAddElemInRow(windowWidth / 8);
+		graphicUI->uiSetImage("speedBoost");
+		graphicUI->uiAddElemInRow(windowWidth / 8);
+		if (_speedBoost < 10.0f)
+			graphicUI->uiText(std::to_string(_speedBoost).substr(0, 3),
+							  NK_TEXT_CENTERED, "20_slider");
+		else
+			graphicUI->uiText(std::to_string(_speedBoost).substr(0, 4),
+							  NK_TEXT_CENTERED, "20_slider");
+		graphicUI->uiAddElemInRow(windowWidth / 8);
+		graphicUI->uiSetImage("rangeBoost");
+		graphicUI->uiAddElemInRow(windowWidth / 8);
+		graphicUI->uiText(std::to_string(_rangeBoost), NK_TEXT_CENTERED,
+						  "20_slider");
+		graphicUI->uiAddElemInRow(windowWidth / 8);
+		graphicUI->uiSetImage("maxBomb");
+		graphicUI->uiAddElemInRow(windowWidth / 8);
+		graphicUI->uiText(std::to_string(_maxBombBoost), NK_TEXT_CENTERED,
+						  "20_slider");
+		graphicUI->uiAddElemInRow(windowWidth / 8);
+		if (_bombKickBoost)
+			graphicUI->uiSetImage("kickBombBoostOn");
+		else
+			graphicUI->uiSetImage("kickBombBoostOff");
 
 		graphicUI->uiRowMultipleElem(false);
-
 	}
 	graphicUI->uiEndBlock();
 	activeStyle = defaultStyle;
 	graphicUI->setStyle(activeStyle);
-
 
 	if (timerCanChange && static_cast<int>(_timer) == 0) {
 		_gameEngine->playMusic("");
@@ -432,8 +433,7 @@ bool SceneTools::_btnHover(GUI *graphicUI, int rectWidth, int rectHeight,
 	fontName = std::to_string(fontSize + *extraSize) + fontName;
 	std::string id = btnName + fontName;
 	if (graphicUI->uiStartBlock(
-			id.c_str(), "",
-			nk_rect(xRectPos, yRectPos, rectWidth, rectHeight),
+			id.c_str(), "", nk_rect(xRectPos, yRectPos, rectWidth, rectHeight),
 			NK_WINDOW_NO_SCROLLBAR)) {
 		if (graphicUI->uiHover()) {
 			*isButtonHover = true;
@@ -838,14 +838,15 @@ void SceneTools::tellPlayerHp(size_t hp) {
 	}
 }
 
-void SceneTools::setPerksValues(float speed, int maxBomb, int range, bool kick) {
+void SceneTools::setPerksValues(float speed, int maxBomb, int range,
+								bool kick) {
 	_speedBoost = speed;
 	_maxBombBoost = maxBomb;
 	_rangeBoost = range;
 	_bombKickBoost = kick;
 }
 
-void SceneTools::gotSpeedBoost(float speed) { 	_speedBoost = speed; }
+void SceneTools::gotSpeedBoost(float speed) { _speedBoost = speed; }
 void SceneTools::gotRangeBoost(int range) { _rangeBoost = range; }
 void SceneTools::gotMaxBombBoost(int maxBomb) { _maxBombBoost = maxBomb; }
 void SceneTools::gotBombKickBoost(bool kick) { _bombKickBoost = kick; }
