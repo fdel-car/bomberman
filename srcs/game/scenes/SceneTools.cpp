@@ -242,6 +242,51 @@ void SceneTools::_gameplayDisplay(GUI *graphicUI) {
 		_displayTimer(graphicUI, false);
 	else
 		_displayTimer(graphicUI, true);
+
+
+	int rowHeight =
+		std::min(_gameEngine->getGameRenderer()->getHeight() / 12, 50);
+	int rowWidth = _playerMaxHp * rowHeight;
+	int windowWidth = (rowWidth + 26) * 2;
+	int windowHeight = (windowWidth / 8) + 12;
+	activeStyle[NK_COLOR_WINDOW] = nk_rgba(57, 67, 71, 150);
+	graphicUI->setStyle(activeStyle);
+	if (graphicUI->uiStartBlock(
+			"perksCount", "",
+			nk_rect(_gameEngine->getGameRenderer()->getWidth() - (windowWidth + 20), 30,
+					windowWidth, windowHeight),
+			NK_WINDOW_NO_SCROLLBAR | NK_COLOR_BORDER)) {
+		graphicUI->uiRowMultipleElem(true, windowWidth / 8, 7);
+			graphicUI->uiAddElemInRow(windowWidth / 8);
+			graphicUI->uiSetImage("speedBoost");
+			graphicUI->uiAddElemInRow(windowWidth / 8);
+			if (_speedBoost < 10.0f)
+				graphicUI->uiText(std::to_string(_speedBoost).substr(0,3), NK_TEXT_CENTERED, "20_slider");
+			else
+				graphicUI->uiText(std::to_string(_speedBoost).substr(0,4), NK_TEXT_CENTERED, "20_slider");
+			graphicUI->uiAddElemInRow(windowWidth / 8);
+			graphicUI->uiSetImage("rangeBoost");
+			graphicUI->uiAddElemInRow(windowWidth / 8);
+			graphicUI->uiText(std::to_string(_rangeBoost), NK_TEXT_CENTERED, "20_slider");
+			graphicUI->uiAddElemInRow(windowWidth / 8);
+			graphicUI->uiSetImage("maxBomb");
+			graphicUI->uiAddElemInRow(windowWidth / 8);
+			graphicUI->uiText(std::to_string(_maxBombBoost), NK_TEXT_CENTERED, "20_slider");
+			graphicUI->uiAddElemInRow(windowWidth / 8);
+			if (_bombKickBoost)
+				graphicUI->uiSetImage("kickBombBoostActivated");
+			else
+				graphicUI->uiSetImage("kickBombBoost");
+
+
+		graphicUI->uiRowMultipleElem(false);
+
+	}
+	graphicUI->uiEndBlock();
+	activeStyle = defaultStyle;
+	graphicUI->setStyle(activeStyle);
+
+
 	if (timerCanChange && static_cast<int>(_timer) == 0) {
 		_gameEngine->playMusic("");
 		_gameEngine->playSound("time_over_effect");
@@ -448,14 +493,20 @@ void SceneTools::_displayDialogue(GUI *graphicUI, int *searchWord,
 					  (_gameEngine->getGameRenderer()->getWidth() / 4)) -
 					 40) /
 					10;
+	static float timer = 0.05f;
 	maxCharPerLine = maxCharPerLine > maxCPL ? maxCPL : maxCharPerLine;
 	int nbrOfLineTmp =
 		(((_gameEngine->getGameRenderer()->getHeight() / 4) - 45) / 22) - 2;
 	nbrOfLine = nbrOfLine > nbrOfLineTmp ? nbrOfLineTmp : nbrOfLine;
 	if (nbrOfLine > 2) nbrOfLine -= 1;
+	timer -= _gameEngine->getDeltaTime();
 	if (*searchWord < (int)str.size()) {
-		*searchWord += 1;
-		if (str[*searchWord] == ' ') *lastWord = *searchWord;
+		if (timer <= 0.0f) {
+			*searchWord += 1;
+			*lastWord = *searchWord;
+			timer = 0.05f;
+		}
+		// if (str[*searchWord] == ' ') *lastWord = *searchWord;
 	} else
 		*lastWord = *searchWord;
 	if (*lastWord - *startStrIdx >= (int)maxCharPerLine * nbrOfLine)
@@ -786,6 +837,18 @@ void SceneTools::tellPlayerHp(size_t hp) {
 		_gameEngine->playMusic("");
 	}
 }
+
+void SceneTools::setPerksValues(float speed, int maxBomb, int range, bool kick) {
+	_speedBoost = speed;
+	_maxBombBoost = maxBomb;
+	_rangeBoost = range;
+	_bombKickBoost = kick;
+}
+
+void SceneTools::gotSpeedBoost(float speed) { 	_speedBoost = speed; }
+void SceneTools::gotRangeBoost(int range) { _rangeBoost = range; }
+void SceneTools::gotMaxBombBoost(int maxBomb) { _maxBombBoost = maxBomb; }
+void SceneTools::gotBombKickBoost(bool kick) { _bombKickBoost = kick; }
 
 void SceneTools::tellLevelSuccess() {
 	if (_playerHp != 0) {

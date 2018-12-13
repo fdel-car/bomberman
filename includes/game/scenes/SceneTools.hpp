@@ -87,6 +87,13 @@ class SceneTools : public Camera {
 	size_t const &getMapHeight() const;
 	std::map<size_t, Node *> const &getGraphe() const;
 	bool const &getRefreshAI() const;
+	void gotSpeedBoost(float speed);
+	void gotRangeBoost(int range);
+	void gotMaxBombBoost(int maxBomb);
+	void gotBombKickBoost(bool kick);
+	void setPerksValues(float speed, int maxBomb, int range, bool kick);
+
+
 
    protected:
 	void _initSoundsForGameplay(void);
@@ -162,6 +169,10 @@ class SceneTools : public Camera {
 	glm::vec3 _eulerAnglesPrevDebug;
 	glm::vec3 _distanceFromPlayer;
 	std::string _startMusic;
+	float _speedBoost = 0.0f;
+	int _rangeBoost = 0;
+	int _maxBombBoost = 0;
+	bool _bombKickBoost = false;
 
    private:
 	SceneTools(void);
