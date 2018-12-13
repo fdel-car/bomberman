@@ -13,8 +13,6 @@ class Space : public SceneTools {
 	virtual void tellPosition(Entity *entity);
 	virtual void update(void);
 
-	// void printMapInfo(void);
-
    private:
 	Space(void);
 	Space(Space const &src);

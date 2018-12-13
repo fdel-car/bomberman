@@ -13,8 +13,6 @@ class Pokemon : public SceneTools {
 	virtual void tellPosition(Entity *entity);
 	virtual void update(void);
 
-	// void printMapInfo(void);
-
    private:
 	Pokemon(void);
 	Pokemon(Pokemon const &src);
