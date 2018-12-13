@@ -111,7 +111,11 @@ void GameEngine::run(void) {
 
 		// Wait for other thread to finish
 		while (_sceneState != BACKGROUND_LOAD_FINISHED) {
+			_gameRenderer->getUserInput();
 			_camera->update();
+			for (auto entity : _allEntities) {
+				entity->update();
+			}
 			_gameRenderer->refreshWindow(_allEntities, _camera, _light,
 										 _skybox);
 		}
