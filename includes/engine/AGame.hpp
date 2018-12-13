@@ -58,24 +58,27 @@ class AGame {
 								// both get and set value
 
    protected:
-	std::vector<std::string> _scenesNames;
+	std::vector<std::string> _scenesNames = std::vector<std::string>();
 	int _sceneIdx;
-	std::vector<Entity *> _spawnableEntities;
-	std::vector<Entity *> _entities;
-	Camera *_camera;
-	Light *_light;
-	Skybox *_skybox;
+	std::vector<Entity *> _spawnableEntities = std::vector<Entity *>();
+	std::vector<Entity *> _entities = std::vector<Entity *>();
+	Camera *_camera = nullptr;
+	Light *_light = nullptr;
+	Skybox *_skybox = nullptr;
 
-	std::vector<Entity *> _loadingEntities;
-	Camera *_loadingCamera;
-	Light *_loadingLight;
-	Skybox *_loadingSkybox;
+	std::vector<Entity *> _loadingEntities = std::vector<Entity *>();
+	Camera *_loadingCamera = nullptr;
+	Light *_loadingLight = nullptr;
+	Skybox *_loadingSkybox = nullptr;
 
-	std::vector<std::tuple<float, std::string, std::string>> _neededFonts;
-	std::map<std::string, ModelInfo> _allAssets;
-	std::set<std::string> _neededAssets;
-	std::map<std::string, std::string> _allSounds;  // keyword -> path
-	std::set<std::string> _neededSounds;
+	std::vector<std::tuple<float, std::string, std::string>> _neededFonts =
+		std::vector<std::tuple<float, std::string, std::string>>();
+	std::map<std::string, ModelInfo> _allAssets =
+		std::map<std::string, ModelInfo>();
+	std::set<std::string> _neededAssets = std::set<std::string>();
+	std::map<std::string, std::string> _allSounds =
+		std::map<std::string, std::string>();
+	std::set<std::string> _neededSounds = std::set<std::string>();
 	std::vector<std::vector<bool>> _collisionTable;
 
 	void setLayerCollision(int layer1, int layer2, bool doCollide);

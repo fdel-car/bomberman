@@ -3,7 +3,7 @@
 Joint::Joint(std::string const &name, glm::mat4 const &offsetMatrix, int index)
 	: name(name), offsetMatrix(offsetMatrix), index(index) {}
 
-Joint::~Joint(void) {}
+Joint::~Joint(void) { _animations.clear(); }
 
 void Joint::applyAnimationTransform(double currentAnimTime,
 									std::string const &currentAnimName) {
@@ -59,7 +59,7 @@ void Joint::updateFinalTransform(void) {
 	Joint *tmp = parent;
 	std::vector<glm::mat4> transforms;
 
-	finalTransform = _toYAxisUp;
+	finalTransform = glm::mat4(1.0f);
 	while (tmp != nullptr) {
 		transforms.push_back(tmp->localTransform);
 		tmp = tmp->parent;
@@ -111,6 +111,6 @@ void Joint::setScalingKeys(std::string const &animName,
 	}
 }
 
-glm::mat4 Joint::_toYAxisUp = glm::mat4(1.0f);
-// glm::rotate(glm::mat4(1.0f), glm::radians(-90.0f),
-//										  glm::vec3(1.0, 0.0, 0.0));
+// glm::mat4 Joint::_toYAxisUp = glm::rotate(glm::mat4(1.0f),
+// glm::radians(-90.0f),
+//   glm::vec3(1.0, 0.0, 0.0));

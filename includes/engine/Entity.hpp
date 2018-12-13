@@ -35,7 +35,7 @@ class Entity {
 	std::string const &getModelName(void) const;
 	glm::vec3 const &getTargetMovement(void) const;
 	glm::vec3 const &getColor(void) const;
-	bool getNeedToBeDestroyed(void) const;
+	bool needsToBeDestroyed(void) const;
 	std::set<std::string> getNeededSounds(void) const;
 	bool doShowModel(void) const;
 
@@ -61,10 +61,10 @@ class Entity {
 	glm::vec3 _eulerAngles;
 	glm::vec3 _color = glm::vec3(-1.0f);
 
-	glm::mat4 _scaleMatrix;
+	glm::mat4 _scaleMatrix = glm::mat4(1.0f);
 	glm::mat4 _rotationMatrix;
-	glm::mat4 _translationMatrix;
-	glm::mat4 _modelMatrix;
+	glm::mat4 _translationMatrix = glm::mat4(1.0f);
+	glm::mat4 _modelMatrix = glm::mat4(1.0f);
 
 	Entity &operator=(Entity const &rhs);
 
@@ -74,17 +74,17 @@ class Entity {
 	static size_t _spawnedEntities;
 
 	size_t _id;
-	bool _needToBeDestroyed;
+	bool _needToBeDestroyed = false;
 	bool _localOrientation = true;
 	std::string _modelName;
 	std::string _name;
 	std::string _tag;
-	Entity *_sceneManager;
+	Entity *_sceneManager = nullptr;
 
-	bool _showModel;
-	Model *_model;
-	Collider *_collider;
-	GameEngine *_gameEngine;
+	bool _showModel = true;
+	Model *_model = nullptr;
+	Collider *_collider = nullptr;
+	GameEngine *_gameEngine = nullptr;
 
 	glm::vec3 _targetMovement;
 	std::set<std::string> _neededSounds;

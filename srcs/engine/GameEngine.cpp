@@ -51,8 +51,6 @@ GameEngine::GameEngine(AGame *game)
 	  _newEntities(std::vector<Entity *>()),
 	  _initialCollisionMap(std::map<size_t, std::vector<size_t>>()),
 	  _collisionTable(game->getCollisionTable()) {
-	_running = false;
-
 	// Create interface class
 	_gameRenderer = new GameRenderer(this, _game);
 	_game->setGameRenderer(_gameRenderer);
@@ -67,9 +65,6 @@ GameEngine::GameEngine(AGame *game)
 	// Thread atomic Int
 	_sceneState = BACKGROUND_LOAD_NEEDED;
 	_checkLoadSceneIsGood = false;
-	_light = nullptr;
-	_camera = nullptr;
-	_skybox = nullptr;
 
 	// Set LoadingScene variable
 	_setLoadingSceneVariables();
@@ -218,7 +213,7 @@ void GameEngine::run(void) {
 			// Delete game entities if needed
 			for (size_t idx = _allEntities.size() - 1;
 				 idx < _allEntities.size(); idx--) {
-				if (_allEntities[idx]->getNeedToBeDestroyed()) {
+				if (_allEntities[idx]->needsToBeDestroyed()) {
 					// Erase possible ingame ref
 					if (_initialCollisionMap.find(_allEntities[idx]->getId()) !=
 						_initialCollisionMap.end())
@@ -425,7 +420,7 @@ void GameEngine::_moveEntities(void) {
 	bool firstLoop = true;
 	bool hasCollided = true;
 	for (auto entity : _allEntities) {
-		if (!entity->getNeedToBeDestroyed()) {
+		if (!entity->needsToBeDestroyed()) {
 			collider = entity->getCollider();
 			collidedEntitiesBck.clear();
 			collidedEntities.clear();
@@ -492,16 +487,16 @@ void GameEngine::_moveEntities(void) {
 
 				// Collide with colliders (do not consider shortcut move yet)
 				while (!collidedEntitiesBck.empty() &&
-					   !entity->getNeedToBeDestroyed()) {
+					   !entity->needsToBeDestroyed()) {
 					idx = _checkCollision(entity, futureMovement,
 										  collidedEntitiesBck);
 					if (idx != collidedEntitiesBck.size()) {
 						hasCollided = true;
 						// Other entity will always be a collider
-						if (!collidedEntitiesBck[idx]->getNeedToBeDestroyed())
+						if (!collidedEntitiesBck[idx]->needsToBeDestroyed())
 							collidedEntitiesBck[idx]->onCollisionEnter(entity);
 						// Check if we are a trigger or a collider
-						if (!entity->getNeedToBeDestroyed()) {
+						if (!entity->needsToBeDestroyed()) {
 							if (collider->isTrigger)
 								entity->onTriggerEnter(
 									collidedEntitiesBck[idx]);
@@ -526,10 +521,10 @@ void GameEngine::_moveEntities(void) {
 					// Trigger on shortcutted entity
 
 					// Other entity will always be a collider
-					if (!shortcutEntity->getNeedToBeDestroyed())
+					if (!shortcutEntity->needsToBeDestroyed())
 						shortcutEntity->onCollisionEnter(entity);
 					// Check if we are a trigger or a collider
-					if (!entity->getNeedToBeDestroyed()) {
+					if (!entity->needsToBeDestroyed()) {
 						if (collider->isTrigger)
 							entity->onTriggerEnter(shortcutEntity);
 						else
@@ -538,7 +533,7 @@ void GameEngine::_moveEntities(void) {
 				}
 				// Trigger all triggers
 				while (!collidedTriggers.empty() &&
-					   !entity->getNeedToBeDestroyed()) {
+					   !entity->needsToBeDestroyed()) {
 					idx = _checkCollision(entity, futureMovement,
 										  collidedTriggers);
 					if (idx != collidedTriggers.size()) {
@@ -559,7 +554,7 @@ void GameEngine::_moveEntities(void) {
 			}
 
 			if ((futureMovement.x != 0 || futureMovement.z != 0) &&
-				!hasCollided && !entity->getNeedToBeDestroyed()) {
+				!hasCollided && !entity->needsToBeDestroyed()) {
 				entity->translate(futureMovement);
 			}
 		}
@@ -581,7 +576,7 @@ void GameEngine::_getPossibleCollisions(
 			if (entity->getId() == entitiesToTest[i]->getId()) continue;
 
 			// Skip if dead entity
-			if (entity->getNeedToBeDestroyed()) continue;
+			if (entity->needsToBeDestroyed()) continue;
 
 			// Skip if it's an initialCollision
 			if (_initialCollisionMap.find(entitiesToTest[i]->getId()) !=
@@ -647,7 +642,7 @@ size_t GameEngine::_checkCollision(Entity *entity, glm::vec3 &futureMovement,
 	for (auto entityToTest : collidedEntities) {
 		// 2) Check if final position collides with smth
 		// 3) Check if any other obj collides with lineA/lineB
-		if (!entityToTest->getNeedToBeDestroyed() &&
+		if (!entityToTest->needsToBeDestroyed() &&
 			(_doCollide(entity->getCollider(), futurePos, entityToTest) ||
 			 (lineA.isVertical &&
 			  _doCollide(&moveCollider, centerPos, entityToTest)) ||

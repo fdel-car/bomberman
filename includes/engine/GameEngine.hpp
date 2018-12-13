@@ -112,33 +112,32 @@ class GameEngine final {
 	void _setNewResolution();
 
 	// Graphic libraries vars
-	GameRenderer *_gameRenderer;
+	GameRenderer *_gameRenderer = nullptr;
+	AudioManager *_audioManager = nullptr;
 	Clock::time_point _frameTs;
 	Clock::time_point _lastFrameTs;
 	double _deltaTime;
-	AudioManager *_audioManager;
 
 	// Thread
-	std::thread *_loadSceneThread;
+	std::thread *_loadSceneThread = nullptr;
 	std::atomic_int _sceneState;
 	Clock::time_point _timer;
 	bool _checkLoadSceneIsGood;
 
 	// Game model vars
-	bool _running;
 	bool _restartRequest;
 
 	// Scene management vars
 	int _sceneIdx;
-	AGame *_game;
-	Camera *_camera;
-	Light *_light;
-	Skybox *_skybox;
+	AGame *_game = nullptr;
+	Camera *_camera = nullptr;
+	Light *_light = nullptr;
+	Skybox *_skybox = nullptr;
 	std::vector<Entity *> _allEntities;
 
-	Camera *_loadingCamera;
-	Light *_loadingLight;
-	Skybox *_loadingSkybox;
+	Camera *_loadingCamera = nullptr;
+	Light *_loadingLight = nullptr;
+	Skybox *_loadingSkybox = nullptr;
 	std::vector<Entity *> _loadingAllEntities;
 
 	std::vector<Entity *> _newEntities;

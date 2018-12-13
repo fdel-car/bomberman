@@ -41,6 +41,7 @@ Model::Model(std::string const &modelPath)
 }
 
 Model::~Model(void) {
+	for (auto joint : _joints) delete joint;
 	for (auto mesh : _meshes) delete mesh;
 }
 

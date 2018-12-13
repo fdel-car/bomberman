@@ -40,8 +40,6 @@ class GameRenderer final {
 	GUI *getGUI();
 	GLFWwindow *getWindow(void) const;
 
-	bool active;
-
    private:
 	static void keyCallback(GLFWwindow *window, int key, int scancode,
 							int action, int mods);
@@ -64,14 +62,14 @@ class GameRenderer final {
 
 	// General vars
 	GLFWwindow *_window = nullptr;
-	AGame *_game;
+	AGame *_game = nullptr;
 	bool _isFullScreen;
 	int _width;
 	int _height;
 	int _widthRequested;
 	int _heightRequested;
-	GLFWmonitor *_monitor;
-	const GLFWvidmode *_mode;
+	GLFWmonitor *_monitor = nullptr;
+	const GLFWvidmode *_mode = nullptr;
 
 	// Nuklear vars
 	GUI *_graphicUI;
