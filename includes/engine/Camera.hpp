@@ -37,7 +37,7 @@ class Camera : public Entity {
 	std::string _newSceneName;
 	std::map<int, nk_color> defaultStyle;
 	std::map<int, nk_color> activeStyle;
-	std::vector<std::tuple<std::string, std::string>> _neededImages;
+	std::vector<std::tuple<std::string, std::string, bool>> _neededImages;
 	void _updateData(void);
 	float _speed;
 	float _aspectRatio;

@@ -65,8 +65,8 @@ class GUI {
 	GUI(GameRenderer *gameRenderer, GLFWwindow *window,
 		std::vector<std::tuple<float, std::string, std::string>> vFontPath =
 			std::vector<std::tuple<float, std::string, std::string>>(),
-		std::vector<std::tuple<std::string, std::string>> vImagePath =
-			std::vector<std::tuple<std::string, std::string>>());
+		std::vector<std::tuple<std::string, std::string, bool>> vImagePath =
+			std::vector<std::tuple<std::string, std::string, bool>>());
 	~GUI();
 
 	static struct nk glfw;
@@ -158,7 +158,7 @@ class GUI {
 	void _setFonts(
 		std::vector<std::tuple<float, std::string, std::string>> &vFontPath);
 	void _setImages(
-		std::vector<std::tuple<std::string, std::string>> &vImagePath);
+		std::vector<std::tuple<std::string, std::string, bool>> &vImagePath);
 	struct nk_image iconLoad(const char *filename);
 
 	/*
