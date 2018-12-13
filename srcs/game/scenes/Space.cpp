@@ -46,8 +46,8 @@ void Space::configGUI(GUI *graphicUI) {
 		_buildNewDialogue(0, 0, 0, "Bomberman", "BomberBlack", str, true, 1000,
 						  1000, NK_TEXT_LEFT, "20_BOMBERMAN", "24_BOMBERMAN");
 		str =
-			"Oh yes I totally forgot about this. What am I supposed to do this "
-			"time to survive?";
+			"Oh yes, I totally forgot about that. What am I supposed to do "
+			"this time to survive?";
 		_buildNewDialogue(0, 0, 0, "Bomberman", "BomberWhite", str, false, 1000,
 						  1000, NK_TEXT_LEFT, "20_BOMBERMAN", "24_BOMBERMAN");
 		str =
