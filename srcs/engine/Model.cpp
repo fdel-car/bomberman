@@ -3,8 +3,7 @@
 extern std::string _assetsDir;
 
 Model::Model(std::string const &modelPath)
-	: _meshes(std::vector<Mesh *>()),
-	  _directory(modelPath.substr(0, modelPath.find_last_of('/'))) {
+	: _directory(modelPath.substr(0, modelPath.find_last_of('/'))) {
 	Assimp::Importer importer;
 	const aiScene *scene = importer.ReadFile(
 		_assetsDir + modelPath, aiProcess_Triangulate | aiProcess_GenNormals |

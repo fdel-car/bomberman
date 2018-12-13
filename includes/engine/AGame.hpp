@@ -58,7 +58,7 @@ class AGame {
 								// both get and set value
 
    protected:
-	std::vector<std::string> _scenesNames = std::vector<std::string>();
+	std::vector<std::string> _scenesNames;
 	int _sceneIdx;
 	std::vector<Entity *> _spawnableEntities = std::vector<Entity *>();
 	std::vector<Entity *> _entities = std::vector<Entity *>();
@@ -71,14 +71,11 @@ class AGame {
 	Light *_loadingLight = nullptr;
 	Skybox *_loadingSkybox = nullptr;
 
-	std::vector<std::tuple<float, std::string, std::string>> _neededFonts =
-		std::vector<std::tuple<float, std::string, std::string>>();
-	std::map<std::string, ModelInfo> _allAssets =
-		std::map<std::string, ModelInfo>();
-	std::set<std::string> _neededAssets = std::set<std::string>();
-	std::map<std::string, std::string> _allSounds =
-		std::map<std::string, std::string>();
-	std::set<std::string> _neededSounds = std::set<std::string>();
+	std::vector<std::tuple<float, std::string, std::string>> _neededFonts;
+	std::map<std::string, ModelInfo> _allAssets;
+	std::set<std::string> _neededAssets;
+	std::map<std::string, std::string> _allSounds;
+	std::set<std::string> _neededSounds;
 	std::vector<std::vector<bool>> _collisionTable;
 
 	void setLayerCollision(int layer1, int layer2, bool doCollide);
@@ -89,6 +86,6 @@ class AGame {
 	AGame(void);
 	virtual void _initScenes(void) = 0;
 
-	GameRenderer *_gameRenderer;
-	AudioManager *_audioManager;
+	GameRenderer *_gameRenderer = nullptr;
+	AudioManager *_audioManager = nullptr;
 };

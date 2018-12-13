@@ -4,8 +4,7 @@
 
 Camera::Camera(glm::vec3 const &pos, glm::vec3 const &eulerAngles)
 	: Entity(pos, eulerAngles, nullptr, "", "Camera", "Camera"),
-	  _newSceneIdx(-1),
-	  _newSceneName("") {
+	  _newSceneIdx(-1) {
 	_view = glm::inverse(getModelMatrix());
 	_speed = 8.0f;
 	_front = -glm::normalize(glm::vec3(getModelMatrix()[2][0],

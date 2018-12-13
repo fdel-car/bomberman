@@ -19,7 +19,7 @@ class Model final {
 	void addAnimation(std::string const &animName, std::string const &animPath);
 
    private:
-	std::vector<Mesh *> _meshes;
+	std::vector<Mesh *> _meshes = std::vector<Mesh *>();
 	std::string const _directory;
 
 	std::vector<Joint *> _joints;

@@ -46,11 +46,7 @@ GameEngine::RectanglePoints::RectanglePoints(Entity *entity,
 }
 
 GameEngine::GameEngine(AGame *game)
-	: _game(game),
-	  _allEntities(std::vector<Entity *>()),
-	  _newEntities(std::vector<Entity *>()),
-	  _initialCollisionMap(std::map<size_t, std::vector<size_t>>()),
-	  _collisionTable(game->getCollisionTable()) {
+	: _game(game), _collisionTable(game->getCollisionTable()) {
 	// Create interface class
 	_gameRenderer = new GameRenderer(this, _game);
 	_game->setGameRenderer(_gameRenderer);
@@ -165,15 +161,14 @@ void GameEngine::run(void) {
 
 			// Merge new game entities
 			if (!_newEntities.empty()) {
-				std::vector<Entity *> collidedEntities =
-					std::vector<Entity *>();
-				std::vector<Entity *> triggeredEntities =
-					std::vector<Entity *>();  // we dont really use this vector,
-											  // it's just needed by func
+				std::vector<Entity *> collidedEntities;
+				std::vector<Entity *>
+					triggeredEntities;  // We dont really use this vector,
+										// it's just needed by func
 				std::vector<Entity *> entitiesToTest = _allEntities;
 				entitiesToTest.insert(entitiesToTest.end(),
 									  _newEntities.begin(), _newEntities.end());
-				std::vector<size_t> initialCollisions = std::vector<size_t>();
+				std::vector<size_t> initialCollisions;
 				for (auto newEntity : _newEntities) {
 					if (newEntity->getCollider() == nullptr ||
 						newEntity->getCollider()->isTrigger)
@@ -406,9 +401,9 @@ void GameEngine::_loadScene(size_t newSceneIdx, std::atomic_int *_sceneState,
 void GameEngine::_moveEntities(void) {
 	const Collider *collider;
 	bool isShortcut = false;
-	std::vector<Entity *> collidedEntitiesBck = std::vector<Entity *>();
-	std::vector<Entity *> collidedEntities = std::vector<Entity *>();
-	std::vector<Entity *> collidedTriggers = std::vector<Entity *>();
+	std::vector<Entity *> collidedEntitiesBck;
+	std::vector<Entity *> collidedEntities;
+	std::vector<Entity *> collidedTriggers;
 	Entity *shortcutEntity;
 	glm::vec3 futureMovement = glm::vec3();
 	glm::vec3 shortcutMovement = glm::vec3();

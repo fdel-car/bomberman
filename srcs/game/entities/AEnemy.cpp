@@ -13,8 +13,7 @@ AEnemy::AEnemy(glm::vec3 position, glm::vec3 eulerAngles, std::string name,
 	  _resetMoveCoolDown(0.0f),
 	  _doMeleeDmg(doMeleeDmg),
 	  _hasSpawned(false),
-	  _toSpawn(toSpawn),
-	  _damagingSounds(std::vector<std::string>()) {
+	  _toSpawn(toSpawn) {
 	scale(glm::vec3(0.8, 0.8, 0.8));
 
 	_neededSounds.insert("damage_1");
@@ -220,7 +219,8 @@ void AEnemy::walk(SceneTools *cam) {
 				shouldBeAnimated = true;
 				float angle;
 				if (xDirection < 0)
-					angle = 360.0f - glm::degrees(atan2(xDirection, zDirection) * -1);
+					angle = 360.0f -
+							glm::degrees(atan2(xDirection, zDirection) * -1);
 				else
 					angle = glm::degrees(atan2(xDirection, zDirection));
 				rotateY(angle - _rotationAngle);

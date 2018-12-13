@@ -43,12 +43,12 @@ struct device {
 };
 
 struct nk {
-	GLFWwindow *win;
+	GLFWwindow *win = nullptr;
 	int width, height;
 	int display_width, display_height;
 	struct device ogl;
 	struct nk_context ctx;
-	struct nk_font_atlas *atlas;
+	struct nk_font_atlas *atlas = nullptr;
 	struct nk_vec2 fb_scale;
 	unsigned int text[NK_GLFW_TEXT_MAX];
 	int text_len;
@@ -108,7 +108,8 @@ class GUI {
 					 nk_flags textPosition = NK_TEXT_LEFT,
 					 std::string fontText = "", std::string fontTitle = "");
 	bool uiHorizontalSelection(int widgetWidth, std::string leftText,
-							   std::string rightText, int *choice, int maxSize, int height);
+							   std::string rightText, int *choice, int maxSize,
+							   int height);
 	bool uiHover();
 	void uiEditString(nk_flags flags, char *fieldBuffer, int *len, int max,
 					  nk_plugin_filter filter);
@@ -121,7 +122,7 @@ class GUI {
 	void uiAddElemOffset(int offset);
 
    private:
-	GameRenderer *_gameRenderer;
+	GameRenderer *_gameRenderer = nullptr;
 
 	GUI();
 	GUI(GUI const &src);

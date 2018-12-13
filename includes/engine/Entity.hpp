@@ -86,7 +86,7 @@ class Entity {
 	Collider *_collider = nullptr;
 	GameEngine *_gameEngine = nullptr;
 
-	glm::vec3 _targetMovement;
+	glm::vec3 _targetMovement = glm::vec3(0.0f);
 	std::set<std::string> _neededSounds;
 	std::vector<std::string> _initSounds;
 	std::vector<std::string> _destroySounds;

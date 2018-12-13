@@ -16,7 +16,6 @@ Player::Player(glm::vec3 position, glm::vec3 eulerAngles, Save &save,
 	  _bombCooldown(2.5f),
 	  _bombRange(2),
 	  _bombKick(false),
-	  _bombTimers(std::vector<float>()),
 	  _cam(dynamic_cast<SceneTools *>(_sceneManager)) {
 	if (_cam != nullptr) {
 		_cam->tellPlayerHp(_hp);
@@ -100,16 +99,16 @@ void Player::update(void) {
 	_targetMovement.z = zDirection * _speed * deltaTime;
 }
 
-void Player::onTakeDamage(std::vector<std::string> demagingSounds) {
+void Player::onTakeDamage(std::vector<std::string> damagingSounds) {
 	Damageable::onTakeDamage();
 	if (_cam != nullptr) {
 		_cam->tellPlayerHp(_hp);
 	}
 
 	if (_hp > 0) {
-		if (demagingSounds.size() != 0) {
-			int randomIdx = rand() % demagingSounds.size();
-			_gameEngine->playSound(demagingSounds[randomIdx]);
+		if (damagingSounds.size() != 0) {
+			int randomIdx = rand() % damagingSounds.size();
+			_gameEngine->playSound(damagingSounds[randomIdx]);
 		}
 	} else {
 		_gameEngine->playSound("defeat_effect");

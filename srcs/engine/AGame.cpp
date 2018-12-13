@@ -1,10 +1,8 @@
 #include "engine/AGame.hpp"
 
-ModelInfo::ModelInfo(void)
-	: modelPath(""), animMap(std::map<std::string, std::string>()) {}
+ModelInfo::ModelInfo(void) {}
 
-ModelInfo::ModelInfo(std::string modelPath)
-	: modelPath(modelPath), animMap(std::map<std::string, std::string>()) {}
+ModelInfo::ModelInfo(std::string modelPath) : modelPath(modelPath) {}
 
 ModelInfo::ModelInfo(std::string modelPath,
 					 std::map<std::string, std::string> animMap)

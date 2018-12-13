@@ -75,10 +75,10 @@ class GameRenderer final {
 	GUI *_graphicUI;
 
 	// Rendering vars
-	ShaderProgram *_shaderProgram;
-	ShaderProgram *_shadowShaderProgram;
-	ShaderProgram *_skyboxShaderProgram;
-	std::map<std::string, Model *> _models;
+	ShaderProgram *_shaderProgram = nullptr;
+	ShaderProgram *_shadowShaderProgram = nullptr;
+	ShaderProgram *_skyboxShaderProgram = nullptr;
+	std::map<std::string, Model *> _models = std::map<std::string, Model *>();
 	std::vector<std::string> _toDelete;  // Models to delete
 
 	// Shadow

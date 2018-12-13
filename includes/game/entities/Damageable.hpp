@@ -8,14 +8,14 @@ class Damageable : public Entity {
 			   std::string modelName, std::string name, std::string tag,
 			   size_t hp, int baseLayer, int damagedLayer,
 			   float _damagedMaxTime, Entity *sceneManager = nullptr,
-			   glm::vec3 damagedColor = glm::vec3(-1));
+			   glm::vec3 damagedColor = glm::vec3(-1.0f));
 	~Damageable(void);
 
 	virtual void update(void);
 	virtual void takeDamage(
-		std::vector<std::string> demagingSounds = std::vector<std::string>());
+		std::vector<std::string> damagingSounds = std::vector<std::string>());
 	virtual void onTakeDamage(
-		std::vector<std::string> demagingSounds = std::vector<std::string>());
+		std::vector<std::string> damagingSounds = std::vector<std::string>());
 	virtual void onDeath(void);
 
    protected:

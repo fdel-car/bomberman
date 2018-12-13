@@ -135,7 +135,7 @@ class SceneTools : public Camera {
 	void _clearGraphe(void);
 	void _describeNode(Node *n);
 
-	Bomberman *_bomberman;
+	Bomberman *_bomberman = nullptr;
 	Save &_save;
 	bool _slowGUIAnimation;
 	size_t _playerPos;
@@ -148,8 +148,9 @@ class SceneTools : public Camera {
 	size_t _mapWidth;
 	size_t _mapHeight;
 	std::map<size_t, std::vector<size_t>> _entitiesInfos;
-	std::vector<std::map<size_t, Entity *>> _entitiesInSquares;
-	std::map<size_t, Node *> _graphe;
+	std::vector<std::map<size_t, Entity *>> _entitiesInSquares =
+		std::vector<std::map<size_t, Entity *>>();
+	std::map<size_t, Node *> _graphe = std::map<size_t, Node *>();
 	std::vector<std::string>
 		_staticDecor;  // Decor who can't be destroy (like arena walls)
 	std::vector<std::string>
@@ -171,14 +172,14 @@ class SceneTools : public Camera {
 
 	float _xOffset = static_cast<float>(_mapWidth) / 2;
 	float _zOffset = static_cast<float>(_mapHeight) / 2;
-	std::vector<Dialogue> _dialogues = std::vector<Dialogue>();
+	std::vector<Dialogue> _dialogues;
 	WorldLocation _currentLocation;
 	WorldLocation _dialogueLocation;
 	WorldLocation _gameplayLocation;
 	glm::vec3 _pastRotation;
 	float _transitionTime;
 	float _transitionElapsedTime = 0.0f;
-	std::vector<Node *> nodePool;
+	std::vector<Node *> nodePool = std::vector<Node *>();
 	std::string _ownLvlName;
 	std::string _startLvlName;
 	std::string _nextLvlName;

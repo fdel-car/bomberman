@@ -24,7 +24,7 @@ class Skybox : public Entity {
 	void _initData(void);
 
 	std::vector<std::string> _faces;
-	std::vector<unsigned char *> _datas;
+	std::vector<unsigned char *> _datas = std::vector<unsigned char *>();
 	int _width;
 	int _height;
 	std::string nameTextureDir;

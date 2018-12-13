@@ -50,8 +50,7 @@ class Joint final {
 
    private:
 	// static glm::mat4 _toYAxisUp;
-	std::map<std::string, Animation> _animations =
-		std::map<std::string, Animation>();
+	std::map<std::string, Animation> _animations;
 
 	Joint(void);
 	Joint(Joint const &src);

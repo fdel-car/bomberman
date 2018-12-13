@@ -31,8 +31,7 @@ void from_json(const nlohmann::json& j, Save& p) {
 }
 
 const std::vector<std::tuple<std::string, size_t, size_t>> getResolutions() {
-	std::vector<std::tuple<std::string, size_t, size_t>> res =
-		std::vector<std::tuple<std::string, size_t, size_t>>();
+	std::vector<std::tuple<std::string, size_t, size_t>> res;
 	res.push_back(std::make_tuple("1024x576", 1024, 576));
 	res.push_back(std::make_tuple("1280x720 (HD)", 1280, 720));
 	res.push_back(std::make_tuple("1920x1080 (FHD)", 1920, 1080));
@@ -43,8 +42,7 @@ const std::vector<std::tuple<std::string, size_t, size_t>> Save::RESOLUTIONS =
 	getResolutions();
 
 const std::vector<std::tuple<std::string, bool>> getFullScreen() {
-	std::vector<std::tuple<std::string, bool>> res =
-		std::vector<std::tuple<std::string, bool>>();
+	std::vector<std::tuple<std::string, bool>> res;
 	res.push_back(std::make_tuple("No", false));
 	res.push_back(std::make_tuple("Yes", true));
 	return res;
@@ -53,8 +51,7 @@ const std::vector<std::tuple<std::string, bool>> Save::FULL_SCREEN =
 	getFullScreen();
 
 const std::vector<std::tuple<std::string, int>> getVolumeOptions() {
-	std::vector<std::tuple<std::string, int>> res =
-		std::vector<std::tuple<std::string, int>>();
+	std::vector<std::tuple<std::string, int>> res;
 	res.push_back(std::make_tuple("0", 0));
 	res.push_back(std::make_tuple("1", 1));
 	res.push_back(std::make_tuple("2", 2));

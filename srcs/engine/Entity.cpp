@@ -19,11 +19,7 @@ Entity::Entity(glm::vec3 position, glm::vec3 eulerAngles, Collider *collider,
 	  _name(name),
 	  _tag(tag),
 	  _sceneManager(sceneManager),
-	  _collider(collider),
-	  _targetMovement(glm::vec3()),
-	  _neededSounds(std::set<std::string>()),
-	  _initSounds(std::vector<std::string>()),
-	  _destroySounds(std::vector<std::string>()) {
+	  _collider(collider) {
 	_translationMatrix[3][0] = position.x;
 	_translationMatrix[3][1] = position.y;
 	_translationMatrix[3][2] = position.z;

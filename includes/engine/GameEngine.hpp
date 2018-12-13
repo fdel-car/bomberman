@@ -133,12 +133,12 @@ class GameEngine final {
 	Camera *_camera = nullptr;
 	Light *_light = nullptr;
 	Skybox *_skybox = nullptr;
-	std::vector<Entity *> _allEntities;
+	std::vector<Entity *> _allEntities = std::vector<Entity *>();
 
 	Camera *_loadingCamera = nullptr;
 	Light *_loadingLight = nullptr;
 	Skybox *_loadingSkybox = nullptr;
-	std::vector<Entity *> _loadingAllEntities;
+	std::vector<Entity *> _loadingAllEntities = std::vector<Entity *>();
 
 	std::vector<Entity *> _newEntities;
 	std::map<size_t, std::vector<size_t>> _initialCollisionMap;

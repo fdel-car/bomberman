@@ -11,9 +11,7 @@ GameRenderer::GameRenderer(GameEngine *gameEngine, AGame *game)
 	: _game(game),
 	  _isFullScreen(game->isFullScreen()),
 	  _widthRequested(game->getWindowWidth()),
-	  _heightRequested(game->getWindowHeight()),
-	  _models(std::map<std::string, Model *>()),
-	  _toDelete(std::vector<std::string>()) {
+	  _heightRequested(game->getWindowHeight()) {
 	_gameEngine = gameEngine;
 	glfwSetErrorCallback(errorCallback);
 	if (!glfwInit()) throw std::runtime_error("Failed to initialize GLFW");

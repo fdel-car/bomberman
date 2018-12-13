@@ -3,10 +3,7 @@
 extern std::string _assetsDir;
 
 AudioManager::AudioManager(int musicVolume, int soundsVolume)
-	: _musicVolume(musicVolume),
-	  _soundsVolume(soundsVolume),
-	  _soundPlayers(std::vector<sf::Sound>()),
-	  _soundsMap(std::map<std::string, sf::SoundBuffer>()) {
+	: _musicVolume(musicVolume), _soundsVolume(soundsVolume) {
 	_musicPlayer.setLoop(true);
 	_musicPlayer.setVolume(_musicVolume);
 }

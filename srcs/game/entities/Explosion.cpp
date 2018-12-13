@@ -9,8 +9,7 @@ Explosion::Explosion(glm::vec3 position, Entity *sceneManager)
 			 new Collider(Collider::Rectangle, LayerTag::ExplosionLayer, 0.45f,
 						  0.45f, true),
 			 "Sphere", "Explosion", "Explosion", sceneManager),
-	  _timer(1.0f),
-	  _damagingSounds(std::vector<std::string>()) {
+	  _timer(1.0f) {
 	scale(glm::vec3(0.8, 0.8, 0.8));
 	setColor(glm::vec3(0.8, 0.6, 0.2));
 	_damagingSounds.push_back("burn_player_1");
