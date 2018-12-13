@@ -149,6 +149,7 @@ void Bomberman::initAllAssets(void) {
 	_allAssets["RockPipe"] = ModelInfo("Models/RockPipe/RockPipe.obj");
 	_allAssets["Pipe"] = ModelInfo("Models/Pipe/Pipe.obj");
 	_allAssets["CloudMap"] = ModelInfo("Models/CloudMap/CloudMap.obj");
+	_allAssets["Fire"] = ModelInfo("Models/Flame/Flame.obj");
 }
 
 void Bomberman::initAllSounds(void) {
@@ -260,13 +261,13 @@ void Bomberman::_forest(void) {
 
 	// Droppped Assets
 	_neededAssets.insert("Bomb");
-	_neededAssets.insert("Sphere");
 	_neededAssets.insert("Portal");
 	_neededAssets.insert("KickPerk");
 	_neededAssets.insert("DamagePerk");
 	_neededAssets.insert("MaxBombPerk");
 	_neededAssets.insert("RangePerk");
 	_neededAssets.insert("SpeedPerk");
+	_neededAssets.insert("Fire");
 
 	// Dropped sounds
 	_neededSounds.insert("portal_spawn");
@@ -330,13 +331,13 @@ void Bomberman::_pokemon(void) {
 
 	// Force add of models (for entities that may be dropped randomly)
 	_neededAssets.insert("Bomb");
-	_neededAssets.insert("Sphere");
 	_neededAssets.insert("Portal");
 	_neededAssets.insert("KickPerk");
 	_neededAssets.insert("DamagePerk");
 	_neededAssets.insert("MaxBombPerk");
 	_neededAssets.insert("RangePerk");
 	_neededAssets.insert("SpeedPerk");
+	_neededAssets.insert("Fire");
 
 	// Dropped sounds
 	_neededSounds.insert("portal_spawn");
@@ -445,13 +446,13 @@ void Bomberman::_mario(void) {
 
 	// Force add of models (for entities that may be dropped randomly)
 	_neededAssets.insert("Bomb");
-	_neededAssets.insert("Sphere");
 	_neededAssets.insert("Portal");
 	_neededAssets.insert("KickPerk");
 	_neededAssets.insert("DamagePerk");
 	_neededAssets.insert("MaxBombPerk");
 	_neededAssets.insert("RangePerk");
 	_neededAssets.insert("SpeedPerk");
+	_neededAssets.insert("Fire");
 
 	// Dropped sounds
 	_neededSounds.insert("portal_spawn");
@@ -572,13 +573,13 @@ void Bomberman::_space(void) {
 
 	// Assets
 	_neededAssets.insert("Bomb");
-	_neededAssets.insert("Sphere");
 	_neededAssets.insert("Portal");
 	_neededAssets.insert("KickPerk");
 	_neededAssets.insert("DamagePerk");
 	_neededAssets.insert("MaxBombPerk");
 	_neededAssets.insert("RangePerk");
 	_neededAssets.insert("SpeedPerk");
+	_neededAssets.insert("Fire");
 
 	// Dropped sounds
 	_neededSounds.insert("portal_spawn");

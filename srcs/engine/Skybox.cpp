@@ -79,11 +79,16 @@ void Skybox::_initCubeMap(void) {
 
 void Skybox::_initData(void) {
 	int nrChannels;
-	for (unsigned int i = 0; i < _faces.size(); i++) {
-		_datas.push_back(
-			stbi_load(_faces[i].c_str(), &_width, &_height, &nrChannels, 0));
-		if (!_datas[i])
-			std::cout << "Cubemap texture failed to load at path: " << _faces[i]
-					  << std::endl;
+	try {
+		for (unsigned int i = 0; i < _faces.size(); i++) {
+			_datas.push_back(stbi_load(_faces[i].c_str(), &_width, &_height,
+									   &nrChannels, 0));
+			if (!_datas[i]) {
+				throw std::runtime_error("Cannot load Skybox at path: " +
+										 _faces[i]);
+			}
+		}
+	} catch (const std::runtime_error &err) {
+		std::cerr << err.what() << std::endl;
 	}
 }
