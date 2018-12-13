@@ -37,7 +37,6 @@ GameRenderer::~GameRenderer(void) {
 	if (_skyboxShaderProgram) delete _skyboxShaderProgram;
 	if (_window) glfwDestroyWindow(_window);
 	glfwTerminate();
-	return;
 }
 
 void GameRenderer::_initWindow(void) {

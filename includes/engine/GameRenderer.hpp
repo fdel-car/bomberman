@@ -72,7 +72,7 @@ class GameRenderer final {
 	const GLFWvidmode *_mode = nullptr;
 
 	// Nuklear vars
-	GUI *_graphicUI;
+	GUI *_graphicUI = nullptr;
 
 	// Rendering vars
 	ShaderProgram *_shaderProgram = nullptr;
