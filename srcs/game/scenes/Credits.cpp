@@ -207,14 +207,6 @@ void Credits::configGUI(GUI *graphicUI) {
 		std::tuple<std::string, std::string>("Fabien Del Carmen", "20_slider"));
 
 	_credits.push_back(std::tuple<std::string, std::string>("", "20_slider"));
-	_credits.push_back(std::tuple<std::string, std::string>(
-		"Daily stand-up dodger", "34_slider"));
-	_credits.push_back(
-		std::tuple<std::string, std::string>("Jimmy Chen Ma", "20_slider"));
-	_credits.push_back(
-		std::tuple<std::string, std::string>("Vivien Klaousen", "20_slider"));
-
-	_credits.push_back(std::tuple<std::string, std::string>("", "20_slider"));
 	_credits.push_back(
 		std::tuple<std::string, std::string>("Nuklear lead dev", "34_slider"));
 	_credits.push_back(
