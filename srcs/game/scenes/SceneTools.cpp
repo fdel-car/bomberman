@@ -48,7 +48,7 @@ SceneTools::SceneTools(size_t mapWidth, size_t mapHeight,
 	_neededImages.push_back(std::tuple<std::string, std::string, bool>(
 		(_assetsDir + "GUI/Icons/heart.png"), "heart", true));
 	_neededImages.push_back(std::tuple<std::string, std::string, bool>(
-		(_assetsDir + "GUI/Icons/sad_bomberman.png"), "sad_bomberman", true));
+		(_assetsDir + "GUI/Icons/sad_bomberman.png"), "sad_bomberman", false));
 }
 
 SceneTools::SceneTools(size_t mapWidth, size_t mapHeight,
