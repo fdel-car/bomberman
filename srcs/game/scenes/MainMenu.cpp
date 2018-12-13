@@ -12,9 +12,11 @@ MainMenu::MainMenu(WorldLocation &startLocation,
 				 bomberman->getStartLevelName()),
 	  _levelsName(levelsName) {
 	_neededImages.push_back(std::tuple<std::string, std::string, bool>(
-		(_assetsDir + "GUI/Icons/rightAngleBracket.png"), "rightAngleBracket", true));
+		(_assetsDir + "GUI/Icons/rightAngleBracket.png"), "rightAngleBracket",
+		true));
 	_neededImages.push_back(std::tuple<std::string, std::string, bool>(
-		(_assetsDir + "GUI/Icons/leftAngleBracket.png"), "leftAngleBracket", true));
+		(_assetsDir + "GUI/Icons/leftAngleBracket.png"), "leftAngleBracket",
+		true));
 	_neededImages.push_back(std::tuple<std::string, std::string, bool>(
 		(_assetsDir + "GUI/Icons/MainMenuTitle.png"), "title", true));
 	_neededImages.push_back(std::tuple<std::string, std::string, bool>(
@@ -34,9 +36,11 @@ MainMenu::MainMenu(WorldLocation &startLocation,
 	_neededImages.push_back(std::tuple<std::string, std::string, bool>(
 		(_assetsDir + "GUI/Icons/speedBoost.png"), "speedBoost", true));
 	_neededImages.push_back(std::tuple<std::string, std::string, bool>(
-		(_assetsDir + "GUI/Icons/kickBombBoost.png"), "kickBombBoost", true));
+		(_assetsDir + "GUI/Icons/kickBombBoostOff.png"), "kickBombBoostOff",
+		true));
 	_neededImages.push_back(std::tuple<std::string, std::string, bool>(
-		(_assetsDir + "GUI/Icons/kickBombBoostActivated.png"), "kickBombBoostActivated", true));
+		(_assetsDir + "GUI/Icons/kickBombBoostOn.png"), "kickBombBoostOn",
+		true));
 	_neededImages.push_back(std::tuple<std::string, std::string, bool>(
 		(_assetsDir + "GUI/Icons/rangeBoost.png"), "rangeBoost", true));
 
