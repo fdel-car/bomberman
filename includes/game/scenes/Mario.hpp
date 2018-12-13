@@ -13,8 +13,6 @@ class Mario : public SceneTools {
 	virtual void tellPosition(Entity *entity);
 	virtual void update(void);
 
-	// void printMapInfo(void);
-
    private:
 	Mario(void);
 	Mario(Mario const &src);

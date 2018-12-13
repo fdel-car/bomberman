@@ -59,7 +59,10 @@ void Model::updateBoneTransforms(double *animTime, std::string &animName,
 	if (_animated) {
 		double tmp = *animTime + deltaTime * speed;
 		if (tmp + EPSILON >= _animLengths[animName]) {
-			if (loop) *animTime = 0.0;
+			if (loop)
+				*animTime = 0.0;
+			else
+				*animTime = _animLengths[animName] - EPSILON;
 		} else
 			*animTime = tmp;
 		if (_animLengths.find(animName) == _animLengths.end()) {

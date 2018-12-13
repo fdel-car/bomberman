@@ -71,7 +71,9 @@ class SceneTools : public Camera {
 	virtual void tellDestruction(Entity *entity);
 	virtual void configAI(void);
 
-	void printMapInfo(void);
+	// debug for IA
+	// void printMapInfo(void);
+
 	bool canPutBomb(float xCenter, float zCenter);
 	bool putBomb(float xCenter, float zCenter, float explosionTimer,
 				 size_t range);
@@ -92,8 +94,6 @@ class SceneTools : public Camera {
 	void gotMaxBombBoost(int maxBomb);
 	void gotBombKickBoost(bool kick);
 	void setPerksValues(float speed, int maxBomb, int range, bool kick);
-
-
 
    protected:
 	void _initSoundsForGameplay(void);
@@ -129,7 +129,7 @@ class SceneTools : public Camera {
 	// Display during gameplay
 	void _gameplayDisplay(GUI *graphicUI);
 	bool _displayPauseMenu(GUI *graphicUI);
-	void _displayPlayerHP(GUI *graphicUI, size_t hp);
+	void _displayPlayerHP(GUI *graphicUI);
 	void _displayVictoryScreen(GUI *graphicUI);
 	void _displayDeathScreen(GUI *graphicUI);
 	void _displayTimer(GUI *graphicUI, bool isPause);

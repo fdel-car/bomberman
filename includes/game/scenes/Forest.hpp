@@ -13,8 +13,6 @@ class Forest : public SceneTools {
 	virtual void tellPosition(Entity *entity);
 	virtual void update(void);
 
-	// void printMapInfo(void);
-
    private:
 	Forest(void);
 	Forest(Forest const &src);

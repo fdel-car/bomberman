@@ -234,7 +234,7 @@ void SceneTools::_gameplayDisplay(GUI *graphicUI) {
 		} else if (_showDeathScreen) {
 			_displayDeathScreen(graphicUI);
 		}
-		_displayPlayerHP(graphicUI, _playerHp);
+		_displayPlayerHP(graphicUI);
 	}
 
 	bool timerCanChange = static_cast<int>(_timer) > 0;
@@ -242,7 +242,6 @@ void SceneTools::_gameplayDisplay(GUI *graphicUI) {
 		_displayTimer(graphicUI, false);
 	else
 		_displayTimer(graphicUI, true);
-
 
 	int rowHeight =
 		std::min(_gameEngine->getGameRenderer()->getHeight() / 12, 50);
@@ -253,39 +252,41 @@ void SceneTools::_gameplayDisplay(GUI *graphicUI) {
 	graphicUI->setStyle(activeStyle);
 	if (graphicUI->uiStartBlock(
 			"perksCount", "",
-			nk_rect(_gameEngine->getGameRenderer()->getWidth() - (windowWidth + 20), 30,
-					windowWidth, windowHeight),
+			nk_rect(
+				_gameEngine->getGameRenderer()->getWidth() - (windowWidth + 20),
+				20, windowWidth, windowHeight),
 			NK_WINDOW_NO_SCROLLBAR | NK_COLOR_BORDER)) {
 		graphicUI->uiRowMultipleElem(true, windowWidth / 8, 7);
-			graphicUI->uiAddElemInRow(windowWidth / 8);
-			graphicUI->uiSetImage("speedBoost");
-			graphicUI->uiAddElemInRow(windowWidth / 8);
-			if (_speedBoost < 10.0f)
-				graphicUI->uiText(std::to_string(_speedBoost).substr(0,3), NK_TEXT_CENTERED, "20_slider");
-			else
-				graphicUI->uiText(std::to_string(_speedBoost).substr(0,4), NK_TEXT_CENTERED, "20_slider");
-			graphicUI->uiAddElemInRow(windowWidth / 8);
-			graphicUI->uiSetImage("rangeBoost");
-			graphicUI->uiAddElemInRow(windowWidth / 8);
-			graphicUI->uiText(std::to_string(_rangeBoost), NK_TEXT_CENTERED, "20_slider");
-			graphicUI->uiAddElemInRow(windowWidth / 8);
-			graphicUI->uiSetImage("maxBomb");
-			graphicUI->uiAddElemInRow(windowWidth / 8);
-			graphicUI->uiText(std::to_string(_maxBombBoost), NK_TEXT_CENTERED, "20_slider");
-			graphicUI->uiAddElemInRow(windowWidth / 8);
-			if (_bombKickBoost)
-				graphicUI->uiSetImage("kickBombBoostActivated");
-			else
-				graphicUI->uiSetImage("kickBombBoost");
-
+		graphicUI->uiAddElemInRow(windowWidth / 8);
+		graphicUI->uiSetImage("speedBoost");
+		graphicUI->uiAddElemInRow(windowWidth / 8);
+		if (_speedBoost < 10.0f)
+			graphicUI->uiText(std::to_string(_speedBoost).substr(0, 3),
+							  NK_TEXT_CENTERED, "20_slider");
+		else
+			graphicUI->uiText(std::to_string(_speedBoost).substr(0, 4),
+							  NK_TEXT_CENTERED, "20_slider");
+		graphicUI->uiAddElemInRow(windowWidth / 8);
+		graphicUI->uiSetImage("rangeBoost");
+		graphicUI->uiAddElemInRow(windowWidth / 8);
+		graphicUI->uiText(std::to_string(_rangeBoost), NK_TEXT_CENTERED,
+						  "20_slider");
+		graphicUI->uiAddElemInRow(windowWidth / 8);
+		graphicUI->uiSetImage("maxBomb");
+		graphicUI->uiAddElemInRow(windowWidth / 8);
+		graphicUI->uiText(std::to_string(_maxBombBoost), NK_TEXT_CENTERED,
+						  "20_slider");
+		graphicUI->uiAddElemInRow(windowWidth / 8);
+		if (_bombKickBoost)
+			graphicUI->uiSetImage("kickBombBoostOn");
+		else
+			graphicUI->uiSetImage("kickBombBoostOff");
 
 		graphicUI->uiRowMultipleElem(false);
-
 	}
 	graphicUI->uiEndBlock();
 	activeStyle = defaultStyle;
 	graphicUI->setStyle(activeStyle);
-
 
 	if (timerCanChange && static_cast<int>(_timer) == 0) {
 		_gameEngine->playMusic("");
@@ -295,14 +296,14 @@ void SceneTools::_gameplayDisplay(GUI *graphicUI) {
 	}
 }
 
-void SceneTools::_displayPlayerHP(GUI *graphicUI, size_t hp) {
+void SceneTools::_displayPlayerHP(GUI *graphicUI) {
 	int rowHeight =
 		std::min(_gameEngine->getGameRenderer()->getHeight() / 12, 50);
 	int rowWidth = _playerMaxHp * rowHeight;
-	int windowWidth = rowWidth + 26;
-	int windowHeight = rowHeight + 10;
-	(void)hp;
-	// (void)rowHeight;
+	int windowWidth = (rowWidth + 26) * 2;
+	int windowHeight = (windowWidth / 8) + 12;
+	windowWidth /= 2;
+
 	activeStyle[NK_COLOR_WINDOW] = nk_rgba(57, 67, 71, 150);
 
 	graphicUI->setStyle(activeStyle);
@@ -333,11 +334,7 @@ void SceneTools::_displayVictoryScreen(GUI *graphicUI) {
 	int windowWidth = _gameEngine->getGameRenderer()->getWidth() / 4;
 	int windowHeight = _gameEngine->getGameRenderer()->getHeight() / 3;
 	int rowHeight = (windowHeight / 3) - 17;
-	// int rowWidth = windowWidth - 10;
-	// int blockXPadding = 8;
-	// (void)rowWidth;
-	// (void)rowHeight;
-	// return;
+
 	if (graphicUI->uiStartBlock(
 			"VictoryScreen", "Victory !",
 			nk_rect((_gameEngine->getGameRenderer()->getWidth() / 2) -
@@ -432,8 +429,7 @@ bool SceneTools::_btnHover(GUI *graphicUI, int rectWidth, int rectHeight,
 	fontName = std::to_string(fontSize + *extraSize) + fontName;
 	std::string id = btnName + fontName;
 	if (graphicUI->uiStartBlock(
-			id.c_str(), "",
-			nk_rect(xRectPos, yRectPos, rectWidth, rectHeight),
+			id.c_str(), "", nk_rect(xRectPos, yRectPos, rectWidth, rectHeight),
 			NK_WINDOW_NO_SCROLLBAR)) {
 		if (graphicUI->uiHover()) {
 			*isButtonHover = true;
@@ -647,12 +643,9 @@ void SceneTools::_savePositions(Entity *entity) {
 
 	// Save Player position
 	if (entity->getTag().compare("Player") == 0) {
-		// std::cout << xCoord << " " << zCoord << std::endl;
 		size_t MIN_DISTANCE_FROM_WALL_TO_MOVE_CAM = 5;
 		int FOLLOW_CORRECTION = static_cast<int>(_mapHeight / 2) -
-								MIN_DISTANCE_FROM_WALL_TO_MOVE_CAM;  // 3
-		// std::cout << "FOLLOW_CORRECTION " << FOLLOW_CORRECTION <<
-		// std::endl;
+								MIN_DISTANCE_FROM_WALL_TO_MOVE_CAM;
 		FOLLOW_CORRECTION = 3;
 		_playerPos = vectorIdx;
 		// Move cam
@@ -713,25 +706,26 @@ void SceneTools::_savePositions(Entity *entity) {
 	_entitiesInfos[entity->getId()] = allNewSquareWeAreIn;
 }
 
-void SceneTools::printMapInfo(void) {
-	std::cout << "------------------------------------------- " << _mapWidth
-			  << " " << _mapHeight << std::endl;
-	size_t i = 0;
-	size_t j = 0;
-	for (const auto &info : _entitiesInSquares) {
-		if (i % _mapWidth != 0) std::cout << " ";
-		if (info.empty())
-			std::cout << "0";
-		else
-			std::cout << info.size();
-		i++;
-		j++;
-		if (j == _mapWidth) {
-			j = 0;
-			std::cout << std::endl;
-		}
-	}
-}
+// debug for IA
+// void SceneTools::printMapInfo(void) {
+// 	std::cout << "------------------------------------------- " << _mapWidth
+// 			  << " " << _mapHeight << std::endl;
+// 	size_t i = 0;
+// 	size_t j = 0;
+// 	for (const auto &info : _entitiesInSquares) {
+// 		if (i % _mapWidth != 0) std::cout << " ";
+// 		if (info.empty())
+// 			std::cout << "0";
+// 		else
+// 			std::cout << info.size();
+// 		i++;
+// 		j++;
+// 		if (j == _mapWidth) {
+// 			j = 0;
+// 			std::cout << std::endl;
+// 		}
+// 	}
+// }
 
 bool SceneTools::canPutBomb(float xCenter, float zCenter) {
 	size_t xCoord = static_cast<size_t>(xCenter + _xOffset);
@@ -838,14 +832,15 @@ void SceneTools::tellPlayerHp(size_t hp) {
 	}
 }
 
-void SceneTools::setPerksValues(float speed, int maxBomb, int range, bool kick) {
+void SceneTools::setPerksValues(float speed, int maxBomb, int range,
+								bool kick) {
 	_speedBoost = speed;
 	_maxBombBoost = maxBomb;
 	_rangeBoost = range;
 	_bombKickBoost = kick;
 }
 
-void SceneTools::gotSpeedBoost(float speed) { 	_speedBoost = speed; }
+void SceneTools::gotSpeedBoost(float speed) { _speedBoost = speed; }
 void SceneTools::gotRangeBoost(int range) { _rangeBoost = range; }
 void SceneTools::gotMaxBombBoost(int maxBomb) { _maxBombBoost = maxBomb; }
 void SceneTools::gotBombKickBoost(bool kick) { _bombKickBoost = kick; }
