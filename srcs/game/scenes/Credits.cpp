@@ -23,58 +23,58 @@ void Credits::configGUI(GUI *graphicUI) {
 	coords.push_back(
 		std::tuple<int, int>(_gameEngine->getGameRenderer()->getWidth() / 3,
 							 _gameEngine->getGameRenderer()->getHeight()));
-	_jimmy.push_back("Jimmy");
-	_jimmy.push_back("Chen Ma");
+	_jimmy.push_back(std::tuple<std::string, std::string>("Jimmy", "24_slider"));
+	_jimmy.push_back(std::tuple<std::string, std::string>("Chen Ma", "24_slider"));
 
 	coords.push_back(
 		std::tuple<int, int>(_gameEngine->getGameRenderer()->getWidth() / 3,
 							 _gameEngine->getGameRenderer()->getHeight() * 2));
-	_fabien.push_back("Fabien");
-	_fabien.push_back("Del Carmen");
+	_fabien.push_back(std::tuple<std::string, std::string>("Fabien", "24_slider"));
+	_fabien.push_back(std::tuple<std::string, std::string>("Del Carmen", "24_slider"));
 
 	coords.push_back(
 		std::tuple<int, int>(_gameEngine->getGameRenderer()->getWidth() / 3,
 							 _gameEngine->getGameRenderer()->getHeight() * 3));
-	_claudio.push_back("Claudio");
-	_claudio.push_back("Mutti");
+	_claudio.push_back(std::tuple<std::string, std::string>("Claudio", "24_slider"));
+	_claudio.push_back(std::tuple<std::string, std::string>("Mutti", "24_slider"));
 
 	coords.push_back(
 		std::tuple<int, int>(_gameEngine->getGameRenderer()->getWidth() / 3,
 							 _gameEngine->getGameRenderer()->getHeight() * 4));
-	_vivien.push_back("Vivien");
-	_vivien.push_back("Klaousen");
+ 	_vivien.push_back(std::tuple<std::string, std::string>("Vivien", "24_slider"));
+	_vivien.push_back(std::tuple<std::string, std::string>("Klaousen", "24_slider"));
 
 	coords.push_back(
 		std::tuple<int, int>(_gameEngine->getGameRenderer()->getWidth() / 3,
 							 _gameEngine->getGameRenderer()->getHeight() * 5));
-	_credits.push_back("Test1");
-	_credits.push_back("Test1");
-	_credits.push_back("Test1");
-	_credits.push_back("Test1");
-	_credits.push_back("Test1");
-	_credits.push_back("Test1");
-	_credits.push_back("Test1");
-	_credits.push_back("Test1");
-	_credits.push_back("Test1");
-	_credits.push_back("Test1");
-	_credits.push_back("Test1");
-	_credits.push_back("Test1");
-	_credits.push_back("Test1");
-	_credits.push_back("Test1");
-	_credits.push_back("Test1");
-	_credits.push_back("Test1");
-	_credits.push_back("Test1");
-	_credits.push_back("Test1");
-	_credits.push_back("Test1");
-	_credits.push_back("Test1");
-	_credits.push_back("Test1");
-	_credits.push_back("Test1");
-	_credits.push_back("Test1");
-	_credits.push_back("Test1");
-	_credits.push_back("Test1");
-	_credits.push_back("Test1");
-	_credits.push_back("Test1");
-	_credits.push_back("Test1");
+	// _credits.push_back("Test1");
+	// _credits.push_back("Test1");
+	// _credits.push_back("Test1");
+	// _credits.push_back("Test1");
+	// _credits.push_back("Test1");
+	// _credits.push_back("Test1");
+	// _credits.push_back("Test1");
+	// _credits.push_back("Test1");
+	// _credits.push_back("Test1");
+	// _credits.push_back("Test1");
+	// _credits.push_back("Test1");
+	// _credits.push_back("Test1");
+	// _credits.push_back("Test1");
+	// _credits.push_back("Test1");
+	// _credits.push_back("Test1");
+	// _credits.push_back("Test1");
+	// _credits.push_back("Test1");
+	// _credits.push_back("Test1");
+	// _credits.push_back("Test1");
+	// _credits.push_back("Test1");
+	// _credits.push_back("Test1");
+	// _credits.push_back("Test1");
+	// _credits.push_back("Test1");
+	// _credits.push_back("Test1");
+	// _credits.push_back("Test1");
+	// _credits.push_back("Test1");
+	// _credits.push_back("Test1");
+	// _credits.push_back("Test1");
 }
 
 void Credits::drawGUI(GUI *graphicUI) {
@@ -84,25 +84,25 @@ void Credits::drawGUI(GUI *graphicUI) {
 	_evolveCoords(&std::get<0>(coords[0]), &std::get<1>(coords[0]), -4, false,
 				  8, 4, height);
 	_creditsWindow(graphicUI, "jimmy", std::get<0>(coords[0]),
-				   std::get<1>(coords[0]), width, height, _jimmy, "", 30,
+				   std::get<1>(coords[0]), width, height, _jimmy, 30,
 				   "jimmy", true);
 
 	_evolveCoords(&std::get<0>(coords[1]), &std::get<1>(coords[1]), -4, false,
 				  -8, 4, height);
 	_creditsWindow(graphicUI, "fabien", std::get<0>(coords[1]),
-				   std::get<1>(coords[1]), width, height, _fabien, "", 30,
+				   std::get<1>(coords[1]), width, height, _fabien, 30,
 				   "fabien", true);
 
 	_evolveCoords(&std::get<0>(coords[2]), &std::get<1>(coords[2]), -4, false,
 				  8, -4, height);
 	_creditsWindow(graphicUI, "claudio", std::get<0>(coords[2]),
-				   std::get<1>(coords[2]), width, height, _claudio, "", 30,
+				   std::get<1>(coords[2]), width, height, _claudio, 30,
 				   "claudio", false);
 
 	_evolveCoords(&std::get<0>(coords[3]), &std::get<1>(coords[3]), -4, false,
 				  -8, -4, height);
 	_creditsWindow(graphicUI, "vivien", std::get<0>(coords[3]),
-				   std::get<1>(coords[3]), width, height, _vivien, "", 30,
+				   std::get<1>(coords[3]), width, height, _vivien, 30,
 				   "vivien", false);
 
 	_evolveCoords(&std::get<0>(coords[4]), &std::get<1>(coords[4]), -4, true,
@@ -115,9 +115,8 @@ void Credits::drawGUI(GUI *graphicUI) {
 
 void Credits::_creditsWindow(GUI *graphicUI, std::string id, int x, int y,
 							 size_t width, size_t height,
-							 std::vector<std::string> texts,
-							 std::string fontName, int rowSize,
-							 std::string imageName, bool imageBeforeText) {
+							 std::vector<std::tuple<std::string, std::string>> texts,
+							 int rowSize, std::string imageName, bool imageBeforeText) {
 	if (graphicUI->uiStartBlock(id.c_str(), "", nk_rect(x, y, width, height),
 								NK_WINDOW_NO_SCROLLBAR)) {
 		int imgHeight = height - (texts.size() * rowSize);
@@ -131,8 +130,8 @@ void Credits::_creditsWindow(GUI *graphicUI, std::string id, int x, int y,
 			graphicUI->uiRowMultipleElem(false);
 		}
 		for (const auto &text : texts)
-			graphicUI->uiHeader(text.c_str(), NK_TEXT_CENTERED, rowSize,
-								fontName);
+			graphicUI->uiHeader(std::get<0>(text).c_str(), NK_TEXT_CENTERED, rowSize,
+								std::get<1>(text));
 		if (!imageBeforeText) {
 			graphicUI->uiRowMultipleElem(true, imgHeight, 1);
 			graphicUI->uiAddElemInRow(imgHeight);
