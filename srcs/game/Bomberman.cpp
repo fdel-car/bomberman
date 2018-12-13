@@ -110,8 +110,7 @@ void Bomberman::initLoadScene() {
 }
 
 void Bomberman::initAllAssets(void) {
-	std::map<std::string, std::string> animInfo =
-		std::map<std::string, std::string>();
+	std::map<std::string, std::string> animInfo;
 	_allAssets["Sphere"] = ModelInfo("Models/Sphere/sphere.dae");
 	_allAssets["Bomb"] = ModelInfo("Models/Bomb/bomb.obj");
 	_allAssets["Island"] = ModelInfo("Models/Island/island.obj");

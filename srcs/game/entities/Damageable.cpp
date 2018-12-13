@@ -4,8 +4,8 @@
 Damageable::Damageable(glm::vec3 position, glm::vec3 eulerAngles,
 					   Collider *collider, std::string modelName,
 					   std::string name, std::string tag, size_t hp,
-					   int baseLayer, int damagedLayer, float damagedMaxTime, Entity *sceneManager,
-					   glm::vec3 damagedColor)
+					   int baseLayer, int damagedLayer, float damagedMaxTime,
+					   Entity *sceneManager, glm::vec3 damagedColor)
 	: Entity(position, eulerAngles, collider, modelName, name, tag,
 			 sceneManager),
 	  _alive(hp != 0),
@@ -42,9 +42,9 @@ void Damageable::update(void) {
 	}
 }
 
-void Damageable::takeDamage(std::vector<std::string> demagingSounds) {
+void Damageable::takeDamage(std::vector<std::string> damagingSounds) {
 	if (_alive && _timeDamaged <= 0.0f) {
-		onTakeDamage(demagingSounds);
+		onTakeDamage(damagingSounds);
 		if (_hp == 0) {
 			_alive = false;
 			onDeath();
@@ -52,16 +52,16 @@ void Damageable::takeDamage(std::vector<std::string> demagingSounds) {
 	}
 }
 
-void Damageable::onTakeDamage(std::vector<std::string> demagingSounds) {
+void Damageable::onTakeDamage(std::vector<std::string> damagingSounds) {
 	if (_alive) {
 		_hp -= 1;
 		_timeDamaged = _damagedMaxTime;
 		_defaultColor = this->getColor();
 		setColor(_damagedColor);
 		if (_collider) _collider->layerTag = _damagedLayer;
-		if (demagingSounds.size() != 0) {
-			int randomIdx = rand() % demagingSounds.size();
-			_gameEngine->playSound(demagingSounds[randomIdx]);
+		if (damagingSounds.size() != 0) {
+			int randomIdx = rand() % damagingSounds.size();
+			_gameEngine->playSound(damagingSounds[randomIdx]);
 		}
 	}
 }

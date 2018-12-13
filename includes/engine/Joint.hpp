@@ -26,7 +26,7 @@ struct Animation {
 	std::vector<ScalingKey> scalingKeys;
 };
 
-class Joint {
+class Joint final {
    public:
 	Joint(std::string const &name, glm::mat4 const &offsetMatrix, int index);
 
@@ -35,7 +35,7 @@ class Joint {
 	std::string const name;
 	glm::mat4 const offsetMatrix;
 	int const index;
-	Joint *parent;
+	Joint *parent = nullptr;
 	glm::mat4 localTransform;
 	glm::mat4 finalTransform;
 
@@ -49,7 +49,7 @@ class Joint {
 						size_t nbr);
 
    private:
-	static glm::mat4 _toYAxisUp;
+	// static glm::mat4 _toYAxisUp;
 	std::map<std::string, Animation> _animations;
 
 	Joint(void);

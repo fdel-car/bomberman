@@ -1,31 +1,15 @@
 #include "engine/AGame.hpp"
 
-ModelInfo::ModelInfo(void)
-	: modelPath(""), animMap(std::map<std::string, std::string>()) {}
+ModelInfo::ModelInfo(void) {}
 
-ModelInfo::ModelInfo(std::string modelPath)
-	: modelPath(modelPath), animMap(std::map<std::string, std::string>()) {}
+ModelInfo::ModelInfo(std::string modelPath) : modelPath(modelPath) {}
 
 ModelInfo::ModelInfo(std::string modelPath,
 					 std::map<std::string, std::string> animMap)
 	: modelPath(modelPath), animMap(animMap) {}
 
 AGame::AGame(size_t enumSize)
-	: _spawnableEntities(std::vector<Entity *>()),
-	  _entities(std::vector<Entity *>()),
-	  _camera(nullptr),
-	  _light(nullptr),
-	  _skybox(nullptr),
-	  _loadingEntities(std::vector<Entity *>()),
-	  _loadingCamera(nullptr),
-	  _loadingLight(nullptr),
-	  _loadingSkybox(nullptr),
-	  _neededFonts(std::vector<std::tuple<float, std::string, std::string>>()),
-	  _allAssets(std::map<std::string, ModelInfo>()),
-	  _neededAssets(std::set<std::string>()),
-	  _allSounds(std::map<std::string, std::string>()),
-	  _neededSounds(std::set<std::string>()),
-	  _collisionTable(std::vector<std::vector<bool>>(enumSize)) {
+	: _collisionTable(std::vector<std::vector<bool>>(enumSize)) {
 	for (auto &collisionTag : _collisionTable) {
 		collisionTag = std::vector<bool>(enumSize, true);
 	}

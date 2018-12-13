@@ -16,5 +16,5 @@ class Box : public Damageable {
 	bool _hasSpawned;
 	float _timer;
 	int _perkProb;
-	Entity *_toSpawn;
+	Entity *_toSpawn = nullptr;
 };

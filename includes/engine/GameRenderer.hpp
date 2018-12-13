@@ -40,8 +40,6 @@ class GameRenderer final {
 	GUI *getGUI();
 	GLFWwindow *getWindow(void) const;
 
-	bool active;
-
    private:
 	static void keyCallback(GLFWwindow *window, int key, int scancode,
 							int action, int mods);
@@ -64,23 +62,23 @@ class GameRenderer final {
 
 	// General vars
 	GLFWwindow *_window = nullptr;
-	AGame *_game;
+	AGame *_game = nullptr;
 	bool _isFullScreen;
 	int _width;
 	int _height;
 	int _widthRequested;
 	int _heightRequested;
-	GLFWmonitor *_monitor;
-	const GLFWvidmode *_mode;
+	GLFWmonitor *_monitor = nullptr;
+	const GLFWvidmode *_mode = nullptr;
 
 	// Nuklear vars
 	GUI *_graphicUI;
 
 	// Rendering vars
-	ShaderProgram *_shaderProgram;
-	ShaderProgram *_shadowShaderProgram;
-	ShaderProgram *_skyboxShaderProgram;
-	std::map<std::string, Model *> _models;
+	ShaderProgram *_shaderProgram = nullptr;
+	ShaderProgram *_shadowShaderProgram = nullptr;
+	ShaderProgram *_skyboxShaderProgram = nullptr;
+	std::map<std::string, Model *> _models = std::map<std::string, Model *>();
 	std::vector<std::string> _toDelete;  // Models to delete
 
 	// Shadow

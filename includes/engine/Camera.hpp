@@ -38,9 +38,7 @@ class Camera : public Entity {
 	std::map<int, nk_color> defaultStyle;
 	std::map<int, nk_color> activeStyle;
 	std::vector<std::tuple<std::string, std::string>> _neededImages;
-	void _updateData(
-		void);  // TODO: Put back to private and override translate func
-
+	void _updateData(void);
 	float _speed;
 	float _aspectRatio;
 	glm::mat4 _view;

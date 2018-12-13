@@ -30,7 +30,7 @@ class AEnemy : public Damageable {
 
    private:
 	bool _hasSpawned;
-	Entity *_toSpawn;
+	Entity *_toSpawn = nullptr;
 	std::vector<std::string> _damagingSounds;
 	float _rotationAngle = 0.0f;
 

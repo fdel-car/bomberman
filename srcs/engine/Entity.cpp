@@ -14,29 +14,17 @@ Entity::Entity(glm::vec3 position, glm::vec3 eulerAngles, Collider *collider,
 			   std::string modelName, std::string name, std::string tag,
 			   Entity *sceneManager)
 	: _position(position),
-	  _modelMatrix(glm::mat4(1.0f)),
 	  _id(Entity::_spawnedEntities++),
-	  _needToBeDestroyed(false),
 	  _modelName(modelName),
 	  _name(name),
 	  _tag(tag),
 	  _sceneManager(sceneManager),
-	  _showModel(true),
-	  _model(nullptr),
-	  _collider(collider),
-	  _gameEngine(nullptr),
-	  _targetMovement(glm::vec3()),
-	  _neededSounds(std::set<std::string>()),
-	  _initSounds(std::vector<std::string>()),
-	  _destroySounds(std::vector<std::string>()) {
-	_translationMatrix = glm::mat4(1.0f);
+	  _collider(collider) {
 	_translationMatrix[3][0] = position.x;
 	_translationMatrix[3][1] = position.y;
 	_translationMatrix[3][2] = position.z;
 	_rotationMatrix = glm::mat4(glm::quat(glm::radians(eulerAngles)));
-	_scaleMatrix = glm::mat4(1.0f);
 	_eulerAngles = eulerAngles;
-	_gameEngine = nullptr;
 	_updateModelMatrix();
 
 	// Signal, if _sceneManager is set, where is entity starting pos
@@ -96,7 +84,7 @@ glm::vec3 const &Entity::getTargetMovement(void) const {
 	return _targetMovement;
 }
 
-bool Entity::getNeedToBeDestroyed(void) const { return _needToBeDestroyed; }
+bool Entity::needsToBeDestroyed(void) const { return _needToBeDestroyed; }
 
 std::set<std::string> Entity::getNeededSounds(void) const {
 	return _neededSounds;
