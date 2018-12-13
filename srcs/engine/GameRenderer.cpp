@@ -175,25 +175,12 @@ void GameRenderer::getUserInput(void) { glfwPollEvents(); }
 
 void GameRenderer::refreshWindow(std::vector<Entity *> &entities,
 								 Camera *camera, Light *light, Skybox *skybox) {
-	glfwSetWindowTitle(_window,
-					   toString(1.0f / _gameEngine->getDeltaTime())
-						   .c_str());  // TODO: Don't forget to remove this
-
 	// Custom OpenGL state
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_MULTISAMPLE);
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	for (auto entity : entities) {
-		Model *model = entity->getModel();
-		if (model && model->isRigged() && entity->shouldBeAnimated)
-			model->updateBoneTransforms(
-				&entity->currentAnimTime, entity->currentAnimName,
-				entity->loopAnim, _gameEngine->getDeltaTime(),
-				entity->currentAnimSpeed);
-	}
 
 	_lightSpaceMatrix = light->getProjectionMatrix() * light->getViewMatrix();
 	// Shadow map
@@ -204,8 +191,14 @@ void GameRenderer::refreshWindow(std::vector<Entity *> &entities,
 	_shadowShaderProgram->setMat4("lightSpaceMatrix", _lightSpaceMatrix);
 	glCullFace(GL_FRONT);
 	for (auto entity : entities) {
+		if (!entity->doShowModel()) continue;
 		_shadowShaderProgram->setMat4("M", entity->getModelMatrix());
 		Model *model = entity->getModel();
+		if (model && model->isRigged() && entity->shouldBeAnimated)
+			model->updateBoneTransforms(
+				&entity->currentAnimTime, entity->currentAnimName,
+				entity->loopAnim, _gameEngine->getDeltaTime(),
+				entity->currentAnimSpeed);
 		if (model) model->draw(*_shadowShaderProgram);
 	}
 	glCullFace(GL_BACK);
@@ -226,9 +219,12 @@ void GameRenderer::refreshWindow(std::vector<Entity *> &entities,
 	glBindTexture(GL_TEXTURE_2D, _depthMap);
 	for (auto entity : entities) {
 		if (!entity->doShowModel()) continue;
-
 		_shaderProgram->setMat4("M", entity->getModelMatrix());
 		Model *model = entity->getModel();
+		if (model && model->isRigged() && entity->shouldBeAnimated)
+			model->updateBoneTransforms(
+				&entity->currentAnimTime, entity->currentAnimName,
+				entity->loopAnim, 0.0, entity->currentAnimSpeed);
 		if (model) model->draw(*_shaderProgram, entity->getColor());
 	}
 
