@@ -7,13 +7,13 @@ Credits::Credits(WorldLocation &startLocation, Bomberman *bomberman)
 	: SceneTools(0, 0, startLocation, bomberman, "Credits", "MainMenu") {
 	_startMusic = _assetsDir + "Audio/Musics/Credits.wav";
 	_neededImages.push_back(std::tuple<std::string, std::string>(
-		(_assetsDir + "GUI/icons/jimmy.png"), "jimmy"));
+		(_assetsDir + "GUI/icons/jimmy.jpg"), "jimmy"));
 	_neededImages.push_back(std::tuple<std::string, std::string>(
-		(_assetsDir + "GUI/icons/claudio.png"), "claudio"));
+		(_assetsDir + "GUI/icons/claudio.jpg"), "claudio"));
 	_neededImages.push_back(std::tuple<std::string, std::string>(
-		(_assetsDir + "GUI/icons/fabien.png"), "fabien"));
+		(_assetsDir + "GUI/icons/fabien.jpg"), "fabien"));
 	_neededImages.push_back(std::tuple<std::string, std::string>(
-		(_assetsDir + "GUI/icons/vivien.png"), "vivien"));
+		(_assetsDir + "GUI/icons/vivien.jpg"), "vivien"));
 }
 
 Credits::~Credits(void) {}

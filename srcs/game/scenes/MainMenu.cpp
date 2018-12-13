@@ -18,13 +18,13 @@ MainMenu::MainMenu(WorldLocation &startLocation,
 	_neededImages.push_back(std::tuple<std::string, std::string>(
 		(_assetsDir + "GUI/Icons/MainMenuTitle.png"), "title"));
 	_neededImages.push_back(std::tuple<std::string, std::string>(
-		(_assetsDir + "GUI/Icons/Space.png"), "Space"));
+		(_assetsDir + "GUI/Icons/Space.jpg"), "Space"));
 	_neededImages.push_back(std::tuple<std::string, std::string>(
-		(_assetsDir + "GUI/Icons/Pokemon.png"), "Pokemon"));
+		(_assetsDir + "GUI/Icons/Pokemon.jpg"), "Pokemon"));
 	_neededImages.push_back(std::tuple<std::string, std::string>(
-		(_assetsDir + "GUI/Icons/Mario.png"), "Mario"));
+		(_assetsDir + "GUI/Icons/Mario.jpg"), "Mario"));
 	_neededImages.push_back(std::tuple<std::string, std::string>(
-		(_assetsDir + "GUI/Icons/Forest.png"), "Forest"));
+		(_assetsDir + "GUI/Icons/Forest.jpg"), "Forest"));
 	_neededImages.push_back(std::tuple<std::string, std::string>(
 		(_assetsDir + "GUI/Icons/BombermanWhite.png"), "BomberWhite"));
 	_neededImages.push_back(std::tuple<std::string, std::string>(
@@ -69,20 +69,21 @@ void MainMenu::drawGUI(GUI *graphicUI) {
 	if (graphicUI->uiStartBlock(
 			"imgBehind", "",
 			nk_rect(-10, -10, _gameEngine->getGameRenderer()->getWidth() + 20,
-			_gameEngine->getGameRenderer()->getHeight() + 20),
+					_gameEngine->getGameRenderer()->getHeight() + 20),
 			NK_WINDOW_NO_SCROLLBAR | NK_WINDOW_NO_INPUT)) {
-				graphicUI->uiRowMultipleElem(true, _gameEngine->getGameRenderer()->getHeight() + 20, 1);
-				graphicUI->uiAddElemInRow(_gameEngine->getGameRenderer()->getWidth() + 20);
-				if (_levelsName[_lvlIndex] == "Space")
-					graphicUI->uiSetImage(_levelsName[_lvlIndex]);
-				else if (_levelsName[_lvlIndex] == "Pokemon")
-					graphicUI->uiSetImage(_levelsName[_lvlIndex]);
-				else if (_levelsName[_lvlIndex] == "Mario")
-					graphicUI->uiSetImage(_levelsName[_lvlIndex]);
-				else if (_levelsName[_lvlIndex] == "Forest")
-					graphicUI->uiSetImage(_levelsName[_lvlIndex]);
-				graphicUI->uiRowMultipleElem(false);
-
+		graphicUI->uiRowMultipleElem(
+			true, _gameEngine->getGameRenderer()->getHeight() + 20, 1);
+		graphicUI->uiAddElemInRow(_gameEngine->getGameRenderer()->getWidth() +
+								  20);
+		if (_levelsName[_lvlIndex] == "Space")
+			graphicUI->uiSetImage(_levelsName[_lvlIndex]);
+		else if (_levelsName[_lvlIndex] == "Pokemon")
+			graphicUI->uiSetImage(_levelsName[_lvlIndex]);
+		else if (_levelsName[_lvlIndex] == "Mario")
+			graphicUI->uiSetImage(_levelsName[_lvlIndex]);
+		else if (_levelsName[_lvlIndex] == "Forest")
+			graphicUI->uiSetImage(_levelsName[_lvlIndex]);
+		graphicUI->uiRowMultipleElem(false);
 	}
 	graphicUI->uiEndBlock();
 	if (!_changeSettings) {
@@ -121,7 +122,8 @@ void MainMenu::drawGUI(GUI *graphicUI) {
 		// 		graphicUI, (_gameEngine->getGameRenderer()->getWidth() / 5), 60,
 		// 		(_gameEngine->getGameRenderer()->getWidth() / 5) * 2,
 		// 		(_gameEngine->getGameRenderer()->getHeight() / 5) * 2.7, 34,
-		// 		"_slider", &extraSizeHiddePlay, 10, &isHiddePlayButtonHover, "Play")) {
+		// 		"_slider", &extraSizeHiddePlay, 10, &isHiddePlayButtonHover,
+		// "Play")) {
 		// 	// _newSceneName = _levelsName[_lvlIndex];
 		// 	// _gameEngine->playSound("select");
 		// }

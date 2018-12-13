@@ -159,7 +159,7 @@ class GUI {
 		std::vector<std::tuple<float, std::string, std::string>> &vFontPath);
 	void _setImages(
 		std::vector<std::tuple<std::string, std::string>> &vImagePath);
-	struct nk_image iconLoad(const char *filename);
+	struct nk_image iconLoad(const char *filename, bool hasAlphaChannel = true);
 
 	/*
 	** Free GUI (nuklear)
