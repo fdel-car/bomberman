@@ -66,7 +66,7 @@ void Forest::configGUI(GUI *graphicUI) {
 		_buildNewDialogue(0, 0, 0, "Bomberman", "BomberWhite", str, false, 1000,
 						  1000, NK_TEXT_LEFT, "20_BOMBERMAN", "24_BOMBERMAN");
 		str =
-			"Hey, use your brain and your bombs ;). And a Fuzzy is a kind of "
+			"Hey, use your brain and your bombs. And a Fuzzy is a kind of "
 			"little hairball, there are many of them in here apparently. "
 			"Just don't touch them. Hurry up, we don't have much time!";
 		_buildNewDialogue(0, 0, 0, "Bomberman", "BomberBlack", str, true, 1000,

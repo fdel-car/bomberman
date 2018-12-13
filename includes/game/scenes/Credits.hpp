@@ -19,8 +19,8 @@ class Credits : public SceneTools {
 
 	void _creditsWindow(GUI *graphicUI, std::string id, int x, int y,
 						size_t width, size_t height,
-						std::vector<std::tuple<std::string, std::string>> texts, int rowSize = 30,
-						std::string imageName = "",
+						std::vector<std::tuple<std::string, std::string>> texts,
+						int rowSize = 30, std::string imageName = "",
 						bool imageBeforeText = true);
 	void _evolveCoords(int *x, int *y, int yEvolution, bool neverStop,
 					   int xNextEvolution, int yNextEvolution, int height);
@@ -33,4 +33,10 @@ class Credits : public SceneTools {
 	std::vector<std::tuple<std::string, std::string>> _credits;
 
 	std::vector<std::tuple<int, int>> coords;
+
+	bool jimFinish = false;
+	bool fabFinish = false;
+	bool claFinish = false;
+	bool vivFinish = false;
+	bool textFinish = false;
 };

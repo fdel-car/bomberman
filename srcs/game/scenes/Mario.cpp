@@ -45,7 +45,7 @@ void Mario::configGUI(GUI *graphicUI) {
 						  1000, NK_TEXT_LEFT, "20_BOMBERMAN", "24_BOMBERMAN");
 		str =
 			"Can you listen please? They are not cute, they are dangerous. "
-			"They can blow you up if you stay static to long.";
+			"They can blow you up if you freeze for too long.";
 		_buildNewDialogue(0, 0, 0, "Bomberman", "BomberBlack", str, true, 1000,
 						  1000, NK_TEXT_LEFT, "20_BOMBERMAN", "24_BOMBERMAN");
 		str = "Roger, the koffings are not cutes.";
