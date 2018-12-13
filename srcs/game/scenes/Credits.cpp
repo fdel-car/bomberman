@@ -5,7 +5,7 @@ extern std::string _assetsDir;
 
 Credits::Credits(WorldLocation &startLocation, Bomberman *bomberman)
 	: SceneTools(0, 0, startLocation, bomberman, "Credits", "MainMenu") {
-	_startMusic = _assetsDir + "Audio/Musics/Credits.wav";
+	_startMusic = "Audio/Musics/Credits.wav";
 	_neededImages.push_back(std::tuple<std::string, std::string>(
 		(_assetsDir + "GUI/icons/jimmy.png"), "jimmy"));
 	_neededImages.push_back(std::tuple<std::string, std::string>(
