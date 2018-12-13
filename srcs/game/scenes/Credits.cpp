@@ -6,14 +6,14 @@ extern std::string _assetsDir;
 Credits::Credits(WorldLocation &startLocation, Bomberman *bomberman)
 	: SceneTools(0, 0, startLocation, bomberman, "Credits", "MainMenu") {
 	_startMusic = "Audio/Musics/Credits.wav";
-	_neededImages.push_back(std::tuple<std::string, std::string>(
-		(_assetsDir + "GUI/icons/jimmy.jpg"), "jimmy"));
-	_neededImages.push_back(std::tuple<std::string, std::string>(
-		(_assetsDir + "GUI/icons/claudio.jpg"), "claudio"));
-	_neededImages.push_back(std::tuple<std::string, std::string>(
-		(_assetsDir + "GUI/icons/fabien.jpg"), "fabien"));
-	_neededImages.push_back(std::tuple<std::string, std::string>(
-		(_assetsDir + "GUI/icons/vivien.jpg"), "vivien"));
+	_neededImages.push_back(std::tuple<std::string, std::string, bool>(
+		(_assetsDir + "GUI/icons/jimmy.jpg"), "jimmy", false));
+	_neededImages.push_back(std::tuple<std::string, std::string, bool>(
+		(_assetsDir + "GUI/icons/claudio.jpg"), "claudio", false));
+	_neededImages.push_back(std::tuple<std::string, std::string, bool>(
+		(_assetsDir + "GUI/icons/fabien.jpg"), "fabien", false));
+	_neededImages.push_back(std::tuple<std::string, std::string, bool>(
+		(_assetsDir + "GUI/icons/vivien.jpg"), "vivien", false));
 }
 
 Credits::~Credits(void) {}

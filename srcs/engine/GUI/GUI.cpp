@@ -14,7 +14,7 @@ struct nk GUI::glfw = nk();
 
 GUI::GUI(GameRenderer *gameRenderer, GLFWwindow *window,
 		 std::vector<std::tuple<float, std::string, std::string>> vFontPath,
-		 std::vector<std::tuple<std::string, std::string>> vImagePath)
+		 std::vector<std::tuple<std::string, std::string, bool>> vImagePath)
 	: _gameRenderer(gameRenderer), _media(new media()) {
 	GUI::glfw.atlas = new nk_font_atlas();
 	_nkInit(window);
@@ -315,12 +315,12 @@ void GUI::_setFonts(
 }
 
 void GUI::_setImages(
-	std::vector<std::tuple<std::string, std::string>> &vImagePath) {
+	std::vector<std::tuple<std::string, std::string, bool>> &vImagePath) {
 	glEnable(GL_TEXTURE_2D);
 	struct nk_image tmpImage;
 	for (const auto &img : vImagePath) {
 		if (_media->myImages.find(std::get<1>(img)) == _media->myImages.end()) {
-			tmpImage = iconLoad(std::get<0>(img).c_str());
+			tmpImage = iconLoad(std::get<0>(img).c_str(), std::get<2>(img));
 			_media->myImages[std::get<1>(img)] = tmpImage;
 		}
 	}
@@ -739,7 +739,7 @@ void GUI::setStyle(std::map<int, nk_color> &styleMap) {
 }
 
 void GUI::setAssetImages(
-	std::vector<std::tuple<std::string, std::string>> vFontImage) {
+	std::vector<std::tuple<std::string, std::string, bool>> vFontImage) {
 	if (!vFontImage.empty()) _setImages(vFontImage);
 }
 

@@ -11,34 +11,38 @@ MainMenu::MainMenu(WorldLocation &startLocation,
 	: SceneTools(0, 0, startLocation, bomberman,
 				 bomberman->getStartLevelName()),
 	  _levelsName(levelsName) {
-	_neededImages.push_back(std::tuple<std::string, std::string>(
-		(_assetsDir + "GUI/Icons/rightAngleBracket.png"), "rightAngleBracket"));
-	_neededImages.push_back(std::tuple<std::string, std::string>(
-		(_assetsDir + "GUI/Icons/leftAngleBracket.png"), "leftAngleBracket"));
-	_neededImages.push_back(std::tuple<std::string, std::string>(
-		(_assetsDir + "GUI/Icons/MainMenuTitle.png"), "title"));
-	_neededImages.push_back(std::tuple<std::string, std::string>(
-		(_assetsDir + "GUI/Icons/Space.jpg"), "Space"));
-	_neededImages.push_back(std::tuple<std::string, std::string>(
-		(_assetsDir + "GUI/Icons/Pokemon.jpg"), "Pokemon"));
-	_neededImages.push_back(std::tuple<std::string, std::string>(
-		(_assetsDir + "GUI/Icons/Mario.jpg"), "Mario"));
-	_neededImages.push_back(std::tuple<std::string, std::string>(
-		(_assetsDir + "GUI/Icons/Forest.jpg"), "Forest"));
-	_neededImages.push_back(std::tuple<std::string, std::string>(
-		(_assetsDir + "GUI/Icons/BombermanWhite.png"), "BomberWhite"));
-	_neededImages.push_back(std::tuple<std::string, std::string>(
-		(_assetsDir + "GUI/Icons/BombermanBlack.png"), "BomberBlack"));
-	_neededImages.push_back(std::tuple<std::string, std::string>(
-		(_assetsDir + "GUI/Icons/maxBomb.jpg"), "maxBomb"));
-	_neededImages.push_back(std::tuple<std::string, std::string>(
-		(_assetsDir + "GUI/Icons/speedBoost.jpg"), "speedBoost"));
-	_neededImages.push_back(std::tuple<std::string, std::string>(
-		(_assetsDir + "GUI/Icons/kickBombBoostOff.jpg"), "kickBombBoostOff"));
-	_neededImages.push_back(std::tuple<std::string, std::string>(
-		(_assetsDir + "GUI/Icons/kickBombBoostOn.jpg"), "kickBombBoostOn"));
-	_neededImages.push_back(std::tuple<std::string, std::string>(
-		(_assetsDir + "GUI/Icons/rangeBoost.jpg"), "rangeBoost"));
+	_neededImages.push_back(std::tuple<std::string, std::string, bool>(
+		(_assetsDir + "GUI/Icons/rightAngleBracket.png"), "rightAngleBracket",
+		true));
+	_neededImages.push_back(std::tuple<std::string, std::string, bool>(
+		(_assetsDir + "GUI/Icons/leftAngleBracket.png"), "leftAngleBracket",
+		true));
+	_neededImages.push_back(std::tuple<std::string, std::string, bool>(
+		(_assetsDir + "GUI/Icons/MainMenuTitle.png"), "title", true));
+	_neededImages.push_back(std::tuple<std::string, std::string, bool>(
+		(_assetsDir + "GUI/Icons/Space.jpg"), "Space", false));
+	_neededImages.push_back(std::tuple<std::string, std::string, bool>(
+		(_assetsDir + "GUI/Icons/Pokemon.jpg"), "Pokemon", false));
+	_neededImages.push_back(std::tuple<std::string, std::string, bool>(
+		(_assetsDir + "GUI/Icons/Mario.jpg"), "Mario", false));
+	_neededImages.push_back(std::tuple<std::string, std::string, bool>(
+		(_assetsDir + "GUI/Icons/Forest.jpg"), "Forest", false));
+	_neededImages.push_back(std::tuple<std::string, std::string, bool>(
+		(_assetsDir + "GUI/Icons/BombermanWhite.png"), "BomberWhite", true));
+	_neededImages.push_back(std::tuple<std::string, std::string, bool>(
+		(_assetsDir + "GUI/Icons/BombermanBlack.png"), "BomberBlack", true));
+	_neededImages.push_back(std::tuple<std::string, std::string, bool>(
+		(_assetsDir + "GUI/Icons/maxBomb.png"), "maxBomb", true));
+	_neededImages.push_back(std::tuple<std::string, std::string, bool>(
+		(_assetsDir + "GUI/Icons/speedBoost.png"), "speedBoost", true));
+	_neededImages.push_back(std::tuple<std::string, std::string, bool>(
+		(_assetsDir + "GUI/Icons/kickBombBoostOff.png"), "kickBombBoostOff",
+		true));
+	_neededImages.push_back(std::tuple<std::string, std::string, bool>(
+		(_assetsDir + "GUI/Icons/kickBombBoostOn.png"), "kickBombBoostOn",
+		true));
+	_neededImages.push_back(std::tuple<std::string, std::string, bool>(
+		(_assetsDir + "GUI/Icons/rangeBoost.png"), "rangeBoost", true));
 
 	_updateVarsFromSave();
 

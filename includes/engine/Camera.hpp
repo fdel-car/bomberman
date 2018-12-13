@@ -13,7 +13,7 @@ class Camera : public Entity {
 	glm::mat4 const &getProjectionMatrix(void) const;
 	int getNewSceneIdx(void) const;
 	std::string getNewSceneName(void) const;
-	std::vector<std::tuple<std::string, std::string>> const &getNeededImages()
+	std::vector<std::tuple<std::string, std::string, bool>> const &getNeededImages()
 		const;
 	bool isGameRunning(void) const;
 
@@ -37,7 +37,7 @@ class Camera : public Entity {
 	std::string _newSceneName;
 	std::map<int, nk_color> defaultStyle;
 	std::map<int, nk_color> activeStyle;
-	std::vector<std::tuple<std::string, std::string>> _neededImages;
+	std::vector<std::tuple<std::string, std::string, bool>> _neededImages;
 	void _updateData(void);
 	float _speed;
 	float _aspectRatio;

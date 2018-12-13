@@ -65,8 +65,8 @@ class GUI {
 	GUI(GameRenderer *gameRenderer, GLFWwindow *window,
 		std::vector<std::tuple<float, std::string, std::string>> vFontPath =
 			std::vector<std::tuple<float, std::string, std::string>>(),
-		std::vector<std::tuple<std::string, std::string>> vImagePath =
-			std::vector<std::tuple<std::string, std::string>>());
+		std::vector<std::tuple<std::string, std::string, bool>> vImagePath =
+			std::vector<std::tuple<std::string, std::string, bool>>());
 	~GUI();
 
 	static struct nk glfw;
@@ -85,7 +85,7 @@ class GUI {
 	void getDefaultStyle(enum theme theme, std::map<int, nk_color> *styleMap);
 	void setStyle(std::map<int, nk_color> &styleMap);
 	void setAssetImages(
-		std::vector<std::tuple<std::string, std::string>> vFontImage);
+		std::vector<std::tuple<std::string, std::string, bool>> vFontImage);
 
 	bool uiStartBlock(const char *id, const char *title, struct nk_rect bounds,
 					  nk_flags flags);
@@ -158,7 +158,7 @@ class GUI {
 	void _setFonts(
 		std::vector<std::tuple<float, std::string, std::string>> &vFontPath);
 	void _setImages(
-		std::vector<std::tuple<std::string, std::string>> &vImagePath);
+		std::vector<std::tuple<std::string, std::string, bool>> &vImagePath);
 	struct nk_image iconLoad(const char *filename, bool hasAlphaChannel = true);
 
 	/*
