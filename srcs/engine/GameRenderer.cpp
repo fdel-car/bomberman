@@ -45,6 +45,12 @@ void GameRenderer::_initWindow(void) {
 
 	_monitor = glfwGetPrimaryMonitor();
 	_mode = glfwGetVideoMode(_monitor);
+	if (_widthRequested > _mode->width) {
+		_widthRequested = _mode->width;
+	}
+	if (_heightRequested > _mode->height) {
+		_heightRequested = _mode->height;
+	}
 	if (_isFullScreen) {
 		_widthRequested = _mode->width;
 		_heightRequested = _mode->height;
