@@ -6,7 +6,7 @@
 
 Portal::Portal(glm::vec3 position, Entity *sceneManager)
 	: Entity(glm::vec3(position.x, position.y, position.z), glm::vec3(0),
-			 new Collider(Collider::Circle, LayerTag::PortalLayer, 0.25f, 0.25f,
+			 new Collider(Collider::Circle, LayerTag::PortalLayer, 0.3f, 0.3f,
 						  true),
 			 "Portal", "Portal", "Portal", sceneManager),
 	  _hasTriggered(false) {
