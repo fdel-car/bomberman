@@ -446,7 +446,7 @@ void SceneTools::_displayDialogue(GUI *graphicUI, int *searchWord,
 					 (((_gameEngine->getGameRenderer()->getHeight() / 4) - 45) -
 					  (_gameEngine->getGameRenderer()->getWidth() / 4)) -
 					 40) /
-					8.5;
+					10;
 	maxCharPerLine = maxCharPerLine > maxCPL ? maxCPL : maxCharPerLine;
 	int nbrOfLineTmp =
 		(((_gameEngine->getGameRenderer()->getHeight() / 4) - 45) / 22) - 2;

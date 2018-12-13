@@ -32,15 +32,40 @@ void Space::configGUI(GUI *graphicUI) {
 	graphicUI->setStyle(defaultStyle);
 	activeStyle = defaultStyle;
 	_refreshAI = false;
-	if (false) {
-		std::string str =
-			"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do "
-			"officia deserunt mollit anim id est laborum.";
-
-		_buildNewDialogue(0, 0, 0, "Bomberman", "heart", str, false, 1000, 1000,
-						  NK_TEXT_LEFT, "20_BOMBERMAN", "24_BOMBERMAN");
-		_buildNewDialogue(0, 0, 0, "Bomberman", "heart", str, true, 1000, 1000,
-						  NK_TEXT_LEFT, "20_BOMBERMAN", "24_BOMBERMAN");
+	if (true) {
+		std::string str = "We are in space!";
+		_buildNewDialogue(0, 0, 0, "Bomberman", "BomberWhite", str, false, 1000,
+						  1000, NK_TEXT_LEFT, "20_BOMBERMAN", "24_BOMBERMAN");
+		str = "You did take a lot of LSD at this party.";
+		_buildNewDialogue(0, 0, 0, "Bomberman", "BomberBlack", str, true, 1000,
+						  1000, NK_TEXT_LEFT, "20_BOMBERMAN", "24_BOMBERMAN");
+		str = "Worth it, I can fly now!";
+		_buildNewDialogue(0, 0, 0, "Bomberman", "BomberWhite", str, false, 1000,
+						  1000, NK_TEXT_LEFT, "20_BOMBERMAN", "24_BOMBERMAN");
+		str = "It's a dream, and you're still dying in real life...";
+		_buildNewDialogue(0, 0, 0, "Bomberman", "BomberBlack", str, true, 1000,
+						  1000, NK_TEXT_LEFT, "20_BOMBERMAN", "24_BOMBERMAN");
+		str =
+			"Oh yes I totally forgot about this. What am I supposed to do this "
+			"time to survive?";
+		_buildNewDialogue(0, 0, 0, "Bomberman", "BomberWhite", str, false, 1000,
+						  1000, NK_TEXT_LEFT, "20_BOMBERMAN", "24_BOMBERMAN");
+		str =
+			"You have to find the last portal to escape and get back to your "
+			"real body. But I don't know where is it this time... I'm sorry.";
+		_buildNewDialogue(0, 0, 0, "Bomberman", "BomberBlack", str, true, 1000,
+						  1000, NK_TEXT_LEFT, "20_BOMBERMAN", "24_BOMBERMAN");
+		str = "So I'll blow everything up to find it.";
+		_buildNewDialogue(0, 0, 0, "Bomberman", "BomberWhite", str, false, 1000,
+						  1000, NK_TEXT_LEFT, "20_BOMBERMAN", "24_BOMBERMAN");
+		str =
+			"Just be careful about the ghosts. They will chase you if they can "
+			"find a path.";
+		_buildNewDialogue(0, 0, 0, "Bomberman", "BomberBlack", str, true, 1000,
+						  1000, NK_TEXT_LEFT, "20_BOMBERMAN", "24_BOMBERMAN");
+		str = "Let's GO! YEAAAHHH!";
+		_buildNewDialogue(0, 0, 0, "Bomberman", "BomberWhite", str, false, 1000,
+						  1, NK_TEXT_CENTERED, "20_BOMBERMAN", "24_BOMBERMAN");
 	}
 }
 

@@ -36,15 +36,34 @@ void Pokemon::configGUI(GUI *graphicUI) {
 	graphicUI->setStyle(defaultStyle);
 	activeStyle = defaultStyle;
 	_refreshAI = false;
-	if (false) {
-		std::string str =
-			"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do "
-			"officia deserunt mollit anim id est laborum.";
-
-		_buildNewDialogue(0, 0, 0, "Bomberman", "heart", str, false, 1000, 1000,
-						  NK_TEXT_LEFT, "20_BOMBERMAN", "24_BOMBERMAN");
-		_buildNewDialogue(0, 0, 0, "Bomberman", "heart", str, true, 1000, 1000,
-						  NK_TEXT_LEFT, "20_BOMBERMAN", "24_BOMBERMAN");
+	if (true) {
+		std::string str = "Oh no...";
+		_buildNewDialogue(0, 0, 0, "Bomberman", "BomberBlack", str, true, 1000,
+						  1000, NK_TEXT_LEFT, "20_BOMBERMAN", "24_BOMBERMAN");
+		str = "Nice, I love pokemon :D! But I prefer Kyogre.";
+		_buildNewDialogue(0, 0, 0, "Bomberman", "BomberWhite", str, false, 1000,
+						  1000, NK_TEXT_LEFT, "20_BOMBERMAN", "24_BOMBERMAN");
+		str =
+			"I know, I'm you, remember? But let's not complain, for now it "
+			"seems you have to catch the digglet.";
+		_buildNewDialogue(0, 0, 0, "Bomberman", "BomberBlack", str, true, 1000,
+						  1000, NK_TEXT_LEFT, "20_BOMBERMAN", "24_BOMBERMAN");
+		str = "Why? The portal isn't in a fossil?";
+		_buildNewDialogue(0, 0, 0, "Bomberman", "BomberWhite", str, false, 1000,
+						  1000, NK_TEXT_LEFT, "20_BOMBERMAN", "24_BOMBERMAN");
+		str =
+			"It was, but I've seen this digglet stole it and now you'll have "
+			"to kill him to survive :/. He's a fast runner for sure.";
+		_buildNewDialogue(0, 0, 0, "Bomberman", "BomberBlack", str, true, 1000,
+						  1000, NK_TEXT_LEFT, "20_BOMBERMAN", "24_BOMBERMAN");
+		str =
+			"Don't worry I'm gonna blow away this little thief, he should not "
+			"have messed with me!";
+		_buildNewDialogue(0, 0, 0, "Bomberman", "BomberWhite", str, false, 1000,
+						  1000, NK_TEXT_LEFT, "20_BOMBERMAN", "24_BOMBERMAN");
+		str = "Do not count your chickens before they hatch. Go get him now!";
+		_buildNewDialogue(0, 0, 0, "Bomberman", "BomberBlack", str, true, 1000,
+						  1000, NK_TEXT_LEFT, "20_BOMBERMAN", "24_BOMBERMAN");
 	}
 }
 
