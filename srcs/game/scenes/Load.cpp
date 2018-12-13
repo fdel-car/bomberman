@@ -18,7 +18,7 @@ void Load::drawGUI(GUI *graphicUI) {
 		activeStyle[NK_COLOR_TEXT] = nk_rgba(255, 255, 255, 255);
 		graphicUI->setStyle(activeStyle);
 		activeStyle = defaultStyle;
-		static int nbrOfPoint = 0;
+		static int nbrOfPoint = 2;
 		static bool addPoint = true;
 		static float timer = 0;
 

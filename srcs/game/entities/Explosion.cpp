@@ -5,16 +5,15 @@
 #include "game/scenes/SceneTools.hpp"
 
 Explosion::Explosion(glm::vec3 position, Entity *sceneManager)
-	: Entity(glm::vec3(position.x, position.y + 0.3f, position.z), glm::vec3(0),
+	: Entity(glm::vec3(position.x, position.y + 0.05f, position.z),
+			 glm::vec3(0),
 			 new Collider(Collider::Rectangle, LayerTag::ExplosionLayer, 0.45f,
 						  0.45f, true),
 			 "Fire", "Explosion", "Explosion", sceneManager),
 	  _timer(1.0f) {
-	scale(glm::vec3(0.8, 0.8, 0.8));
-	// setColor(glm::vec3(0.8, 0.6, 0.2));
+	scale(glm::vec3(0.8f));
 	_damagingSounds.push_back("burn_player_1");
 	_damagingSounds.push_back("burn_player_2");
-	// setColor(glm::vec3(0.9, 0.6, 0.1));
 }
 
 Explosion::~Explosion(void) {}

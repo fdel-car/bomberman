@@ -173,6 +173,10 @@ void GameRenderer::getUserInput(void) { glfwPollEvents(); }
 
 void GameRenderer::refreshWindow(std::vector<Entity *> &entities,
 								 Camera *camera, Light *light, Skybox *skybox) {
+	glfwSetWindowTitle(_window,
+					   toString(1.0f / _gameEngine->getDeltaTime())
+						   .c_str());  // TODO: Don't forget to remove this
+
 	// Custom OpenGL state
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
