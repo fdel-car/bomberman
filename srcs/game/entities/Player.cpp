@@ -24,6 +24,7 @@ Player::Player(glm::vec3 position, glm::vec3 eulerAngles, Save &save,
 	_neededSounds.insert("defeat_effect");
 	_neededSounds.insert("defeat_voice");
 	shouldBeAnimated = true;
+	rotateX(90);
 
 	Damageable::setFlickering(0.1f, 0.3f);
 	_cam->setPerksValues(_speed, _maxBombs, _bombRange, false);

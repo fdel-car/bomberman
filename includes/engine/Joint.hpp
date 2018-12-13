@@ -49,7 +49,7 @@ class Joint final {
 						size_t nbr);
 
    private:
-	// static glm::mat4 _toYAxisUp;
+	static glm::mat4 _toYAxisUp;
 	std::map<std::string, Animation> _animations;
 
 	Joint(void);

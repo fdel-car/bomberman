@@ -9,9 +9,24 @@ void Joint::applyAnimationTransform(double currentAnimTime,
 									std::string const &currentAnimName) {
 	PositionKey prevPosition, nextPosition;
 	RotationKey prevRotation, nextRotation;
+	ScalingKey prevScaling, nextScaling;
 	float mixRatio;
 
-	// Scale not taken into account for now
+	for (size_t i = 0; i < _animations[currentAnimName].scalingKeys.size();
+		 i++) {
+		if (currentAnimTime <
+			_animations[currentAnimName].scalingKeys[i].frameTime) {
+			prevScaling = _animations[currentAnimName].scalingKeys[i - 1];
+			nextScaling = _animations[currentAnimName].scalingKeys[i];
+			break;
+		}
+	}
+	mixRatio = (currentAnimTime - prevScaling.frameTime) /
+			   (nextScaling.frameTime - prevScaling.frameTime);
+	glm::mat4 scalingMatrix =
+		glm::scale(glm::mat4(1.0f), prevScaling.scaling * (1.0f - mixRatio) +
+										nextScaling.scaling * mixRatio);
+
 	for (size_t i = 0; i < _animations[currentAnimName].positionKeys.size();
 		 i++) {
 		if (currentAnimTime <
@@ -23,13 +38,10 @@ void Joint::applyAnimationTransform(double currentAnimTime,
 	}
 	mixRatio = (currentAnimTime - prevPosition.frameTime) /
 			   (nextPosition.frameTime - prevPosition.frameTime);
+	glm::mat4 translationMatrix = glm::translate(
+		glm::mat4(1.0f), prevPosition.position * (1.0f - mixRatio) +
+							 nextPosition.position * mixRatio);
 
-	glm::vec3 position = prevPosition.position * mixRatio +
-						 nextPosition.position * (1.0f - mixRatio);
-
-	localTransform[3][0] = position.x;
-	localTransform[3][1] = position.y;
-	localTransform[3][2] = position.z;
 	for (size_t i = 0; i < _animations[currentAnimName].rotationKeys.size();
 		 i++) {
 		if (currentAnimTime <
@@ -41,25 +53,18 @@ void Joint::applyAnimationTransform(double currentAnimTime,
 	}
 	mixRatio = (currentAnimTime - prevRotation.frameTime) /
 			   (nextRotation.frameTime - prevRotation.frameTime);
-
-	glm::mat4 interpolated = glm::mat4(
+	glm::mat4 rotationMatrix = glm::mat4(
 		glm::slerp(prevRotation.rotation, nextRotation.rotation, mixRatio));
-	localTransform[0][0] = interpolated[0][0];
-	localTransform[0][1] = interpolated[0][1];
-	localTransform[0][2] = interpolated[0][2];
-	localTransform[1][0] = interpolated[1][0];
-	localTransform[1][1] = interpolated[1][1];
-	localTransform[1][2] = interpolated[1][2];
-	localTransform[2][0] = interpolated[2][0];
-	localTransform[2][1] = interpolated[2][1];
-	localTransform[2][2] = interpolated[2][2];
+
+	// Compute localTransform final value
+	localTransform = translationMatrix * rotationMatrix * scalingMatrix;
 }
 
 void Joint::updateFinalTransform(void) {
 	Joint *tmp = parent;
 	std::vector<glm::mat4> transforms;
 
-	finalTransform = glm::mat4(1.0f);
+	finalTransform = _toYAxisUp;
 	while (tmp != nullptr) {
 		transforms.push_back(tmp->localTransform);
 		tmp = tmp->parent;
@@ -111,6 +116,5 @@ void Joint::setScalingKeys(std::string const &animName,
 	}
 }
 
-// glm::mat4 Joint::_toYAxisUp = glm::rotate(glm::mat4(1.0f),
-// glm::radians(-90.0f),
-//   glm::vec3(1.0, 0.0, 0.0));
+glm::mat4 Joint::_toYAxisUp = glm::rotate(glm::mat4(1.0f), glm::radians(-90.0f),
+										  glm::vec3(1.0, 0.0, 0.0));

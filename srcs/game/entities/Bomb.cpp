@@ -5,12 +5,15 @@
 
 Bomb::Bomb(glm::vec3 position, float timer, size_t range, Entity *sceneManager)
 	: Damageable(
-		  glm::vec3(position.x, position.y + 0.3f, position.z), glm::vec3(0),
+		  glm::vec3(position.x, position.y + 0.24f, position.z), glm::vec3(0),
 		  new Collider(Collider::Rectangle, LayerTag::BombLayer, 0.4f, 0.4f),
 		  "Bomb", "Bomb", "Bomb", 1, BombLayer, BombLayer, 0.0f, sceneManager),
 	  _timer(timer),
 	  _range(range),
 	  _slideSpeed(0.0f) {
+	scale(glm::vec3(0.4f));
+	shouldBeAnimated = true;
+	loopAnim = false;
 	_neededSounds.insert("put_bomb_1");
 	_neededSounds.insert("put_bomb_2");
 	_initSounds.push_back("put_bomb_1");
@@ -55,6 +58,7 @@ void Bomb::onCollisionEnter(Entity *entity) {
 
 void Bomb::pushBomb(int xSign, int zSign, size_t pusherID) {
 	if (_slideSpeed != 0.0f || (xSign == 0.0f && zSign == 0.0f)) return;
+	shouldBeAnimated = false;
 	_pusherID = pusherID;
 	_slideSpeed = 7.0f;
 	if (xSign != 0 && zSign != 0) zSign = 0;
