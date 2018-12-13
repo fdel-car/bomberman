@@ -186,21 +186,6 @@ void GameRenderer::refreshWindow(std::vector<Entity *> &entities,
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-#ifdef __APPLE__
-	// Trick to solve macOS bug with Mojave (link:
-	// https://github.com/glfw/glfw/issues/1334)
-	if (!_isFullScreen) {
-		int widthBck = _widthRequested;
-		int heightBck = _heightRequested;
-		setNewResolution(_isFullScreen, widthBck - 1, heightBck - 1);
-		setNewResolution(_isFullScreen, widthBck, heightBck);
-
-		// glfwShowWindow(_window);
-		// glfwHideWindow(_window);
-		// glfwShowWindow(_window);
-	}
-#endif
-
 	for (auto entity : entities) {
 		Model *model = entity->getModel();
 		if (model && model->isRigged() && entity->shouldBeAnimated)

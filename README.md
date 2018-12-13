@@ -48,5 +48,27 @@ Here is the key mapping:
 - Pressing the "esc" key will pop-up the pause menu.
 - Pressing the "\`" key (backquote) will put you in debug mode, press the key again to resume game.
 
+### Known issues
+* macOS Mojave compatibility
+As of today OpenGl has some issues running on a mac with Mojave installed there are some hotfixes that we tried but none are really perfect.
+This piece of code place inside the refreshWindow function place right after glClear(...) should be working (at the price of a lower framerate, thanks Apple to just forget about OpenGL 👍).
+```
+// Trick to solve macOS bug with Mojave (link:
+// https://github.com/glfw/glfw/issues/1334)
+if (!_isFullScreen) {
+    int widthBck = _widthRequested;
+    int heightBck = _heightRequested;
+    setNewResolution(_isFullScreen, widthBck - 1, heightBck - 1);
+    setNewResolution(_isFullScreen, widthBck, heightBck);
+
+    // One of the other solutions found (this one prevent you from switching
+    // windows, you'll have to exit the game)
+
+    // glfwShowWindow(_window);
+    // glfwHideWindow(_window);
+    // glfwShowWindow(_window);
+}
+```
+
 # Disclaimer
 We do not own any of the assets used for this game, all ownership and credit goes to the respective creators.

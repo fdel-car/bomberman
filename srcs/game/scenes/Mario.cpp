@@ -35,18 +35,22 @@ void Mario::configGUI(GUI *graphicUI) {
 	activeStyle = defaultStyle;
 	_refreshAI = false;
 	if (true) {
-		std::string str = "Well, this time the portal is probably in a rock pipe. You can destroy them with your bombs.";
-		_buildNewDialogue(0, 0, 0, "Bomberman", "BomberBlack", str, true, 1000, 1000,
-				  			NK_TEXT_LEFT, "20_BOMBERMAN", "24_BOMBERMAN");
-		str = "The koffings are cutes.";
-		_buildNewDialogue(0, 0, 0, "Bomberman", "BomberWhite", str, false, 1000, 1000,
-				  			NK_TEXT_LEFT, "20_BOMBERMAN", "24_BOMBERMAN");
-		str = "Can you listen please ? They are not cute, they are dangerous. They can blow you if you stay static to long.";
-		_buildNewDialogue(0, 0, 0, "Bomberman", "BomberBlack", str, true, 1000, 1000,
-				  			NK_TEXT_LEFT, "20_BOMBERMAN", "24_BOMBERMAN");
-		str = "The koffings are not cutes.";
-		_buildNewDialogue(0, 0, 0, "Bomberman", "BomberWhite", str, false, 1000, 1000,
-				  			NK_TEXT_LEFT, "20_BOMBERMAN", "24_BOMBERMAN");
+		std::string str =
+			"Well, this time the portal is probably in a rock pipe. You should "
+			"be able to destroy them with your bombs.";
+		_buildNewDialogue(0, 0, 0, "Bomberman", "BomberBlack", str, true, 1000,
+						  1000, NK_TEXT_LEFT, "20_BOMBERMAN", "24_BOMBERMAN");
+		str = "The koffings are so cutes!";
+		_buildNewDialogue(0, 0, 0, "Bomberman", "BomberWhite", str, false, 1000,
+						  1000, NK_TEXT_LEFT, "20_BOMBERMAN", "24_BOMBERMAN");
+		str =
+			"Can you listen please? They are not cute, they are dangerous. "
+			"They can blow you up if you stay static to long.";
+		_buildNewDialogue(0, 0, 0, "Bomberman", "BomberBlack", str, true, 1000,
+						  1000, NK_TEXT_LEFT, "20_BOMBERMAN", "24_BOMBERMAN");
+		str = "Roger, the koffings are not cutes.";
+		_buildNewDialogue(0, 0, 0, "Bomberman", "BomberWhite", str, false, 1000,
+						  1000, NK_TEXT_LEFT, "20_BOMBERMAN", "24_BOMBERMAN");
 	}
 }
 

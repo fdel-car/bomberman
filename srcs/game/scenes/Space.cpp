@@ -33,33 +33,39 @@ void Space::configGUI(GUI *graphicUI) {
 	activeStyle = defaultStyle;
 	_refreshAI = false;
 	if (true) {
-		std::string str = "Wow, we are in space.";
-		_buildNewDialogue(0, 0, 0, "Bomberman", "BomberWhite", str, false, 1000, 1000,
-				  			NK_TEXT_LEFT, "20_BOMBERMAN", "24_BOMBERMAN");
-		str = "You took a lot of LSD at this party.";
-		_buildNewDialogue(0, 0, 0, "Bomberman", "BomberBlack", str, true, 1000, 1000,
-				  			NK_TEXT_LEFT, "20_BOMBERMAN", "24_BOMBERMAN");
-		str = "And i can fly !";
-		_buildNewDialogue(0, 0, 0, "Bomberman", "BomberWhite", str, false, 1000, 1000,
-				  			NK_TEXT_LEFT, "20_BOMBERMAN", "24_BOMBERMAN");
-		str = "It's a dream, you are still dying in the real life...";
-		_buildNewDialogue(0, 0, 0, "Bomberman", "BomberBlack", str, true, 1000, 1000,
-				  			NK_TEXT_LEFT, "20_BOMBERMAN", "24_BOMBERMAN");
-		str = "Oh yes i forgot this. What am i supposed to do this time for survive ?";
-		_buildNewDialogue(0, 0, 0, "Bomberman", "BomberWhite", str, false, 1000, 1000,
-				  			NK_TEXT_LEFT, "20_BOMBERMAN", "24_BOMBERMAN");
-		str = "You have to find the last portal for comeback in the real life. But i don't know where is the portal this time... I'm sorry.";
-		_buildNewDialogue(0, 0, 0, "Bomberman", "BomberBlack", str, true, 1000, 1000,
-				  			NK_TEXT_LEFT, "20_BOMBERMAN", "24_BOMBERMAN");
-		str = "Don't worry i'm will blow everything for find it.";
-		_buildNewDialogue(0, 0, 0, "Bomberman", "BomberWhite", str, false, 1000, 1000,
-				  			NK_TEXT_LEFT, "20_BOMBERMAN", "24_BOMBERMAN");
-		str = "Just care about the red ghosts. They will focus you if you give them a way to you.";
-		_buildNewDialogue(0, 0, 0, "Bomberman", "BomberBlack", str, true, 1000, 1000,
-				  			NK_TEXT_LEFT, "20_BOMBERMAN", "24_BOMBERMAN");
-		str = "YYYYYY AAAAAA AAAAAA AAAAAA HHHHHH HHHHHH.";
-		_buildNewDialogue(0, 0, 0, "Bomberman", "BomberWhite", str, false, 1000, 1,
-				  			NK_TEXT_CENTERED, "20_BOMBERMAN", "24_BOMBERMAN");
+		std::string str = "We are in space!";
+		_buildNewDialogue(0, 0, 0, "Bomberman", "BomberWhite", str, false, 1000,
+						  1000, NK_TEXT_LEFT, "20_BOMBERMAN", "24_BOMBERMAN");
+		str = "You did take a lot of LSD at this party.";
+		_buildNewDialogue(0, 0, 0, "Bomberman", "BomberBlack", str, true, 1000,
+						  1000, NK_TEXT_LEFT, "20_BOMBERMAN", "24_BOMBERMAN");
+		str = "Worth it, I can fly now!";
+		_buildNewDialogue(0, 0, 0, "Bomberman", "BomberWhite", str, false, 1000,
+						  1000, NK_TEXT_LEFT, "20_BOMBERMAN", "24_BOMBERMAN");
+		str = "It's a dream, and you're still dying in real life...";
+		_buildNewDialogue(0, 0, 0, "Bomberman", "BomberBlack", str, true, 1000,
+						  1000, NK_TEXT_LEFT, "20_BOMBERMAN", "24_BOMBERMAN");
+		str =
+			"Oh yes I totally forgot about this. What am I supposed to do this "
+			"time to survive?";
+		_buildNewDialogue(0, 0, 0, "Bomberman", "BomberWhite", str, false, 1000,
+						  1000, NK_TEXT_LEFT, "20_BOMBERMAN", "24_BOMBERMAN");
+		str =
+			"You have to find the last portal to escape and get back to your "
+			"real body. But I don't know where is it this time... I'm sorry.";
+		_buildNewDialogue(0, 0, 0, "Bomberman", "BomberBlack", str, true, 1000,
+						  1000, NK_TEXT_LEFT, "20_BOMBERMAN", "24_BOMBERMAN");
+		str = "So I'll blow everything up to find it.";
+		_buildNewDialogue(0, 0, 0, "Bomberman", "BomberWhite", str, false, 1000,
+						  1000, NK_TEXT_LEFT, "20_BOMBERMAN", "24_BOMBERMAN");
+		str =
+			"Just be careful about the ghosts. They will chase you if they can "
+			"find a path.";
+		_buildNewDialogue(0, 0, 0, "Bomberman", "BomberBlack", str, true, 1000,
+						  1000, NK_TEXT_LEFT, "20_BOMBERMAN", "24_BOMBERMAN");
+		str = "Let's GO! YEAAAHHH!";
+		_buildNewDialogue(0, 0, 0, "Bomberman", "BomberWhite", str, false, 1000,
+						  1, NK_TEXT_CENTERED, "20_BOMBERMAN", "24_BOMBERMAN");
 	}
 }
 
