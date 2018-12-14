@@ -5,8 +5,13 @@
 Create our own game engine in C++ and create a Bomberman-like game which uses the engine.
 (You can find an in-depth Readme of the engine in the "srcs" folder)
 
-### In-Game screenshots
+### In-game screenshots
+The debug mode was activated with the `TAB` key.
 
+![alt tag](https://github.com/fdel-car/Bomberman/blob/master/screenshots/Forest.png)
+![alt tag](https://github.com/fdel-car/Bomberman/blob/master/screenshots/Pokemon.png)
+![alt tag](https://github.com/fdel-car/Bomberman/blob/master/screenshots/Mario.png)
+![alt tag](https://github.com/fdel-car/Bomberman/blob/master/screenshots/Space.png)
 
 # Project's Constraints
 The project mus follow the following constraints:
