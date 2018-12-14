@@ -1,5 +1,5 @@
 # Bomberman
-42 project made by Jimmy Chen Ma, Fabien Del Carmen, Vivien Klaousen and Claudio Mutti.
+42 project made by [Jimmy Chen Ma](https://github.com/Qwesaqwes), [Fabien Del Carmen](https://github.com/fdel-car), [Vivien Klaousen](https://github.com/vklaouse) and [Claudio Mutti](https://github.com/Tolo789).
 
 # Objective
 Create our own game engine in C++ and create a Bomberman-like game which uses the engine.
