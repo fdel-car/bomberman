@@ -80,8 +80,6 @@ void Credits::configGUI(GUI *graphicUI) {
 		std::tuple<std::string, std::string>("Jimmy Chen Ma", "20_slider"));
 	_credits.push_back(
 		std::tuple<std::string, std::string>("Fabien Del Carmen", "20_slider"));
-	_credits.push_back(
-		std::tuple<std::string, std::string>("Claudio Mutti", "20_slider"));
 
 	_credits.push_back(std::tuple<std::string, std::string>("", "20_slider"));
 	_credits.push_back(
@@ -91,7 +89,7 @@ void Credits::configGUI(GUI *graphicUI) {
 
 	_credits.push_back(std::tuple<std::string, std::string>("", "20_slider"));
 	_credits.push_back(std::tuple<std::string, std::string>(
-		"GameEngine Architecture", "34_slider"));
+		"Game Engine Architecture", "34_slider"));
 	_credits.push_back(
 		std::tuple<std::string, std::string>("Claudio Mutti", "20_slider"));
 	_credits.push_back(
@@ -113,6 +111,12 @@ void Credits::configGUI(GUI *graphicUI) {
 		std::tuple<std::string, std::string>("Shadows", "34_slider"));
 	_credits.push_back(
 		std::tuple<std::string, std::string>("Jimmy Chen Ma", "20_slider"));
+
+	_credits.push_back(std::tuple<std::string, std::string>("", "20_slider"));
+	_credits.push_back(std::tuple<std::string, std::string>(
+		"Collisions & Triggers", "34_slider"));
+	_credits.push_back(
+		std::tuple<std::string, std::string>("Claudio Mutti", "20_slider"));
 
 	_credits.push_back(std::tuple<std::string, std::string>("", "20_slider"));
 	_credits.push_back(
@@ -226,6 +230,8 @@ void Credits::configGUI(GUI *graphicUI) {
 }
 
 void Credits::drawGUI(GUI *graphicUI) {
+	if (_gameEngine->isKeyJustPressed(KEY_SPACE)) _newSceneName = "MainMenu";
+
 	size_t width = _gameEngine->getGameRenderer()->getWidth() / 3;
 	size_t height = _gameEngine->getGameRenderer()->getHeight() / 3;
 	_evolveCoords(&std::get<0>(coords[0]), &std::get<1>(coords[0]), -2, false,
@@ -297,8 +303,6 @@ void Credits::drawGUI(GUI *graphicUI) {
 							"18_slider");
 	}
 	graphicUI->uiEndBlock();
-
-	if (_gameEngine->isKeyJustPressed(KEY_SPACE)) _newSceneName = "MainMenu";
 }
 
 void Credits::_creditsWindow(
