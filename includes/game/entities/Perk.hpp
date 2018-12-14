@@ -14,6 +14,9 @@ class Perk : public Entity {
 	virtual void onTriggerEnter(Entity *entity);
 
    private:
+	Perk(Perk const &src);
+	Perk &operator=(Perk const &rhs);
+
 	static const std::vector<std::tuple<PerkType, size_t, std::string>>
 		_possiblePerks;
 	static const size_t _totalPerkProbs;

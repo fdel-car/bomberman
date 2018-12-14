@@ -6,9 +6,6 @@
 class Load : public SceneTools {
    public:
 	Load(WorldLocation &startLocation, Bomberman *bomberman);
-	Load(Load const &src);
-
-	Load &operator=(Load const &rhs);
 
 	virtual void drawGUI(GUI *graphicUI);
 	virtual void configGUI(GUI *graphicUI);
@@ -16,4 +13,7 @@ class Load : public SceneTools {
    private:
 	Load(void);
 	virtual ~Load(void);
+	Load(Load const &src);
+
+	Load &operator=(Load const &rhs);
 };

@@ -10,5 +10,8 @@ class Portal : public Entity {
 	virtual void onTriggerEnter(Entity *entity);
 
    private:
+	Portal(Portal const &src);
+	Portal &operator=(Portal const &rhs);
+
 	bool _hasTriggered;
 };

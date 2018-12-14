@@ -12,6 +12,9 @@ class Box : public Damageable {
 	virtual void onDeath(void);
 
    private:
+	Box(Box const &src);
+	Box &operator=(Box const &rhs);
+
 	bool _onFire;
 	bool _hasSpawned;
 	float _timer;

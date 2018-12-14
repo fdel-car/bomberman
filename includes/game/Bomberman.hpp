@@ -46,6 +46,9 @@ class Bomberman : public AGame {
 	Save &getSave(void);
 
    private:
+	Bomberman(Bomberman const &src);
+	Bomberman &operator=(Bomberman const &rhs);
+
 	Save _save;
 	const std::string _startLevelName;
 	std::map<std::string, Scene> _scenesMap;

@@ -66,6 +66,7 @@ class Entity {
 	glm::mat4 _translationMatrix = glm::mat4(1.0f);
 	glm::mat4 _modelMatrix = glm::mat4(1.0f);
 
+	Entity(Entity const &src);
 	Entity &operator=(Entity const &rhs);
 
 	void _updateModelMatrix(void);
@@ -92,7 +93,6 @@ class Entity {
 	std::vector<std::string> _destroySounds;
 
 	Entity(void);
-	Entity(Entity const &src);
 };
 
 std::ostream &operator<<(std::ostream &o, Entity const &entity);

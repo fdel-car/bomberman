@@ -14,6 +14,9 @@ class Bomb : public Damageable {
 	void pushBomb(int xSign, int zSign, size_t pusherID);
 
    private:
+	Bomb(Bomb const &src);
+	Bomb &operator=(Bomb const &rhs);
+
 	float _timer;
 	size_t _range;
 	size_t _pusherID;

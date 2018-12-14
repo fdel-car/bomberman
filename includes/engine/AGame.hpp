@@ -84,6 +84,8 @@ class AGame {
 
    private:
 	AGame(void);
+	AGame(AGame const &src);
+	AGame &operator=(AGame const &rhs);
 	virtual void _initScenes(void) = 0;
 
 	GameRenderer *_gameRenderer = nullptr;

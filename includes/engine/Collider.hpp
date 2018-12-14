@@ -9,7 +9,6 @@ struct Collider final {
 	Collider(void);
 	Collider(Shape shape, int layerTag, float width, float height,
 			 bool isTrigger = false);
-	Collider(Collider const &src);
 	~Collider(void);
 
 	Shape shape;
@@ -19,6 +18,7 @@ struct Collider final {
 	bool isTrigger;
 
    private:
+	Collider(Collider const &src);
 	Collider &operator=(Collider const &rhs);
 };
 

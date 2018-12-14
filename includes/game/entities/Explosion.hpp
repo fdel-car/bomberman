@@ -11,6 +11,9 @@ class Explosion : public Entity {
 	virtual void onTriggerEnter(Entity *entity);
 
    private:
+	Explosion(Explosion const &src);
+	Explosion &operator=(Explosion const &rhs);
+
 	float _timer;
 	std::vector<std::string> _damagingSounds;
 };

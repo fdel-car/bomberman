@@ -176,6 +176,8 @@ class SceneTools : public Camera {
 
    private:
 	SceneTools(void);
+	SceneTools(SceneTools const &src);
+	SceneTools &operator=(SceneTools const &rhs);
 
 	void _putExplosionsInDirection(size_t xCoord, size_t zCoord, int xChange,
 								   int zChange, size_t range,

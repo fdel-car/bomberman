@@ -6,9 +6,6 @@
 class Credits : public SceneTools {
    public:
 	Credits(WorldLocation &startLocation, Bomberman *bomberman);
-	Credits(Credits const &src);
-
-	Credits &operator=(Credits const &rhs);
 
 	virtual void drawGUI(GUI *graphicUI);
 	virtual void configGUI(GUI *graphicUI);
@@ -16,6 +13,9 @@ class Credits : public SceneTools {
    private:
 	Credits(void);
 	virtual ~Credits(void);
+	Credits(Credits const &src);
+
+	Credits &operator=(Credits const &rhs);
 
 	void _creditsWindow(GUI *graphicUI, std::string id, int x, int y,
 						size_t width, size_t height,

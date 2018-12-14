@@ -31,6 +31,8 @@ struct Save {
 	bool areValuesGood(void);
 
    private:
+	Save(Save const &src);
+	Save &operator=(Save const &rhs);
 	std::string savePath;
 };
 
