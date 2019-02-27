@@ -6,7 +6,7 @@ Create our own game engine in C++ and create a Bomberman-like game which uses th
 (You can find an in-depth Readme of the engine in the "srcs" folder)
 
 ### In-game screenshots
-The debug mode was activated with the `TAB` key.
+The debug mode was activated with the `Tab` key.
 
 ![alt tag](/screenshots/Forest.png "Forest")
 ![alt tag](/screenshots/Pokemon.png "Pokemon")
