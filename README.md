@@ -39,7 +39,7 @@ Additionally, for Linux the following libraries may need to be installed:
 
 # How to launch
 - If you run "install.sh" without problems the game will launch by itself at the end of the script.
-- If you want to play a second time after having quit the game run this command from the root of the repository: "$> ./buld/super_bomberman".
+- If you want to play a second time after having quit the game run this command from the root of the repository: "$> ./build/super_bomberman".
 - If you had to fix some dependecies and have to build the game then launch "$> make -C build  && ./build/super_bomberman".
 - A "uninstall.sh" script is also provided if you want to clean up all dependencies and assets.
 
