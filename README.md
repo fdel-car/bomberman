@@ -50,8 +50,8 @@ Here is the key mapping:
 - Spacebar to put a bomb down, you can put a maximum of 3 bombs at the same time.
 - Left-shift to kick bombs, you have to find the perk that gives you this ability in order to be able to do it.
 - To trigger a portal or pick-up a perk just walk over it.
-- Pressing the "esc" key will pop-up the pause menu.
-- Pressing the "\`" key (backquote) will put you in debug mode, press the key again to resume game.
+- Pressing the `Esc` key will pop-up the pause menu.
+- Pressing the `TAB` key will put you in debug mode, press the key again to resume game.
 
 ### Known issues
 * macOS Mojave compatibility
